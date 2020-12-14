@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright Contributors to the ODPi Egeria project.
+
+# IntelliJ
+*.iml
+**.iml
+*.ipr
+*.iws
+.idea
+venv
+
+# Eclipse
+.cache
+.classpath
+.project
+.checkstyle
+
+.settings
+.externalToolBuilders
+maven-eclipse.xml
+
+# Mac OS
+__MACOSX
+
+# other files
+.DS_Store
+*.swp
+
+package-lock.json
+**/node_modules/**
+
+# vscode editor
+**/.vscode*/**
+**/.factorypath
+**/**.code-workspace
+

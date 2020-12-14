@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: Apache-2.0
+# # Copyright Contributors to the ODPi Egeria project.
+#
+name: Egeria react UI build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Run client/server in parallel. 
+# Code checkout is small so low overhead, 
+# npm build is slow, so benefits from parallelism
+jobs:
+
+  client:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies for client
+        working-directory: ./cra-client
+        run: npm install
+      - name: Build client
+        working-directory: ./cra-client
+        run: npm run build
+      - name: Upload Client
+        uses: actions/upload-artifact@v2
+        with:
+          name: client
+          path: cra-client/build
+
+  server:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies for client
+        working-directory: ./cra-client
+      - name: Install dependencies for server
+        working-directory: ./cra-server
+        run: npm install
+      - name: Build client
+        working-directory: ./cra-server
+        run: npm run build
+      - name: Upload Server
+        uses: actions/upload-artifact@v2
+        with:
+          name: server
+          path: cra-client/server
