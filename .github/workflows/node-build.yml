@@ -31,6 +31,8 @@ jobs:
       - name: Build client
         working-directory: ./cra-client
         run: npm run build
+        env:
+          CI: true
       - name: Upload Client
         uses: actions/upload-artifact@v2
         with:
@@ -42,6 +44,8 @@ jobs:
       - name: Build server
         working-directory: ./cra-server
         run: npm run build
+        env:
+          CI: true
       - name: Upload Server
         uses: actions/upload-artifact@v2
         with:
