@@ -14,7 +14,7 @@ on:
 # npm build is slow, so benefits from parallelism
 jobs:
 
-  client:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,18 +36,6 @@ jobs:
         with:
           name: client
           path: cra-client/build
-
-  server:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
       - name: Install dependencies for server
         working-directory: ./cra-server
         run: npm install
