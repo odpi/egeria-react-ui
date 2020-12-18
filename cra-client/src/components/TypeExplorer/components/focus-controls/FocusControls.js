@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 
 
-import React, { useContext, useEffect }           from "react";
+import React, { useContext, useEffect, useCallback }           from "react";
 
 import { TypesContext }                from "../../contexts/TypesContext";  
 
@@ -103,30 +103,37 @@ export default function FocusControls() {
    * need to be updated to reflect the new focus and view state
    * 
    */
-  const updateSelectorValues = () => {
-    let selector;
-    switch (focusContext.view.category) {
+  const updateSelectorValues = useCallback(
+    () => {
+      let selector;
+      switch (focusContext.view.category) {
 
-      case "Entity":
-        selector = document.getElementById("entityTypeSelector");
-        selector.value = focusContext.view.typeName;
-        resetRelTypeSelector();     
-        resetClsTypeSelector();
-        break;
+        case "Entity":
+          selector = document.getElementById("entityTypeSelector");
+          selector.value = focusContext.view.typeName;
+          resetRelTypeSelector();
+          resetClsTypeSelector();
+          break;
 
-      case "Relationship":
-        selector = document.getElementById("relationshipTypeSelector");
-        selector.value = focusContext.view.typeName;
-        resetClsTypeSelector();
-        break;
+        case "Relationship":
+          selector = document.getElementById("relationshipTypeSelector");
+          selector.value = focusContext.view.typeName;
+          resetClsTypeSelector();
+          break;
 
-      case "Classification":
-        selector = document.getElementById("classificationTypeSelector");
-        selector.value = focusContext.view.typeName;
-        resetRelTypeSelector();
-        break;
-    }
-  };
+        case "Classification":
+          selector = document.getElementById("classificationTypeSelector");
+          selector.value = focusContext.view.typeName;
+          resetRelTypeSelector();
+          break;
+
+        default:
+          alert("Unknown focus category detected in updateSelectorValues: "+focusContext.view.category);
+          break;
+      }
+    },
+    [focusContext]
+  );
 
   /*
    * On focus change...
@@ -141,7 +148,7 @@ export default function FocusControls() {
         resetClsTypeSelector();
       }
     },
-    [focusContext.view]
+    [focusContext.view, updateSelectorValues]
   )
  
  
