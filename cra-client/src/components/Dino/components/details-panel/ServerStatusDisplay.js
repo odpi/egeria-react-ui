@@ -20,44 +20,13 @@ export default function ServerStatusDisplay(props) {
 
 
   const [historyStatus, setHistoryStatus]     = useState("idle");
-  const [history, setHistory]                 = useState({});
 
-  
-  /*
-   * Handler for flopping a collapsible
-   */
-  const flipSection = (evt) => {
-    /*
-     * Use currentTarget (not target) - because we need to operate relative to the button,
-     * which is where the handler is defined, in order for the content section to be the sibling.
-     */
-    const element = evt.currentTarget;
-    element.classList.toggle("active");
-    const content = element.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    }
-    else {
-      content.style.display = "block";
-    }
-  };
-
-  const formatItem = (item) => {
-    return (
-      <div>
-        <ul className="details-sublist">
-          <li className="details-sublist-item" key={item.startTime}>Start Time : {item.startTime}</li>
-          <li className="details-sublist-item" key={item.endTime}>End Time : {item.endTime}</li>  
-        </ul>
-      </div>
-    );
-  }
 
   /*
-   * Handler to render sevrer config audit trail in portal
+   * Handler to render server config audit trail in portal
    */
   const displayServerRunHistory = (serverName, history) => {
-    setHistory({"serverName" : serverName , "history" : history });
+    //setHistory({"serverName" : serverName , "history" : history });
     setHistoryStatus("complete");
   }
 
@@ -69,21 +38,6 @@ export default function ServerStatusDisplay(props) {
     setHistoryStatus("idle");
   };
 
-
-
-  const serverRunHistory = (history) => {
-
-    /*
-     * Use the name to index into the map in sorted order and display cohort
-     */
-    let historyReport = history.map( (histItem) => 
-      <li className="details-sublist-item" key={histItem.startTime}> 
-        {formatItem(histItem)}
-      </li>
-    );
-
-    return historyReport;
-  }
 
   const expandStatus = (inStatus) => {
 

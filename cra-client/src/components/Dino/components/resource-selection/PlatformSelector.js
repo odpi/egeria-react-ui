@@ -145,9 +145,10 @@ export default function PlatformSelector() {
    * option then we will see it as a change. Otherwise the user action will be ignored and the focus will 
    * not change.
    */
-  let selectorValue;
+
   useEffect(
     () => {
+      let selectorValue;
       const focus = resourcesContext.focus;
       /*
        * If the focus is a platform then we need to ensure we track the current focus

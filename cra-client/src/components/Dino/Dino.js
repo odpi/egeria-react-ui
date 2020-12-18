@@ -146,7 +146,7 @@ export default function Dino() {
                 <div className="title">
                   <p>Dino</p>
              
-                  <input type="image"  src={QuestionMarkImage}
+                  <input type="image"  src={QuestionMarkImage} alt="image of question mark"
                      onClick = { () => displayHelp() }  >
                   </input>
 

@@ -752,6 +752,10 @@ const ResourcesContextProvider = (props) => {
              */
             break;
 
+          default:
+            console.log("Unexpected resource category: "+resource.category);
+            break;
+
         }
       }
     }
@@ -1335,86 +1339,84 @@ const _loadService = (json) => {
 
 
 //++++++++++++
-
-  const OLDloadService = (serverName, serviceName) => {
-
-
-    /*
-     * If the server is not found the operation will fail.
-     */
-  
-    let serverGUID = genServerGUID(serverName);
-
-    /*
-     * Find the server entry in the gens
-     */
-    let serverGenId = guidToGenId[serverGUID];
-    if (serverGenId === undefined) {
-      /*
-       * Operation cannot proceed - we do not have the specified server.
-       */
-      alert("Cannot add service for unknown server "+serverName);
-      return;
-    }
-
-    /*
-     * Create a service object
-     */
-    let serviceGUID = genServiceGUID(serviceName);
-
-    let service                   = {};
-    service.category              = "service";
-    service.serviceName           = serviceName;    
-    service.guid                  = serviceGUID;
-
-    /*
-     * Create a relationship from the specified server to the cohort - if we do not already have one
-     * The relationship will need a guid, a source and target and a gen (which is assigned when the 
-     * gen is created)
-     */
-
-    let serverServiceName                         = serviceName+"@"+serverName;
-    let serverServiceGUID                         = "SERVER_SERVICE"+serverServiceName;
-
-    let serverServiceRelationship                 = {};
-    serverServiceRelationship.category            = "server-service";
-    serverServiceRelationship.serverCohortName    = serverServiceName;
-    serverServiceRelationship.guid                = serverServiceGUID;
-    serverServiceRelationship.serverName          = serverName;
-    serverServiceRelationship.cohortName          = serviceName;
-    /* 
-     * Server-Service relationships are always active - this is driven from the active server list.
-     */
-    serverServiceRelationship.active              = true;
-
-    /*
-     * Include graph navigation ids.
-     */
-    serverServiceRelationship.source              = serverGUID;
-    serverServiceRelationship.target              = serviceGUID;
-
-  
-    /*
-     * Create a map of the objects to be updated.
-     */
-    let update_objects                               = {};
-    update_objects.resources                         = {};
-    update_objects.relationships                     = {};
-    update_objects.resources[serviceGUID]            = service;
-    update_objects.relationships[serverServiceGUID]  = serverServiceRelationship; 
-
-    /*
-     * Include a request summary - since this was a local operation there is no request information 
-     * to be returned from the VS
-     */
-    let requestSummary             = {};
-    requestSummary.serverName      = serverName;
-    requestSummary.operation       = "TODO";
-    requestSummary.platformName    = null;
-
-    updateGens(update_objects, requestSummary);
-
-  };
+// TODO cleanup
+//  const OLDloadService = (serverName, serviceName) => {
+//
+//    /*
+//     * If the server is not found the operation will fail.
+//     */
+//
+//    let serverGUID = genServerGUID(serverName);
+//
+//    /*
+//     * Find the server entry in the gens
+//     */
+//    let serverGenId = guidToGenId[serverGUID];
+//    if (serverGenId === undefined) {
+//      /*
+//       * Operation cannot proceed - we do not have the specified server.
+//       */
+//      alert("Cannot add service for unknown server "+serverName);
+//      return;
+//    }
+//
+//    /*
+//     * Create a service object
+//     */
+//    let serviceGUID = genServiceGUID(serviceName);
+//
+//    let service                   = {};
+//    service.category              = "service";
+//    service.serviceName           = serviceName;
+//    service.guid                  = serviceGUID;
+//
+//    /*
+//     * Create a relationship from the specified server to the cohort - if we do not already have one
+//     * The relationship will need a guid, a source and target and a gen (which is assigned when the
+//     * gen is created)
+//     */
+//
+//    let serverServiceName                         = serviceName+"@"+serverName;
+//    let serverServiceGUID                         = "SERVER_SERVICE"+serverServiceName;
+//
+//    let serverServiceRelationship                 = {};
+//    serverServiceRelationship.category            = "server-service";
+//    serverServiceRelationship.serverCohortName    = serverServiceName;
+//    serverServiceRelationship.guid                = serverServiceGUID;
+//    serverServiceRelationship.serverName          = serverName;
+//    serverServiceRelationship.cohortName          = serviceName;
+//    /*
+//     * Server-Service relationships are always active - this is driven from the active server list.
+//     */
+//    serverServiceRelationship.active              = true;
+//
+//    /*
+//     * Include graph navigation ids.
+//     */
+//    serverServiceRelationship.source              = serverGUID;
+//    serverServiceRelationship.target              = serviceGUID;
+//
+//    /*
+//     * Create a map of the objects to be updated.
+//     */
+//    let update_objects                               = {};
+//    update_objects.resources                         = {};
+//    update_objects.relationships                     = {};
+//    update_objects.resources[serviceGUID]            = service;
+//    update_objects.relationships[serverServiceGUID]  = serverServiceRelationship;
+//
+//    /*
+//     * Include a request summary - since this was a local operation there is no request information
+//     * to be returned from the VS
+//     */
+//    let requestSummary             = {};
+//    requestSummary.serverName      = serverName;
+//    requestSummary.operation       = "TODO";
+//    requestSummary.platformName    = null;
+//
+//    updateGens(update_objects, requestSummary);
+//
+//  };
 
 
 
