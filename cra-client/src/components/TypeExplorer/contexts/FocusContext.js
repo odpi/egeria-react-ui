@@ -7,8 +7,6 @@ import PropTypes                                                   from "prop-ty
 
 import { TypesContext }                                            from "./TypesContext";
 
-import { RequestContext }                                          from "./RequestContext";
-
 
 
 export const FocusContext = createContext();
@@ -21,8 +19,6 @@ export const FocusContextConsumer = FocusContext.Consumer;
 const FocusContextProvider = (props) => {
 
   const typesContext           = useContext(TypesContext);
-
-  const requestContext         = useContext(RequestContext);
 
   /*
    * The focus state tracks the user's focus on an entity type. The type name is stored. It is initially empty... 
@@ -67,6 +63,9 @@ const FocusContextProvider = (props) => {
         setPrevView(view); /* Only required on Enum Type display. */
         setView({ typeName : typeName , category : category });
         break;
+      default:
+        alert("Unknown type selection category in FocusContext "+category+" for type "+typeName);
+        break;
     }
   };
 
@@ -90,7 +89,7 @@ const FocusContextProvider = (props) => {
         clearFocus();
       }
     },
-    [typesContext.tex]
+    [typesContext.tex, focus, typesContext]
   )
 
   return (

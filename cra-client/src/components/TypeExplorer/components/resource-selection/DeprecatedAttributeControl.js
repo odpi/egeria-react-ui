@@ -4,8 +4,6 @@
 
 import React, { useContext }                    from "react";
 
-import { RequestContext }                       from "../../contexts/RequestContext";
-
 import { TypesContext }                         from "../../contexts/TypesContext";
 
 import "./resource-selector.scss"
@@ -19,13 +17,12 @@ import "./resource-selector.scss"
  */
 
 export default function DeprecatedAttributeControl() {
-  
-  const requestContext         = useContext(RequestContext);
+
 
   const typesContext           = useContext(TypesContext);
 
   const updateDeprecatedAttributeOption = () => {
-    requestContext.updateDeprecatedAttributeOption();
+    typesContext.updateDeprecatedAttributeOption();
   };
 
   return (
@@ -37,8 +34,8 @@ export default function DeprecatedAttributeControl() {
              id="cbAttributeDeprecation"
              name="cbAttributeDeprecation"
              onChange={updateDeprecatedAttributeOption}
-             checked={ requestContext.deprecatedAttributeOption }
-             value={ requestContext.deprecatedAttributeOption }  />
+             checked={ typesContext.deprecatedAttributeOption }
+             value={ typesContext.deprecatedAttributeOption }  />
       <br />
 
     </div>

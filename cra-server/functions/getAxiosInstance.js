@@ -7,8 +7,8 @@ const fs = require("fs");
 const path = require("path")
 const getServerInfoFromEnv = require('./getServerInfoFromEnv');
 
-const cert = fs.readFileSync(path.join(__dirname, '../../') + "/../presentation-server/ssl/keys/server.cert");
-const key = fs.readFileSync(path.join(__dirname, '../../') + "/../presentation-server/ssl/keys/server.key");
+const cert = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.cert");
+const key = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.key");
 
 const getAxiosInstance = (url) => {
 

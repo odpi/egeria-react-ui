@@ -2,13 +2,17 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 
 
-import React, { createContext, useContext, useState, useEffect }   from "react";
+import React, { createContext,
+                useContext,
+                useState,
+                useEffect,
+                useCallback }                   from "react";
 
-import PropTypes                                                   from "prop-types";
+import PropTypes                                from "prop-types";
 
-import { RequestContext }                                          from "./RequestContext";
+import { RequestContext }                       from "./RequestContext";
 
-import { InteractionContext }                                      from "./InteractionContext";
+import { InteractionContext }                   from "./InteractionContext";
 
 
 
@@ -34,134 +38,183 @@ const TypesContextProvider = (props) => {
   const [platformName, setPlatformName] = useState("");
   const [serverName,   setServerName]   = useState("");
 
+
+
+  /*
+   * State and handler for change to deprecation option checkbox
+   */
+  const [deprecatedAttributeOption, setDeprecatedAttributeOption] = useState(false);
+
+  const updateDeprecatedAttributeOption = () => {
+    setDeprecatedAttributeOption(!deprecatedAttributeOption);
+  }
+
+
+
+
+
   /*
    * loadTypeInfo function is an asynchronous function that triggers loading of types and (in _loadTypeInfo) sets the state for tex,
    * which can then be accessed by getter functions below
    */
 
-  /* Without parameters, the function will use the incumbent platform and server (from RequestContext)
-   * This version of the function is intended for anything that requires a reload and is not initiated
-   * by the user selecting a server in the ServerSelector.
-   */
-  const loadTypeInfoForExisting = () => {
-    if (platformName !== "" && serverName !== "") {
-      loadTypeInfo(serverName, platformName);
-    }
-    else {
-      alert("No server has been selected yet");
-    }
-  };
-
   /*
    * This version of the function is called directly from ServerSelector and accepts a (potentially new)
    * platform and server name. These are remembered.
    */
-  const loadTypeInfo = (serverName,platformName ) => {
 
-    setPlatformName(platformName);
-    setServerName(serverName);
+  const _loadTypeInfo = useCallback(
 
-    requestContext.callPOST("server", serverName,  "types",
-      { serverName        : serverName,
-        platformName      : platformName,
-        enterpriseOption  : requestContext.enterpriseOption,
-        deprecationOption : requestContext.deprecatedTypeOption,
-      }, _loadTypeInfo);
-  };
+    (json) => {
 
-  const _loadTypeInfo = (json) => {
-    
-    if (json !== null) {
-      if (json.relatedHTTPCode === 200 ) {
-        let typeExplorer = json.typeExplorer;
-        if (typeExplorer !== null) {
-          setTex(typeExplorer);
-          return;
+      if (json !== null) {
+        if (json.relatedHTTPCode === 200 ) {
+          let typeExplorer = json.typeExplorer;
+          if (typeExplorer !== null) {
+            setTex(typeExplorer);
+            return;
+          }
         }
       }
-    }   
-    /*
-     * On failure ...     
-     */
-    interactionContext.reportFailedOperation("get types for server",json);
-  }
+      /*
+       * On failure ...
+       */
+      interactionContext.reportFailedOperation("get types for server",json);
+    },
+    [interactionContext]
+  );
 
 
+
+  const loadTypeInfo = useCallback(
+    
+    (serverName,platformName ) => {
+
+      setPlatformName(platformName);
+      setServerName(serverName);
+
+      requestContext.callPOST("server", serverName,  "types",
+        { serverName        : serverName,
+          platformName      : platformName,
+          enterpriseOption  : requestContext.enterpriseOption,
+          deprecationOption : requestContext.deprecatedTypeOption,
+        }, _loadTypeInfo);
+    },
+    [requestContext, _loadTypeInfo]
+  );
+
+
+  /* Without parameters, the function will use the incumbent platform and server (from RequestContext)
+   * This version of the function is intended for anything that requires a reload and is not initiated
+   * by the user selecting a server in the ServerSelector.
+   */
+  const loadTypeInfoForExisting = useCallback(
+    () => {
+      if (platformName !== "" && serverName !== "") {
+        loadTypeInfo(serverName, platformName);
+      }
+      else {
+        alert("No server has been selected yet");
+      }
+    },
+    [platformName, serverName, loadTypeInfo]
+  );
 
   /*
    * Helper function to retrieve entities from tex
    */
-  const getEntityTypes = () => {
+  const getEntityTypes = useCallback(
+    () => {
     if (tex !== undefined && tex.entities !== undefined) {
         return tex.entities;
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
   /*
    * Helper function to retrieve relationships from tex
    */
-  const getRelationshipTypes = () => {
+  const getRelationshipTypes = useCallback(
+    () => {
     if (tex !== undefined && tex.relationships !== undefined) {
       return tex.relationships;
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
   /*
    * Helper function to retrieve classifications from tex
    */
-  const getClassificationTypes = () => {
+  const getClassificationTypes = useCallback(
+    () => {
     if (tex !== undefined && tex.classifications !== undefined) {
       return tex.classifications;
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
   /*
    * Helper functions to retrieve specific named types from tex
    */
-  const getEntityType = (typeName) => {
+  const getEntityType = useCallback(
+    (typeName) => {
     if (tex !== undefined && tex.entities !== undefined) {
       return tex.entities[typeName];
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
-  const getRelationshipType = (typeName) => {
+  const getRelationshipType = useCallback(
+    (typeName) => {
     if (tex !== undefined && tex.relationships !== undefined) {
       return tex.relationships[typeName];
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
-  const getClassificationType = (typeName) => {
+  const getClassificationType = useCallback(
+    (typeName) => {
     if (tex !== undefined && tex.classifications !== undefined) {
       return tex.classifications[typeName];
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
-  const getEnumType = (typeName) => {
+  const getEnumType = useCallback(
+    (typeName) => {
     if (tex !== undefined && tex.enums !== undefined) {
       return tex.enums[typeName];
     }
     else {
       return null;
     }
-  }
+  },
+  [tex]
+  );
 
 
   /*
@@ -215,7 +268,7 @@ const TypesContextProvider = (props) => {
       }
      }
      else {
-      console.log("Type Explorer TypesContext detected unknown type category "+cat+ "for tyoe "+typeName);
+      alert("TypeExplorer TypesContext detected unknown type category "+cat+ "for tyoe "+typeName);
       return false;
     }
   }
@@ -230,7 +283,7 @@ const TypesContextProvider = (props) => {
       if (platformName && serverName)
         loadTypeInfoForExisting();
     },
-    [requestContext.deprecatedTypeOption]
+    [requestContext.deprecatedTypeOption, loadTypeInfoForExisting, platformName, serverName]
   )
 
 
@@ -248,7 +301,11 @@ const TypesContextProvider = (props) => {
         getRelationshipType,
         getClassificationType,
         getEnumType,
-        isTypeDeprecated
+        isTypeDeprecated,
+        setPlatformName,
+        setServerName,
+        deprecatedAttributeOption,
+        updateDeprecatedAttributeOption
       }}
     >
      {props.children}

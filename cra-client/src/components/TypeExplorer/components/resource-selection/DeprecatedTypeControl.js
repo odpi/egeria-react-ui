@@ -6,8 +6,6 @@ import React, { useContext }                    from "react";
 
 import { RequestContext }                       from "../../contexts/RequestContext";
 
-import { TypesContext }                         from "../../contexts/TypesContext";
-
 import "./resource-selector.scss"
 
 
@@ -21,8 +19,6 @@ import "./resource-selector.scss"
 export default function DeprecatedTypeControl() {
   
   const requestContext         = useContext(RequestContext);
-
-  const typesContext           = useContext(TypesContext);
 
   const updateDeprecatedTypeOption = () => {
     requestContext.updateDeprecatedTypeOption();

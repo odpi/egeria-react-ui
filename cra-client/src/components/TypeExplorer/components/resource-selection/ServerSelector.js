@@ -95,9 +95,12 @@ export default function ServerSelector() {
     let platformName   = serverInstance.platformName;
 
     /*
-     * This operation initiates the load of type information from the specified repository server
+     * Updating the serverName and/or platformName updates the state of the typesContext, which
+     * will decide whether to fetch type info, in which case it will initiate the load of type
+     * information from the specified repository server
      */
-    typesContext.loadTypeInfo(serverName, platformName);
+    typesContext.setServerName(serverName);
+    typesContext.setPlatformName(platformName);
   }
 
   /*
