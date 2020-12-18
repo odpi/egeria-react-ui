@@ -31,7 +31,7 @@ export default function InstancePropertiesDisplay(props) {
         value = (<ul>  {expandProperties(prop.arrayValues)} </ul>)
         break;
       default:
-        console.log("Unknown instance property category: "+prop.instancePropertyCategory);
+        alert("Unknown instance property category: "+prop.instancePropertyCategory);
         break;
     }       
     return value;

@@ -71,7 +71,7 @@ export default function FilterManager(props) {
         resetEntTypeSelector();                   
         break;        
       default:
-        console.log("Unexpected category: "+category);
+        alert("Unexpected category detected in typeSelected: "+category);
         break;
     }   
     props.typeSelected(category, typeName);   

@@ -593,7 +593,7 @@ const InstancesContextProvider = (props) => {
             break;
 
           default:
-            console.log("Unknown value "+provenance+" for instance provenance was encountered");
+            alert("Unknown value "+provenance+" for instance provenance was encountered");
             break;
         }
       }
@@ -683,7 +683,7 @@ const InstancesContextProvider = (props) => {
             break;
 
           default:
-            console.log("Unknown value "+provenance+" for instance provenance was encountered");
+            alert("Unknown value "+provenance+" for instance provenance was encountered");
             break;
         }
       }
