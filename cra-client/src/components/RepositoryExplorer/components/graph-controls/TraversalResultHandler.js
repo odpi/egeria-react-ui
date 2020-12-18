@@ -15,8 +15,6 @@ export default function TraversalResultHandler(props) {
 
   const interactionContext    = useContext(InteractionContext);
 
- 
-  const spec                  = props.spec;
   const entityTypes           = props.entityTypes; 
   const relationshipTypes     = props.relationshipTypes; 
   const classificationTypes   = props.classificationTypes; 
@@ -101,9 +99,9 @@ export default function TraversalResultHandler(props) {
        * Display results if there are any, otherwise display empty result...
        */
 
-      let resultsPresent = entityTypes         && entityTypes.length         > 0   ||
-                           relationshipTypes   && relationshipTypes.length   > 0   ||
-                           classificationTypes && classificationTypes.length > 0;
+      let resultsPresent = (entityTypes         && entityTypes.length         > 0)   ||
+                           (relationshipTypes   && relationshipTypes.length   > 0)   ||
+                           (classificationTypes && classificationTypes.length > 0);
                       
 
       if (!resultsPresent) {
@@ -259,7 +257,7 @@ TraversalResultHandler.propTypes = {
   onSubmit             : PropTypes.func.isRequired, 
   selectCallback       : PropTypes.func.isRequired, 
   setAllCallback       : PropTypes.func.isRequired, 
-  spec                 : PropTypes.object,
+  //spec                 : PropTypes.object,
   entityTypes          : PropTypes.array,                    
   relationshipTypes    : PropTypes.array,   
   classificationTypes  : PropTypes.array   

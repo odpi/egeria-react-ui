@@ -70,6 +70,9 @@ export default function FilterManager(props) {
       case "Relationship":
         resetEntTypeSelector();                   
         break;        
+      default:
+        console.log("Unexpected category: "+category);
+        break;
     }   
     props.typeSelected(category, typeName);   
 

@@ -151,7 +151,7 @@ export default function RepositoryExplorer() {
                 <div className="title">
                   <p>Repository Explorer</p>
 
-                  <input type="image"  src={QuestionMarkImage}
+                  <input type="image"  src={QuestionMarkImage} alt="image of question mark"
                      onClick = { () => displayHelp() }  >
                   </input>
 
