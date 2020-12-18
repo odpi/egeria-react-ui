@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 
 import PropTypes                                      from "prop-types";
 
@@ -48,21 +48,15 @@ const RequestContextProvider = (props) => {
     setDeprecatedTypeOption(!deprecatedTypeOption);
   }
 
-  const [deprecatedAttributeOption, setDeprecatedAttributeOption] = useState(false);
 
-  /*
-   * Handler for change to deprecation option checkbox
-   */
-  const updateDeprecatedAttributeOption = () => {
-    setDeprecatedAttributeOption(!deprecatedAttributeOption);
-  }
 
   /*
    * Define the basic body parameters that are common to requests to the platform or server
    * resourceCategory is either "platform" or "server"
    */
  
-  const buildBaseBody = (resourceCategory, resourceName) => {
+  const buildBaseBody = useCallback(
+    (resourceCategory, resourceName) => {
     
     if (!resourceName) {
       alert("No resource name was specified - please specify one and retry");
@@ -87,7 +81,9 @@ const RequestContextProvider = (props) => {
       return null;
     }
       
-  };
+  },
+  []
+  );
 
   /*
    * This method wil POST to the view service appending the supplied URI to a multi-tenant URL.
@@ -97,7 +93,9 @@ const RequestContextProvider = (props) => {
    * The caller needs to specfiy the platform by platformName - the platformRootURL will be resolved
    * by the view service.
    */ 
-  const callPOST = (resourceCategory, resourceName, uri, bodyParms, callback) => {
+  const callPOST = useCallback(
+
+    (resourceCategory, resourceName, uri, bodyParms, callback) => {
 
     if (identificationContext.userId === "") {
       alert("There is no user context, please login to the UI");
@@ -166,7 +164,9 @@ const RequestContextProvider = (props) => {
         }
       })
     }
-  };
+  },
+  [identificationContext, buildBaseBody]
+  );
 
 
   /* 
@@ -245,9 +245,7 @@ const RequestContextProvider = (props) => {
         updateEnterpriseOption,
         enterpriseOption,
         updateDeprecatedTypeOption,
-        deprecatedTypeOption,
-        updateDeprecatedAttributeOption,
-        deprecatedAttributeOption
+        deprecatedTypeOption
       }}
     >      
     {props.children}
