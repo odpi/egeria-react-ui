@@ -11,8 +11,8 @@ const getAxiosInstance = require('../functions/getAxiosInstance');
 const validateURL = require('../validations/validateURL');
 const validateAdminURL = require('../validations/validateAdminURL');
 
-const cert = fs.readFileSync(path.join(__dirname, '../../') + "/../presentation-server/ssl/keys/server.cert");
-const key = fs.readFileSync(path.join(__dirname, '../../') + "/../presentation-server/ssl/keys/server.key");
+const cert = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.cert");
+const key = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.key");
 
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware. 
@@ -67,9 +67,9 @@ router.get("/user", (req, res) => {
   }
 });
 
-const staticJoinedPath = path.join(__dirname, "../../dist");
+const staticJoinedPath = path.join(__dirname, "../../cra-client/public/index.html");
 router.use(express.static(staticJoinedPath, { index: false }));
-const joinedPath = path.join(__dirname, "../../dist", "index.html");
+const joinedPath = path.join(__dirname, "../../cra-client/public/", "index.html");
 /**
  * Process login url,
  */
