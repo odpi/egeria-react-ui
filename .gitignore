@@ -37,4 +37,4 @@ package-lock.json
 **/**.code-workspace
 
 # .env
-./cra-server/.env
+cra-server/.env
