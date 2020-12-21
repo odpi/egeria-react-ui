@@ -21,7 +21,7 @@ import getNodeType from "../properties/NodeTypes.js";
 import { Link } from "react-router-dom";
 
 export default function StartingNodeNavigation({
-  match,
+  match, 
   nodeTypeName,
   onSelectCallback,
 }) {
