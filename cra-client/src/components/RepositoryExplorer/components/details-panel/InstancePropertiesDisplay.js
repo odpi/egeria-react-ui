@@ -30,6 +30,9 @@ export default function InstancePropertiesDisplay(props) {
       case "ARRAY" :
         value = (<ul>  {expandProperties(prop.arrayValues)} </ul>)
         break;
+      default:
+        alert("Unknown instance property category: "+prop.instancePropertyCategory);
+        break;
     }       
     return value;
   };

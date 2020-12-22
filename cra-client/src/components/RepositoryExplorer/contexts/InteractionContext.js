@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 
 
-import React, { createContext, useState, useRef } from "react";
+import React, { createContext, useState, useRef, useCallback } from "react";
 
 import PropTypes                                  from "prop-types";
 
@@ -34,33 +34,48 @@ const InteractionContextProvider = (props) => {
 
   const portalAnchor = useRef(null);
 
-  const getPortalAnchor = () => {
+  const getPortalAnchor = useCallback(
+    () => {
     return portalAnchor;
-  };
+  },
+  []
+  );
 
-  const portalCancel = () => {
+  const portalCancel = useCallback(
+    () => {
     setPortalVisible(false);
     cancelCallback();
-  };
+  },
+  [cancelCallback]
+  );
 
-  const portalSubmit = (evt) => {
+  const portalSubmit = useCallback(
+    (evt) => {
     setPortalVisible(false);
     submitCallback(evt);
-  };
+  },
+  [submitCallback]
+  );
 
-  const showPortal = (content, submitCB, cancelCB) => {
+  const showPortal = useCallback(
+    (content, submitCB, cancelCB) => {
     setPortalContent(content);
     setSubmitCallback(submitCB);
     setCancelCallback(cancelCB);
     setPortalVisible(true);
-  };
+  },
+  []
+  );
 
-  const hidePortal = () => {
+  const hidePortal = useCallback(
+    () => {
     setPortalVisible(false);
     setSubmitCallback(null);
     setCancelCallback(null);
     setPortalContent(null);
-  };
+  },
+  []
+  );
 
   /*
    * General failure reporting utility
@@ -85,7 +100,8 @@ const InteractionContextProvider = (props) => {
    * so there should be no need to perform any formatting; that is all done by the view service.
    *
    */
-  const reportFailedOperation = (operation, json) => {
+  const reportFailedOperation = useCallback(
+    (operation, json) => {
     if (json !== null) {
       const relatedHTTPCode = json.relatedHTTPCode;
       const exceptionMessage = json.exceptionErrorMessage;
@@ -99,7 +115,9 @@ const InteractionContextProvider = (props) => {
     else {
       alert("Attempt to "+operation+" did not get a JSON response from the view server");
     }
-  }
+  },
+  []
+  );
 
 
 

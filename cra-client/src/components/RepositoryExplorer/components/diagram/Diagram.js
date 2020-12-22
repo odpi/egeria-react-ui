@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 
 
-import React, { useRef, useState, useEffect, useContext }  from "react";
+import React, { useRef, useState, useEffect, useContext, useCallback }  from "react";
 
 import PropTypes                                           from "prop-types";
 
@@ -17,16 +17,19 @@ import { InstancesContext }                                from "../../contexts/
 
 export default function Diagram(props) {
 
+
   /*
    * Access instancesContext to get access to focus information
    */
   const instancesContext = useContext(InstancesContext);
   
   /*
-   * We need a force-directed sim, which should be created on load of the component.
-   * It should be restarted when the data is updated. 
-   * We mustn't make it part of the Diagram's state else we'll run into rendering loop issues.
-   * So make it soft and initialise it and check it on the calls to useEffect.
+   * We need a force-directed sim, which ideally should be created on load of the component.
+   * and only restarted when the data is updated. Unfortunately it cannot be made part of the
+   * Diagram's state, otherwise animation does not work. This is true whether one attempts to
+   * use useState or useRef. So, unfortunately, it seeems to be necessary to make it soft.
+   * This will mean that every rendering will cause the first useEffect to re-create it and
+   * initialise it. It will be lost and recreated on each render.
    */
 
   let loc_force;
@@ -50,14 +53,15 @@ export default function Diagram(props) {
     /*
      * Just a small nudge...
      */
-    loc_force.alpha(0.1);
-    loc_force.restart();
+    if (loc_force) {
+      loc_force.alpha(0.1);
+      loc_force.restart();
+    }
   }
 
   const [pinningOption, setPinningOption] = useState(true);
   const pinningRef = useRef();
   pinningRef.current = pinningOption;
-  
   
   const width                       = 1070;
   const height                      = 1100;
@@ -91,7 +95,7 @@ export default function Diagram(props) {
    * The use of diagramFocusGUID is to ensure that the instancesContext focus is visible in the 
    * Diagram component. A function can either use it, or call instancesContext.focus directly.
    */ 
-  let diagramFocusGUID;
+  let diagramFocusGUID = useRef("");
 
 
   /*
@@ -283,8 +287,11 @@ export default function Diagram(props) {
 
  
   const dragstarted = (d) => {
-    if (!d3.event.active)
-      loc_force.alphaTarget(0.3).restart();
+    if (!d3.event.active) {
+      if (loc_force) {
+        loc_force.alphaTarget(0.3).restart();
+      }
+    }
     d.xinit = d3.event.x;
     d.yinit = d3.event.y;
   }
@@ -305,8 +312,11 @@ export default function Diagram(props) {
   }
 
   const dragended = (d) => {
-    if (!d3.event.active)
-      loc_force.alphaTarget(0.0005);
+    if (!d3.event.active) {
+      if (loc_force) {
+        loc_force.alphaTarget(0.0005);
+      }
+    }
     if (!pinningRef.current) {
       d.fx = null;
       d.fy = null;
@@ -330,7 +340,7 @@ export default function Diagram(props) {
 
   /*
    *  This function is called to determine the color of a node - if the node is selected then a decision
-   *  will already have been made about color. So assume it is not selected. Nodes from different repositories 
+   *  will already have been made about color. So assume it is not selected. Nodes from different repositories
    *  are filled using different colors.
    */
   const nodeColor = (d) => {
@@ -348,7 +358,7 @@ export default function Diagram(props) {
     }
     else {
 
-      /* 
+      /*
        * Assign first available color
        */
       let assigned = false;
@@ -390,7 +400,7 @@ export default function Diagram(props) {
    */
   const tick = () => {
 
-    const focusGUID = diagramFocusGUID;
+    const focusGUID = diagramFocusGUID.current;
    
     const svg = d3.select(d3Container.current);
 
@@ -405,12 +415,12 @@ export default function Diagram(props) {
     
 
     /*
-     * Highlight a selected node, if it is the instance that has been selected or just loaded 
+     * Highlight a selected node, if it is the instance that has been selected or just loaded
      * (in which case it is selected)
      */
 
     nodes.selectAll('circle')
-      .attr("fill", d => (d.id === focusGUID) ? egeria_primary_color_string : nodeColor(d) );     
+      .attr("fill", d => (d.id === focusGUID) ? egeria_primary_color_string : nodeColor(d) );
 
       nodes.selectAll('line')      
       .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");
@@ -431,7 +441,7 @@ export default function Diagram(props) {
        .attr("dominant-baseline", function(d) { return (d.source.x > d.target.x) ? "baseline" : "hanging"; } )
        .attr("transform" , d => `rotate(${180/Math.PI * Math.atan((d.target.y-d.source.y)/(d.target.x-d.source.x))}, ${d.x}, ${d.y})`)
        .attr("dx", d => ((d.target.y-d.source.y)<0)? 100.0 : -100.0 )
-       .attr("dy", d => 
+       .attr("dy", d =>
            ((d.target.x-d.source.x)>0)?
            20.0 * (d.target.x-d.source.x)/(d.target.y-d.source.y) :
            20.0 * (d.source.x-d.target.x)/(d.target.y-d.source.y) 
@@ -443,27 +453,30 @@ export default function Diagram(props) {
   const createSim = () => {
 
     if (!loc_force) {
+
       loc_force = d3.forceSimulation(props.nodes)
         .force('horiz', d3.forceX(width/2).strength(0.05))
-        .force('repulsion', d3.forceManyBody().strength(-500))        
+        .force('repulsion', d3.forceManyBody().strength(-500))
         .alphaDecay(.002)
         .alphaMin(0.001)
         .alphaTarget(0.0005)
-        .velocityDecay(0.8)            
+        .velocityDecay(0.8)
         .force('link', d3.forceLink()
           .links(props.links)
           .id(DiagramUtils.nodeId)
           .distance(link_distance)
-          .strength(function(d) { return DiagramUtils.ls(d);})) ;      
-          
-      if (layoutMode === "Temporal") {            
+          .strength(function(d) { return DiagramUtils.ls(d);})) ;
+
+
+      if (layoutMode === "Temporal") {
         loc_force.force('vert', d3.forceY().strength(0.1).y(function(d) {return DiagramUtils.yPlacement(d, height, props.numGens);}));
-      }      
-      else {            
+      }
+      else {
         loc_force.force('vert', d3.forceY(height/2).strength(0.05))
       }
 
-      loc_force.on('tick', tick);    
+      loc_force.on('tick', tick);
+
     }
   };
 
@@ -489,11 +502,13 @@ export default function Diagram(props) {
 
   };
 
-  const startSim = () => {
+  const startSim = //useCallback(
+    () => {
     if (loc_force) {
       loc_force.restart();
     }
   };
+
   
   /*
    * Function to update all SVG node and link elements. Nodes must be initially positioned,
@@ -507,9 +522,12 @@ export default function Diagram(props) {
     updateNodes();
   };
 
-  const setDiagramFocus = () => {    
-    diagramFocusGUID = instancesContext.focus.instanceGUID;
-  };
+  const setDiagramFocus = useCallback(
+    () => {
+    diagramFocusGUID.current = instancesContext.focus.instanceGUID;
+  },
+  [instancesContext.focus]
+  );
 
   const updatedPinningOption = () => {
    
@@ -519,19 +537,34 @@ export default function Diagram(props) {
        * If pinning was true, nodes may be pinned, so ensure all nodes are unpinned
        */
       props.nodes.forEach(n => unpin(n));
-
     }
   };
 
 
-  useEffect(
-    () => {      
-      if ( d3Container.current ) {       
+ useEffect(
+  () => {
+    if ( d3Container.current ) {
+      if ( !loc_force ) {
         createSim();        
         createMarker();                           
         startSim();
       }
-      if ( props.nodes || props.links) {   
+    }
+  },
+  /*
+   * Disable the linter's full dependency check - this is because if you specify createSim for example,
+   * then to avoid further linter checks you need to make createSim a useCallback - which prevents the
+   * animation from working.
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [ loc_force, createMarker  ]
+)
+
+
+useEffect(
+  () => {
+    if ( d3Container.current ) {
+      if ( props.nodes || props.links) {
         try {
           updateData();
           startSim();
@@ -540,21 +573,37 @@ export default function Diagram(props) {
           alert("Exception from diagram data, sim update  : " + err);
         }
       }
+    }
+  },
+  /*
+   * Disable the linter's full dependency check - this is because if you specify startSim for example,
+   * then to avoid further linter checks you need to make startSim a useCallback - which prevents the
+   * animation from working.
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [  props.nodes, props.links, updateData ]
+)
+
+useEffect(
+  () => {
+    if ( d3Container.current ) {
       if ( instancesContext.focus ) {
         setDiagramFocus();
       }
-    },
-    [d3Container.current, props.nodes, props.links, instancesContext.focus, props.onLinkClick, props.onNodeClick, layoutMode]
-  )
+    }
+  },
+  [  instancesContext.focus, setDiagramFocus ]
+)
 
-  useEffect(
-    () => {
-      drgContainerDiv.current.style.width=""+props.outerWidth+"px";
-      drgContainerDiv.current.style.height=""+props.outerHeight+"px";
-    },
-    [props.outerHeight, props.outerWidth]
-  )
- 
+useEffect(
+  () => {
+    drgContainerDiv.current.style.width=""+props.outerWidth+"px";
+    drgContainerDiv.current.style.height=""+props.outerHeight+"px";
+  },
+  [props.outerHeight, props.outerWidth]
+)
+
+
  
   return (
     <div>

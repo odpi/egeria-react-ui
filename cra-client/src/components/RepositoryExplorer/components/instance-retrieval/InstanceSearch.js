@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useCallback } from "react";
 
 import PropTypes                               from "prop-types";
 
@@ -266,7 +266,8 @@ export default function InstanceSearch(props) {
   /*
    * Handler for submit of search results modal
    */
-  const submitSearchModal = (evt) => {    
+  const submitSearchModal = useCallback(
+    (evt) => {
 
     let selectedInstances = searchResults.filter(function(instance) {
       return instance['checked'];
@@ -401,7 +402,9 @@ export default function InstanceSearch(props) {
     setSearchResults( [] );    
     setStatus("idle");
     
-  };
+  },
+  [searchResults, instancesContext, repositoryServerContext, searchText, searchCategory]
+  );
 
   
   /*
@@ -427,51 +430,57 @@ export default function InstanceSearch(props) {
    * Handler for updating search results when user checks or unchecks an instance in the search results.
    * Toggles the checked state of an individual instance.
    */
-  const selectCallback = (guid) => {
-    let list = null;
-    if (searchCategory === "Entity") {
-      /*
-       * Search was for entities
-       */
-      list = searchResults.map((item) => {
-        if (item.entityGUID === guid) {
-          const prevChecked = item.checked;
-          return Object.assign(item, { checked : !prevChecked });            
-        }
-        else {
-          return item;
-        }
-      });   
-    } 
-    else {
-      /*
-       * Search was for relationships
-       */
-      list = searchResults.map((item) => {
-        if (item.relationshipDigest.relationshipGUID === guid) {
-          const prevChecked = item.checked;
-          return Object.assign(item, { checked : !prevChecked });            
-        }
-        else {
-          return item;
-        }
-      });   
-    }
-    setSearchResults( list );    
-  }
+  const selectCallback = useCallback(
+    (guid) => {
+      let list = null;
+      if (searchCategory === "Entity") {
+        /*
+         * Search was for entities
+         */
+        list = searchResults.map((item) => {
+          if (item.entityGUID === guid) {
+            const prevChecked = item.checked;
+            return Object.assign(item, { checked : !prevChecked });
+          }
+          else {
+            return item;
+          }
+        });
+      }
+      else {
+        /*
+         * Search was for relationships
+         */
+        list = searchResults.map((item) => {
+          if (item.relationshipDigest.relationshipGUID === guid) {
+            const prevChecked = item.checked;
+            return Object.assign(item, { checked : !prevChecked });
+          }
+          else {
+            return item;
+          }
+        });
+      }
+      setSearchResults( list );
+    },
+    [searchCategory, searchResults, setSearchResults]
+  );
 
 
   /*
    * Set or clear all searched instances to checked or unchecked...
    */
-  const setAllCallback = (checked) => {   
+  const setAllCallback = useCallback(
+    (checked) => {
     let updates = [];      
     searchResults.forEach((instance) => {
-      let newInst = Object.assign(instance, {checked : checked});                                     
+      let newInst = Object.assign(instance, {checked : checked});
       updates.push( newInst );                
     });   
     setSearchResults(updates);
-  }
+  },
+  [searchResults]
+  );
 
   
 
