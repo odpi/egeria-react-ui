@@ -50,8 +50,7 @@ export default function TopologyDiagram(props) {
      * So make it soft and initialise it and check it on the calls to useEffect.
      */
 
-    let forceSimulation = useRef(null);
-    //let loc_force;
+    let loc_force;
 
 
     /*
@@ -60,7 +59,6 @@ export default function TopologyDiagram(props) {
      * Proximal layout mode allows the graph to organise itself based on connections.
      */
     const [layoutMode, setLayoutMode] = useState("Temporal");
-
 
 
     const changeLayoutMode = () => {
@@ -73,9 +71,9 @@ export default function TopologyDiagram(props) {
       /*
        * Just a small nudge...
        */
-      if (forceSimulation.current) {
-        forceSimulation.current.alpha(0.1);
-        forceSimulation.current.restart();
+      if (loc_force) {
+        loc_force.alpha(0.1);
+        loc_force.restart();
       }
     }
 
@@ -125,6 +123,47 @@ export default function TopologyDiagram(props) {
      */
     let repositoryToColor = {};
     let colorToRepository = {};
+
+
+
+    const dragstarted = (d) => {
+      /*
+       * Do not set fx, fy yet - wait till the node is actually dragged
+       */
+      if (!d3.event.active)
+      loc_force.alphaTarget(0.3).restart();
+      d.xinit = d3.event.x;
+      d.yinit = d3.event.y;
+    }
+
+    const dragged = (d) => {
+      if ( d.xinit && d.yinit) {
+        if ( (Math.abs(d3.event.x - d.xinit) > 5) || (Math.abs(d3.event.y - d.yinit) > 5)) {
+          d.xinit = undefined;
+          d.yinit = undefined;
+          d.fx = d3.event.x;
+          d.fy = d3.event.y;
+        }
+      }
+      else {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+      }
+    }
+
+    const dragended = (d) => {
+      if (!d3.event.active)
+      loc_force.alphaTarget(0.0005);
+      if (!pinningRef.current) {
+        d.fx = null;
+        d.fy = null;
+      }
+    }
+
+    const unpin = (d) => {
+      d.fx = null;
+      d.fy = null;
+    }
 
 
     /*
@@ -249,53 +288,54 @@ export default function TopologyDiagram(props) {
 
     const nodeRightClicked = useCallback(
       (d) => {
-        // TODO alignment
 
-      let createMenu = false;
-      let menuItems;
+        let createMenu = false;
+        let menuItems;
 
-      if (resourcesContext.focus.guid !== d.id) {
-         /*
-         * The user right-clicked a non-focus resource
-         *
-         * If the node is of a suitable type (i.e. one that can become the focus) present a
-         * context menu to enable the the user to explicitly make it the focus.
-         */
-        switch (d.category) {
-          case "platform":
-          case "server":
-            menuItems = nonFocusMenuItems;
-            createMenu = true;
-            break;
-          default:
-            /* Node type not expected to be made focus */
-            break;
+        if (resourcesContext.focus.guid !== d.id) {
+          /*
+           * The user right-clicked a non-focus resource
+           *
+           * If the node is of a suitable type (i.e. one that can become the focus) present a
+           * context menu to enable the the user to explicitly make it the focus.
+           */
+          switch (d.category) {
+            case "platform":
+            case "server":
+              menuItems = nonFocusMenuItems;
+              createMenu = true;
+              break;
+            default:
+              /* Node type not expected to be made focus */
+              break;
+          }
         }
-      }
-      else {
-        /*
-         * The user right-clicked the focus resource
-         */
-        switch (d.category) {
-          case "platform":
-            menuItems = platformMenuItems;
-            createMenu = true;
-            break;
-          case "server":
-            menuItems = serverMenuItems;
-            createMenu = true;
-            break;
-          default:
-            // The user right-clicked on a node with a type that does not have a context menu - ignore
-            break;
+        else {
+          /*
+           * The user right-clicked the focus resource
+           */
+          switch (d.category) {
+            case "platform":
+              menuItems = platformMenuItems;
+              createMenu = true;
+              break;
+            case "server":
+              menuItems = serverMenuItems;
+              createMenu = true;
+              break;
+            default:
+              /*
+               * The user right-clicked on a node with a type that does not have a context menu - ignore
+               */
+              break;
+          }
         }
-      }
-      if (createMenu) {
-        createContextMenu(d, menuItems)
-        d3.event.preventDefault();
-      }
-    },
-    [createContextMenu, nonFocusMenuItems, platformMenuItems, resourcesContext.focus.guid, serverMenuItems]
+        if (createMenu) {
+          createContextMenu(d, menuItems)
+          d3.event.preventDefault();
+        }
+      },
+      [createContextMenu, nonFocusMenuItems, platformMenuItems, resourcesContext.focus.guid, serverMenuItems]
     );
 
 
@@ -404,7 +444,7 @@ export default function TopologyDiagram(props) {
     /*
      * Databind the latest nodes and add/remove SVG elements accordingly
      */
-    const updateNodes = useCallback(
+    const updateNodes =
 
       () => {
 
@@ -478,9 +518,7 @@ export default function TopologyDiagram(props) {
         .text( function(d) { return d.label; } ) ;
 
       nodes.merge(enter_set);
-    },
-    [nodeClicked, nodeRightClicked, props.nodes]
-    );
+    };
 
 
     const nodeImage = (d) => {
@@ -504,45 +542,6 @@ export default function TopologyDiagram(props) {
     }
 
 
-    const dragstarted = (d) => {
-      /*
-       * Do not set fx, fy yet - wait till the node is actually dragged
-       */
-      if (!d3.event.active)
-      forceSimulation.current.alphaTarget(0.3).restart();
-      d.xinit = d3.event.x;
-      d.yinit = d3.event.y;
-    }
-
-    const dragged = (d) => {
-      if ( d.xinit && d.yinit) {
-        if ( (Math.abs(d3.event.x - d.xinit) > 5) || (Math.abs(d3.event.y - d.yinit) > 5)) {
-          d.xinit = undefined;
-          d.yinit = undefined;
-          d.fx = d3.event.x;
-          d.fy = d3.event.y;
-        }
-      }
-      else {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-      }
-    }
-
-    const dragended = (d) => {
-      if (!d3.event.active)
-      forceSimulation.current.alphaTarget(0.0005);
-      if (!pinningRef.current) {
-        d.fx = null;
-        d.fy = null;
-      }
-    }
-
-    const unpin = (d) => {
-      d.fx = null;
-      d.fy = null;
-    }
-
 
     /*
      *  This function is called to determine the color of a node - if the node is selected then a decision
@@ -553,55 +552,53 @@ export default function TopologyDiagram(props) {
 
       (d) => {
 
-        // TODO - alignment
-
-      /*
-       * Look up repository name in repositoryColor map, if not found assign next color.
-       * This actually assigns gray-shades, starting with the #EEE and darkening by two
-       * stops for each new repository found - e.g. #AAA -> #888. There are therefore 8 shades
-       * that can be allocated, by which time we are at 100% black. If this number proves to
-       * be insufficient, we can shorten the two-stops or assign a single hue, e.g. green.
-       */
-      let colorString = repositoryToColor[d.metadataCollectionName];
-      if (colorString !== undefined) {
-        return colorString;
-      }
-      else {
-
         /*
-         * Assign first available color
+         * Look up repository name in repositoryColor map, if not found assign next color.
+         * This actually assigns gray-shades, starting with the #EEE and darkening by two
+         * stops for each new repository found - e.g. #AAA -> #888. There are therefore 8 shades
+         * that can be allocated, by which time we are at 100% black. If this number proves to
+         * be insufficient, we can shorten the two-stops or assign a single hue, e.g. green.
          */
-        let assigned = false;
-        for (let col in possibleColors) {
-          colorString = possibleColors[col];
-          if (colorToRepository[colorString] === undefined) {
-            /*
-             * Color is available
-             */
-            repositoryToColor[d.metadataCollectionName] = colorString;
-            colorToRepository[colorString] = d.metadataCollectionName;
-            return colorString;
-          }
+        let colorString = repositoryToColor[d.metadataCollectionName];
+        if (colorString !== undefined) {
+          return colorString;
         }
-        if (!assigned) {
+        else {
 
           /*
-           * Ran out of available colors for repositories!
-           *
-           * Assign a color that we know is not in the possible colors to this
-           * repo and any further ones we discover. Remember this for consistency
-           * - i.e. this repository will use this color for the remainder of this
-           * exploration. There may be multiple repositories sharing this same color
-           * so do not update the colorToRepository map. If a color frees up it will
-           * be allocated to a new repository, but not to repositories remembered below.
+           * Assign first available color
            */
-          const col = '#000';
-          this.repositoryToColor[d.metadataCollectionName] = col;
-          return col;
+          let assigned = false;
+          for (let col in possibleColors) {
+            colorString = possibleColors[col];
+            if (colorToRepository[colorString] === undefined) {
+              /*
+               * Color is available
+               */
+              repositoryToColor[d.metadataCollectionName] = colorString;
+              colorToRepository[colorString] = d.metadataCollectionName;
+              return colorString;
+            }
+          }
+          if (!assigned) {
+
+            /*
+             * Ran out of available colors for repositories!
+             *
+             * Assign a color that we know is not in the possible colors to this
+             * repo and any further ones we discover. Remember this for consistency
+             * - i.e. this repository will use this color for the remainder of this
+             * exploration. There may be multiple repositories sharing this same color
+             * so do not update the colorToRepository map. If a color frees up it will
+             * be allocated to a new repository, but not to repositories remembered below.
+             */
+            const col = '#000';
+            this.repositoryToColor[d.metadataCollectionName] = col;
+            return col;
+          }
         }
-      }
-    },
-    [colorToRepository, possibleColors, repositoryToColor]
+      },
+      [colorToRepository, possibleColors, repositoryToColor]
     );
 
 
@@ -614,66 +611,64 @@ export default function TopologyDiagram(props) {
 
       () => {
 
-        // TODO - alignment
+        const focusName = diagramFocusName.current;
 
-      const focusName = diagramFocusName.current;
+        const svg = d3.select(d3Container.current);
 
-      const svg = d3.select(d3Container.current);
+        const nodes = svg.selectAll(".node");
 
-      const nodes = svg.selectAll(".node");
-
-      /*
-       * Keep nodes in the viewbox, with a safety margin so that (curved) links are unlikely to stray...
-       */
-      nodes.attr('cx',function(d) { return d.x = Math.max(node_margin, Math.min(width  - 8 * node_margin, d.x)); });
-      nodes.attr('cy',function(d) { return d.y = Math.max(node_margin, Math.min(height -     node_margin, d.y)); });
-      nodes.attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")";});
+        /*
+         * Keep nodes in the viewbox, with a safety margin so that (curved) links are unlikely to stray...
+         */
+        nodes.attr('cx',function(d) { return d.x = Math.max(node_margin, Math.min(width  - 8 * node_margin, d.x)); });
+        nodes.attr('cy',function(d) { return d.y = Math.max(node_margin, Math.min(height -     node_margin, d.y)); });
+        nodes.attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")";});
 
 
-      /*
-       * Highlight a selected node, if it is the instance that has been selected or just loaded
-       * (in which case it is selected)
-       */
+        /*
+         * Highlight a selected node, if it is the instance that has been selected or just loaded
+        * (in which case it is selected)
+         */
 
-      nodes.selectAll('circle')
-        .attr("fill", d => (d.id === focusName) ? egeria_primary_color_string : nodeColor(d) );
+        nodes.selectAll('circle')
+             .attr("fill", d => (d.id === focusName) ? egeria_primary_color_string : nodeColor(d) );
 
-      nodes.selectAll('line')
-        .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");
+        nodes.selectAll('line')
+             .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");
 
-      nodes.selectAll('text')
-        .attr("fill", d => (d.id === focusName) ? egeria_text_color_string : "#444" );
+        nodes.selectAll('text')
+             .attr("fill", d => (d.id === focusName) ? egeria_text_color_string : "#444" );
 
-      const links = svg.selectAll(".link")
+        const links = svg.selectAll(".link")
 
-      links.selectAll('path')
-         .attr('d', function(d) { return DiagramUtils.path_func2(d).path; })
-         .lower();
+        links.selectAll('path')
+             .attr('d', function(d) { return DiagramUtils.path_func2(d).path; })
+             .lower();
 
-      links.selectAll('text')
-         .attr("x", function(d) { return d.x = DiagramUtils.path_func2(d).midpoint.x; } )
-         .attr("y", function(d) { return d.y = DiagramUtils.path_func2(d).midpoint.y; } )
-         /* If focus, use color egeria-aqua, else grey... */
-         .attr("fill", function(d) { return ( (d.id === focusName) ? egeria_text_color_string : "#888" );} )
-         .attr("dominant-baseline", function(d) { return (d.source.x > d.target.x) ? "baseline" : "hanging"; } )
-         .attr("transform" , d => `rotate(${180/Math.PI * Math.atan((d.target.y-d.source.y)/(d.target.x-d.source.x))}, ${d.x}, ${d.y})`)
-         .attr("dx", d => ((d.target.y-d.source.y)<0)? 100.0 : -100.0)
-         .attr("dy", d =>
-             ((d.target.x-d.source.x)>0)?
-             20.0 * (d.target.x-d.source.x)/(d.target.y-d.source.y) :
-             20.0 * (d.source.x-d.target.x)/(d.target.y-d.source.y) );
+        links.selectAll('text')
+             .attr("x", function(d) { return d.x = DiagramUtils.path_func2(d).midpoint.x; } )
+             .attr("y", function(d) { return d.y = DiagramUtils.path_func2(d).midpoint.y; } )
+             /* If focus, use color egeria-aqua, else grey... */
+             .attr("fill", function(d) { return ( (d.id === focusName) ? egeria_text_color_string : "#888" );} )
+             .attr("dominant-baseline", function(d) { return (d.source.x > d.target.x) ? "baseline" : "hanging"; } )
+             .attr("transform" , d => `rotate(${180/Math.PI * Math.atan((d.target.y-d.source.y)/(d.target.x-d.source.x))}, ${d.x}, ${d.y})`)
+             .attr("dx", d => ((d.target.y-d.source.y)<0)? 100.0 : -100.0)
+             .attr("dy", d =>
+                 ((d.target.x-d.source.x)>0)?
+                 20.0 * (d.target.x-d.source.x)/(d.target.y-d.source.y) :
+                 20.0 * (d.source.x-d.target.x)/(d.target.y-d.source.y) );
 
-    },
-    [egeria_text_color_string, nodeColor]
+      },
+      [egeria_text_color_string, nodeColor]
     );
 
 
-    const createSim = useCallback(
+    const createSim =
 
       () => {
 
-        if (!forceSimulation.current) {
-          forceSimulation.current = d3.forceSimulation(props.nodes)
+        if (!loc_force) {
+          loc_force = d3.forceSimulation(props.nodes)
             .force('horiz', d3.forceX(width/2).strength(0.01))
             .force('repulsion', d3.forceManyBody().strength(-500))
             .alphaDecay(.002)
@@ -687,17 +682,15 @@ export default function TopologyDiagram(props) {
               .strength(function(d) { return DiagramUtils.ls(d);})) ;
 
           if (layoutMode === "Temporal") {
-            forceSimulation.current.force('vert', d3.forceY().strength(0.1).y(function(d) {return DiagramUtils.yPlacement(d, height, props.numGens);}));
+            loc_force.force('vert', d3.forceY().strength(0.1).y(function(d) {return DiagramUtils.yPlacement(d, height, props.numGens);}));
           }
           else {
-            forceSimulation.current.force('vert', d3.forceY(height/2).strength(0.05))
+            loc_force.force('vert', d3.forceY(height/2).strength(0.05))
           }
 
-          forceSimulation.current.on('tick', tick);
+          loc_force.on('tick', tick);
         }
-      },
-      [layoutMode, props.links, props.nodes, props.numGens, tick]
-    );
+      };
 
     /*
      * Define arrowhead for links
@@ -721,25 +714,21 @@ export default function TopologyDiagram(props) {
 
     };
 
-    const startSim = useCallback(
-
+    const startSim =
       () => {
-        if (forceSimulation.current) {
-          forceSimulation.current.restart();
+        if (loc_force) {
+          loc_force.restart();
         }
-      },
-      [forceSimulation]
-    );
+      };
 
-    const updateData = useCallback(
 
+    const updateData =
       () => {
         fixNodePositions();
         updateLinks();
         updateNodes();
-      },
-      [fixNodePositions, updateLinks, updateNodes]
-    );
+      };
+
 
     const setDiagramFocus = useCallback(
       () => {
@@ -764,21 +753,55 @@ export default function TopologyDiagram(props) {
     useEffect(
       () => {
         if ( d3Container.current ) {
-          createSim();
-          createMarker();
-          startSim();
-        }
-        if ( props.nodes || props.links) {
-          updateData();
-          startSim();
-        }
-        if ( ResourcesContext.focus ) {
-          setDiagramFocus();
+          if ( !loc_force ) {
+            createSim();
+            createMarker();
+            startSim();
+          }
         }
       },
+      /*
+       * Disable the linter's full dependency check - this is because if you specify createSim for example,
+       * then to avoid further linter checks you need to make createSim a useCallback - which prevents the
+       * animation from working.
+       */
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [ loc_force, createMarker  ]
+    )
 
-      [ props.nodes, props.links, resourcesContext.focus, props.onNodeClick, layoutMode,
-        createSim, startSim, setDiagramFocus, updateData ]
+
+    useEffect(
+      () => {
+        if ( d3Container.current ) {
+          if ( props.nodes || props.links) {
+            try {
+              updateData();
+              startSim();
+            }
+            catch(err) {
+              alert("Exception from diagram data, sim update  : " + err);
+            }
+          }
+        }
+      },
+      /*
+       * Disable the linter's full dependency check - this is because if you specify startSim for example,
+       * then to avoid further linter checks you need to make startSim a useCallback - which prevents the
+       * animation from working.
+       */
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [  props.nodes, props.links, updateData ]
+    )
+
+    useEffect(
+      () => {
+        if ( d3Container.current ) {
+          if ( resourcesContext.focus ) {
+            setDiagramFocus();
+          }
+        }
+      },
+      [  resourcesContext.focus, setDiagramFocus ]
     )
 
 
