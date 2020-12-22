@@ -17,20 +17,22 @@ import { InstancesContext }                                from "../../contexts/
 
 export default function Diagram(props) {
 
+
   /*
    * Access instancesContext to get access to focus information
    */
   const instancesContext = useContext(InstancesContext);
   
   /*
-   * We need a force-directed sim, which should be created on load of the component.
-   * It should be restarted when the data is updated. 
-   * We mustn't make it part of the Diagram's state else we'll run into rendering loop issues.
-   * So make it soft and initialise it and check it on the calls to useEffect.
+   * We need a force-directed sim, which ideally should be created on load of the component.
+   * and only restarted when the data is updated. Unfortunately it cannot be made part of the
+   * Diagram's state, otherwise animation does not work. This is true whether one attempts to
+   * use useState or useRef. So, unfortunately, it seeems to be necessary to make it soft.
+   * This will mean that every rendering will cause the first useEffect to re-create it and
+   * initialise it. It will be lost and recreated on each render.
    */
 
-  let forceSimulation = useRef(null);
-  //let loc_force = forceSimulation.current;  // TODO if this works you could simplify it out....
+  let loc_force;
 
 
   /*
@@ -51,14 +53,15 @@ export default function Diagram(props) {
     /*
      * Just a small nudge...
      */
-    forceSimulation.current.alpha(0.1);
-    forceSimulation.current.restart();
+    if (loc_force) {
+      loc_force.alpha(0.1);
+      loc_force.restart();
+    }
   }
 
   const [pinningOption, setPinningOption] = useState(true);
   const pinningRef = useRef();
   pinningRef.current = pinningOption;
-  
   
   const width                       = 1070;
   const height                      = 1100;
@@ -110,96 +113,10 @@ export default function Diagram(props) {
 
   const drgContainerDiv  = useRef();
 
-
-
-
-
-  const nodeClicked = useCallback(
-    (guid) => {
-      props.onNodeClick(guid);
-    },
-    [props]
-  );
-
-  const linkClicked = useCallback(
-    (guid) => {
-      props.onLinkClick(guid);
-    },
-    [props]
-  );
-
-
-  /*
-   *  This function is called to determine the color of a node - if the node is selected then a decision
-   *  will already have been made about color. So assume it is not selected. Nodes from different repositories
-   *  are filled using different colors.
-   */
-  const nodeColor = useCallback(
-
-    (d) => {
-
-      // TODO - alignment
-
-    /*
-     * Look up repository name in repositoryColor map, if not found assign next color.
-     * This actually assigns gray-shades, starting with the #EEE and darkening by two
-     * stops for each new repository found - e.g. #AAA -> #888. There are therefore 8 shades
-     * that can be allocated, by which time we are at 100% black. If this number proves to
-     * be insufficient, we can shorten the two-stops or assign a single hue, e.g. green.
-     */
-    let colorString = repositoryToColor[d.metadataCollectionId];
-    if (colorString !== undefined) {
-      return colorString;
-    }
-    else {
-
-      /*
-       * Assign first available color
-       */
-      let assigned = false;
-      for (let col in possibleColors) {
-        colorString = possibleColors[col];
-        if (colorToRepository[colorString] === undefined) {
-          /*
-           * Color is available
-           */
-          repositoryToColor[d.metadataCollectionId] = colorString;
-          colorToRepository[colorString] = d.metadataCollectionId;
-          return colorString;
-        }
-      }
-      if (!assigned) {
-
-        /*
-         * Ran out of available colors for repositories!
-         *
-         * Assign a color that we know is not in the possible colors to this
-         * repo and any further ones we discover. Remember this for consistency
-         * - i.e. this repository will use this color for the remainder of this
-         * exploration. There may be multiple repositories sharing this same color
-         * so do not update the colorToRepository map. If a color frees up it will
-         * be allocated to a new repository, but not to repositories remembered below.
-         */
-        const col = '#000';
-        this.repositoryToColor[d.metadataCollectionId] = col;
-        return col;
-      }
-    }
-  },
-  [colorToRepository, possibleColors, repositoryToColor]
-  );
-
-
-
-
   /*
    * Databind the latest links and add/remove SVG elements accordingly
    */
-  const updateLinks = useCallback(
-
-    () => {
-
-      // TODO - alignment
+  const updateLinks = () => {
   
     const svg = d3.select(d3Container.current);
 
@@ -261,20 +178,14 @@ export default function Diagram(props) {
 
     links.merge(enter_set);
 
-  },
-  [linkClicked, props.links]
-  );
+  };
 
 
   /*
    * Function to ensure that all nodes have initial coordinates so that path
    * calculations on initial render have valid values to work with.
    */
-  const placeNodes = useCallback(
-
-    () => {
-
-      // TODO - alignment
+  const placeNodes = () => {
 
     if (props.nodes) {
 
@@ -305,20 +216,14 @@ export default function Diagram(props) {
         });
       }
     }
-  },
-  [props.links, props.nodes, props.numGens]
-  );
+  };
 
 
   /*
    * Databind the latest nodes and add/remove SVG elements accordingly
    */
-  const updateNodes = useCallback(
-
-    () => {
+  const updateNodes = () => {
   
-      // TODO - alignment
-
     const svg = d3.select(d3Container.current);
 
     svg.selectAll(".node").remove()
@@ -378,14 +283,15 @@ export default function Diagram(props) {
       .text( function(d) { return d.label; } ) ;
 
     nodes.merge(enter_set);
-  },
-  [nodeClicked, props.nodes]
-  );
+  };
 
  
   const dragstarted = (d) => {
-    if (!d3.event.active)
-    forceSimulation.current.alphaTarget(0.3).restart();
+    if (!d3.event.active) {
+      if (loc_force) {
+        loc_force.alphaTarget(0.3).restart();
+      }
+    }
     d.xinit = d3.event.x;
     d.yinit = d3.event.y;
   }
@@ -406,8 +312,11 @@ export default function Diagram(props) {
   }
 
   const dragended = (d) => {
-    if (!d3.event.active)
-    forceSimulation.current.alphaTarget(0.0005);
+    if (!d3.event.active) {
+      if (loc_force) {
+        loc_force.alphaTarget(0.0005);
+      }
+    }
     if (!pinningRef.current) {
       d.fx = null;
       d.fy = null;
@@ -420,99 +329,156 @@ export default function Diagram(props) {
   }
 
  
+  const nodeClicked = (guid) => {
+    props.onNodeClick(guid);
+  }
+
+  const linkClicked = (guid) => {
+    props.onLinkClick(guid);
+  }
+
+
+  /*
+   *  This function is called to determine the color of a node - if the node is selected then a decision
+   *  will already have been made about color. So assume it is not selected. Nodes from different repositories
+   *  are filled using different colors.
+   */
+  const nodeColor = (d) => {
+
+    /*
+     * Look up repository name in repositoryColor map, if not found assign next color.
+     * This actually assigns gray-shades, starting with the #EEE and darkening by two
+     * stops for each new repository found - e.g. #AAA -> #888. There are therefore 8 shades
+     * that can be allocated, by which time we are at 100% black. If this number proves to
+     * be insufficient, we can shorten the two-stops or assign a single hue, e.g. green.
+     */
+    let colorString = repositoryToColor[d.metadataCollectionId];
+    if (colorString !== undefined) {
+      return colorString;
+    }
+    else {
+
+      /*
+       * Assign first available color
+       */
+      let assigned = false;
+      for (let col in possibleColors) {
+        colorString = possibleColors[col];
+        if (colorToRepository[colorString] === undefined) {
+          /*
+           * Color is available
+           */
+          repositoryToColor[d.metadataCollectionId] = colorString;
+          colorToRepository[colorString] = d.metadataCollectionId;
+          return colorString;
+        }
+      }
+      if (!assigned) {
+
+        /*
+         * Ran out of available colors for repositories!
+         *
+         * Assign a color that we know is not in the possible colors to this
+         * repo and any further ones we discover. Remember this for consistency
+         * - i.e. this repository will use this color for the remainder of this
+         * exploration. There may be multiple repositories sharing this same color
+         * so do not update the colorToRepository map. If a color frees up it will
+         * be allocated to a new repository, but not to repositories remembered below.
+         */
+        const col = '#000';
+        this.repositoryToColor[d.metadataCollectionId] = col;
+        return col;
+      }
+    }
+  }
+
 
 
   /*
    * tick function is responsible for updating SVG attributes to match the latest 
    * positions of the nodes, as updated by the force sim.
    */
-  const tick = useCallback(
+  const tick = () => {
 
-    () => {
-
-      const focusGUID = diagramFocusGUID.current;
+    const focusGUID = diagramFocusGUID.current;
    
-      const svg = d3.select(d3Container.current);
+    const svg = d3.select(d3Container.current);
 
-      const nodes = svg.selectAll(".node");
+    const nodes = svg.selectAll(".node");
 
-      /*
-       * Keep nodes in the viewbox, with a safety margin so that (curved) links are unlikely to stray...
-       */
-      nodes.attr('cx',function(d) { return d.x = Math.max(node_margin, Math.min(width  - 8 * node_margin, d.x)); });
-      nodes.attr('cy',function(d) { return d.y = Math.max(node_margin, Math.min(height -     node_margin, d.y)); });
-      nodes.attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")";});
+    /*
+     * Keep nodes in the viewbox, with a safety margin so that (curved) links are unlikely to stray...
+     */
+    nodes.attr('cx',function(d) { return d.x = Math.max(node_margin, Math.min(width  - 8 * node_margin, d.x)); });
+    nodes.attr('cy',function(d) { return d.y = Math.max(node_margin, Math.min(height -     node_margin, d.y)); });
+    nodes.attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")";});
     
 
-      /*
-       * Highlight a selected node, if it is the instance that has been selected or just loaded
-       * (in which case it is selected)
-       */
+    /*
+     * Highlight a selected node, if it is the instance that has been selected or just loaded
+     * (in which case it is selected)
+     */
 
-      nodes.selectAll('circle')
-        .attr("fill", d => (d.id === focusGUID) ? egeria_primary_color_string : nodeColor(d) );
+    nodes.selectAll('circle')
+      .attr("fill", d => (d.id === focusGUID) ? egeria_primary_color_string : nodeColor(d) );
 
       nodes.selectAll('line')      
-        .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");
+      .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");
 
-      nodes.selectAll('text')
-        .attr("fill", d => (d.id === focusGUID) ? egeria_text_color_string : "#444" );
+    nodes.selectAll('text')
+      .attr("fill", d => (d.id === focusGUID) ? egeria_text_color_string : "#444" );
     
-      const links = svg.selectAll(".link")
+    const links = svg.selectAll(".link")
 
-      links.selectAll('path')
-         .attr('d', function(d) { return DiagramUtils.path_func(d, link_distance).path; })
-         .lower();
+    links.selectAll('path')
+       .attr('d', function(d) { return DiagramUtils.path_func(d, link_distance).path; })
+       .lower();
 
-      links.selectAll('text')
-        .attr("x", function(d) { return d.x = DiagramUtils.path_func(d, link_distance).midpoint.x; } )
-        .attr("y", function(d) { return d.y = DiagramUtils.path_func(d, link_distance).midpoint.y; } )
-        .attr("fill", function(d) { return ( (d.id === focusGUID) ? egeria_text_color_string : "#888" );} )
-        .attr("dominant-baseline", function(d) { return (d.source.x > d.target.x) ? "baseline" : "hanging"; } )
-        .attr("transform" , d => `rotate(${180/Math.PI * Math.atan((d.target.y-d.source.y)/(d.target.x-d.source.x))}, ${d.x}, ${d.y})`)
-        .attr("dx", d => ((d.target.y-d.source.y)<0)? 100.0 : -100.0 )
-        .attr("dy", d =>
+    links.selectAll('text')
+       .attr("x", function(d) { return d.x = DiagramUtils.path_func(d, link_distance).midpoint.x; } )
+       .attr("y", function(d) { return d.y = DiagramUtils.path_func(d, link_distance).midpoint.y; } )
+       .attr("fill", function(d) { return ( (d.id === focusGUID) ? egeria_text_color_string : "#888" );} )
+       .attr("dominant-baseline", function(d) { return (d.source.x > d.target.x) ? "baseline" : "hanging"; } )
+       .attr("transform" , d => `rotate(${180/Math.PI * Math.atan((d.target.y-d.source.y)/(d.target.x-d.source.x))}, ${d.x}, ${d.y})`)
+       .attr("dx", d => ((d.target.y-d.source.y)<0)? 100.0 : -100.0 )
+       .attr("dy", d =>
            ((d.target.x-d.source.x)>0)?
            20.0 * (d.target.x-d.source.x)/(d.target.y-d.source.y) :
            20.0 * (d.source.x-d.target.x)/(d.target.y-d.source.y) 
            );
             
-    },
-    [diagramFocusGUID, egeria_text_color_string, nodeColor]
-  );
+  };
 
 
-  const createSim = useCallback(
+  const createSim = () => {
 
-    () => {
+    if (!loc_force) {
 
-      if (!forceSimulation.current) {
+      loc_force = d3.forceSimulation(props.nodes)
+        .force('horiz', d3.forceX(width/2).strength(0.05))
+        .force('repulsion', d3.forceManyBody().strength(-500))
+        .alphaDecay(.002)
+        .alphaMin(0.001)
+        .alphaTarget(0.0005)
+        .velocityDecay(0.8)
+        .force('link', d3.forceLink()
+          .links(props.links)
+          .id(DiagramUtils.nodeId)
+          .distance(link_distance)
+          .strength(function(d) { return DiagramUtils.ls(d);})) ;
 
-        forceSimulation.current = d3.forceSimulation(props.nodes)
-          .force('horiz', d3.forceX(width/2).strength(0.05))
-          .force('repulsion', d3.forceManyBody().strength(-500))
-          .alphaDecay(.002)
-          .alphaMin(0.001)
-          .alphaTarget(0.0005)
-          .velocityDecay(0.8)
-          .force('link', d3.forceLink()
-            .links(props.links)
-            .id(DiagramUtils.nodeId)
-            .distance(link_distance)
-            .strength(function(d) { return DiagramUtils.ls(d);})) ;
 
-        if (layoutMode === "Temporal") {
-          forceSimulation.current.force('vert', d3.forceY().strength(0.1).y(function(d) {return DiagramUtils.yPlacement(d, height, props.numGens);}));
-        }
-        else {
-          forceSimulation.current.force('vert', d3.forceY(height/2).strength(0.05))
-        }
-
-        forceSimulation.current.on('tick', tick);
+      if (layoutMode === "Temporal") {
+        loc_force.force('vert', d3.forceY().strength(0.1).y(function(d) {return DiagramUtils.yPlacement(d, height, props.numGens);}));
       }
-    }, 
-    [layoutMode, props.links, props.nodes, props.numGens, tick]
-  );
+      else {
+        loc_force.force('vert', d3.forceY(height/2).strength(0.05))
+      }
+
+      loc_force.on('tick', tick);
+
+    }
+  };
 
   /*
    * Define arrowhead for links
@@ -536,15 +502,13 @@ export default function Diagram(props) {
 
   };
 
-  const startSim = useCallback(
-
+  const startSim = //useCallback(
     () => {
-      if (forceSimulation.current) {
-        forceSimulation.current.restart();
-      }
-    },
-    []
-  );
+    if (loc_force) {
+      loc_force.restart();
+    }
+  };
+
   
   /*
    * Function to update all SVG node and link elements. Nodes must be initially positioned,
@@ -552,22 +516,17 @@ export default function Diagram(props) {
    * of links - this has better aesthetics and makes node and link selection simpler because
    * it avoids having link ends overlapping nodes.
    */
-  const updateData = useCallback(
-
-    () => {
-      placeNodes();
-      updateLinks();
-      updateNodes();
-    },
-    [placeNodes, updateLinks, updateNodes]
-  );
+  const updateData = () => {
+    placeNodes();
+    updateLinks();
+    updateNodes();
+  };
 
   const setDiagramFocus = useCallback(
-
     () => {
-      diagramFocusGUID.current = instancesContext.focus.instanceGUID;
-    },
-    [instancesContext.focus.instanceGUID]
+    diagramFocusGUID.current = instancesContext.focus.instanceGUID;
+  },
+  [instancesContext.focus]
   );
 
   const updatedPinningOption = () => {
@@ -578,19 +537,34 @@ export default function Diagram(props) {
        * If pinning was true, nodes may be pinned, so ensure all nodes are unpinned
        */
       props.nodes.forEach(n => unpin(n));
-
     }
   };
 
 
-  useEffect(
-    () => {      
-      if ( d3Container.current ) {       
+ useEffect(
+  () => {
+    if ( d3Container.current ) {
+      if ( !loc_force ) {
         createSim();        
         createMarker();                           
         startSim();
       }
-      if ( props.nodes || props.links) {   
+    }
+  },
+  /*
+   * Disable the linter's full dependency check - this is because if you specify createSim for example,
+   * then to avoid further linter checks you need to make createSim a useCallback - which prevents the
+   * animation from working.
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [ loc_force, createMarker  ]
+)
+
+
+useEffect(
+  () => {
+    if ( d3Container.current ) {
+      if ( props.nodes || props.links) {
         try {
           updateData();
           startSim();
@@ -599,26 +573,37 @@ export default function Diagram(props) {
           alert("Exception from diagram data, sim update  : " + err);
         }
       }
+    }
+  },
+  /*
+   * Disable the linter's full dependency check - this is because if you specify startSim for example,
+   * then to avoid further linter checks you need to make startSim a useCallback - which prevents the
+   * animation from working.
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [  props.nodes, props.links, updateData ]
+)
+
+useEffect(
+  () => {
+    if ( d3Container.current ) {
       if ( instancesContext.focus ) {
         setDiagramFocus();
       }
-    },
-    [  createSim, props.nodes, props.links, instancesContext.focus,
-      props.onLinkClick, props.onNodeClick, layoutMode,
-      setDiagramFocus, startSim,updateData ]
-     // [ d3Container.current, props.nodes, props.links, instancesContext.focus,
-     //   props.onLinkClick, props.onNodeClick, layoutMode,                           TODO cleanup
-     //   createSim, setDiagramFocus, startSim,updateData ]
-  )
+    }
+  },
+  [  instancesContext.focus, setDiagramFocus ]
+)
 
-  useEffect(
-    () => {
-      drgContainerDiv.current.style.width=""+props.outerWidth+"px";
-      drgContainerDiv.current.style.height=""+props.outerHeight+"px";
-    },
-    [props.outerHeight, props.outerWidth]
-  )
- 
+useEffect(
+  () => {
+    drgContainerDiv.current.style.width=""+props.outerWidth+"px";
+    drgContainerDiv.current.style.height=""+props.outerHeight+"px";
+  },
+  [props.outerHeight, props.outerWidth]
+)
+
+
  
   return (
     <div>
