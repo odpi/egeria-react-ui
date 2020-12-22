@@ -15,12 +15,7 @@ import ServerStatusDisplay                     from "./ServerStatusDisplay";
 import AuditLogHandler                         from "./AuditLogHandler";
 import ConfigLogHandler                        from "./ConfigLogHandler";
 
-
-
 import "./details-panel.scss";
-
-import PropTypes                               from "prop-types";
-
 
 
 
@@ -46,6 +41,9 @@ export default function ServerDisplay() {
         break;
       case "modeDiffs":
         setDisplayMode("diffs");
+        break;
+      default:
+        console.log("Unknown display mode: "+mode);
         break;
 
     }
@@ -360,6 +358,9 @@ export default function ServerDisplay() {
       break;
     case "diffs":
       displayedConfig = null;
+      break;
+    default:
+      console.log("Unknown displayMode: "+displayMode);
       break;
   }
 

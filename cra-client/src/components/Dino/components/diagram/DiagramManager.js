@@ -1,7 +1,10 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React, { useContext, useState, useEffect }    from "react";
+import React, { useContext,
+                useState,
+                useEffect,
+                useCallback }                        from "react";
 
 import PropTypes                                     from "prop-types";
 
@@ -49,136 +52,145 @@ export default function DiagramManager(props) {
    * preserve its current position in the new array. Finally stamp the new map and arrays into the 
    * state.
    */
-  const parseAllGens = () => {
+  const parseAllGens = useCallback(
 
-    /*
-     * Create empty node and link arrays and an empty node map.
-     */
-    let newNodesArray = [];
-    let newLinksArray = [];
-    let newNodesMap   = {};
+    () => {
 
-    /*
-     * Get te gens and iterate over them
-     */
-    let gens = resourcesContext.getGens();
-    for (let i=0; i<gens.length; i++) {
-      let gen = gens[i];
+      // TODO alignment
+      /*
+       * Create empty node and link arrays and an empty node map.
+       */
+      let newNodesArray = [];
+      let newLinksArray = [];
+      let newNodesMap   = {};
 
       /*
-       * Iterate over the resources in this gen
+       * Get te gens and iterate over them
        */
-      let resources = gen.resources;
-      let resourceGUIDs = Object.keys(resources);
-      resourceGUIDs.forEach(resGUID => {
-        let resource = resources[resGUID];
-        let newNode = {};
-        let category = resource.category;
-        newNode.category = category;
+      let gens = resourcesContext.getGens();
+      for (let i=0; i<gens.length; i++) {
+        let gen = gens[i];
+
+        /*
+         * Iterate over the resources in this gen
+         */
+        let resources = gen.resources;
+        let resourceGUIDs = Object.keys(resources);
+        resourceGUIDs.forEach(resGUID => {
+          let resource = resources[resGUID];
+          let newNode = {};
+          let category = resource.category;
+          newNode.category = category;
   
-        switch(category) {
+          switch(category) {
   
-          case "platform":
-            newNode.id                     = resource.guid;
-            newNode.label                  = resource.platformName;
-            newNode.gen                    = resource.gen;
-            break;
+            case "platform":
+              newNode.id                     = resource.guid;
+              newNode.label                  = resource.platformName;
+              newNode.gen                    = resource.gen;
+              break;
   
-          case "server":
-            newNode.id         = resource.guid;
-            newNode.label      = resource.serverName;
-            newNode.gen        = resource.gen;
-            break;
+              case "server":
+                newNode.id         = resource.guid;
+              newNode.label      = resource.serverName;
+              newNode.gen        = resource.gen;
+              break;
   
-          case "service":
-            newNode.id         = resource.guid;
-            newNode.label      = resource.serviceName;
-            newNode.gen        = resource.gen;
-            break;
+            case "service":
+              newNode.id         = resource.guid;
+              newNode.label      = resource.serviceName;
+              newNode.gen        = resource.gen;
+              break;
             
-          case "cohort":
-            newNode.id         = resource.guid;
-            newNode.label      = resource.cohortName;
-            newNode.gen        = resource.gen;
-            break;
+            case "cohort":
+              newNode.id         = resource.guid;
+              newNode.label      = resource.cohortName;
+              newNode.gen        = resource.gen;
+              break;
+
+            default:
+              console.log("Unexpected value for category: "+category);
+              break;
           
-        }
+          }
       
-        /*
-         * Check if node already exists and has position...
-         */
-        if (allNodes[resGUID]) {
-          let exNode = allNodes[resGUID];
-          newNode.x = exNode.x;
-          newNode.y = exNode.y;
           /*
-           * Retain the node's pinned state, if applicable
+           * Check if node already exists and has position...
            */
-          newNode.fx = exNode.fx;
-          newNode.fy = exNode.fy;
-        }
-        else {
+          if (allNodes[resGUID]) {
+            let exNode = allNodes[resGUID];
+            newNode.x = exNode.x;
+            newNode.y = exNode.y;
+            /*
+             * Retain the node's pinned state, if applicable
+             */
+            newNode.fx = exNode.fx;
+            newNode.fy = exNode.fy;
+          }
+          else {
+            /*
+             * Initialise position to null so that node is given appropriate starting posiiton
+             * by the diagram
+             */
+            newNode.x                      = null;
+            newNode.y                      = null;
+          }
+
+          newNodesArray.push(newNode);
+          newNodesMap[newNode.id] = newNode;
+
+        });
+
+        /*
+         * Iterate over the resources in this gen
+         */
+        let relationships = gen.relationships;
+        let relationshipGUIDs = Object.keys(relationships);
+        relationshipGUIDs.forEach(relGUID => {
+          let relationship = relationships[relGUID];
+          var newLink = {};
+          newLink.id                     = relationship.guid;
+
           /*
-           * Initialise position to null so that node is given appropriate starting posiiton 
-           * by the diagram
-           */            
-          newNode.x                      = null;
-          newNode.y                      = null;
-        }
+           * Indicate whether the relationship link is active or not; it will be displayed differently
+           */
+          newLink.active                 = relationship.active;
 
-        newNodesArray.push(newNode);     
-        newNodesMap[newNode.id] = newNode;     
-        
-      });
-
-      /*
-       * Iterate over the resources in this gen
-       */
-      let relationships = gen.relationships;
-      let relationshipGUIDs = Object.keys(relationships);
-      relationshipGUIDs.forEach(relGUID => {
-        let relationship = relationships[relGUID];
-        var newLink = {};
-        newLink.id                     = relationship.guid;
-        
-        /*
-         * Indicate whether the relationship link is active or not; it will be displayed differently
-         */
-        newLink.active                 = relationship.active; 
-
-        /*
-         * Need to get each node from its GUID...it must already be in the gens but you would need to 
-         * ask resourcesContext to map the guid to the gen and then again to look up the guid in that gen
-         * 
-         * The asynchronous state update to allNodes will not have happened yet.
-         */
-        newLink.source                 = newNodesMap[relationship.source];  
-        newLink.target                 = newNodesMap[relationship.target];
-        newLink.gen                    = relationship.gen;
+          /*
+           * Need to get each node from its GUID...it must already be in the gens but you would need to
+           * ask resourcesContext to map the guid to the gen and then again to look up the guid in that gen
+           *
+           * The asynchronous state update to allNodes will not have happened yet.
+           */
+          newLink.source                 = newNodesMap[relationship.source];
+          newLink.target                 = newNodesMap[relationship.target];
+          newLink.gen                    = relationship.gen;
       
-        /*
-         * Graph is not a multigraph, so set idx to 0
-         */
-        newLink.idx = 0;
+          /*
+           * Graph is not a multigraph, so set idx to 0
+           */
+          newLink.idx = 0;
        
-        newLinksArray.push(newLink);     
+          newLinksArray.push(newLink);
         
-      });   
-    }   
+        });
+      }
   
    
-    /*
-     *  Update the states of nodeArray and allNodes ...
-     */
-    setNodeArray(newNodesArray);
-    setAllNodes(newNodesMap);  
-    /*
-     *  Update the state of linkArray ...
-     */
-    setLinkArray(newLinksArray);
+      /*
+       *  Update the states of nodeArray and allNodes ...
+       */
+      setNodeArray(newNodesArray);
+      setAllNodes(newNodesMap);
+      /*
+       *  Update the state of linkArray ...
+       */
+      setLinkArray(newLinksArray);
 
-  }
- 
+    },
+    [allNodes, resourcesContext]
+  );
+
 
   
 
@@ -217,6 +229,7 @@ export default function DiagramManager(props) {
     () => {
       parseAllGens();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [resourcesContext.gens]
   )
   
