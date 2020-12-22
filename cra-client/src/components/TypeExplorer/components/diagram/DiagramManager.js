@@ -59,6 +59,9 @@ export default function DiagramManager(props) {
         case "Neighborhood":
           diagram = <EntityNeighborhoodDiagram outerHeight={height} outerWidth={width}/>
           break;
+        default:
+          alert("Unexpected diagram type in DiagramManager: "+selectedDiagram);
+          break;
       }
     }
 

@@ -49,7 +49,7 @@ export default function GraphControls(props) {
 
   const [history, setHistory]          = useState([]); 
 
-  const [traversalSpecification, setTraversalSpecification]                    = useState({}); 
+  //const [traversalSpecification, setTraversalSpecification]                    = useState({});  TODO cleanup
   const [preTraversalEntityTypes, setPreTraversalEntityTypes]                  = useState([]); 
   const [preTraversalRelationshipTypes, setPreTraversalRelationshipTypes]      = useState([]); 
   const [preTraversalClassificationTypes, setPreTraversalClassificationTypes]  = useState([]); 
@@ -79,17 +79,6 @@ export default function GraphControls(props) {
       return;
     }
 
-    const entityLabel = instancesContext.getFocusEntity().entityDigest.label;
-
-    /*
-     * Save the traversal parameters into the traversal spec....
-     */
-    let traversalSpec = {};    
-    traversalSpec.serverName = repositoryServerContext.repositoryServer.serverName;
-    traversalSpec.entityGUID = entityGUID;
-    traversalSpec.entityLabel = entityLabel;
-    traversalSpec.depth = 1;
-    setTraversalSpecification(traversalSpec);
 
     /*
      * No filtering is applied to the pre-traversal...
@@ -405,7 +394,7 @@ export default function GraphControls(props) {
         </button>
 
         <TraversalResultHandler status                = { status }
-                                spec                  = { traversalSpecification }
+                                //spec                  = { traversalSpecification }
                                 selectCallback        = { selectCallback }
                                 setAllCallback        = { setAllCallback }
                                 entityTypes           = {preTraversalEntityTypes}

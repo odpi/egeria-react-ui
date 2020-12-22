@@ -55,6 +55,9 @@ export default function TypeDisplay() {
       case "Enum":
         return <EnumTypeDisplay typeName={focusContext.view.typeName} />
 
+      default:
+        alert("Unknown fous category in TypeDisplay: "+focusContext.view.category);
+        break;
     }
   }
 }

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React, { useContext, useState }    from "react";
+import React, { useContext, useState, useEffect, useCallback }    from "react";
 
 import PropTypes                          from "prop-types";
 
@@ -12,6 +12,7 @@ import { InstancesContext }               from "../../contexts/InstancesContext"
 
 
 export default function DiagramManager(props) {
+
 
   let height = props.height;
   let width = props.width;
@@ -55,7 +56,8 @@ export default function DiagramManager(props) {
    * The parseGen function accepts a gen and creates the associated nodes and links
    * based on the entities and relationships in the gen. 
    */
-  const parseGen = (gen) => {
+  const parseGen = useCallback(
+    (gen) => {
 
     /*
      * Parse Entities
@@ -165,7 +167,9 @@ export default function DiagramManager(props) {
      */
     setLinkArray(newLinksArray);
     
-  };
+  },
+  [nodeArray, setNodeArray, allNodes, setAllNodes, linkArray, setLinkArray]
+  );
 
 
 
@@ -177,7 +181,8 @@ export default function DiagramManager(props) {
    * proves to be a performance problem, consider maintaining a gen-keyed map to use as an 
    * index.
    */
-  const removeGen = (genId) => {
+  const removeGen = useCallback(
+    (genId) => {
 
     /*
      * Remove Entities
@@ -248,11 +253,14 @@ export default function DiagramManager(props) {
       setLinkArray(newLinksArray);
     }
     
-  };
+  },
+  [nodeArray, setNodeArray, allNodes, setAllNodes, linkArray, setLinkArray]
+  );
 
 
 
-  const clearGraph = () => {
+  const clearGraph = useCallback(
+    () => {
 
     /*
      * Clear Entities
@@ -292,26 +300,34 @@ export default function DiagramManager(props) {
         setLinkArray(newLinksArray);
       }
     }
-  };
+  },
+  [nodeArray, setNodeArray, linkArray, setLinkArray]
+  );
 
  
 
   /*
    * Request that the InstancesContext loads the entity from the repository and makes it the focus.
    */
-  const onNodeClick = (guid) => {    
+  const onNodeClick = useCallback(
 
-    instancesContext.changeFocusEntity(guid);
-  };
+    (guid) => {
+      instancesContext.changeFocusEntity(guid);
+    },
+    [instancesContext]
+  );
 
 
   /*
    * Request that the InstancesContext loads the relationship from the repository and makes it the focus.
    */
-  const onLinkClick = (guid) => {
+  const onLinkClick = useCallback(
 
-    instancesContext.changeFocusRelationship(guid);
-  };
+    (guid) => {
+      instancesContext.changeFocusRelationship(guid);
+    },
+    [instancesContext]
+  );
 
 
   /*
@@ -321,40 +337,42 @@ export default function DiagramManager(props) {
    * and parse it into the nodes and links arrays.
    */
 
-  const latestActiveGenId = instancesContext.getLatestActiveGenId();
- 
-  if (latestActiveGenId > lastGenProcessed) {
-    /* Additional gen */
-    /* Get the last gen and add it to the nodes array and allNodes map. */
-    parseGen(instancesContext.getLatestGen());
-    setLastGenProcessed(latestActiveGenId);    
-  }
-  else if (latestActiveGenId < lastGenProcessed) {
+  useEffect(
+    () => {
 
-    if (latestActiveGenId === 0) {
+      const latestActiveGenId = instancesContext.getLatestActiveGenId();
 
-      /* Graph has been cleared */
-      clearGraph();
-      setLastGenProcessed(latestActiveGenId);  
-    }
-    else {
+      if (latestActiveGenId > lastGenProcessed) {
+        /* Additional gen */
+        /* Get the last gen and add it to the nodes array and allNodes map. */
+        parseGen(instancesContext.getLatestGen());
+        setLastGenProcessed(latestActiveGenId);
+      }
+      else if (latestActiveGenId < lastGenProcessed) {
+        if (latestActiveGenId === 0) {
+          /* Graph has been cleared */
+          clearGraph();
+          setLastGenProcessed(latestActiveGenId);
+        }
+        else {
+          /*
+           * Graph has been reduced - by an undo operation that has remove the most recent gen
+           */
+          removeGen(latestActiveGenId+1);
+          setLastGenProcessed(latestActiveGenId);
+        }
+      }
 
-      /*
-       * Graph has been reduced - by an undo operation that has remove the most recent gen
-       */     
-      removeGen(latestActiveGenId+1);
-      setLastGenProcessed(latestActiveGenId);    
-    } 
-  }
-
-  
+    },
+    [instancesContext, lastGenProcessed, parseGen, removeGen, clearGraph]
+  )
 
 
   return (
     <div>
       <Diagram nodes={nodeArray} 
                links={linkArray} 
-               numGens={latestActiveGenId} 
+               numGens={instancesContext.getLatestActiveGenId()}
                onNodeClick={onNodeClick} 
                onLinkClick={onLinkClick}
                outerHeight={height}
