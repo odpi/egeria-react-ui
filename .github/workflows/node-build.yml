@@ -33,6 +33,7 @@ jobs:
         run: npm run build
         env:
           CI: false
+          NODE_OPTIONS: "--max_old_space_size=6144"
       - name: Upload Client
         uses: actions/upload-artifact@v2
         with:
@@ -46,6 +47,7 @@ jobs:
         run: npm run build
         env:
           CI: false
+          NODE_OPTIONS: "--max_old_space_size=6144"
       - name: Upload Server
         uses: actions/upload-artifact@v2
         with:
