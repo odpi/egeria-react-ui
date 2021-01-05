@@ -81,7 +81,7 @@ Working with Categories and terms, is similar to working with Glossaries, apart 
 
 ## Glossary children
 When the glossary children action is chosen, the categories and terms under that glossary are displayed. 
- <img src="glossarychildren.png" alt="glossary children"  width="400px" height="300px" />
+ <img src="glossarychildren.png" alt="glossary children"  width="400px" height="200px" />
 By default top categories are displayed, these are categories that do not have a parent category. If you want to see the all the categories under the glossary then toggle the Top Categories <img src="topcats.png" alt="top categories"  width="100px" height="30px" /> to All Categories <img src="allcats.png" alt="all categories"  width="100px" height="30px" />
 
 ## Future improvements
