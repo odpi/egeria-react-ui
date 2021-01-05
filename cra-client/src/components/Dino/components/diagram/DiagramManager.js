@@ -83,25 +83,29 @@ export default function DiagramManager(props) {
           newNode.category = category;
   
           switch(category) {
-  
+
             case "platform":
               newNode.id                     = resource.guid;
               newNode.label                  = resource.platformName;
               newNode.gen                    = resource.gen;
               break;
-  
-              case "server":
-                newNode.id         = resource.guid;
+
+            case "server-instance":
+              /*
+               * It is OK to use the (possibly ambiguous) serverName since the topology of the graph
+               * will disambiguate which instance of the server this is....
+               */
+              newNode.id         = resource.guid;
               newNode.label      = resource.serverName;
               newNode.gen        = resource.gen;
               break;
-  
-            case "service":
+
+            case "service-instance":
               newNode.id         = resource.guid;
               newNode.label      = resource.serviceName;
               newNode.gen        = resource.gen;
               break;
-            
+
             case "cohort":
               newNode.id         = resource.guid;
               newNode.label      = resource.cohortName;
@@ -111,7 +115,6 @@ export default function DiagramManager(props) {
             default:
               console.log("Unexpected value for category: "+category);
               break;
-          
           }
       
           /*

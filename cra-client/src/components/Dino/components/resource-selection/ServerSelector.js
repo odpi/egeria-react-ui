@@ -160,7 +160,7 @@ export default function ServerSelector() {
       /*
        * If the focus is a server then ensure we track the current focus
        */
-      if (focus.category === "server") {
+      if (focus.category === "server-instance") {
         selectorValue = (focus.name === "") ? "none" : focus.name;
         const selector = document.getElementById("serverSelector");
         if (selector)
