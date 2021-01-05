@@ -108,8 +108,8 @@ This project is a [Create React App](https://reactjs.org/docs/create-a-new-react
 
 * docs
   * design - design docs
-  * [RepositoryExplorer](docs/RepositoryExplorer/RepositoryExplorerGuide)
-  * [GlossaryAuthor](docs/GlossaryAuthor/GlossaryAuthorGuide)
+  * [RepositoryExplorer](docs/RepositoryExplorer/RepositoryExplorerGuide.md)
+  * [GlossaryAuthor](docs/GlossaryAuthor/GlossaryAuthorGuide.md)
 
 * cra-server
 This is the Express server (also known as the presentation server). the cra - stands for Create React app.

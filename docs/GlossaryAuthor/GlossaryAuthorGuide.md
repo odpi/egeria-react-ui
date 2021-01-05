@@ -1,8 +1,9 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 <!-- Copyright Contributors to the ODPi Egeria project 2020. -->
 
+# Glossary Author
 
-The **Glossary Author** is an allows you to author glossary content, such as Glossary , Term, Categories
+The **Glossary Author** is a UI capability of the Egeria Rect UI that allows you to author glossary content, such as Glossaries, Terms, Categories
 and the relationships between them.
 
 # Concepts
@@ -91,15 +92,6 @@ By default top categories are displayed, these are categories that do not have a
 - add spine object views
 - add collaboration authoring and viewing
 - start with a context from the community profile.   
-
-
-
-
-
-
-
-
-
 
 ----
 License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
