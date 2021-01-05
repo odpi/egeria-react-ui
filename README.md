@@ -33,7 +33,7 @@ There are 2 types of capabilities in the Presentation Server.
 Egeria ecosystems, consist of platforms, on which servers run; these servers run services and communicate using cohorts. The ecosystem tools allows an infrastructure architect to configure, define, explore, navigate and operate the eco-system. Services work on open types and instances of these open types; these can also be explored using these tools. The ecosystem tools are 
 
 - Type Explorer: allowing a user to explore the Egeria open types
-- Repository Explorer: allowing a user to explore Egeria instances
+- [RepositoryExplorer](docs/RepositoryExplorer/RepositoryExplorerGuide.md) : allowing a user to explore Egeria instances
 - Server Author: allowing a user to configure a server. This is work in progress.
 - Dino: allowing a user to see and work with Egeria platforms and servers operationally.    
 
@@ -42,7 +42,7 @@ Egeria ecosystems, consist of platforms, on which servers run; these servers run
 
 These are user interface capabilities allowing particular personas to work with [Egeria Solutions](https://github.com/odpi/egeria/tree/master/open-metadata-publication/website/solutions). The solutions that are being developed are:
 
-- Glossary Author: allowing a Glossary Author persona to create, update and delete Glossary content.   
+- [GlossaryAuthor](docs/GlossaryAuthor/GlossaryAuthorGuide.md): allowing a Glossary Author persona to create, update and delete Glossary content.   
 
 The expectation is that more solutions will be developed by the community. 
 
