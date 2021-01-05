@@ -31,35 +31,35 @@ Note the screenshots might be slightly out of date with the code base.
 
 ## Getting to the Glossary Author start screen
 - After logging into the Egeria react UI, you will see tasks at the left hand side of the user interface including the glossary author task.
-<img src="leftnav.png" alt="Left hand side of the user interface" width="200px" width="20px" height="80px" />
-- If you see a screen with a connect button like this <img src="connect.png" alt="connect button"  width="20px" height="20px" /> then the glossary author is not able to issue a successfully glossary call; this is caused by either
+<img src="leftnav.png" alt="Left hand side of the user interface" width="200px" width="200px" height="200px" />
+- If you see a screen with a connect button like this <img src="connect.png" alt="connect button"  width="70px" height="40px" /> then the glossary author is not able to issue a successfully glossary call; this is caused by either
    - the Subject Area OMAS is not active, so the glossary author cannot call it
    - the glossary author view is not configured on the view server.
    - the presentation server is not configured to point to the glossary server view service.   
    If everythign is correctly configured but the view server or its downstream server is not started then, start them and press the connect button.  
 - Assuming you have successfully connected, then you are now in a position to author glossary content and should see
-<img src="emptystartscreen.png" alt="Empty start screen" width="100px" height="100px" />  
+<img src="emptystartscreen.png" alt="Empty start screen" width="350px" height="100px" />  
 - You will notice that you can choose the node to work with using the node tabs
-<img src="nodetabs.png" alt="Node Tabs" width="100px" height="20px" /> 
+<img src="nodetabs.png" alt="Node Tabs" width="350px" height="20px" /> 
 
 ## Add a glossary
 - Add a node on a tab using the <img src="add](add.png) add button. Pressing add for glossary will show
- <img src="glossaryaddinput.png" alt="Glossary add input" width="100px" height="20px" /> . The minimal input is a name.
+ <img src="glossaryaddinput.png" alt="Glossary add input" width="400px" height="250px" /> . The minimal input is a name.
 pressing create will show a screen like : 
- <img src="glossaryaddresult.png" alt="Glossary add result" width="100px" height="20px" /> 
+ <img src="glossaryaddresult.png" alt="Glossary add result" width="400px" height="250px" /> 
 
  ## Working with a glossary
 - Navigating back after having created a glossary called 'glossary1' in an empty system will show you 
- <img src="startscreenwithoneglossary.png" alt="start screen with one glossary" width="100px" height="100px" /> 
+ <img src="startscreenwithoneglossary.png" alt="start screen with one glossary" width="400px" height="300px" /> 
 - 'List view' You can toggle the glossary view to show the glossaries as a list
-<img src="startscreenwithonelistedglossary.png" alt="start screen with one listed glossary" width="100px" height="100px" /> 
+<img src="startscreenwithonelistedglossary.png" alt="start screen with one listed glossary" width="400px" height="300px" /> 
 
 - 'paging' - notice the paging options, these allow you to change the page size (how many are displayed), page through the results if there is more than a page's worth to display.
-- 'filter' Entering text into the filter box <img src="filter.png" alt="Filter field" width="30px" height="20px" /> filters the displayed results. If you want an exact match, check <img src="exactmatch.png" alt="Exact match"   width="30px" height="20px" />   
+- 'filter' Entering text into the filter box <img src="filter.png" alt="Filter field" width="100px" height="20px" /> filters the displayed results. If you want an exact match, check <img src="exactmatch.png" alt="Exact match"   width="100px" height="20px" />   
 
 ## Button that appear when a node is selected 
 - Note that there is a checkbox on the node card; when checked, buttons appear indicating actions you can perform against the selected node:
-  - <img src="quickterms.png"  - this is shown for glossary, to quickly create Terms under the selected glossary
+  - <img src="quickterms.png" alt="quick terms"  width="20px" height="20px" />  - this is shown for glossary, to quickly create Terms under the selected glossary
   - <img src="children.png" alt="children"  width="20px" height="20px" />  - this shows the children of the selected node.
   - <img src="edit.png" alt="edit"  width="20px" height="20px" />  - this displays an edit screen for the selected node
   - <img src="delete.png" alt="delete"  width="20px" height="20px" /> - this deletes the selected node. Glossaries with content cannot be deleted.
