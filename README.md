@@ -42,7 +42,7 @@ Egeria ecosystems, consist of platforms, on which servers run; these servers run
 
 These are user interface capabilities allowing particular personas to work with [Egeria Solutions](https://github.com/odpi/egeria/tree/master/open-metadata-publication/website/solutions). The solutions that are being developed are:
 
-- Glossary Author: allowing a Glossary Author use to create, update and delete Glossary content.   
+- Glossary Author: allowing a Glossary Author persona to create, update and delete Glossary content.   
 
 The expectation is that more solutions will be developed by the community. 
 
