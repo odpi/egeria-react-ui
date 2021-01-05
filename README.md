@@ -64,12 +64,12 @@ The presentation server is an Express web server that serves the web resources, 
 #### The presentation server environment variable
 
 The environment variable is: 
-EGERIA_PRESENTATIONSERVER_SERVER_<localServerName>={"remoteServerName":"<remoteServerName>","remoteURL":"<remoteURL>"}
+EGERIA_PRESENTATIONSERVER_SERVER_\<localServerName\>={"remoteServerName":"\<remoteServerName\>","remoteURL":"\<remoteURL\>"}
 
 where
-<localServerName> should be replaced with the local server name. This segment is the start segment of the url that the browser sends.
-<remoteServerName> should be replaced with the remote server name. This is the name of the view service that has been configured in the view server.
-<remoteURL> should be replaced with the remote root URL. This is the start of the URL on which the platform where the view server resides) is listening    
+\<localServerName\> should be replaced with the local server name. This segment is the start segment of the url that the browser sends.
+\<remoteServerName\> should be replaced with the remote server name. This is the name of the view service that has been configured in the view server.
+\<remoteURL\> should be replaced with the remote root URL. This is the start of the URL on which the platform where the view server resides) is listening    
 
 It is possible for multiple localServerName environment variables to be specified that each point to different 'view servers', this is the multi tenant support. The server name being the tenant name. 
 
@@ -108,8 +108,8 @@ This project is a [Create React App](https://reactjs.org/docs/create-a-new-react
 
 * docs
   * design - design docs
-  * [RepositoryExplorer](RepositoryExplorer/RepositoryExplorerGuide)
-  * [GlossaryAuthor](GlossaryAuthor/GlossaryAuthorGuide)
+  * [RepositoryExplorer](docs/RepositoryExplorer/RepositoryExplorerGuide)
+  * [GlossaryAuthor](docs/GlossaryAuthor/GlossaryAuthorGuide)
 
 * cra-server
 This is the Express server (also known as the presentation server). the cra - stands for Create React app.
@@ -137,7 +137,7 @@ This is the client code including the javascript. the cra - stands for Create Re
  * The Presentation Server code is built under maven (mvn clean install) & added to a new assembly (open-metadata-distribution/open-metadata-assemblies) as part of the overall build.
  * A new docker image is created as 'odpi/egeria-presentation-server' containing Presentation Server.
  * Our docker-compose based tutorial now has Presentation Server included & configured via the environment variable, and accessed at https://localhost:18091/coco/login .
- * The Kubernetes tutorial 'odpi-egeria-lab' has also been updated similarly, with the Presentation Server UI being acessible via port 30091 - ie access via https:<<address-of-k8s-node>/coco.login
+ * The Kubernetes tutorial 'odpi-egeria-lab' has also been updated similarly, with the Presentation Server UI being acessible via port 30091 - ie access via https:\<address-of-k8s-node\>/coco.login
  * For the lab environment it is recommended to use user 'garygeeke' and password 'admin' since this environment has security setup, and other users including faithbroker will not have access to all capabilities. 
  * This is still work in progress. For example if the session times out you will need to go to the UI URL again manually.
  * Contact us via Slack on odpi.slack.com to get additional guidance.
