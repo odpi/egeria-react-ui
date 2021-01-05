@@ -72,17 +72,17 @@ pressing create will show a screen like :
 - fillin the name and description in the rows
  <img src="quicktermswithnames.png" alt="quick terms with names"  width="400px" height="300px" />
 - press Create Terms on Server button to show
- <img src="quicktermsresults.png" alt="quick terms with results"  width="400px" height="300px" />
+ <img src="quicktermsresults.png" alt="quick terms with results"  width="400px" height="200px" />
 
 ## Working with Categories and Terms
 Working with Categories and terms, is similar to working with Glossaries, apart from
   - choosing the Term or Category node tab, Terms or Categories can be created, in this case a wizard is displayed to aske the user to choose the glossary in which the term should be created. Here is the first page of the term wizard
-   <img src="termwizard.png" alt="term wizard"  width="400px" height="300px" />
+   <img src="termwizard.png" alt="term wizard"  width="400px" height="200px" />
 
 ## Glossary children
-When chosing the glossary children, the categories and terms under that glossary are displayed. 
+When the glossary children action is chosen, the categories and terms under that glossary are displayed. 
  <img src="glossarychildren.png" alt="glossary children"  width="400px" height="300px" />
-By default top categories are displayed, these are categories that do not have a parent category. If you want to see the all the categories under the glossary then toggle the Top Categories <img src="topcats.png" alt="top categories"  width="30px" height="20px" /> to All Categories <img src="allcats.png" alt="all categories"  width="30px" height="20px" />
+By default top categories are displayed, these are categories that do not have a parent category. If you want to see the all the categories under the glossary then toggle the Top Categories <img src="topcats.png" alt="top categories"  width="100px" height="30px" /> to All Categories <img src="allcats.png" alt="all categories"  width="100px" height="30px" />
 
 ## Future improvements
 - a breadcrumb will be added to show visually where in a nested hierarchy the nodes being displayed live.
