@@ -77,7 +77,7 @@ pressing create will show a screen like :
 ## Working with Categories and Terms
 Working with Categories and terms, is similar to working with Glossaries, apart from
   - choosing the Term or Category node tab, Terms or Categories can be created, in this case a wizard is displayed to aske the user to choose the glossary in which the term should be created. Here is the first page of the term wizard
-   <img src="termwizard.png" alt="term wizard"  width="400px" height="200px" />
+   <img src="Termwizard.png" alt="term wizard"  width="400px" height="200px" />
 
 ## Glossary children
 When the glossary children action is chosen, the categories and terms under that glossary are displayed. 
