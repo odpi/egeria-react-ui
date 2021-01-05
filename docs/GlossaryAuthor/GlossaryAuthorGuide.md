@@ -21,7 +21,7 @@ The Node is the top level parent object for Glossary, Category and Term, which i
 * Name - name to be displayed.
 * qualfied name - readable unique name
 * guid - global unqiue identifier, unique identifier.
-* Effective startyand end times - to indicate when the node is effective.    
+* Effective start and end times - to indicate when the node is effective.    
 
  <img src="Glossary author Node.png" alt="Glossary author node model" width="200px" />
 
