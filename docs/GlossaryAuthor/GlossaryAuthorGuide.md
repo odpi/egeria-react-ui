@@ -3,31 +3,31 @@
 
 # Glossary Author
 
-The **Glossary Author** is a UI capability of the Egeria Rect UI that allows you to author glossary content, such as Glossaries, Terms, Categories
+The **Glossary Author** is a UI capability of the Egeria React UI that allows you to author glossary content, such as Glossaries, Terms, Categories
 and the relationships between them.
 
 # Concepts
 
-Egeria has subject area open types that are described in [Area 3](https://egeria.odpi.org/open-metadata-publication/website/open-metadata-types/Area-3-models.html). This mature model of glossary content shows you the relevant concepts around glossaries.
+Egeria has subject area open types that are described in [Area 3](https://egeria.odpi.org/open-metadata-publication/website/open-metadata-types/Area-3-models.html). This mature model of glossary content describes the relevant concepts around glossaries.
 
 The Glossary Author exposes concepts (json objects) that map onto the open types. The Glossary Author concepts are intended to make it easier for a 
 user interface to author glossaries. 
 
-As metadata is often best thought of as a graph; the Glossary author user interface exposes the concept of a Graph contining only the concepts relevantg to a 
-glossary author. The Graph is composed of Nodes (vertices) and Lines (edges).  
+As metadata is often best thought of as a graph; the Glossary author user interface exposes the concept of a Graph containing only the concepts relevant  to a glossary author. The Graph is composed of Nodes (vertices) and Lines (edges).  
 
-The Node is the top level parent object for Glossary, Category and Term, which in turn have child objects; these all map back to the Area 3 concepts. The Node object contains standard Egeria properties including:
+Glossary, Category and Term are all types of Node. The Node object contains standard Egeria properties including:
 
 * Name - name to be displayed.
 * qualfied name - readable unique name
-* guid - global unqiue identifier, unique identifier.
+* guid - global unique identifier.
 * Effective start and end times - to indicate when the node is effective.    
 
+Glossary Author Node inheritance model, including the nodes that inherit from Term , Category and Glossary. 
  <img src="Glossary author Node.png" alt="Glossary author node model" width="200px" />
 
 # Working with the Glossary Author user interface.
 
-Note the screenshots might be slightly out of date with the code base. 
+Note the screenshots might be slightly out of date with the code base, but hopefully help orientate the reader. 
 
 ## Getting to the Glossary Author start screen
 - After logging into the Egeria react UI, you will see tasks at the left hand side of the user interface including the glossary author task.
