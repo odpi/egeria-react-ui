@@ -66,7 +66,7 @@ pressing create will show a screen like :
 
 ## Quick terms
 - The quick term screen looks like this:
- <img src="initialquickterms.png" alt="initial quick terms"  width="400px" height="400px" /> 
+ <img src="initialquickterms.png" alt="initial quick terms"  width="300px" height="100px" /> 
 - Press the + button to add extra rows
  <img src="quicktermswithblankrows.png" alt="quick terms with blank rows"  width="400px" height="300px" />
 - fillin the name and description in the rows
