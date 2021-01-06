@@ -48,7 +48,7 @@ export default function ServerServicesDisplay(props) {
     }
 
     if (requestService) {
-      resourcesContext.loadService(serverInstanceName, serviceName);
+      resourcesContext.loadService(serviceCat, serverInstanceName, serviceName, true);
     }
   };
 
@@ -56,8 +56,12 @@ export default function ServerServicesDisplay(props) {
     let formattedService = null;
     switch (serviceCat) {
 
-      case "Integration":
+      case "IntegrationService":
         formattedService = formatIntegrationService(service);
+        break;
+
+      case "AccessService":
+        formattedService = formatAccessService(service);
         break;
 
       default:
@@ -68,6 +72,19 @@ export default function ServerServicesDisplay(props) {
   };
 
   const formatIntegrationService = (svc) => {
+    return (
+      <div>
+        <ul>
+          <li className="details-sublist-item">Name : {svc.serviceName ? svc.serviceName : <i>blank</i>}</li>
+           <li className="details-sublist-item">Description : {svc.serviceDescription ? svc.serviceDescription : <i>blank</i>}</li>
+           <li className="details-sublist-item">URL Marker : {svc.serviceURLMarker ? svc.serviceURLMarker : <i>blank</i>}</li>
+          <li className="details-sublist-item">Wiki : {svc.serviceWiki ? svc.serviceWiki : <i>blank</i>}</li>
+         </ul>
+      </div>
+    );
+  }
+
+  const formatAccessService = (svc) => {
     return (
       <div>
         <ul>

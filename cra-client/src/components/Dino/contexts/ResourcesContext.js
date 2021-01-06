@@ -163,6 +163,15 @@ const ResourcesContextProvider = (props) => {
     return guid;
   }
 
+  const genServerServiceGUID = (edgeName) => {
+    let guid = "SERVER_SERVICE_"+edgeName;
+    return guid;
+  };
+
+  const genServiceDependencyGUID = (edgeName) => {
+    let guid = "SERVICE_DEPENDENCY"+edgeName;
+    return guid;
+  };
 
 
   /*
@@ -620,15 +629,10 @@ const ResourcesContextProvider = (props) => {
         return;
       }
 
-      let serverInstanceName     = listedServer.serverInstanceName;
-      if (!serverInstanceName) {
-        /* Indicates that the view service does not have a resource endpoint for this
-         * service instance; create a local name for it...
-         */
-        serverInstanceName = serverName+"@"+platformName;
-      }
+
+      let serverInstanceName    = serverName+"@"+platformName;
     
-      let isActive               = listedServer.isActive;
+      let isActive              = listedServer.isActive;
 
       /*
        * A server instance is identified by its serverInstanceGUID
@@ -638,13 +642,14 @@ const ResourcesContextProvider = (props) => {
       /*
        * Build a server instance for the gen
        */
-      let serverInstance          = {};
+      let serverInstance                  = {};
       serverInstance.category             = "server-instance";
       serverInstance.serverInstanceName   = serverInstanceName;
       serverInstance.serverName           = serverName;
       serverInstance.isActive             = isActive;
       serverInstance.platformName         = platformName;
       serverInstance.guid                 = serverInstanceGUID;
+      serverInstance.description          = "Loaded by "+platformName+" platform query";
 
       /*
        * Find out if the server instance already exists.
@@ -887,9 +892,10 @@ const ResourcesContextProvider = (props) => {
 
   const processRetrievedServer = (requestSummary, serverOverview) => {
 
-    let serverInstanceName        = serverOverview.serverInstanceName;
     let platformName              = requestSummary.platformName;
     let serverName                = serverOverview.serverName;
+
+    let serverInstanceName        = serverName +"@"+ platformName;
 
     let update_objects            = {};
     update_objects.resources      = {};
@@ -907,23 +913,26 @@ const ResourcesContextProvider = (props) => {
      * getActiveServers or getKnownServers query.
      */
     
-    let serverInstance                  = {};
-    serverInstance.category              = "server-instance";
-    serverInstance.serverInstanceName    = serverInstanceName;
-    serverInstance.guid                  = serverInstanceGUID;
-    serverInstance.serverName            = serverName;
-    serverInstance.platformName          = platformName;
-    if (serverOverview.description)
-      serverInstance.description         = "Loaded by "+serverOverview.serverInstanceName+" server link. "+serverOverview.description;
-    else
-      serverInstance.description         = "Loaded by "+platformName+" platform query";
-      serverInstance.platformRootURL       = serverOverview.platformRootURL;
-      serverInstance.serverOrigin          = serverOverview.serverOrigin;
-      serverInstance.serverClassification  = serverOverview.serverClassification;
-      serverInstance.cohortDetails         = serverOverview.cohortDetails;
-      serverInstance.serverStatus          = serverOverview.serverStatus;
-      serverInstance.serverServicesList    = serverOverview.serverServicesList;
-      serverInstance.integrationServices   = serverOverview.integrationServices;
+    let serverInstance                     = {};
+    serverInstance.category                = "server-instance";
+    serverInstance.serverInstanceName      = serverInstanceName;
+    serverInstance.guid                    = serverInstanceGUID;
+    serverInstance.serverName              = serverName;
+    serverInstance.platformName            = platformName;
+    if (serverOverview.description) {
+      serverInstance.description           = "Loaded by "+serverOverview.serverInstanceName+" server link. "+serverOverview.description;
+    }
+    else {
+      serverInstance.description           = "Loaded by "+platformName+" platform query";
+    }
+    serverInstance.platformRootURL       = serverOverview.platformRootURL;
+    serverInstance.serverOrigin          = serverOverview.serverOrigin;
+    serverInstance.serverClassification  = serverOverview.serverClassification;
+    serverInstance.cohortDetails         = serverOverview.cohortDetails;
+    serverInstance.serverStatus          = serverOverview.serverStatus;
+    serverInstance.serverServicesList    = serverOverview.serverServicesList;
+    serverInstance.integrationServices   = serverOverview.integrationServices;
+    serverInstance.accessServices        = serverOverview.accessServices;
 
     /*
      * Find out if the server already exists - and if so augment the platform list if the platform is not present.
@@ -1315,28 +1324,59 @@ const ResourcesContextProvider = (props) => {
   /*
    * This function reloads a service that is already in a gen.
    * This is used when a user clicks on a service icon to give it the focus.
+   * As such we want to load it (from the view service) and then make it the focus.
    */
   const loadServiceFromGen = (serviceInstance) => {
-    console.log("loadServiceFromGen - under development");
 
     /*
      * The serviceName field in a RegisteredOMAGService is set by admin services to the service full name
      */
-    let serviceFullName    = serviceInstance.serviceConfig.integrationServiceFullName;
+    let serviceCat = serviceInstance.serviceCat;
+    let serviceFullName;
+    switch (serviceCat) {
+      case "IntegrationService":
+        serviceFullName    = serviceInstance.serviceConfig.integrationServiceFullName;
+        break;
+      case "AccessService":
+        serviceFullName    = serviceInstance.serviceConfig.accessServiceFullName;
+        break;
+    }
     let serverInstanceName = serviceInstance.serverInstanceName;
 
-    loadService(serverInstanceName, serviceFullName);
+    console.log("loadServiceFromGen - will try to load serviceInstance "+serviceFullName);
+
+    loadService(serviceCat, serverInstanceName, serviceFullName, true);  // make the loaded service the new focus
   };
 
 
+  const findServiceInList = (serviceList, serviceFullName) => {
+    for (let i=0; i<serviceList.length; i++) {
+      let svc = serviceList[i];
+      /*
+       * A listed RegisteredOMAGService has serviceName field set to the full name of the service.
+       */
+      if (svc.serviceName === serviceFullName) {
+        /* This is the one */
+        return svc.serviceURLMarker;
+      }
+    }
+    return null;
+  };
+
   /*
-   * The server will NOT AWLAYS be the focus resource.
-   * Use the serverInstanceName to locae the server instance and then from the serverInstance retrieve
+   * Use the serverInstanceName to idntify and locate the server as it will not always be the focus resource.
+   * Use the serverInstanceName to locate the server instance and then from the serverInstance retrieve
    * the serverName and platformName. The serverInstance also has the list(s) of services running on the serverInstance.
    * By locating the service requested in the serviceFullName parameter, it is possible to find
    * the other service details like the service-url-marker.
+   *
+   * Parameters:
+   * serviceCat         - { "IntegrationService" | "AccessService" | ... } tells context what type of service to expect
+   * serverInstanceName - The name of the specific instance of the server (includes server name and platform name)
+   * serviceFullName    - The FULL name of the service. This is the name returned in a RegisteredOMAGService object
+   * makeFocus          - Whether to make the loaded service the new focus on completion.
    */
-  const loadService = (serverInstanceName, serviceFullName) => {
+  const loadService = (serviceCat, serverInstanceName, serviceFullName, makeFocus) => {
 
     let serverInstanceGUID = genServerInstanceGUID(serverInstanceName);
     let serverInstanceGenId = guidToGenId[serverInstanceGUID];
@@ -1348,39 +1388,55 @@ const ResourcesContextProvider = (props) => {
 
       let genId = guidToGenId[serverInstanceGUID];
       if (genId === null) {
-        console.log("Trouble at mill - the server could not be found in the gens"); // TODO proper error handling
+        alert("Dino loadService function could not locate the server "+serverInstanceName);
         return;
       }
       else {
 
-        let serviceList = serverInstance.integrationServices;
+        /*
+         * Look for the service by full name in the services listed for the serviceCat. We are trying
+         * to find a service that has a matching url-marker because that is what the view service needs.
+         */
+
         let serviceURLMarker = null;
-        let serviceName = null;
-        serviceList.forEach(svc => {
-          /*
-           * A listed RegisteredOMAGService has serviceName field set to the full name of the service.
-           */
-          if (svc.serviceName === serviceFullName) {
-            /* This is the one */
-            serviceURLMarker = svc.serviceURLMarker;  // TODO could break out of loop
-            serviceName = svc.serviceName;
-          }
-        });
+        let viewServiceURL   = null;
+
+        switch (serviceCat) {
+          case "IntegrationService":
+            serviceURLMarker = findServiceInList(serverInstance.integrationServices, serviceFullName);
+            viewServiceURL = "integration-service-details";
+            break;
+
+          case "AccessService":
+            serviceURLMarker = findServiceInList(serverInstance.accessServices, serviceFullName);
+            viewServiceURL = "access-service-details";
+            break;
+
+          default:
+            console.log("loadService: passed unknown serviceCat of "+serviceCat);
+            return;
+        }
+
         if (serviceURLMarker === null) {
           /* Did not find service... bin out */
-          console.log("Service not found - binning out");
+          alert("Dino loadService could not find service "+serviceFullName);
           return;
         }
 
+        let callback;
+        if (makeFocus)
+          callback =  _loadServiceAndFocus;
+        else
+          callback = _loadService;
+
         /* Retrieve the configuration for the service */
-        // TODO might rename URL tail to integration-service-details......
-        requestContext.callPOST("service-instance", serviceName,  "server/"+serverName+"/service-details",
+        requestContext.callPOST("service-instance", serviceFullName,  "server/"+serverName+"/"+viewServiceURL,
           { serverName          : serverName,
             platformName        : platformName,
             serverInstanceName  : serverInstanceName,
             serviceURLMarker    : serviceURLMarker
           },
-          _loadService);
+          callback);
 
       }
     }
@@ -1392,7 +1448,24 @@ const ResourcesContextProvider = (props) => {
         let requestSummary = json.requestSummary;
         let serviceDetails = json.serviceDetails;
         if (requestSummary && serviceDetails) {
-          processRetrievedServiceDetails(requestSummary, serviceDetails);
+          processRetrievedServiceDetails(requestSummary, serviceDetails, false);
+          return;
+        }
+      }
+    }
+    /*
+     * On failure ...
+     */
+    interactionContext.reportFailedOperation("load server",json);
+  };
+
+  const _loadServiceAndFocus = (json) => {
+    if (json) {
+      if (json.relatedHTTPCode === 200 ) {
+        let requestSummary = json.requestSummary;
+        let serviceDetails = json.serviceDetails;
+        if (requestSummary && serviceDetails) {
+          processRetrievedServiceDetails(requestSummary, serviceDetails, true);
           return;
         }
       }
@@ -1405,16 +1478,26 @@ const ResourcesContextProvider = (props) => {
 
 
 
-  // TODO - this function looks generic but actually it only handles integration services.
-  // It needs to be either made general-purpose or replicated with the clones handling the
-  // other types of service.
-  const processRetrievedServiceDetails = (requestSummary, serviceDetails) => {
+  const processRetrievedServiceDetails = (requestSummary, serviceDetails, makeFocus) => {
 
-    console.log("processRetrievedServiceDetails: - under development");
+    // Use the discriminator (serviceCat) to determine the category of the ServiceDetails object.
 
+    let serviceCat = serviceDetails.serviceCat;
 
-    let integrationServiceConfig = serviceDetails.integrationServiceConfig;
-    let serviceName              = integrationServiceConfig.integrationServiceName;
+    let serviceConfig;
+    let serviceName;
+
+    switch (serviceCat) {
+      case "IntegrationService":
+        serviceConfig = serviceDetails.integrationServiceConfig;
+        serviceName   = serviceConfig.integrationServiceFullName;
+        break;
+      case "AccessService":
+        serviceConfig = serviceDetails.accessServiceConfig;
+        serviceName   = serviceConfig.accessServiceFullName;
+        break;
+    }
+
 
     /*
      * Create a service object.
@@ -1423,17 +1506,17 @@ const ResourcesContextProvider = (props) => {
      */
     let serverInstanceName  = requestSummary.serverInstanceName;
     let serverInstanceGUID  = genServerInstanceGUID(serverInstanceName);
-    //let serviceName         = serviceDetails.serviceName;
+
     let serviceInstanceName = serviceName +"@"+ serverInstanceName;
     let serviceInstanceGUID = genServiceInstanceGUID(serviceInstanceName);
 
     let serviceInstance                   = {};
-    //serviceInstance.serviceInstanceName   = serviceInstanceName;  ??
     serviceInstance.guid                  = serviceInstanceGUID;
     serviceInstance.category              = "service-instance";
     serviceInstance.serverInstanceName    = serverInstanceName;
     serviceInstance.serviceName           = serviceName;
-    serviceInstance.serviceConfig         = integrationServiceConfig;
+    serviceInstance.serviceConfig         = serviceConfig;
+    serviceInstance.serviceCat            = serviceCat;
 
 
     /*
@@ -1450,7 +1533,7 @@ const ResourcesContextProvider = (props) => {
      */
 
     let edgeName             = serviceInstanceName;
-    let edgeGUID             = "SERVER_SERVICE_"+edgeName;  // TODO use a gen function
+    let edgeGUID             = genServerServiceGUID(edgeName); // "SERVER_SERVICE_"+edgeName;
 
     let edge                 = {};
     edge.category            = "server-service-edge";
@@ -1480,9 +1563,17 @@ const ResourcesContextProvider = (props) => {
     updateGens(update_objects, requestSummary);
 
     /*
-     * Set the newly added server to be the focus.
+     * Only make the service the focus if the caller requested that.
+     * Focus is applied when the user has clicked on a node in the diagram; it is not applied
+     * wgen a service list entry is merely expanded.
      */
-    setFocus( { category : "service-instance", guid : serviceInstanceGUID } );
+    if (makeFocus) {
+      setFocus( { category : "service-instance", guid : serviceInstanceGUID } );
+    }
+
+    /*
+     * Indicate that the load operation is complete
+     */
     setOperationState( { state:"inactive", name:""} );
 
   }
@@ -1688,31 +1779,32 @@ const ResourcesContextProvider = (props) => {
 
     let correlatedPlatformName = null;
     let augmentedServerInstanceName = null;
+    let serviceInstanceName;
+
     let platformNames = Object.keys(availablePlatforms);
-    platformNames.forEach(platformName => {
+    for (let i=0; i<platformNames.length; i++) {
+      let platformName = platformNames[i];
       let platform = availablePlatforms[platformName];
       if (platform.platformRootURL === partnerOMASServerRootURL) {
-        correlatedPlatformName = platformName;
+        console.log("Found the partner's platformURL of "+partnerOMASServerRootURL+" in availablePlatforms");
+        correlatedPlatformName      = platformName;
         augmentedServerInstanceName = partnerOMASServerName +"@"+ correlatedPlatformName;
-        // TODO should break out of loop
+        serviceInstanceName         = partnerOMASName +"@"+ augmentedServerInstanceName;
+        break;
       }
-    });
-    if (correlatedPlatformName !== null) {
-      console.log("Found the partner's platformURL of "+partnerOMASServerRootURL+" in availablePlatforms");
     }
-    else {
+    if (correlatedPlatformName === null) {
+      /*
+       * The platform/server root URL could not be correlated with an available platform
+       */
       console.log("Did not find the partner's platformURL of "+partnerOMASServerRootURL+" in availablePlatforms");
-    }
-
-    let serviceInstanceName;
-    if (augmentedServerInstanceName !== null) {
-      serviceInstanceName = partnerOMASName +"@"+ augmentedServerInstanceName;
-    }
-    else {
-      console.log("Cannot navigate beyond partner OMAS without additional configured platform resources");
-      // Maybe set an indicator in the service instance that this is the edge of the user's known universe  TODO
+      /*
+       * Provide an indication to the user that this is the edge of the user's known universe
+       */
+      alert("Advisory: It will not be possible to navigate beyond the "+partnerOMASName+" partner OMAS without a configured resource endpoint for the platform running it");
       serviceInstanceName = partnerOMASName +"@"+ partnerOMASServerName;
     }
+
     let serviceInstanceGUID = genServiceInstanceGUID(serviceInstanceName);
 
     let serviceInstance                         = {};
@@ -1722,7 +1814,10 @@ const ResourcesContextProvider = (props) => {
     serviceInstance.platformName                = correlatedPlatformName;  // If null then only have partnerOMASServerRootURL
     serviceInstance.partnerOMASServerRootURL    = partnerOMASServerRootURL;
     serviceInstance.serviceName                 = partnerOMASName;
-    serviceInstance.serviceConfig               = null;   // TODO care needed to not assume a service has config !!
+    /* Do not set more fields than needed - e.g. do not set the serviceConfig to null - it may already be present
+     * in the access service (if in the graph) and should not be removed during the merge that occurs when this
+     * service instance object is merged into the instance already in the gens.
+     */
 
     /*
      * Create a service-dependency relationship from the specified service to the partner service, if we do not
@@ -1737,7 +1832,7 @@ const ResourcesContextProvider = (props) => {
      * Note that the category is set to "service-dependency-edge".
      */
     let edgeName             = sourceServiceInstanceName;
-    let edgeGUID             = "SERVICE_DEPENDENCY"+edgeName;  // TODO use a gen function
+    let edgeGUID             = genServiceDependencyGUID(edgeName);
     let edge                 = {};
     edge.category            = "service-dependency-edge";
     edge.guid                = edgeGUID;

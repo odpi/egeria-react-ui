@@ -383,8 +383,17 @@ export default function ServerDisplay() {
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
                                serverInstanceName={serverDetails.serverInstanceName}
-                               serviceCat="Integration"
+                               serviceCat="IntegrationService"
                                serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
+      </div>
+      <br/>
+
+      <button className="collapsible" onClick={flipSection}> Access Services: </button>
+      <div className="content">
+        <ServerServicesDisplay serverName={serverDetails.serverName}
+                               serverInstanceName={serverDetails.serverInstanceName}
+                               serviceCat="AccessService"
+                               serviceList={serverDetails.accessServices}></ServerServicesDisplay>
       </div>
       <br/>
 
