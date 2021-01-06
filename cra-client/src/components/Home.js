@@ -18,10 +18,9 @@ export default function Home() {
           <div class="flip-box-back">
             <div class="center-400-container">
               <div class="center-400-content">
-                <p>
-                  A persona based user interface to work with Egeria solutions
-                  and ecosytems.
-                </p>
+                <h1>
+                  Community profile home screen coming soon.
+                </h1>
               </div>
             </div>
           </div>
