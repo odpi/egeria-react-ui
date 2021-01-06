@@ -382,7 +382,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> Integration Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
-                               serverInstanceName={serverDetails.serverInstanceName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
                                serviceCat="IntegrationService"
                                serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
       </div>
@@ -391,7 +391,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> Access Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
-                               serverInstanceName={serverDetails.serverInstanceName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
                                serviceCat="AccessService"
                                serviceList={serverDetails.accessServices}></ServerServicesDisplay>
       </div>

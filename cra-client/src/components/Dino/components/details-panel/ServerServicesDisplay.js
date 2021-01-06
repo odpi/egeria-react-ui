@@ -15,7 +15,7 @@ export default function ServerServicesDisplay(props) {
   const resourcesContext = useContext(ResourcesContext);
 
   const inServices  = props.serviceList;
-  const serverInstanceName  = props.serverInstanceName;
+  const qualifiedServerName  = props.qualifiedServerName;
   const serviceCat  = props.serviceCat;
 
   let outServices;
@@ -48,7 +48,7 @@ export default function ServerServicesDisplay(props) {
     }
 
     if (requestService) {
-      resourcesContext.loadService(serviceCat, serverInstanceName, serviceName, true);
+      resourcesContext.loadService(serviceCat, qualifiedServerName, serviceName, true);
     }
   };
 
@@ -158,8 +158,8 @@ export default function ServerServicesDisplay(props) {
 }
 
 ServerServicesDisplay.propTypes = {
-  serverName : PropTypes.string,
-  serverInstanceName : PropTypes.string,
-  serviceList: PropTypes.array,
-  serviceCat : PropTypes.string
+  serverName          : PropTypes.string,
+  qualifiedServerName : PropTypes.string,
+  serviceList         : PropTypes.array,
+  serviceCat          : PropTypes.string
 };

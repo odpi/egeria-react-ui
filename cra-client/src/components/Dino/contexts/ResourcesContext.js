@@ -138,8 +138,8 @@ const ResourcesContextProvider = (props) => {
     return guid;
   }
 
-  const genServerInstanceGUID = (serverInstanceName) => {
-    let guid = "SERVER_INSTANCE_"+serverInstanceName;
+  const genServerInstanceGUID = (qualifiedServerName) => {
+    let guid = "SERVER_INSTANCE_"+qualifiedServerName;
     return guid;
   }
 
@@ -526,8 +526,10 @@ const ResourcesContextProvider = (props) => {
   const loadServerFromSelector = (serverName, platformName, serverInstanceName, description) => {
     setOperationState({state:"loading", name: serverName});
     requestContext.callPOST("server-instance", serverName,  "server/"+serverName,
-      { serverName : serverName, platformName : platformName,
-        serverInstanceName : serverInstanceName , description : description
+      { serverName         : serverName,
+        platformName       : platformName,
+        serverInstanceName : serverInstanceName,  // serverInstanceName is used as a correlator if set
+        description        : description
       }, _loadServer);
   }
 
@@ -539,7 +541,7 @@ const ResourcesContextProvider = (props) => {
      * been discovered through cohort membership and we do not know a platform that hosts it)
      */
     if (!platformName) {
-      alert("There is no platform specified for server "+server.serverInstanceName+" so details cannot be retrieved.");
+      alert("There is no platform specified for server "+server.qualfiiedServerName+" so details cannot be retrieved.");
       return;
     }
     else {
@@ -550,9 +552,10 @@ const ResourcesContextProvider = (props) => {
 
   const loadServer = (serverInstanceName, serverName, platformName) => {
     requestContext.callPOST("server-instance", serverName,  "server/"+serverName,
-      { serverInstanceName : serverInstanceName,
-        serverName : serverName,
-        platformName : platformName }, _loadServer);
+      { serverInstanceName : serverInstanceName,  // serverInstanceName is used as a correlator if set
+        serverName         : serverName,
+        platformName       : platformName
+      }, _loadServer);
   };
 
   const _loadServer = (json) => {
@@ -576,7 +579,7 @@ const ResourcesContextProvider = (props) => {
   /*
    * User has retrieved the active servers for the focus platform.
    * Include the servers in the gens.
-   * The servers are supplied as a list of DinoServerInstance objects - ech of which has the
+   * The servers are supplied as a list of DinoServerInstance objects - each of which has the
    * -- platformName
    * -- serverName
    * -- serverInstanceName (i.e. the name configured in the VS resource endpoints)
@@ -630,21 +633,22 @@ const ResourcesContextProvider = (props) => {
       }
 
 
-      let serverInstanceName    = serverName+"@"+platformName;
+      let qualifiedServerName   = serverName+"@"+platformName;
     
       let isActive              = listedServer.isActive;
 
       /*
        * A server instance is identified by its serverInstanceGUID
        */
-      let serverInstanceGUID       = genServerInstanceGUID(serverInstanceName);
+      let serverInstanceGUID       = genServerInstanceGUID(qualifiedServerName);
 
       /*
        * Build a server instance for the gen
        */
       let serverInstance                  = {};
       serverInstance.category             = "server-instance";
-      serverInstance.serverInstanceName   = serverInstanceName;
+      //serverInstance.serverInstanceName   = serverInstanceName;  TODO clean up
+      serverInstance.qualifiedServerName  = qualifiedServerName;
       serverInstance.serverName           = serverName;
       serverInstance.isActive             = isActive;
       serverInstance.platformName         = platformName;
@@ -661,14 +665,14 @@ const ResourcesContextProvider = (props) => {
         /*
          * This is a new server instance, add it to the graph
          */
-        console.log("add new server instance "+serverInstanceName+" to graph");
+        console.log("add new server instance "+qualifiedServerName+" to graph");
       }
       else {
         /*
          * The server was already known. Check it is up to date compared
          * to the server instance fields just received from the platform.
          */
-        console.log("update existing server instance "+serverInstanceName);
+        console.log("update existing server instance "+qualifiedServerName);
       }
 
       update_objects.resources[serverInstanceGUID] = serverInstance;
@@ -680,14 +684,14 @@ const ResourcesContextProvider = (props) => {
        * server instance. Note that the category is different.
        */
 
-      let edgeName                       = serverInstanceName;
+      let edgeName                       = qualifiedServerName;
       let edgeGUID                       = genPlatformServerEdgeGUID(edgeName);
 
       let edge                           = {};
       edge.category                      = "platform-server-edge";
-      edge.serverInstanceName            = edgeName;
+      // edge.serverInstanceName            = edgeName;  // this is the resource endpoint/display label TODO clean up
+      edge.qualifiedServerName           = qualifiedServerName;
       edge.guid                          = edgeGUID;
-      edge.serverInstanceName            = serverInstanceName;
       edge.serverName                    = serverName;
       edge.platformName                  = platformName;
 
@@ -790,7 +794,7 @@ const ResourcesContextProvider = (props) => {
             break;
 
           case "server-instance":
-            setOperationState({state:"loading", name: resource.serverInstanceName});
+            setOperationState({state:"loading", name: resource.qualifiedServerName});
             loadServerFromGen(resource);
             break;
               
@@ -842,7 +846,7 @@ const ResourcesContextProvider = (props) => {
        * Retrieve the server and make it the new focus 
        */
       setOperationState({state:"loading", name: tgt.serverName});
-      loadServer(tgt.serverInstanceName, tgt.serverName, src.platformName);
+      loadServer(tgt.qualifiedServerName, tgt.serverName, src.platformName);
     }
     else {
       /*
@@ -895,7 +899,7 @@ const ResourcesContextProvider = (props) => {
     let platformName              = requestSummary.platformName;
     let serverName                = serverOverview.serverName;
 
-    let serverInstanceName        = serverName +"@"+ platformName;
+    let qualifiedServerName       = serverName +"@"+ platformName;
 
     let update_objects            = {};
     update_objects.resources      = {};
@@ -906,7 +910,7 @@ const ResourcesContextProvider = (props) => {
      * Generate the GUID for the server instance.
      */
   
-    let serverInstanceGUID = genServerInstanceGUID(serverInstanceName);
+    let serverInstanceGUID = genServerInstanceGUID(qualifiedServerName);
 
     /*
      * Create a server object - same as if the server was returned by a platform 
@@ -915,7 +919,8 @@ const ResourcesContextProvider = (props) => {
     
     let serverInstance                     = {};
     serverInstance.category                = "server-instance";
-    serverInstance.serverInstanceName      = serverInstanceName;
+    //serverInstance.serverInstanceName      = serverOverview.serverInstanceName; // TODO clean up
+    serverInstance.qualifiedServerName     = qualifiedServerName;
     serverInstance.guid                    = serverInstanceGUID;
     serverInstance.serverName              = serverName;
     serverInstance.platformName            = platformName;
@@ -961,7 +966,8 @@ const ResourcesContextProvider = (props) => {
       edge.category                      = "platform-server-edge";
       edge.edgeName                      = edgeName;
       edge.guid                          = edgeGUID;
-      edge.serverInstanceName            = serverInstanceName;
+      //edge.serverInstanceName            = serverInstanceName; // this is the resource endpoint/display label TODO clean up
+      edge.qualifiedServerName           = qualifiedServerName;
       edge.serverName                    = serverName;
       edge.platformName                  = platformName;
 
@@ -1341,11 +1347,11 @@ const ResourcesContextProvider = (props) => {
         serviceFullName    = serviceInstance.serviceConfig.accessServiceFullName;
         break;
     }
-    let serverInstanceName = serviceInstance.serverInstanceName;
+    let qualifiedServerName = serviceInstance.qualifiedServerName;
 
     console.log("loadServiceFromGen - will try to load serviceInstance "+serviceFullName);
 
-    loadService(serviceCat, serverInstanceName, serviceFullName, true);  // make the loaded service the new focus
+    loadService(serviceCat, qualifiedServerName, serviceFullName, true);  // make the loaded service the new focus
   };
 
 
@@ -1364,21 +1370,21 @@ const ResourcesContextProvider = (props) => {
   };
 
   /*
-   * Use the serverInstanceName to idntify and locate the server as it will not always be the focus resource.
-   * Use the serverInstanceName to locate the server instance and then from the serverInstance retrieve
+   * Use the qualifiedServerName to idntify and locate the server as it will not always be the focus resource.
+   * Use the qualifiedServerName to locate the server instance and then from the serverInstance retrieve
    * the serverName and platformName. The serverInstance also has the list(s) of services running on the serverInstance.
    * By locating the service requested in the serviceFullName parameter, it is possible to find
    * the other service details like the service-url-marker.
    *
    * Parameters:
    * serviceCat         - { "IntegrationService" | "AccessService" | ... } tells context what type of service to expect
-   * serverInstanceName - The name of the specific instance of the server (includes server name and platform name)
+   * qualifiedServerName - The name of the specific instance of the server (includes server name and platform name)
    * serviceFullName    - The FULL name of the service. This is the name returned in a RegisteredOMAGService object
    * makeFocus          - Whether to make the loaded service the new focus on completion.
    */
-  const loadService = (serviceCat, serverInstanceName, serviceFullName, makeFocus) => {
+  const loadService = (serviceCat, qualifiedServerName, serviceFullName, makeFocus) => {
 
-    let serverInstanceGUID = genServerInstanceGUID(serverInstanceName);
+    let serverInstanceGUID = genServerInstanceGUID(qualifiedServerName);
     let serverInstanceGenId = guidToGenId[serverInstanceGUID];
     let serverInstanceGen = gens[serverInstanceGenId-1];
     if (serverInstanceGen) {
@@ -1388,7 +1394,7 @@ const ResourcesContextProvider = (props) => {
 
       let genId = guidToGenId[serverInstanceGUID];
       if (genId === null) {
-        alert("Dino loadService function could not locate the server "+serverInstanceName);
+        alert("Dino loadService function could not locate the server "+qualifiedServerName);
         return;
       }
       else {
@@ -1433,7 +1439,7 @@ const ResourcesContextProvider = (props) => {
         requestContext.callPOST("service-instance", serviceFullName,  "server/"+serverName+"/"+viewServiceURL,
           { serverName          : serverName,
             platformName        : platformName,
-            serverInstanceName  : serverInstanceName,
+            serverInstanceName  : qualifiedServerName,  // optional, used as a correlator
             serviceURLMarker    : serviceURLMarker
           },
           callback);
@@ -1504,16 +1510,17 @@ const ResourcesContextProvider = (props) => {
      * Need to uniquely identify this instance of the service so concatenate
      * the service name and servver instance name.
      */
-    let serverInstanceName  = requestSummary.serverInstanceName;
-    let serverInstanceGUID  = genServerInstanceGUID(serverInstanceName);
+    let qualifiedServerName  = requestSummary.serverInstanceName;           // should really rename request field TODO
+    let serverInstanceGUID  = genServerInstanceGUID(qualifiedServerName);
 
-    let serviceInstanceName = serviceName +"@"+ serverInstanceName;
+    let serviceInstanceName = serviceName +"@"+ qualifiedServerName;
     let serviceInstanceGUID = genServiceInstanceGUID(serviceInstanceName);
 
     let serviceInstance                   = {};
     serviceInstance.guid                  = serviceInstanceGUID;
     serviceInstance.category              = "service-instance";
-    serviceInstance.serverInstanceName    = serverInstanceName;
+    //serviceInstance.serverInstanceName    = serverInstanceName;  // TODO clean up
+    serviceInstance.qualifiedServerName   = qualifiedServerName;
     serviceInstance.serviceName           = serviceName;
     serviceInstance.serviceConfig         = serviceConfig;
     serviceInstance.serviceCat            = serviceCat;
@@ -1539,8 +1546,9 @@ const ResourcesContextProvider = (props) => {
     edge.category            = "server-service-edge";
     edge.serverCohortName    = edgeName;
     edge.guid                = edgeGUID;
-    edge.serverInstanceName  = serverInstanceName;
+    edge.qualifiedServerName = qualifiedServerName;
     edge.serviceInstanceName = serviceInstanceName;
+
     /*
      * Server-Service relationships are always active - this is driven from the active server list.
      */
@@ -1771,14 +1779,14 @@ const ResourcesContextProvider = (props) => {
      * possible then it's OK - it will mean that the user has reached the limit of where
      * they are allowed to explore. If possible advise them that this is the case.
      *
-     * If it is possible to correlate to a platformName then it should be incldued in the serviceInstanceName
-     * (as part of the serverInstanceName) so that this service (which was reached by dependency traversal)
+     * If it is possible to correlate to a platformName then it should be included in the serviceInstanceName
+     * (as part of the qualifiedServerName) so that this service (which was reached by dependency traversal)
      * has the same identity information as a service instance that was reached by expansion (from a server
-     * instance). The latter is given the serverInstanceName as part of its serviceInstanceName.
+     * instance). The latter is given the qualifiedServerName as part of its serviceInstanceName.
      */
 
     let correlatedPlatformName = null;
-    let augmentedServerInstanceName = null;
+    let qualifiedServerName = null;
     let serviceInstanceName;
 
     let platformNames = Object.keys(availablePlatforms);
@@ -1788,8 +1796,8 @@ const ResourcesContextProvider = (props) => {
       if (platform.platformRootURL === partnerOMASServerRootURL) {
         console.log("Found the partner's platformURL of "+partnerOMASServerRootURL+" in availablePlatforms");
         correlatedPlatformName      = platformName;
-        augmentedServerInstanceName = partnerOMASServerName +"@"+ correlatedPlatformName;
-        serviceInstanceName         = partnerOMASName +"@"+ augmentedServerInstanceName;
+        qualifiedServerName         = partnerOMASServerName +"@"+ correlatedPlatformName;
+        serviceInstanceName         = partnerOMASName +"@"+ qualifiedServerName;
         break;
       }
     }
@@ -1814,7 +1822,8 @@ const ResourcesContextProvider = (props) => {
     serviceInstance.platformName                = correlatedPlatformName;  // If null then only have partnerOMASServerRootURL
     serviceInstance.partnerOMASServerRootURL    = partnerOMASServerRootURL;
     serviceInstance.serviceName                 = partnerOMASName;
-    /* Do not set more fields than needed - e.g. do not set the serviceConfig to null - it may already be present
+    /*
+     * Do not set more fields than needed - e.g. do not set the serviceConfig to null - it may already be present
      * in the access service (if in the graph) and should not be removed during the merge that occurs when this
      * service instance object is merged into the instance already in the gens.
      */
