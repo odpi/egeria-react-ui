@@ -18,9 +18,9 @@ export default function Home() {
           <div class="flip-box-back">
             <div class="center-400-container">
               <div class="center-400-content">
-                <h1>
+                <h2>
                   Community profile home screen coming soon.
-                </h1>
+                </h2>
               </div>
             </div>
           </div>
