@@ -184,7 +184,7 @@ export default function ServerDisplay() {
       if (platformList.length === 1) {
         let platformName = platformList[0];
 
-        requestContext.callPOST("server", serverName,  "server/"+serverName+"/audit-log", 
+        requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/audit-log",
             { serverName : serverName, platformName : platformName }, _getServerAuditLog);
         setAuditLogStatus("pending");
 
@@ -276,7 +276,7 @@ export default function ServerDisplay() {
 
   let focus = resourcesContext.focus;
   let serverDetails;
-  if (focus.category === "server") {
+  if (focus.category === "server-instance") {
     serverDetails = resourcesContext.getFocusServer();
     if (!serverDetails) {
       return null;
@@ -381,13 +381,35 @@ export default function ServerDisplay() {
 
       <button className="collapsible" onClick={flipSection}> Integration Services: </button>
       <div className="content">
-        <ServerServicesDisplay serverName={serverDetails.serverName} serviceCat="Integration" serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
+        <ServerServicesDisplay serverName={serverDetails.serverName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
+                               serviceCat="IntegrationService"
+                               serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
+      </div>
+      <br/>
+
+      <button className="collapsible" onClick={flipSection}> Access Services: </button>
+      <div className="content">
+        <ServerServicesDisplay serverName={serverDetails.serverName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
+                               serviceCat="AccessService"
+                               serviceList={serverDetails.accessServices}></ServerServicesDisplay>
+      </div>
+      <br/>
+
+      <button className="collapsible" onClick={flipSection}> View Services: </button>
+      <div className="content">
+        <ServerServicesDisplay serverName={serverDetails.serverName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
+                               serviceCat="ViewService"
+                               serviceList={serverDetails.viewServices}></ServerServicesDisplay>
       </div>
       <br/>
 
       <button className="collapsible" onClick={flipSection}> Cohorts: </button>
       <div className="content">
-        <ServerCohortsDisplay serverName={serverDetails.serverName} cohortDetails={serverDetails.cohortDetails}></ServerCohortsDisplay>
+        <ServerCohortsDisplay serverName={serverDetails.serverName}
+                              cohortDetails={serverDetails.cohortDetails}></ServerCohortsDisplay>
       </div>
       <br/>
 

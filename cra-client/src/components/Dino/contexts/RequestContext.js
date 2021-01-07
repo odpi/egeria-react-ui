@@ -33,7 +33,7 @@ const RequestContextProvider = (props) => {
 
   /*
    * Define the basic body parameters that are common to requests to the platform or server
-   * resourceCategory is either "platform" or "server"
+   * resourceCategory is either "platform" or "server-instance"
    */
  
   const buildBaseBody = (resourceCategory, resourceName) => {
@@ -48,16 +48,21 @@ const RequestContextProvider = (props) => {
     }
     if (resourceCategory === "platform" ) {
       const base = {
-        platformName     : resourceName};
+        platformName    : resourceName};
       return base;
     }
-    else if (resourceCategory === "server") {
+    else if (resourceCategory === "server-instance") {
       const base = {
-        serverName     : resourceName};
+        serverName      : resourceName};
+      return base;
+    }
+    else if (resourceCategory === "service-instance") {
+      const base = {
+        serviceName     : resourceName};
       return base;
     }
     else {
-      alert("The resource category was neither server nor platform - please retry");
+      alert("The resource category was neither server-instance nor platform - please retry");
       return null;
     }
       

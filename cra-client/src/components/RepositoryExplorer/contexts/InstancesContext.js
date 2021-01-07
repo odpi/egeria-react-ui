@@ -509,11 +509,15 @@ const InstancesContextProvider = (props) => {
        * Anything new can remain and should be assigned the next gen.
        */
       const entities = rexTraversal.entities;
-      const eKeys = Object.keys(entities);
-      eKeys.forEach(eKey => {
-          const entity = entities[eKey];        
+      if (entities) {
 
+        const eKeys = Object.keys(entities);
+
+        eKeys.forEach(eKey => {
+
+          const entity = entities[eKey];
           const entityGUID = entity.entityGUID;
+
           /*
            * Determine whether entity is already known ...
            */
@@ -533,8 +537,8 @@ const InstancesContextProvider = (props) => {
                */
               rexTraversal.entities[entityGUID].gen = genId;
           }
-      });
-
+        });
+      }
 
       /*
        * Process relationships...
@@ -544,11 +548,14 @@ const InstancesContextProvider = (props) => {
        * Anything new can remain and should be assigned the next gen.
        */
       const relationships = rexTraversal.relationships;
-      const rKeys = Object.keys(relationships);
-      rKeys.forEach(rKey => {
-        const relationship = relationships[rKey];
+      if (relationships) {
 
-        const relationshipGUID = relationship.relationshipGUID;
+        const rKeys = Object.keys(relationships);
+
+        rKeys.forEach(rKey => {
+
+          const relationship = relationships[rKey];
+          const relationshipGUID = relationship.relationshipGUID;
 
           /*
            * Determine whether relationship is already known ...
@@ -570,8 +577,8 @@ const InstancesContextProvider = (props) => {
                */
               rexTraversal.relationships[relationshipGUID].gen = genId;
           }
-      });
-
+        });
+      }
 
       /*
        * If there is anything new still in the traversal,
