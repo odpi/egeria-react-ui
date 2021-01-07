@@ -15,7 +15,7 @@ export default function ServerServicesDisplay(props) {
   const resourcesContext = useContext(ResourcesContext);
 
   const inServices  = props.serviceList;
-  const serverName  = props.serverName;
+  const qualifiedServerName  = props.qualifiedServerName;
   const serviceCat  = props.serviceCat;
 
   let outServices;
@@ -48,17 +48,24 @@ export default function ServerServicesDisplay(props) {
     }
 
     if (requestService) {
-      resourcesContext.loadService(serverName, serviceName);
+      resourcesContext.loadService(serviceCat, qualifiedServerName, serviceName, true);
     }
-
   };
 
   const formatService = (service) => {
     let formattedService = null;
     switch (serviceCat) {
 
-      case "Integration":
+      case "IntegrationService":
         formattedService = formatIntegrationService(service);
+        break;
+
+      case "AccessService":
+        formattedService = formatAccessService(service);
+        break;
+
+      case "ViewService":
+        formattedService = formatViewService(service);
         break;
 
       default:
@@ -81,6 +88,32 @@ export default function ServerServicesDisplay(props) {
     );
   }
 
+  const formatAccessService = (svc) => {
+    return (
+      <div>
+        <ul>
+          <li className="details-sublist-item">Name : {svc.serviceName ? svc.serviceName : <i>blank</i>}</li>
+           <li className="details-sublist-item">Description : {svc.serviceDescription ? svc.serviceDescription : <i>blank</i>}</li>
+           <li className="details-sublist-item">URL Marker : {svc.serviceURLMarker ? svc.serviceURLMarker : <i>blank</i>}</li>
+          <li className="details-sublist-item">Wiki : {svc.serviceWiki ? svc.serviceWiki : <i>blank</i>}</li>
+         </ul>
+      </div>
+    );
+  }
+
+
+  const formatViewService = (svc) => {
+    return (
+      <div>
+        <ul>
+          <li className="details-sublist-item">Name : {svc.serviceName ? svc.serviceName : <i>blank</i>}</li>
+           <li className="details-sublist-item">Description : {svc.serviceDescription ? svc.serviceDescription : <i>blank</i>}</li>
+           <li className="details-sublist-item">URL Marker : {svc.serviceURLMarker ? svc.serviceURLMarker : <i>blank</i>}</li>
+          <li className="details-sublist-item">Wiki : {svc.serviceWiki ? svc.serviceWiki : <i>blank</i>}</li>
+         </ul>
+      </div>
+    );
+  }
 
   const expandServices = (inServices) => {
     let serviceList;
@@ -142,7 +175,8 @@ export default function ServerServicesDisplay(props) {
 }
 
 ServerServicesDisplay.propTypes = {
-  serverName : PropTypes.string,
-  serviceList: PropTypes.array,
-  serviceCat : PropTypes.string
+  serverName          : PropTypes.string,
+  qualifiedServerName : PropTypes.string,
+  serviceList         : PropTypes.array,
+  serviceCat          : PropTypes.string
 };

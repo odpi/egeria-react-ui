@@ -301,7 +301,7 @@ export default function TopologyDiagram(props) {
            */
           switch (d.category) {
             case "platform":
-            case "server":
+            case "server-instance":
               menuItems = nonFocusMenuItems;
               createMenu = true;
               break;
@@ -319,7 +319,7 @@ export default function TopologyDiagram(props) {
               menuItems = platformMenuItems;
               createMenu = true;
               break;
-            case "server":
+            case "server-instance":
               menuItems = serverMenuItems;
               createMenu = true;
               break;
@@ -526,13 +526,13 @@ export default function TopologyDiagram(props) {
         case "platform":
           return PlatformImage;
 
-        case "server":
+        case "server-instance":
           return ServerImage;
 
         case "cohort":
           return CohortImage;
 
-        case "service":
+        case "service-instance":
           return ServiceImage;
 
         default:

@@ -101,7 +101,7 @@ export default function PlatformDisplay() {
       </button>
       <button className="server-control-button"
               onClick = { () => getKnownServers(platformDetails.guid) }  >
-          Get All Servers
+          Get Known Servers
       </button>
       </div>
 

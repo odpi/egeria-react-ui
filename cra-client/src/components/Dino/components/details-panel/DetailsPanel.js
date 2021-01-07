@@ -9,6 +9,8 @@ import PlatformDisplay                     from "./PlatformDisplay"
 
 import ServerDisplay                       from "./ServerDisplay"
 
+import ServiceDisplay                      from "./ServiceDisplay"
+
 import "./details-panel.scss";
 
 
@@ -28,12 +30,16 @@ export default function DetailsPanel() {
         resourcesContext.operationState.state === "loading" && displayLoadingMessage(resourcesContext.operationState.name)
       }
       {
-        resourcesContext.operationState.state === "inactive" && resourcesContext.focus.category === "server" &&
+        resourcesContext.operationState.state === "inactive" && resourcesContext.focus.category === "server-instance" &&
           (<ServerDisplay />)
       }
       {
         resourcesContext.operationState.state === "inactive" && resourcesContext.focus.category === "platform" &&
           (<PlatformDisplay />)
+      }
+      {
+        resourcesContext.operationState.state === "inactive" && resourcesContext.focus.category === "service-instance" &&
+          (<ServiceDisplay />)
       }
     </div>
   );

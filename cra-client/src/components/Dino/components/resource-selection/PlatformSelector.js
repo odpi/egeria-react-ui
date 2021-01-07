@@ -33,12 +33,15 @@ export default function PlatformSelector() {
   const [platformsLoaded, setPlatformsLoaded] = useState(false);
 
   /*
-   * availablePlatforms is a list of names of the platforms to which requests can be sent.
-   * This list comes from the view-service on initialisation.
-   * If the configuration of the V-S is changed, refresh the page - or we could provide a
-   * list refresh capability behind a button. 
+   * The set of platforms that have configured resource endpoints are loaded into the
+   * resourcesContext availablePlatforms map.
+   * The map is stored in the resourcesContext so that it is possible for the resources context
+   * to correlate a serverRootURL (e.g. for a partnerOMAS) with a particular platformName. The
+   * platformName is essential if Dino is going to be able to navigate further than the partner
+   * service - it will need the platform name not the root URL in order to proceed.
    */
-  const [availablePlatforms, setAvailablePlatforms]       = useState({});
+
+
 
   /*
    * Populate the available platform list by retrieving the permitted platform names 
@@ -61,7 +64,7 @@ export default function PlatformSelector() {
                                   "platformRootURL" : plt.resourceRootURL  };
             newPlatforms[plt.platformName] = newPlatform;
           });
-          setAvailablePlatforms(newPlatforms);
+          resourcesContext.setAvailablePlatforms(newPlatforms);
           return;
         }
       }
@@ -173,7 +176,7 @@ export default function PlatformSelector() {
   )
   
  
-  const platformNameList = Object.keys(availablePlatforms);
+  const platformNameList = Object.keys(resourcesContext.availablePlatforms);
   const platformNameListSorted = platformNameList.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
