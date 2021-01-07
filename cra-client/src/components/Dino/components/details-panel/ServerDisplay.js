@@ -397,6 +397,15 @@ export default function ServerDisplay() {
       </div>
       <br/>
 
+      <button className="collapsible" onClick={flipSection}> View Services: </button>
+      <div className="content">
+        <ServerServicesDisplay serverName={serverDetails.serverName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
+                               serviceCat="ViewService"
+                               serviceList={serverDetails.viewServices}></ServerServicesDisplay>
+      </div>
+      <br/>
+
       <button className="collapsible" onClick={flipSection}> Cohorts: </button>
       <div className="content">
         <ServerCohortsDisplay serverName={serverDetails.serverName}

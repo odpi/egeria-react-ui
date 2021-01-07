@@ -64,6 +64,10 @@ export default function ServerServicesDisplay(props) {
         formattedService = formatAccessService(service);
         break;
 
+      case "ViewService":
+        formattedService = formatViewService(service);
+        break;
+
       default:
         console.log("formatService: does not yet support this type of service!");
         break;
@@ -97,6 +101,19 @@ export default function ServerServicesDisplay(props) {
     );
   }
 
+
+  const formatViewService = (svc) => {
+    return (
+      <div>
+        <ul>
+          <li className="details-sublist-item">Name : {svc.serviceName ? svc.serviceName : <i>blank</i>}</li>
+           <li className="details-sublist-item">Description : {svc.serviceDescription ? svc.serviceDescription : <i>blank</i>}</li>
+           <li className="details-sublist-item">URL Marker : {svc.serviceURLMarker ? svc.serviceURLMarker : <i>blank</i>}</li>
+          <li className="details-sublist-item">Wiki : {svc.serviceWiki ? svc.serviceWiki : <i>blank</i>}</li>
+         </ul>
+      </div>
+    );
+  }
 
   const expandServices = (inServices) => {
     let serviceList;

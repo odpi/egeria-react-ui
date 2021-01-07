@@ -9,6 +9,8 @@ import IntegrationServiceDisplay               from "./IntegrationServiceDisplay
 
 import AccessServiceDisplay                    from "./AccessServiceDisplay";
 
+import ViewServiceDisplay                      from "./ViewServiceDisplay";
+
 import "./details-panel.scss";
 
 
@@ -44,6 +46,9 @@ export default function ServiceDisplay() {
       </div>
       <div>
         { (serviceCat === "AccessService") && <AccessServiceDisplay/> }
+      </div>
+      <div>
+        { (serviceCat === "ViewService") && <ViewServiceDisplay/> }
       </div>
 
     </div>

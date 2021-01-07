@@ -938,6 +938,7 @@ const ResourcesContextProvider = (props) => {
     serverInstance.serverServicesList    = serverOverview.serverServicesList;
     serverInstance.integrationServices   = serverOverview.integrationServices;
     serverInstance.accessServices        = serverOverview.accessServices;
+    serverInstance.viewServices          = serverOverview.viewServices;
 
     /*
      * Find out if the server already exists - and if so augment the platform list if the platform is not present.
@@ -1344,7 +1345,24 @@ const ResourcesContextProvider = (props) => {
         serviceFullName    = serviceInstance.serviceConfig.integrationServiceFullName;
         break;
       case "AccessService":
-        serviceFullName    = serviceInstance.serviceConfig.accessServiceFullName;
+        /*
+         * Need to be slightly guarded with an access service. It could have been loaded
+         * from a partnerOMAS link and hence will not necessarily have any config (that
+         * is only present when Dino has retrieved the service configuration from the
+         * server running the service). So, if there is no config, use the serviceName
+         * field instead - in loadPartnerOMAS it will have been initialised with the
+         * full service name derived from the configuration of the service to whom it is
+         * a partner (e.g. an integration service's configuration).
+         */
+        if (serviceInstance.serviceConfig) {
+          serviceFullName    = serviceInstance.serviceConfig.accessServiceFullName;
+        }
+        else {
+          serviceFullName    = serviceInstance.serviceName;
+        }
+        break;
+      case "ViewService":
+        serviceFullName    = serviceInstance.serviceConfig.viewServiceFullName;
         break;
     }
     let qualifiedServerName = serviceInstance.qualifiedServerName;
@@ -1370,11 +1388,14 @@ const ResourcesContextProvider = (props) => {
   };
 
   /*
-   * Use the qualifiedServerName to idntify and locate the server as it will not always be the focus resource.
+   * Use the qualifiedServerName to identify and locate the server as it will not always be the focus resource.
    * Use the qualifiedServerName to locate the server instance and then from the serverInstance retrieve
    * the serverName and platformName. The serverInstance also has the list(s) of services running on the serverInstance.
    * By locating the service requested in the serviceFullName parameter, it is possible to find
    * the other service details like the service-url-marker.
+   *
+   * A (partner) access service may have been loaded before the server that is running it. The function therefore
+   * checks for existence of the server (in the graph) and behaves accordingly.
    *
    * Parameters:
    * serviceCat         - { "IntegrationService" | "AccessService" | ... } tells context what type of service to expect
@@ -1386,66 +1407,110 @@ const ResourcesContextProvider = (props) => {
 
     let serverInstanceGUID = genServerInstanceGUID(qualifiedServerName);
     let serverInstanceGenId = guidToGenId[serverInstanceGUID];
-    let serverInstanceGen = gens[serverInstanceGenId-1];
-    if (serverInstanceGen) {
-      let serverInstance = serverInstanceGen.resources[serverInstanceGUID];
-      let serverName   = serverInstance.serverName;
-      let platformName = serverInstance.platformName;
 
-      let genId = guidToGenId[serverInstanceGUID];
-      if (genId === null) {
-        alert("Dino loadService function could not locate the server "+qualifiedServerName);
+
+    let serviceURLMarker = null;
+    let viewServiceURL   = null;
+    let serverName       = null;
+    let platformName     = null;
+
+    if (!serverInstanceGenId) {
+
+       /*
+       * Server not yet loaded so could not be found in gens
+       */
+
+      /*
+       * Tokenize the qualifiedServerName - TODO - not terribly keen on this; might be better to include these
+       * as separate fields in the service instance. It will have been added to the gens so you could
+       * concatenate its full name with the qSN and construct its serviceInstanceGUID. and hence find it.
+       * It would then privide direct access to these fields without needing to rely on absence of '@'
+       * characters in the server and platform names, or other more complex encoding schemes.
+       */
+      let tokens = qualifiedServerName.split("@");
+      serverName   = tokens[0];
+      platformName = tokens[1];
+
+      /*
+       * We do not have access to the serviceURLMarker. For an access service it is optional (in the
+       * view service's method for retrieval of access-service-details).
+       */
+      serviceURLMarker = "Unknown for parnerOMAS";
+      viewServiceURL = "access-service-details";
+
+    }
+    else {
+
+      /*
+       * Server already loaded and found in gens
+       */
+
+      let serverInstanceGen = gens[serverInstanceGenId-1];
+      let serverInstance = serverInstanceGen.resources[serverInstanceGUID];
+      serverName   = serverInstance.serverName;
+      platformName = serverInstance.platformName;
+
+
+
+
+      /*
+       * Look for the service by full name in the services listed for the serviceCat. We are trying
+       * to find a service that has a matching url-marker because that is what the view service needs.
+       * TODO - might be able to relax this now - for an access service the VS can use serviceFullName
+       * but note that this is not shared across the other service categories. It could be - it is just
+       * a matter of adding it to those categories in the view service.
+       */
+
+      switch (serviceCat) {
+        case "IntegrationService":
+          serviceURLMarker = findServiceInList(serverInstance.integrationServices, serviceFullName);
+          viewServiceURL = "integration-service-details";
+          break;
+
+        case "AccessService":
+          if (serverInstance.accessServices) {
+            serviceURLMarker = findServiceInList(serverInstance.accessServices, serviceFullName);
+          }
+          else {
+            serviceURLMarker = "Unknown for server only represented by a server overview";
+          }
+
+          viewServiceURL = "access-service-details";
+          break;
+
+        case "ViewService":
+          serviceURLMarker = findServiceInList(serverInstance.viewServices, serviceFullName);
+          viewServiceURL = "view-service-details";
+          break;
+
+        default:
+          console.log("loadService: passed unknown serviceCat of "+serviceCat);
+          return;
+      }
+
+      if (serviceURLMarker === null) {
+        /* Did not find service... bin out */
+        alert("Dino loadService could not find service "+serviceFullName);
         return;
       }
-      else {
-
-        /*
-         * Look for the service by full name in the services listed for the serviceCat. We are trying
-         * to find a service that has a matching url-marker because that is what the view service needs.
-         */
-
-        let serviceURLMarker = null;
-        let viewServiceURL   = null;
-
-        switch (serviceCat) {
-          case "IntegrationService":
-            serviceURLMarker = findServiceInList(serverInstance.integrationServices, serviceFullName);
-            viewServiceURL = "integration-service-details";
-            break;
-
-          case "AccessService":
-            serviceURLMarker = findServiceInList(serverInstance.accessServices, serviceFullName);
-            viewServiceURL = "access-service-details";
-            break;
-
-          default:
-            console.log("loadService: passed unknown serviceCat of "+serviceCat);
-            return;
-        }
-
-        if (serviceURLMarker === null) {
-          /* Did not find service... bin out */
-          alert("Dino loadService could not find service "+serviceFullName);
-          return;
-        }
-
-        let callback;
-        if (makeFocus)
-          callback =  _loadServiceAndFocus;
-        else
-          callback = _loadService;
-
-        /* Retrieve the configuration for the service */
-        requestContext.callPOST("service-instance", serviceFullName,  "server/"+serverName+"/"+viewServiceURL,
-          { serverName          : serverName,
-            platformName        : platformName,
-            serverInstanceName  : qualifiedServerName,  // optional, used as a correlator
-            serviceURLMarker    : serviceURLMarker
-          },
-          callback);
-
-      }
     }
+
+    let callback;
+    if (makeFocus)
+      callback =  _loadServiceAndFocus;
+    else
+      callback = _loadService;
+
+    /* Retrieve the configuration for the service */
+    requestContext.callPOST("service-instance", serviceFullName,  "server/"+serverName+"/"+viewServiceURL,
+      { serverName          : serverName,
+        platformName        : platformName,
+        serverInstanceName  : qualifiedServerName,  // optional, used as a correlator
+        serviceFullName     : serviceFullName,
+        serviceURLMarker    : serviceURLMarker
+      },
+      callback);
+
   };
 
   const _loadService = (json) => {
@@ -1502,6 +1567,10 @@ const ResourcesContextProvider = (props) => {
         serviceConfig = serviceDetails.accessServiceConfig;
         serviceName   = serviceConfig.accessServiceFullName;
         break;
+      case "ViewService":
+        serviceConfig = serviceDetails.viewServiceConfig;
+        serviceName   = serviceConfig.viewServiceFullName;
+        break;
     }
 
 
@@ -1510,7 +1579,7 @@ const ResourcesContextProvider = (props) => {
      * Need to uniquely identify this instance of the service so concatenate
      * the service name and servver instance name.
      */
-    let qualifiedServerName  = requestSummary.serverInstanceName;           // should really rename request field TODO
+    let qualifiedServerName  = requestSummary.serverInstanceName;           // could rename request field TODO
     let serverInstanceGUID  = genServerInstanceGUID(qualifiedServerName);
 
     let serviceInstanceName = serviceName +"@"+ qualifiedServerName;
@@ -1527,53 +1596,69 @@ const ResourcesContextProvider = (props) => {
 
 
     /*
-     * Create a relationship from the specified server to the service.  - if we do not already have one
-     * The relationship will need a guid, a source and target and a gen (which is assigned when the
-     * gen is created)
-     */
-
-    /*
-     * Synthesize a relationship from the server instance to this serviceer instance...
-     * This edge should always be 1:1 with the service instance (every service instance
-     * has a server instance that it calls home); so it can share the same name as the
-     * service instance. Note that the category is different.
-     */
-
-    let edgeName             = serviceInstanceName;
-    let edgeGUID             = genServerServiceGUID(edgeName); // "SERVER_SERVICE_"+edgeName;
-
-    let edge                 = {};
-    edge.category            = "server-service-edge";
-    edge.serverCohortName    = edgeName;
-    edge.guid                = edgeGUID;
-    edge.qualifiedServerName = qualifiedServerName;
-    edge.serviceInstanceName = serviceInstanceName;
-
-    /*
-     * Server-Service relationships are always active - this is driven from the active server list.
-     */
-
-    /*
-     * Include graph navigation ids.
-     */
-    edge.source              = serverInstanceGUID;
-    edge.target              = serviceInstanceGUID;
-
-    /*
      * Create a map of the objects to be updated.
      */
     let update_objects                               = {};
     update_objects.resources                         = {};
     update_objects.relationships                     = {};
     update_objects.resources[serviceInstanceGUID]    = serviceInstance;
-    update_objects.relationships[edgeGUID]           = edge;
+
+
+
+    /*
+     * If (and only if) the server hosting the service is already in the gens, create am edge from it
+     * to the service.
+     * If the service is a (partner) OMAS then the server may not have been loaded. If it has, create
+     * an edge, but if it hasn't just leave the OMAS not connected to a hosting server.
+     *
+     * Create a relationship from the specified server to the service.  - if we do not already have one
+     * The relationship will need a guid, a source and target and a gen (which is assigned when the
+     * gen is created)
+     */
+
+    /*
+     * Look for the server...
+     */
+
+    let serverInstanceGenId = guidToGenId[serverInstanceGUID];
+    if (serverInstanceGenId) {
+
+      /*
+       * Synthesize a relationship from the server instance to this service instance...
+       * This edge should always be 1:1 with the service instance (every service instance
+       * has a server instance that it calls home); so it can share the same name as the
+       * service instance. Note that the category is different.
+       */
+
+      let edgeName             = serviceInstanceName;
+      let edgeGUID             = genServerServiceGUID(edgeName); // "SERVER_SERVICE_"+edgeName;
+
+      let edge                 = {};
+      edge.category            = "server-service-edge";
+      edge.serverCohortName    = edgeName;
+      edge.guid                = edgeGUID;
+      edge.qualifiedServerName = qualifiedServerName;
+      edge.serviceInstanceName = serviceInstanceName;
+
+      /*
+       * Server-Service relationships are always active - this is driven from the active server list.
+       */
+
+      /*
+       * Include graph navigation ids.
+       */
+      edge.source              = serverInstanceGUID;
+      edge.target              = serviceInstanceGUID;
+
+      update_objects.relationships[edgeGUID] = edge;
+    }
 
     updateGens(update_objects, requestSummary);
 
     /*
      * Only make the service the focus if the caller requested that.
      * Focus is applied when the user has clicked on a node in the diagram; it is not applied
-     * wgen a service list entry is merely expanded.
+     * when a service list entry is merely expanded.
      */
     if (makeFocus) {
       setFocus( { category : "service-instance", guid : serviceInstanceGUID } );
@@ -1769,6 +1854,7 @@ const ResourcesContextProvider = (props) => {
     let sourceServiceInstance = sourceServiceInstanceGen.resources[sourceServiceInstanceGUID];
     let sourceServiceInstanceName = sourceServiceInstance.serviceName;
     let sourceServiceConfig = sourceServiceInstance.serviceConfig;
+    // The integrationServicePartnerOMAS field contains the full name of the partner service.
     let partnerOMASName = sourceServiceConfig.integrationServicePartnerOMAS;
     let partnerOMASServerName = sourceServiceConfig.omagserverName;
     let partnerOMASServerRootURL = sourceServiceConfig.omagserverPlatformRootURL;
@@ -1817,11 +1903,13 @@ const ResourcesContextProvider = (props) => {
 
     let serviceInstance                         = {};
     serviceInstance.guid                        = serviceInstanceGUID;
+    serviceInstance.serviceCat                  = "AccessService";
     serviceInstance.category                    = "service-instance";
     serviceInstance.serverName                  = partnerOMASServerName;
     serviceInstance.platformName                = correlatedPlatformName;  // If null then only have partnerOMASServerRootURL
     serviceInstance.partnerOMASServerRootURL    = partnerOMASServerRootURL;
-    serviceInstance.serviceName                 = partnerOMASName;
+    serviceInstance.serviceName                 = partnerOMASName;         // This is the full name of the service.
+    serviceInstance.qualifiedServerName         = qualifiedServerName
     /*
      * Do not set more fields than needed - e.g. do not set the serviceConfig to null - it may already be present
      * in the access service (if in the graph) and should not be removed during the merge that occurs when this
