@@ -34,11 +34,6 @@ jobs:
         env:
           CI: false
           NODE_OPTIONS: "--max_old_space_size=6144"
-      - name: Upload Client
-        uses: actions/upload-artifact@v2
-        with:
-          name: client
-          path: cra-client/build
       - name: Install dependencies for server
         working-directory: ./cra-server
         run: npm install
@@ -48,11 +43,11 @@ jobs:
         env:
           CI: false
           NODE_OPTIONS: "--max_old_space_size=6144"
-      - name: Upload Server
+      - name: Upload 
         uses: actions/upload-artifact@v2
         with:
-          name: server
-          path: cra-client/server
+          name: build
+          path: .
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub
@@ -67,6 +62,8 @@ jobs:
         with:
           push: (github.event.pull_request.merged == 'true')
           tags: odpi/egeria-presentation-server:latest
+          context: .
+          file: ./Dockerfile
           #build-args: |
           #  arg1=value1
           #  arg2=value2
