@@ -50,12 +50,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        if: github.event.pull_request.merged == 'true'
+        if: ${{ github.event.pull_request.merged == 'true' }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          push: (github.event.pull_request.merged == 'true')
+          push:  ${{ github.event.pull_request.merged == 'true' }}
           tags: planetf1/egeria-presentation-server:latest
           context: .
           file: ./Dockerfile
