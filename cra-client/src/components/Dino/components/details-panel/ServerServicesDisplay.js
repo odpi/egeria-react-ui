@@ -60,6 +60,10 @@ export default function ServerServicesDisplay(props) {
         formattedService = formatIntegrationService(service);
         break;
 
+      case "EngineService":
+        formattedService = formatEngineService(service);
+        break;
+
       case "AccessService":
         formattedService = formatAccessService(service);
         break;
@@ -76,6 +80,19 @@ export default function ServerServicesDisplay(props) {
   };
 
   const formatIntegrationService = (svc) => {
+    return (
+      <div>
+        <ul>
+          <li className="details-sublist-item">Name : {svc.serviceName ? svc.serviceName : <i>blank</i>}</li>
+           <li className="details-sublist-item">Description : {svc.serviceDescription ? svc.serviceDescription : <i>blank</i>}</li>
+           <li className="details-sublist-item">URL Marker : {svc.serviceURLMarker ? svc.serviceURLMarker : <i>blank</i>}</li>
+          <li className="details-sublist-item">Wiki : {svc.serviceWiki ? svc.serviceWiki : <i>blank</i>}</li>
+         </ul>
+      </div>
+    );
+  }
+
+  const formatEngineService = (svc) => {
     return (
       <div>
         <ul>

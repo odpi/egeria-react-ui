@@ -388,6 +388,15 @@ export default function ServerDisplay() {
       </div>
       <br/>
 
+      <button className="collapsible" onClick={flipSection}> Engine Services: </button>
+      <div className="content">
+        <ServerServicesDisplay serverName={serverDetails.serverName}
+                               qualifiedServerName={serverDetails.qualifiedServerName}
+                               serviceCat="EngineService"
+                               serviceList={serverDetails.engineServices}></ServerServicesDisplay>
+      </div>
+      <br/>
+
       <button className="collapsible" onClick={flipSection}> Access Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
