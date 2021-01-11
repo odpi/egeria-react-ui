@@ -7,6 +7,8 @@ import { ResourcesContext }                    from "../../contexts/ResourcesCon
 
 import IntegrationServiceDisplay               from "./IntegrationServiceDisplay";
 
+import EngineServiceDisplay                    from "./EngineServiceDisplay";
+
 import AccessServiceDisplay                    from "./AccessServiceDisplay";
 
 import ViewServiceDisplay                      from "./ViewServiceDisplay";
@@ -43,6 +45,9 @@ export default function ServiceDisplay() {
 
       <div>
         { (serviceCat === "IntegrationService") && <IntegrationServiceDisplay/> }
+      </div>
+      <div>
+        { (serviceCat === "EngineService") && <EngineServiceDisplay/> }
       </div>
       <div>
         { (serviceCat === "AccessService") && <AccessServiceDisplay/> }

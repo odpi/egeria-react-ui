@@ -937,6 +937,7 @@ const ResourcesContextProvider = (props) => {
     serverInstance.serverStatus          = serverOverview.serverStatus;
     serverInstance.serverServicesList    = serverOverview.serverServicesList;
     serverInstance.integrationServices   = serverOverview.integrationServices;
+    serverInstance.engineServices        = serverOverview.engineServices;
     serverInstance.accessServices        = serverOverview.accessServices;
     serverInstance.viewServices          = serverOverview.viewServices;
 
@@ -1341,9 +1342,15 @@ const ResourcesContextProvider = (props) => {
     let serviceCat = serviceInstance.serviceCat;
     let serviceFullName;
     switch (serviceCat) {
+
       case "IntegrationService":
         serviceFullName    = serviceInstance.serviceConfig.integrationServiceFullName;
         break;
+
+      case "EngineService":
+        serviceFullName    = serviceInstance.serviceConfig.engineServiceFullName;
+        break;
+
       case "AccessService":
         /*
          * Need to be slightly guarded with an access service. It could have been loaded
@@ -1361,9 +1368,11 @@ const ResourcesContextProvider = (props) => {
           serviceFullName    = serviceInstance.serviceName;
         }
         break;
+
       case "ViewService":
         serviceFullName    = serviceInstance.serviceConfig.viewServiceFullName;
         break;
+
     }
     let qualifiedServerName = serviceInstance.qualifiedServerName;
 
@@ -1467,6 +1476,11 @@ const ResourcesContextProvider = (props) => {
           viewServiceURL = "integration-service-details";
           break;
 
+        case "EngineService":
+          serviceURLMarker = findServiceInList(serverInstance.engineServices, serviceFullName);
+          viewServiceURL = "engine-service-details";
+          break;
+
         case "AccessService":
           if (serverInstance.accessServices) {
             serviceURLMarker = findServiceInList(serverInstance.accessServices, serviceFullName);
@@ -1562,6 +1576,10 @@ const ResourcesContextProvider = (props) => {
       case "IntegrationService":
         serviceConfig = serviceDetails.integrationServiceConfig;
         serviceName   = serviceConfig.integrationServiceFullName;
+        break;
+      case "EngineService":
+        serviceConfig = serviceDetails.engineServiceConfig;
+        serviceName   = serviceConfig.engineServiceFullName;
         break;
       case "AccessService":
         serviceConfig = serviceDetails.accessServiceConfig;
@@ -1830,6 +1848,164 @@ const ResourcesContextProvider = (props) => {
     }
   }
 
+/*
+   * This function will load the engine services by asking the VS to retrieve them.
+   *
+   */
+  const loadEngineServices = (serverName) => {
+
+    /*
+     * If the server is not found the operation will fail.
+     */
+    let serverInstanceGUID = genServerInstanceGUID(serverName);
+
+    /*
+     * Find the server entry in the gens
+     */
+    let serverGenId = guidToGenId[serverInstanceGUID];
+    if (serverGenId === undefined) {
+      /*
+       * Operation cannot proceed - we do not have the specified server.
+       */
+      alert("Cannot add service for unknown server "+serverName);
+      return;
+    }
+
+    /*
+     * Check that the server is the focus resource
+     */
+    if (focus.category !== "server-instance") {
+      return;
+    }
+
+    let guid  = focus.guid;
+    let genId = guidToGenId[guid];
+    let gen   = gens[genId-1];
+    if (gen) {
+      let existingServer = gen.resources[guid];
+      if (existingServer) {
+        let serverName   = existingServer.serverName;
+        let platformList = existingServer.platforms;
+        if (!platformList || platformList.length === 0) {
+          alert("There are no platforms listed for the server "+serverName+" so details cannot be retrieved.");
+          return;
+        }
+        else {
+          /* Select the platform we are querying... */
+          let platformName = platformList[0];
+
+          /* Retrieve a list of the engine services configured on the server */
+          requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/engine-services",
+                                        { platformName : platformName  },
+                                        _loadEngineServices);
+        }
+      }
+    }
+  }
+
+  const _loadEngineServices = (json) => {
+
+    if (json) {
+      if (json.relatedHTTPCode === 200 ) {
+
+        /*
+         * For known (stopped) servers you won't get an active config.
+         */
+        if (json.serviceList) {
+
+          let requestSummary = json.requestSummary;
+          let serverName = requestSummary.serverName;
+          let platformName = requestSummary.platformName;
+          processRetrievedEngineServiceList(platformName, serverName, json.serviceList);
+
+          return;
+
+        }
+      }
+    }
+    /*
+     * On failure ...
+     */
+    interactionContext.reportFailedOperation("list engine services",json);
+  }
+
+
+  const processRetrievedEngineServiceList = (platformName, serverName, serviceList) => {
+
+    if (serviceList)
+    {
+      /*
+       * Create a map of service objects and their server-service relationships
+       */
+      let update_objects                               = {};
+      update_objects.resources                         = {};
+      update_objects.relationships                     = {};
+
+      /*
+       * Iterate over the list and construct an update map
+       */
+      serviceList.forEach( svc => {
+
+        let serviceName = svc.serviceName;
+        let serviceGUID = genServiceInstanceGUID(serviceName);
+
+        /*
+         * Create service object
+         */
+        let service                   = {};
+        service.category              = "service-instance";
+        service.serviceName           = serviceName;
+        service.guid                  = serviceGUID;
+
+        /*
+         * Create a relationship from the specified server to the cohort - if we do not already have one
+         * The relationship will need a guid, a source and target and a gen (which is assigned when the
+         * gen is created)
+         */
+
+        let serverServiceName                         = serviceName+"@"+serverName;
+        let serverServiceGUID                         = "SERVER_SERVICE"+serverServiceName;
+
+        let serverServiceRelationship                 = {};
+        serverServiceRelationship.category            = "server-service";
+        serverServiceRelationship.serverCohortName    = serverServiceName;
+        serverServiceRelationship.guid                = serverServiceGUID;
+        serverServiceRelationship.serverName          = serverName;
+        serverServiceRelationship.cohortName          = serviceName;
+        /*
+         * Server-Service relationships are always active - this is driven from the active server list.
+         */
+        serverServiceRelationship.active              = true;
+
+        /*
+         * Include graph navigation ids.
+         */
+        let serverInstanceGUID                        = genServerInstanceGUID(serverName);
+        serverServiceRelationship.source              = serverInstanceGUID;
+        serverServiceRelationship.target              = serviceGUID;
+
+        /*
+         * Add to update map
+         */
+        update_objects.resources[serviceGUID]            = service;
+        update_objects.relationships[serverServiceGUID]  = serverServiceRelationship;
+
+      });
+
+      /*
+       * Include a request summary - since this was a local operation there is no request information
+       * to be returned from the VS
+       */
+      let requestSummary             = {};
+      requestSummary.serverName      = serverName;
+      requestSummary.operation       = "List engine services";
+      requestSummary.platformName    = null;
+
+      updateGens(update_objects, requestSummary);
+
+    }
+  }
+
 
 
 
@@ -1844,18 +2020,28 @@ const ResourcesContextProvider = (props) => {
    * The first parameter (serviceInstance) is the service that depends on the partner OMAS. This is only needed
    * so this function can create an edge from it to the partner OMAS service.
    *
+   * The serviceCat parameter indicates whether the soure service is an integration or engine service.
+   *
    * If the partnerOMAS already exists but there is no edge from the dependent service then a edge will be
    * created. If both the partnerOMAS and edge already exist then nothing new is added to the graph.
    */
-  const loadPartnerOMAS = (sourceServiceInstanceGUID) => {
+  const loadPartnerOMAS = (sourceServiceInstanceGUID, serviceCat) => {
 
     let sourceServiceInstanceGenId = guidToGenId[sourceServiceInstanceGUID];
     let sourceServiceInstanceGen = gens[sourceServiceInstanceGenId - 1];
     let sourceServiceInstance = sourceServiceInstanceGen.resources[sourceServiceInstanceGUID];
     let sourceServiceInstanceName = sourceServiceInstance.serviceName;
     let sourceServiceConfig = sourceServiceInstance.serviceConfig;
-    // The integrationServicePartnerOMAS field contains the full name of the partner service.
-    let partnerOMASName = sourceServiceConfig.integrationServicePartnerOMAS;
+    let partnerOMASName;
+    if (serviceCat === "IntegrationService") {
+      // The integrationServicePartnerOMAS field contains the full name of the partner service.
+      partnerOMASName = sourceServiceConfig.integrationServicePartnerOMAS;
+    }
+    else {
+      // assumed to be an engine service
+      // The engineServicePartnerOMAS field contains the full name of the partner service.
+      partnerOMASName = sourceServiceConfig.engineServicePartnerOMAS;
+    }
     let partnerOMASServerName = sourceServiceConfig.omagserverName;
     let partnerOMASServerRootURL = sourceServiceConfig.omagserverPlatformRootURL;
 

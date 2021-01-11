@@ -9,7 +9,7 @@ import { ResourcesContext }                    from "../../contexts/ResourcesCon
 import "./details-panel.scss";
 
 
-export default function IntegrationServiceDisplay() {
+export default function EngineServiceDisplay() {
 
 
   const resourcesContext = useContext(ResourcesContext);
@@ -47,7 +47,7 @@ export default function IntegrationServiceDisplay() {
       /*
        * Ask the resources context to create a floating service instance for the OMAS.
        */
-      resourcesContext.loadPartnerOMAS(serviceInstanceGUID, "IntegrationService");
+      resourcesContext.loadPartnerOMAS(serviceInstanceGUID, "EngineService");
     }
   };
 
@@ -77,15 +77,15 @@ export default function IntegrationServiceDisplay() {
       <div className="type-details-item-bold">ServiceName : {serviceDetails.serviceName}</div>
 
       <div className="type-details-item-bold">ServiceURLMarker : </div>
-      <div className="type-details-item">{serviceConfig.integrationServiceURLMarker}</div>
+      <div className="type-details-item">{serviceConfig.engineServiceURLMarker}</div>
     
       <div className="type-details-item-bold">ServiceFullName :</div>
-      <div className="type-details-item">{serviceConfig.integrationServiceFullName}</div>
+      <div className="type-details-item">{serviceConfig.engineServiceFullName}</div>
 
       <div className="type-details-item-bold">ServiceDescription : </div>
-      <div className="type-details-item">{serviceConfig.integrationServiceDescription}</div>
+      <div className="type-details-item">{serviceConfig.engineServiceDescription}</div>
      
-      <button className="collapsible" onClick={flipPartnerOMASSection}> Partner OMAS : {serviceConfig.integrationServicePartnerOMAS} </button>
+      <button className="collapsible" onClick={flipPartnerOMASSection}> Partner OMAS : {serviceConfig.engineServicePartnerOMAS} </button>
       <div className="content">
         <div className="type-details-item">OMAGServerName : {serviceConfig.omagserverName}</div>
         <div className="type-details-item">OMAGServerPlatformRootURL : {serviceConfig.omagserverPlatformRootURL}</div>
@@ -93,17 +93,17 @@ export default function IntegrationServiceDisplay() {
       <br/>
 
       <div className="type-details-item-bold">ServiceStatus :</div>
-      <div className="type-details-item">{serviceConfig.integrationServiceOperationalStatus}</div>
+      <div className="type-details-item">{serviceConfig.engineServiceOperationalStatus}</div>
 
       <div className="type-details-item-bold">ServiceWiki :</div>
-      <div className="type-details-item">{serviceConfig.integrationServiceWiki}</div>
+      <div className="type-details-item">{serviceConfig.engineServiceWiki}</div>
     </div>
   );
 
 }
 
 
-IntegrationServiceDisplay.propTypes = {
+EngineServiceDisplay.propTypes = {
   
 };
 
