@@ -165,37 +165,11 @@ export default function ServerDisplay() {
   const getServerAuditLog = () => {
     let server = resourcesContext.getFocusServer();
     let serverName = server.serverName;
-    
-    let platformList   = server.platforms;
-    /*
-     * If there are no platforms indicate that no further details are avaiable (e.g. the server may have 
-     * been discovered through cohort membership and we do not know a platform that hosts it)
-     */
-    if (!platformList || platformList.length === 0) {
-      alert("There are no platforms listed for the server "+server.serverName+" so details cannot be retrieved.");
-      return;
-    }
-    else {
-      /* 
-        * Check how many platforms the server is running on. If there is one platform, query it.
-        * If there is more than one platform ask the user to click the link corresponding to the 
-        * instance of the server they wish to load and display.
-        */
-      if (platformList.length === 1) {
-        let platformName = platformList[0];
+    let platformName = server.platformName;
 
-        requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/audit-log",
-            { serverName : serverName, platformName : platformName }, _getServerAuditLog);
-        setAuditLogStatus("pending");
-
-      }
-      else {
-        /*
-          * Multi-platform case. Provide user feedback.
-          */
-        alert("For a server on multiple platforms, select the link from the platform to the server to indicate which instance of the server to display");
-      }
-    }
+    requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/audit-log",
+        { serverName : serverName, platformName : platformName }, _getServerAuditLog);
+    setAuditLogStatus("pending");
   };
 
   const _getServerAuditLog = (json) => {
@@ -382,6 +356,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> Integration Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
+                               platformName={serverDetails.platformName}
                                qualifiedServerName={serverDetails.qualifiedServerName}
                                serviceCat="IntegrationService"
                                serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
@@ -391,6 +366,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> Engine Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
+                               platformName={serverDetails.platformName}
                                qualifiedServerName={serverDetails.qualifiedServerName}
                                serviceCat="EngineService"
                                serviceList={serverDetails.engineServices}></ServerServicesDisplay>
@@ -400,6 +376,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> Access Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
+                               platformName={serverDetails.platformName}
                                qualifiedServerName={serverDetails.qualifiedServerName}
                                serviceCat="AccessService"
                                serviceList={serverDetails.accessServices}></ServerServicesDisplay>
@@ -409,6 +386,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> View Services: </button>
       <div className="content">
         <ServerServicesDisplay serverName={serverDetails.serverName}
+                               platformName={serverDetails.platformName}
                                qualifiedServerName={serverDetails.qualifiedServerName}
                                serviceCat="ViewService"
                                serviceList={serverDetails.viewServices}></ServerServicesDisplay>
@@ -611,7 +589,7 @@ export default function ServerDisplay() {
       <button className="collapsible" onClick={flipSection}> Server Audit Log: </button>
       <div className="content">
         <button onClick = { () => getServerAuditLog(serverDetails.guid) }  >
-          Server Audit Log
+          Get Server Audit Log
         </button>
       </div>
 

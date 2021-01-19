@@ -647,7 +647,6 @@ const ResourcesContextProvider = (props) => {
        */
       let serverInstance                  = {};
       serverInstance.category             = "server-instance";
-      //serverInstance.serverInstanceName   = serverInstanceName;  TODO clean up
       serverInstance.qualifiedServerName  = qualifiedServerName;
       serverInstance.serverName           = serverName;
       serverInstance.isActive             = isActive;
@@ -689,7 +688,6 @@ const ResourcesContextProvider = (props) => {
 
       let edge                           = {};
       edge.category                      = "platform-server-edge";
-      // edge.serverInstanceName            = edgeName;  // this is the resource endpoint/display label TODO clean up
       edge.qualifiedServerName           = qualifiedServerName;
       edge.guid                          = edgeGUID;
       edge.serverName                    = serverName;
@@ -735,11 +733,11 @@ const ResourcesContextProvider = (props) => {
   }
 
 
-   /*
+  /*
    * Get the service that is the current focus.
    * This function verifies the expectation that there is a focus and that it is a service.
    * It also verifies that it can find a gen containing the guid of the focus service.
-   * If all of these things are true, the servic is returned.
+   * If all of these things are true, the service is returned.
    */
   const getFocusService = () => {
     if (focus.category === "service-instance") {
@@ -753,6 +751,26 @@ const ResourcesContextProvider = (props) => {
     }
     return null;
   }
+
+  /*
+   * Get the engine that is the current focus.
+   * This function verifies the expectation that there is a focus and that it is an engine.
+   * It also verifies that it can find a gen containing the guid of the focus engine.
+   * If all of these things are true, the engine is returned.
+   */
+  const getFocusEngine = () => {
+    if (focus.category === "engine-instance") {
+      let guid = focus.guid;
+      if (guid) {
+        let genId = guidToGenId[guid];        if (genId) {
+          let gen = gens[genId-1];
+          return gen.resources[guid];
+        }
+      }
+    }
+    return null;
+  }
+
   
   /*
    * Check that a resource exists that has the specified guid
@@ -801,6 +819,11 @@ const ResourcesContextProvider = (props) => {
           case "service-instance":
             setOperationState({state:"loading", name: resource.serviceInstanceName});
             loadServiceFromGen(resource);
+            break;
+
+          case "engine-instance":
+            setOperationState({state:"loading", name: resource.engineQualifiedName});
+            loadEngineFromGen(resource);
             break;
 
           case "cohort":
@@ -919,7 +942,6 @@ const ResourcesContextProvider = (props) => {
     
     let serverInstance                     = {};
     serverInstance.category                = "server-instance";
-    //serverInstance.serverInstanceName      = serverOverview.serverInstanceName; // TODO clean up
     serverInstance.qualifiedServerName     = qualifiedServerName;
     serverInstance.guid                    = serverInstanceGUID;
     serverInstance.serverName              = serverName;
@@ -968,7 +990,6 @@ const ResourcesContextProvider = (props) => {
       edge.category                      = "platform-server-edge";
       edge.edgeName                      = edgeName;
       edge.guid                          = edgeGUID;
-      //edge.serverInstanceName            = serverInstanceName; // this is the resource endpoint/display label TODO clean up
       edge.qualifiedServerName           = qualifiedServerName;
       edge.serverName                    = serverName;
       edge.platformName                  = platformName;
@@ -1018,20 +1039,12 @@ const ResourcesContextProvider = (props) => {
       let existingServer = gen.resources[guid];
       if (existingServer) {
         let serverName   = existingServer.serverName;
-        let platformList = existingServer.platforms;
-        if (!platformList || platformList.length === 0) {
-          alert("There are no platforms listed for the server "+serverName+" so details cannot be retrieved.");
-          return;
-        }
-        else {
-          /* Select the platform we are querying... */
-          let platformName = platformList[0];
+        let platformName = existingServer.platformName;
 
-          /* Retrieve BOTH the stored and running instance configuration for the server */
-          requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/stored-and-active-configuration",
+        /* Retrieve BOTH the stored and running instance configuration for the server */
+        requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/stored-and-active-configuration",
                                         { platformName : platformName }, 
                                         _loadServerConfiguration);
-        }
       }
     }
   }
@@ -1373,12 +1386,18 @@ const ResourcesContextProvider = (props) => {
         serviceFullName    = serviceInstance.serviceConfig.viewServiceFullName;
         break;
 
+      default:
+        alert("Dino ResourcesContext loadServiceFromGen was passed an unknown service category of "+serviceCat);
+        return;
+
     }
-    let qualifiedServerName = serviceInstance.qualifiedServerName;
+
+    let platformName = serviceInstance.platformName;
+    let serverName = serviceInstance.serverName;
 
     console.log("loadServiceFromGen - will try to load serviceInstance "+serviceFullName);
 
-    loadService(serviceCat, qualifiedServerName, serviceFullName, true);  // make the loaded service the new focus
+    loadService(serviceCat, platformName, serverName, serviceFullName, true);  // make the loaded service the new focus
   };
 
 
@@ -1408,37 +1427,26 @@ const ResourcesContextProvider = (props) => {
    *
    * Parameters:
    * serviceCat         - { "IntegrationService" | "AccessService" | ... } tells context what type of service to expect
-   * qualifiedServerName - The name of the specific instance of the server (includes server name and platform name)
+   * platformName       - The name of the platform running the server that is running the service
+   * serverName         - The name of the server that is running the service
    * serviceFullName    - The FULL name of the service. This is the name returned in a RegisteredOMAGService object
    * makeFocus          - Whether to make the loaded service the new focus on completion.
    */
-  const loadService = (serviceCat, qualifiedServerName, serviceFullName, makeFocus) => {
+  const loadService = (serviceCat, platformName, serverName, serviceFullName, makeFocus) => {
 
+    let qualifiedServerName = serverName +"@"+ platformName;
     let serverInstanceGUID = genServerInstanceGUID(qualifiedServerName);
     let serverInstanceGenId = guidToGenId[serverInstanceGUID];
 
 
     let serviceURLMarker = null;
     let viewServiceURL   = null;
-    let serverName       = null;
-    let platformName     = null;
 
     if (!serverInstanceGenId) {
 
-       /*
-       * Server not yet loaded so could not be found in gens
-       */
-
-      /*
-       * Tokenize the qualifiedServerName - TODO - not terribly keen on this; might be better to include these
-       * as separate fields in the service instance. It will have been added to the gens so you could
-       * concatenate its full name with the qSN and construct its serviceInstanceGUID. and hence find it.
-       * It would then privide direct access to these fields without needing to rely on absence of '@'
-       * characters in the server and platform names, or other more complex encoding schemes.
-       */
-      let tokens = qualifiedServerName.split("@");
-      serverName   = tokens[0];
-      platformName = tokens[1];
+     /*
+      * Server not yet loaded; it could not be found in gens
+      */
 
       /*
        * We do not have access to the serviceURLMarker. For an access service it is optional (in the
@@ -1459,18 +1467,16 @@ const ResourcesContextProvider = (props) => {
       serverName   = serverInstance.serverName;
       platformName = serverInstance.platformName;
 
-
-
-
       /*
-       * Look for the service by full name in the services listed for the serviceCat. We are trying
-       * to find a service that has a matching url-marker because that is what the view service needs.
-       * TODO - might be able to relax this now - for an access service the VS can use serviceFullName
-       * but note that this is not shared across the other service categories. It could be - it is just
+       * Look for the service by full name in the services listed for the serviceCat. We are looking
+       * for a service that has a matching url-marker because that is what the view service needs.
+       * It would be possible to relax this; for an access service the VS can use serviceFullName
+       * but this is not currently common across the other service categories. It could be - it is just
        * a matter of adding it to those categories in the view service.
        */
 
       switch (serviceCat) {
+
         case "IntegrationService":
           serviceURLMarker = findServiceInList(serverInstance.integrationServices, serviceFullName);
           viewServiceURL = "integration-service-details";
@@ -1488,7 +1494,6 @@ const ResourcesContextProvider = (props) => {
           else {
             serviceURLMarker = "Unknown for server only represented by a server overview";
           }
-
           viewServiceURL = "access-service-details";
           break;
 
@@ -1519,7 +1524,6 @@ const ResourcesContextProvider = (props) => {
     requestContext.callPOST("service-instance", serviceFullName,  "server/"+serverName+"/"+viewServiceURL,
       { serverName          : serverName,
         platformName        : platformName,
-        serverInstanceName  : qualifiedServerName,  // optional, used as a correlator
         serviceFullName     : serviceFullName,
         serviceURLMarker    : serviceURLMarker
       },
@@ -1577,27 +1581,34 @@ const ResourcesContextProvider = (props) => {
         serviceConfig = serviceDetails.integrationServiceConfig;
         serviceName   = serviceConfig.integrationServiceFullName;
         break;
+
       case "EngineService":
         serviceConfig = serviceDetails.engineServiceConfig;
         serviceName   = serviceConfig.engineServiceFullName;
         break;
+
       case "AccessService":
         serviceConfig = serviceDetails.accessServiceConfig;
         serviceName   = serviceConfig.accessServiceFullName;
         break;
+
       case "ViewService":
         serviceConfig = serviceDetails.viewServiceConfig;
         serviceName   = serviceConfig.viewServiceFullName;
         break;
+
+      default:
+        alert("Dino ResourcesContext processRetrievedServiceDetails was passed a service with an unknown service category of "+serviceCat);
+        return;
     }
 
 
     /*
      * Create a service object.
      * Need to uniquely identify this instance of the service so concatenate
-     * the service name and servver instance name.
+     * the service name and server instance name.
      */
-    let qualifiedServerName  = requestSummary.serverInstanceName;           // could rename request field TODO
+    let qualifiedServerName = requestSummary.serverName +"@"+ requestSummary.platformName;
     let serverInstanceGUID  = genServerInstanceGUID(qualifiedServerName);
 
     let serviceInstanceName = serviceName +"@"+ qualifiedServerName;
@@ -1606,11 +1617,12 @@ const ResourcesContextProvider = (props) => {
     let serviceInstance                   = {};
     serviceInstance.guid                  = serviceInstanceGUID;
     serviceInstance.category              = "service-instance";
-    //serviceInstance.serverInstanceName    = serverInstanceName;  // TODO clean up
-    serviceInstance.qualifiedServerName   = qualifiedServerName;
     serviceInstance.serviceName           = serviceName;
     serviceInstance.serviceConfig         = serviceConfig;
     serviceInstance.serviceCat            = serviceCat;
+
+    serviceInstance.serverName            = requestSummary.serverName;
+    serviceInstance.platformName          = requestSummary.platformName;
 
 
     /*
@@ -1620,7 +1632,6 @@ const ResourcesContextProvider = (props) => {
     update_objects.resources                         = {};
     update_objects.relationships                     = {};
     update_objects.resources[serviceInstanceGUID]    = serviceInstance;
-
 
 
     /*
@@ -1727,20 +1738,12 @@ const ResourcesContextProvider = (props) => {
       let existingServer = gen.resources[guid];
       if (existingServer) {
         let serverName   = existingServer.serverName;
-        let platformList = existingServer.platforms;
-        if (!platformList || platformList.length === 0) {
-          alert("There are no platforms listed for the server "+serverName+" so details cannot be retrieved.");
-          return;
-        }
-        else {
-          /* Select the platform we are querying... */
-          let platformName = platformList[0];
+        let platformName = existingServer.platformName;
 
-          /* Retrieve a list of the integration services configured on the server */
-          requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/integration-services",
+        /* Retrieve a list of the integration services configured on the server */
+        requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/integration-services",
                                         { platformName : platformName  },
                                         _loadIntegrationServices);
-        }
       }
     }
   }
@@ -1848,7 +1851,7 @@ const ResourcesContextProvider = (props) => {
     }
   }
 
-/*
+  /*
    * This function will load the engine services by asking the VS to retrieve them.
    *
    */
@@ -1885,20 +1888,12 @@ const ResourcesContextProvider = (props) => {
       let existingServer = gen.resources[guid];
       if (existingServer) {
         let serverName   = existingServer.serverName;
-        let platformList = existingServer.platforms;
-        if (!platformList || platformList.length === 0) {
-          alert("There are no platforms listed for the server "+serverName+" so details cannot be retrieved.");
-          return;
-        }
-        else {
-          /* Select the platform we are querying... */
-          let platformName = platformList[0];
+        let platformName = existingServer.platformName;
 
-          /* Retrieve a list of the engine services configured on the server */
-          requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/engine-services",
+        /* Retrieve a list of the engine services configured on the server */
+        requestContext.callPOST("server-instance", serverName,  "server/"+serverName+"/engine-services",
                                         { platformName : platformName  },
                                         _loadEngineServices);
-        }
       }
     }
   }
@@ -2005,7 +2000,6 @@ const ResourcesContextProvider = (props) => {
 
     }
   }
-
 
 
 
@@ -2239,6 +2233,257 @@ const ResourcesContextProvider = (props) => {
   }
 
   
+  /*
+   * This function reloads an engine that is already in a gen.
+   * This is used when a user clicks on an engine icon to give it the focus.
+   * As such we want to load it (from the view service) and then make it the focus.
+   */
+  const loadEngineFromGen = (engine) => {
+
+    /*
+     * The GUID of the OMES service instance that is running this engine was stashed
+     * when the engine was loaded.
+     */
+    let omesServiceInstanceGUID = engine.omesServiceInstanceGUID;
+
+    console.log("loadEngineFromGen - will try to load engine "+engine.engineQualifiedName);
+
+    loadEngine(omesServiceInstanceGUID, engine.engineQualifiedName, true);  // make the loaded engine the new focus
+  };
+
+
+
+  /*
+   * loadEngine will load the details of an engine and add it to the graph.
+   * The OMES that is running the engine will already have been loaded and its GUID is passed in.
+   * The engines will have been listed in summary form and the user has selected one. Based on its
+   * engineQualifiedName, retrieve the engine's configuration and list the services that are registered
+   * to the engine.
+   *
+   * Parameters:
+   * omesServiceInstanceGUID   - GUID of the OMES running the engine
+   * engineQualifiedName       - The name of the engine to load.
+   *
+   * For now, do not make the loaded engine the focus.
+   *
+   */
+  const loadEngine = (omesServiceInstanceGUID, engineName, makeFocus) => {
+
+
+    let omesInstanceGenId = guidToGenId[omesServiceInstanceGUID];
+
+
+    let viewServiceURL   = null;
+    let serverName       = null;
+
+    if (!omesInstanceGenId) {
+
+      alert("loadEngine could not find the OpenMetadataEngineService in the gens!");
+      return;
+
+    }
+    else {
+
+      /*
+       * OMES found in gens
+       */
+
+      let omesInstanceGen = gens[omesInstanceGenId-1];
+      let omesInstance    = omesInstanceGen.resources[omesServiceInstanceGUID];
+
+      /*
+       * This request has to be routed to the partner OMAS for the engine service
+       * since that is where the OMES confgiuration is managed.
+       */
+      serverName            = omesInstance.serviceConfig.omagserverName;
+      let platformRootURL   = omesInstance.serviceConfig.omagserverPlatformRootURL;
+      // Needs to be correlated to an available platform...
+      let correlatedPlatformName = null;
+
+      let platformNames = Object.keys(availablePlatforms);
+      for (let i=0; i<platformNames.length; i++) {
+        let platformName = platformNames[i];
+        let platform = availablePlatforms[platformName];
+        if (platform.platformRootURL === platformRootURL) {
+          console.log("Found the partner's platformURL "+platformRootURL+" in availablePlatforms");
+          correlatedPlatformName      = platformName;
+          break;
+        }
+      }
+      if (correlatedPlatformName === null) {
+        /*
+         * The platform/server root URL could not be correlated with an available platform
+         */
+        console.log("Did not find the partner's platformURL of "+platformRootURL+" in availablePlatforms");
+        /*
+         * Provide an indication to the user that this is the edge of the user's known universe
+         */
+        alert("Advisory: It will not be possible to navigate to the engine without a configured resource endpoint for the platform running the partnerOMAS");
+      }
+
+      viewServiceURL = "engine-details";
+
+      let callback;
+      if (makeFocus)
+        callback =  _loadEngineAndFocus;
+      else
+        callback = _loadEngine;
+
+      /* Retrieve the engine details */
+      requestContext.callPOST("engine-instance", engineName,  "server/"+serverName+"/"+viewServiceURL,
+        { serverName               : serverName,
+          platformName             : correlatedPlatformName,
+          requestContextCorrelator : omesServiceInstanceGUID,
+          engineQualifiedName      : engineName
+        },
+        callback);
+
+    }
+  };
+
+  /*
+   * Callback to be used when loading an engine and not wanting it to become the focus
+   */
+  const _loadEngine = (json) => {
+    if (json) {
+      if (json.relatedHTTPCode === 200 ) {
+        let requestSummary = json.requestSummary;
+        let engineDetails = json.engineDetails;
+        if (requestSummary && engineDetails) {
+          processRetrievedEngineDetails(requestSummary, engineDetails, false);
+          return;
+        }
+      }
+    }
+    /*
+     * On failure ...
+     */
+    interactionContext.reportFailedOperation("load engine",json);
+  };
+
+  /*
+   * Callback to be used when loading an engine and wanting it to become the focus
+   */
+  const _loadEngineAndFocus = (json) => {
+    if (json) {
+      if (json.relatedHTTPCode === 200 ) {
+        let requestSummary = json.requestSummary;
+        let engineDetails = json.engineDetails;
+        if (requestSummary && engineDetails) {
+          processRetrievedEngineDetails(requestSummary, engineDetails, true);
+          return;
+        }
+      }
+    }
+    /*
+     * On failure ...
+     */
+    interactionContext.reportFailedOperation("load engine",json);
+  };
+
+
+
+  /*
+   * Function to parse retrieved engine object and add it to the graph
+   */
+  const processRetrievedEngineDetails = (requestSummary, engineDetails, makeFocus) => {
+
+    /*
+     * Create an engine object.
+     * Need a unique ID for this engine. You could form this from the engine's
+     * qualified name together with the OMES service instance instance name (which in turn
+     * includes the qualifiedServerName, so the derived name should be unique even when a
+     * service is running across a server that is cluster deployed). However, now that
+     * we are dealing with an object (the engine) that is stored in a repository, we have a
+     * ready made Egeria instance GUID that is equally appropriate; we just need to make
+     * sure we carry the GUID with the engine properties, which is the intention anyway.
+     * We can therefore identify an engine in the same way that Rex deals with entities or
+     * relationships.
+     *
+     * We also need the OMES service instance GUID because we need to connect an edge to it.
+     * This is available from the fields in the requestSummary.
+     */
+
+    let omesServiceInstanceGUID          = requestSummary.requestContextCorrelator;
+
+    let engineGUID                       = engineDetails.engineGUID;
+
+    let engine                            = {};
+    engine.guid                           = engineDetails.engineGUID;
+    engine.category                       = "engine-instance";
+    engine.engineGUID                     = engineDetails.engineGUID;
+    engine.engineDisplayName              = engineDetails.engineDisplayName;
+    engine.engineQualifiedName            = engineDetails.engineQualifiedName;
+    engine.engineDescription              = engineDetails.engineDescription;
+    engine.engineTypeDescription          = engineDetails.engineTypeDescription;
+    engine.engineVersion                  = engineDetails.engineVersion;
+    engine.serviceMap                     = engineDetails.serviceMap;
+
+    /*
+     * Stash the omesServiceInstanceGUID of the instance that is running this engine
+     * We will need it later if the user refocusses the engine.
+     */
+    engine.omesServiceInstanceGUID        = omesServiceInstanceGUID;
+
+
+    /*
+     * Create a map of the objects to be updated.
+     */
+    let update_objects                    = {};
+    update_objects.resources              = {};
+    update_objects.relationships          = {};
+    update_objects.resources[engineGUID]  = engine;
+
+
+    /*
+     * The service hosting the engine must already be in he gens, so create am edge from it
+     * to the engine.
+     *
+     * Create a relationship from the OMES to the engine, if we do not already have one.
+     * The relationship will need a guid, a source and target and a gen (which is assigned when the
+     * gen is created)
+     */
+
+    /*
+     * Synthesize a relationship from the server instance to this service instance...
+     * This edge should always be 1:1 with the engine instance (every engine
+     * has one OMES service instance that is running it); so it can share the same GUID
+     * as the engine.
+     */
+
+    let edgeGUID             = engineGUID;
+    let edge                 = {};
+    edge.category            = "service-engine-edge";
+    edge.guid                = edgeGUID;
+    edge.engineQualifiedName = engineDetails.engineQualifiedName;
+
+    /*
+     * Include graph navigation ids.
+     */
+
+    edge.source              = omesServiceInstanceGUID;
+    edge.target              = engineGUID;
+
+    update_objects.relationships[edgeGUID] = edge;
+
+    updateGens(update_objects, requestSummary);
+
+    /*
+     * Only make the engine the focus if the caller requested that.
+     * Focus is applied when the user has clicked on a node in the diagram; it is not applied
+     * when a service list entry is merely expanded.
+     */
+
+    if (makeFocus) {
+      setFocus( { category : "engine-instance", guid : engineGUID } );
+    }
+
+    /*
+     * Indicate that the load operation is complete
+     */
+    setOperationState( { state:"inactive", name:""} );
+  };
+
 
 
   return (
@@ -2251,12 +2496,14 @@ const ResourcesContextProvider = (props) => {
         serverConfig,
         operationState,
         gens,
+        availablePlatforms,
         /*
          * Getters
          */
         getFocusPlatform,
         getFocusServer,
         getFocusService,
+        getFocusEngine,
         getLatestGenId,
         getNumGens,
         getLatestGen,
@@ -2275,7 +2522,9 @@ const ResourcesContextProvider = (props) => {
         loadCohort,
         loadCohortFromServer,
         loadService,
+        loadEngine,
         loadIntegrationServices,
+        loadEngineServices,
         loadConfiguredCohort,
         clear,
         removeGen,
@@ -2284,7 +2533,6 @@ const ResourcesContextProvider = (props) => {
         genServiceInstanceGUID,
         genCohortGUID,
         loadPartnerOMAS,
-        availablePlatforms,
         setAvailablePlatforms
       }}
     >      
@@ -2298,4 +2546,3 @@ ResourcesContextProvider.propTypes = {
 };
 
 export default ResourcesContextProvider;
-

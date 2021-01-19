@@ -49,13 +49,11 @@ export default function GraphControls(props) {
 
   const [history, setHistory]          = useState([]); 
 
-  //const [traversalSpecification, setTraversalSpecification]                    = useState({});  TODO cleanup
   const [preTraversalEntityTypes, setPreTraversalEntityTypes]                  = useState([]); 
   const [preTraversalRelationshipTypes, setPreTraversalRelationshipTypes]      = useState([]); 
   const [preTraversalClassificationTypes, setPreTraversalClassificationTypes]  = useState([]); 
 
 
-  
 
   /*
    * Handler for Explore button - initiate a pre-traversal
