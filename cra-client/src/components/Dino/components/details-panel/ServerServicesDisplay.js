@@ -14,13 +14,12 @@ export default function ServerServicesDisplay(props) {
 
   const resourcesContext = useContext(ResourcesContext);
 
-  const inServices  = props.serviceList;
-  const qualifiedServerName  = props.qualifiedServerName;
-  const serviceCat  = props.serviceCat;
+  const inServices           = props.serviceList;
+  const serverName           = props.serverName;
+  const platformName         = props.platformName;
+  const serviceCat           = props.serviceCat;
 
   let outServices;
-
- 
 
    /*
    * As the user flips a service section, expand the service details display and add the service 
@@ -48,7 +47,7 @@ export default function ServerServicesDisplay(props) {
     }
 
     if (requestService) {
-      resourcesContext.loadService(serviceCat, qualifiedServerName, serviceName, true);
+      resourcesContext.loadService(serviceCat, platformName, serverName, serviceName, true);
     }
   };
 
@@ -193,7 +192,7 @@ export default function ServerServicesDisplay(props) {
 
 ServerServicesDisplay.propTypes = {
   serverName          : PropTypes.string,
-  qualifiedServerName : PropTypes.string,
+  platformName        : PropTypes.string,
   serviceList         : PropTypes.array,
   serviceCat          : PropTypes.string
 };

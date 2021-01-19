@@ -61,8 +61,13 @@ const RequestContextProvider = (props) => {
         serviceName     : resourceName};
       return base;
     }
+    else if (resourceCategory === "engine-instance") {
+      const base = {
+        engineGUID      : resourceName};
+      return base;
+    }
     else {
-      alert("The resource category was neither server-instance nor platform - please retry");
+      alert("The resource category "+resourceCategory+" was not recognised");
       return null;
     }
       

@@ -56,7 +56,6 @@ export default function DiagramManager(props) {
 
     () => {
 
-      // TODO alignment
       /*
        * Create empty node and link arrays and an empty node map.
        */
@@ -112,6 +111,12 @@ export default function DiagramManager(props) {
               newNode.gen        = resource.gen;
               break;
 
+            case "engine-instance":
+              newNode.id         = resource.guid;
+              newNode.label      = resource.engineDisplayName;
+              newNode.gen        = resource.gen;
+              break;
+
             default:
               console.log("Unexpected value for category: "+category);
               break;
@@ -145,7 +150,7 @@ export default function DiagramManager(props) {
         });
 
         /*
-         * Iterate over the resources in this gen
+         * Iterate over the relationships in this gen
          */
         let relationships = gen.relationships;
         let relationshipGUIDs = Object.keys(relationships);

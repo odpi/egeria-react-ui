@@ -11,6 +11,8 @@ import ServerDisplay                       from "./ServerDisplay"
 
 import ServiceDisplay                      from "./ServiceDisplay"
 
+import EngineDisplay                       from "./EngineDisplay"
+
 import "./details-panel.scss";
 
 
@@ -40,6 +42,10 @@ export default function DetailsPanel() {
       {
         resourcesContext.operationState.state === "inactive" && resourcesContext.focus.category === "service-instance" &&
           (<ServiceDisplay />)
+      }
+      {
+        resourcesContext.operationState.state === "inactive" && resourcesContext.focus.category === "engine-instance" &&
+          (<EngineDisplay />)
       }
     </div>
   );
