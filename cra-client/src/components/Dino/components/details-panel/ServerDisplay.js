@@ -338,6 +338,8 @@ export default function ServerDisplay() {
       break;
   }
 
+  let serverTypeName        = serverDetails.serverClassification.serverTypeName;
+  let serverTypeDescription = serverDetails.serverClassification.serverTypeDescription;
 
   return (
 
@@ -350,55 +352,88 @@ export default function ServerDisplay() {
       <div className="type-details-item-bold">Server Origin : </div>
       <div className="type-details-item">{serverDetails.serverOrigin}</div>
       <div className="type-details-item-bold">Server Type : </div>
-      <div className="type-details-item">{serverDetails.serverClassification.serverTypeName}</div>
-      <div className="type-details-item">{serverDetails.serverClassification.serverTypeDescription}</div>
+      <div className="type-details-item">{serverTypeName}</div>
+      <div className="type-details-item">{serverTypeDescription}</div>
 
-      <button className="collapsible" onClick={flipSection}> Integration Services: </button>
-      <div className="content">
-        <ServerServicesDisplay serverName={serverDetails.serverName}
-                               platformName={serverDetails.platformName}
-                               qualifiedServerName={serverDetails.qualifiedServerName}
-                               serviceCat="IntegrationService"
-                               serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
+      <div>
+      { (serverTypeName === "Integration Daemon") &&
+        <div>
+          <button className="collapsible" onClick={flipSection}> Integration Services: </button>
+          <div className="content">
+            <ServerServicesDisplay serverName={serverDetails.serverName}
+                                   platformName={serverDetails.platformName}
+                                   qualifiedServerName={serverDetails.qualifiedServerName}
+                                   serviceCat="IntegrationService"
+                                   serviceList={serverDetails.integrationServices}></ServerServicesDisplay>
+          </div>
+          <br/>
+        </div>
+      }
       </div>
-      <br/>
 
-      <button className="collapsible" onClick={flipSection}> Engine Services: </button>
-      <div className="content">
-        <ServerServicesDisplay serverName={serverDetails.serverName}
-                               platformName={serverDetails.platformName}
-                               qualifiedServerName={serverDetails.qualifiedServerName}
-                               serviceCat="EngineService"
-                               serviceList={serverDetails.engineServices}></ServerServicesDisplay>
+      <div>
+      { (serverTypeName === "Engine Host Server") &&
+        <div>
+          <button className="collapsible" onClick={flipSection}> Engine Services: </button>
+          <div className="content">
+            <ServerServicesDisplay serverName={serverDetails.serverName}
+                                   platformName={serverDetails.platformName}
+                                   qualifiedServerName={serverDetails.qualifiedServerName}
+                                   serviceCat="EngineService"
+                                   serviceList={serverDetails.engineServices}></ServerServicesDisplay>
+        </div>
+        <br/>
       </div>
-      <br/>
+      }
+      </div>
 
-      <button className="collapsible" onClick={flipSection}> Access Services: </button>
-      <div className="content">
-        <ServerServicesDisplay serverName={serverDetails.serverName}
-                               platformName={serverDetails.platformName}
-                               qualifiedServerName={serverDetails.qualifiedServerName}
-                               serviceCat="AccessService"
-                               serviceList={serverDetails.accessServices}></ServerServicesDisplay>
+      <div>
+      { (serverTypeName === "Metadata Server" || serverTypeName === "Metadata Access Point") &&
+        <div>
+          <button className="collapsible" onClick={flipSection}> Access Services: </button>
+          <div className="content">
+              <ServerServicesDisplay serverName={serverDetails.serverName}
+                                     platformName={serverDetails.platformName}
+                                     qualifiedServerName={serverDetails.qualifiedServerName}
+                                     serviceCat="AccessService"
+                                     serviceList={serverDetails.accessServices}></ServerServicesDisplay>
+          </div>
+          <br/>
+        </div>
+      }
       </div>
-      <br/>
 
-      <button className="collapsible" onClick={flipSection}> View Services: </button>
-      <div className="content">
-        <ServerServicesDisplay serverName={serverDetails.serverName}
-                               platformName={serverDetails.platformName}
-                               qualifiedServerName={serverDetails.qualifiedServerName}
-                               serviceCat="ViewService"
-                               serviceList={serverDetails.viewServices}></ServerServicesDisplay>
+      <div>
+      { (serverTypeName === "View Server") &&
+        <div>
+          <button className="collapsible" onClick={flipSection}> View Services: </button>
+          <div className="content">
+            <ServerServicesDisplay serverName={serverDetails.serverName}
+                                   platformName={serverDetails.platformName}
+                                   qualifiedServerName={serverDetails.qualifiedServerName}
+                                   serviceCat="ViewService"
+                                   serviceList={serverDetails.viewServices}></ServerServicesDisplay>
+          </div>
+          <br/>
+        </div>
+      }
       </div>
-      <br/>
 
-      <button className="collapsible" onClick={flipSection}> Cohorts: </button>
-      <div className="content">
-        <ServerCohortsDisplay serverName={serverDetails.serverName}
-                              cohortDetails={serverDetails.cohortDetails}></ServerCohortsDisplay>
+      <div>
+      { ( serverTypeName === "Metadata Access Point"   ||
+          serverTypeName === "Repository Proxy"        ||
+          serverTypeName === "Metadata Server"         ||
+          serverTypeName === "Conformance Test Server"   ) &&
+        <div>
+          <button className="collapsible" onClick={flipSection}> Cohorts: </button>
+          <div className="content">
+            <ServerCohortsDisplay serverName={serverDetails.serverName}
+                                  cohortDetails={serverDetails.cohortDetails}></ServerCohortsDisplay>
+          </div>
+          <br/>
+        </div>
+      }
       </div>
-      <br/>
 
 
 
