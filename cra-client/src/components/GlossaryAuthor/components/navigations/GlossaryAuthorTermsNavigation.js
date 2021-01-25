@@ -22,7 +22,6 @@ const GlossaryAuthorTermsNavigation = (props) => {
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "term");
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
-  const [completeResults, setCompleteResults] = useState([]);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -135,7 +134,6 @@ const GlossaryAuthorTermsNavigation = (props) => {
     setErrorMsg("");
     console.log("onSuccessfulGetChildren " + json.result);
     refreshNodes(json.result, pageSize, pageNumber);
-    setCompleteResults(json.result);
   };
 
   const onErrorGetChildren = (msg) => {
