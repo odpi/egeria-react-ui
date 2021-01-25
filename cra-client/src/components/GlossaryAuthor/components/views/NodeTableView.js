@@ -48,7 +48,6 @@ export default function NodeTableView({nodeType, nodes, setSelected}) {
   ];
 
   const [headerData, setHeaderData] = useState(mainProperties);
-  const [searchTableKey, setSearchTableKey] = useState(1);
 
   const additionalProperties = calculateAdditionalProperties();
   let selectedAdditionalProperties = [];
@@ -96,6 +95,8 @@ export default function NodeTableView({nodeType, nodes, setSelected}) {
         item.text = attribute.label;
         items.push(item);
       }
+      // add return to get rid of the linter warning
+      return attribute
     });
     return items;
   }

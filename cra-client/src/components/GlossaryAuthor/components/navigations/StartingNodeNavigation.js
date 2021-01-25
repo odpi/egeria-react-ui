@@ -51,6 +51,7 @@ export default function StartingNodeNavigation({
   useEffect(
     () => {
       processUserCriteriaAndIssueSearch();
+      return null;
     },
     // This is the useEffect input array
     // Our useEffect function will only execute if this value changes ...
@@ -161,7 +162,7 @@ export default function StartingNodeNavigation({
 
   const onSuccessfulDelete = () => {
     setSelectedNodeGuid(undefined);
-    if (pageNumber == 1) {
+    if (pageNumber === 1) {
       // we are already on the first page so just refresh that content
       processUserCriteriaAndIssueSearch();
     } else {
@@ -181,6 +182,7 @@ export default function StartingNodeNavigation({
 
     json.result.map(function (row) {
       row.id = row.systemAttributes.guid;
+      return row;
     });
     refreshNodes(json.result, pageSize, pageNumber);
     // setCompleteResults(json.result);

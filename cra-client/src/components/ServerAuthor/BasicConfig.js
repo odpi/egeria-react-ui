@@ -65,7 +65,7 @@ export default function BasicConfig() {
           value={newServerOrganizationName}
           onChange={e => setNewServerOrganizationName(e.target.value)}
           placeholder="Org 1"
-          invalid={newServerOrganizationName == ""}
+          invalid={newServerOrganizationName === ""}
           style={{marginBottom: "16px"}}
           autoComplete="off"
         />
