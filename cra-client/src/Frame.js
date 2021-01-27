@@ -91,8 +91,8 @@ export default function Frame() {
               </HeaderName>
 
               <HeaderGlobalBar>
-                <HeaderGlobalAction 
-                  aria-label="User" 
+                <HeaderGlobalAction
+                  aria-label="User"
                   isActive={userOpen}
                   onClick={async () => {
                     setUserOpen(!userOpen);
@@ -105,8 +105,9 @@ export default function Frame() {
                 aria-label="Header Panel"
                 expanded={userOpen}
               >
-                <Switcher>
+                <Switcher aria-label="">
                   <SwitcherItem
+                    aria-label=""
                     style={{ textAlign: 'left' }}
                     onClick={async () => {
                       try {
@@ -132,7 +133,7 @@ export default function Frame() {
                   <SideNavLink element={Link} to={homeUrl} isActive>
                     Home
                   </SideNavLink>
-                  <SideNavMenu title="Solutions" defaultExpanded="true">
+                  <SideNavMenu title="Solutions" defaultExpanded={true}>
                     <SideNavLink
                       // uncomment (and import) if we want to show the icon
                       // renderIcon={EgeriaGlossAuth32}
@@ -142,7 +143,7 @@ export default function Frame() {
                       Glossary Author
                     </SideNavLink>
                   </SideNavMenu>
-                  <SideNavMenu title="Ecosystem Tools" defaultExpanded="true">
+                  <SideNavMenu title="Ecosystem Tools" defaultExpanded={true}>
                     <SideNavLink element={Link} to={rexUrl}>
                       Repository Explorer
                     </SideNavLink>
