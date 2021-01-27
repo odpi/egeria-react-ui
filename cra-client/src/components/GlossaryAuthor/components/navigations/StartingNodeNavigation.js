@@ -51,7 +51,6 @@ export default function StartingNodeNavigation({
   useEffect(
     () => {
       processUserCriteriaAndIssueSearch();
-      return null;
     },
     // This is the useEffect input array
     // Our useEffect function will only execute if this value changes ...

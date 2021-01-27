@@ -1,6 +1,7 @@
 {
-  "name": "presentation-server-client",
-  "version": "0.1.0",
+  "name": "egeria-react-ui-client",
+  "version": "2.6.0-rc.0",
+  "description": "Egeria React User Interface client component.",
   "private": true,
   "dependencies": {
     "@carbon/elements": "^10.15.0",
