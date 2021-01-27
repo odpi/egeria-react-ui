@@ -2,7 +2,7 @@
 # Copyright Contributors to the ODPi Egeria project.
 
 # build dir
-**/build/** 
+**/build/**
 # IntelliJ
 *.iml
 **.iml
@@ -38,3 +38,4 @@ package-lock.json
 
 # .env
 cra-server/.env
+cra-client/.env
