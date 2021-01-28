@@ -10,14 +10,14 @@ export default function Home() {
     <div>
       <h1> Welcome to Egeria React UI</h1>
       <div>Click a task on the left to get started</div>
-      <div class="flip-box center">
-        <div class="flip-box-inner">
-          <div class="flip-box-front">
+      <div className="flip-box center">
+        <div className="flip-box-inner">
+          <div className="flip-box-front">
             <Egeriacolor />
           </div>
-          <div class="flip-box-back">
-            <div class="center-400-container">
-              <div class="center-400-content">
+          <div className="flip-box-back">
+            <div className="center-400-container">
+              <div className="center-400-content">
                 <h2>
                   Community profile home screen coming soon.
                 </h2>

@@ -17,7 +17,7 @@ export default function ConfigurationSteps() {
   } = useContext(ServerAuthorContext);
 
   const steps = serverConfigurationSteps(newServerLocalServerType);
-  
+
   return (
 
     <ProgressIndicator
@@ -25,7 +25,6 @@ export default function ConfigurationSteps() {
       vertical={false}
       currentIndex={progressIndicatorIndex}
       spaceEqually={false}
-      vertical={true}
       style={{marginTop: "98px"}}
     >
       {steps.map((step, i) => (

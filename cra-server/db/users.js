@@ -1,17 +1,11 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 var records = [
-  { id: 1, username: 'faith', password: 'admin', displayName: 'Faith Broker', emails: [ { value: 'faith@coco.com' } ], organizationName: 'myOrg' }
-, { id: 2, username: 'faithbroker', password: 'admin', displayName: 'Faith Broker', emails: [ { value: 'faith@coco.com' } ], organizationName: 'myOrg' }
-, { id: 3, username: 'callie', password: 'admin', displayName: 'Callie Quartile', emails: [ { value: 'callie@coco.com' } ], organizationName: 'myOrg' }
+
+{ id: 2, username: 'faithbroker', password: 'admin', displayName: 'Faith Broker', emails: [ { value: 'faith@coco.com' } ], organizationName: 'myOrg' }
 , { id: 4, username: 'calliequartile', password: 'admin', displayName: 'Callie Quartile', emails: [ { value: 'callie@coco.com' } ], organizationName: 'myOrg' }
-, { id: 5, username: 'gary', password: 'admin', displayName: 'Faith Broker', emails: [ { value: 'gary@coco.com' } ], organizationName: 'myOrg' }
 , { id: 6, username: 'garygeeke', password: 'admin', displayName: 'Gary Geeke', emails: [ { value: 'gary@coco.com' } ], organizationName: 'myOrg' }
-, { id: 7, username: 'erin', password: 'admin', displayName: 'Erin Overview', emails: [ { value: 'erin@coco.com' } ], organizationName: 'myOrg' }
 , { id: 8, username: 'erinoverview', password: 'admin', displayName: 'Erin Overview', emails: [ { value: 'erin@coco.com' } ], organizationName: 'myOrg' }
-, { id: 9, username: 'zach', password: 'admin', displayName: 'Zach', emails: [ { value: 'zach@coco.com' } ], organizationName: 'myOrg' }
-, { id: 10, username: 'steves', password: 'admin', displayName: 'Steves', emails: [ { value: 'steves@coco.com' } ], organizationName: 'myOrg' }
-, { id: 11, username: 'terri', password: 'admin', displayName: 'Terri', emails: [ { value: 'terri@coco.com' } ], organizationName: 'myOrg' }
 , { id: 12, username: 'tanyatidie', password: 'admin', displayName: 'Tanya Tidie', emails: [ { value: 'tanyatidie@coco.com' } ], organizationName: 'myOrg' }
 , { id: 13, username: 'pollytasker', password: 'admin', displayName: 'Polly Tasker', emails: [ { value: 'pollytasker@coco.com' } ], organizationName: 'myOrg' }
 , { id: 14, username: 'tessatube', password: 'admin', displayName: 'Tessa Tube', emails: [ { value: 'tessatube@coco.com' } ], organizationName: 'myOrg' }

@@ -98,10 +98,25 @@ After a couple of minutes while it builds, for tenant aaa, you should be able to
 For ecosystem tools use user 'garygeeke' and password 'admin'.
 For glossary author use user 'faithbroker' and password 'admin'.
 
+## Version considerations 
+NPM package.json files exist in folders cra-client and cra-server; these packages describe the Egeria React UI client and server respectively.
+The version defined in these files is intended to match an Egeria version; this is so that Docker images can be constructed with 
+matching levels of this UI and the Egeria to which it is communicating. 
+
+When Egeria is released with a new version, the versions in the 2 package.json files should match the Egeria version, for example Egeria release z.y.x (e.g. 2.6.0)
+will match the package.json's which both specify version z.y.x. When the UI code is being developed, the version is z.y-rc.x (2.7-rc.0); the rc indciates that the
+code is a release candidate (rc) for the next version of Egeria (2.7.0 in this example).      
+
+Note that the 2 Egeria React UI npm packages are not, at this time, published to NPM.  
+
+# A note to the developers managing the creation of new versions
+
+The version in the package.json can be updated using he command 'npm version preminor -preid rc' or can be editted directly in the package.json file.
 
 ## Release Notes
 
-TBA
+This is the release candidate for 2.6.0 
+- this is the initial release of the Egeria React UI.  
 
 ## Project structure
 This project is a [Create React App](https://reactjs.org/docs/create-a-new-react-app.html). 
