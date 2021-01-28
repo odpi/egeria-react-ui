@@ -16,6 +16,7 @@ export default function ServerCohortsDisplay(props) {
 
   const inCohortDetails  = props.cohortDetails;
   const serverName       = props.serverName;
+  const platformName     = props.platformName;
   
   let outCohorts;
 
@@ -46,7 +47,8 @@ export default function ServerCohortsDisplay(props) {
     }
 
     if (requestService) {
-      resourcesContext.loadCohortFromServer(serverName, cohortName);
+      let qualifiedServerName = serverName +"@"+ platformName;
+      resourcesContext.loadCohortFromServer(qualifiedServerName, cohortName);
     }
   };
 
@@ -246,6 +248,7 @@ export default function ServerCohortsDisplay(props) {
 }
 
 ServerCohortsDisplay.propTypes = {
-  serverName : PropTypes.string,
+  serverName   : PropTypes.string,
+  platformName : PropTypes.string,
   cohortDetails: PropTypes.object
 };
