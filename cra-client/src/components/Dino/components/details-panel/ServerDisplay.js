@@ -428,6 +428,7 @@ export default function ServerDisplay() {
           <button className="collapsible" onClick={flipSection}> Cohorts: </button>
           <div className="content">
             <ServerCohortsDisplay serverName={serverDetails.serverName}
+                                  platformName={serverDetails.platformName}
                                   cohortDetails={serverDetails.cohortDetails}></ServerCohortsDisplay>
           </div>
           <br/>
