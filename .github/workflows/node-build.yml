@@ -80,8 +80,10 @@ jobs:
       - name: Image digest (main)
         if: github.ref == 'refs/heads/main'
         run: echo ${{ steps.docker_build_main.outputs.digest }}
+      - name: Create Archive
+        run: tar -zcvf egeria-presentation-server-{{ steps.package-version.outputs.current-version}}.tar.gz .
       - name: Upload 
         uses: actions/upload-artifact@v2
         with:
           name: React UI {{ steps.package-version.outputs.current-version}}
-          path: .
+          path: egeria-presentation-server-{{ steps.package-version.outputs.current-version}}.tar.gz
