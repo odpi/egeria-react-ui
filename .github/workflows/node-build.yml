@@ -75,8 +75,8 @@ jobs:
           context: .
           file: ./Dockerfile
       - name: Image digest (release)
-        if: github.ref == 'refs/heads/main'
-        run: echo ${{ steps.docker_build_main.outputs.digest }}
+        if: github.ref != 'refs/heads/main'
+        run: echo ${{ steps.docker_build_release.outputs.digest }}
       - name: Image digest (main)
         if: github.ref == 'refs/heads/main'
         run: echo ${{ steps.docker_build_main.outputs.digest }}
