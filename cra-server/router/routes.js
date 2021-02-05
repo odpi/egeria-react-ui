@@ -92,7 +92,7 @@ const joinedPath = path.join(
 /**
  * Process login url,
  */
-router.get("/login", (req, res) => {
+router.get("/login", loginLimiter, (req, res) => {
   // Disabling logging as CodeQL does not like user supplied values being logged.
   //  console.log("/login called " + joinedPath);
   res.sendFile(joinedPath);
