@@ -5,10 +5,12 @@ const validateURL = (url, servers) => {
   const urlArray = url.split("/");
   let isValid = true;
   if (url.length < 5) {
-    console.log("Supplied url not long enough " + url);
+    // Disabling logging as CodeQL does not like user supplied values being logged.
+    // console.log("Supplied url not long enough " + url);
     isValid = false;
   } else if (urlArray[4] != "users") {
-    console.log("Users expected in url " + url);
+    // Disabling logging as CodeQL does not like user supplied values being logged.
+    // console.log("Users expected in url " + url);
     isValid = false;
   } else if (urlArray[5].length == 0) {
     console.log("No user supplied");
@@ -25,18 +27,20 @@ const validateURL = (url, servers) => {
         console.log("ServerName not configured");
         isValid = false;
       } else if (serverDetails.remoteURL == undefined) {
-        console.log(
-          "ServerName " +
-            suppliedserverName +
-            " found but there was no associated remoteURL"
-        );
+        // Disabling logging as CodeQL does not like user supplied values being logged.
+        // console.log(
+        //   "ServerName " +
+        //     suppliedserverName +
+        //     " found but there was no associated remoteURL"
+        // );
         isValid = false;
       } else if (serverDetails.remoteServerName == undefined) {
-        console.log(
-          "ServerName " +
-            suppliedserverName +
-            " found but there was no associated remoteServerName"
-        );
+        // Disabling logging as CodeQL does not like user supplied values being logged.
+        // console.log(
+        //   "ServerName " +
+        //     suppliedserverName +
+        //     " found but there was no associated remoteServerName"
+        // );
         isValid = false;
       }
     }

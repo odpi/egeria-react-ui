@@ -1,28 +1,32 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const https = require('https');
+const fs = require("fs");
+const path = require("path");
+const axios = require("axios");
+const https = require("https");
 
-const getAxiosInstance = require('../functions/getAxiosInstance');
-const validateURL = require('../validations/validateURL');
-const validateAdminURL = require('../validations/validateAdminURL');
+const getAxiosInstance = require("../functions/getAxiosInstance");
+const validateURL = require("../validations/validateURL");
+const validateAdminURL = require("../validations/validateAdminURL");
 
-const cert = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.cert");
-const key = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.key");
+const cert = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keys/server.cert"
+);
+const key = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keys/server.key"
+);
 
 /**
- * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware. 
- * The login is performed using passport' local authentication (http://www.passportjs.org/docs/authenticate/). 
+ * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
+ * The login is performed using passport' local authentication (http://www.passportjs.org/docs/authenticate/).
  * TODO support other authentication style e.g oauth and ldap both of which passport supports.
  */
 router.post("/login", function (req, res, next) {
   console.debug("/login");
   // get passport instance from app
-  const passport = (req.app.get('passport'));
+  const passport = req.app.get("passport");
   passport.authenticate("local", function (err, user, next) {
     if (err) {
       return next(err);
@@ -68,9 +72,16 @@ router.get("/user", (req, res) => {
   }
 });
 
-const staticJoinedPath = path.join(__dirname, "../../cra-client/public/index.html");
+const staticJoinedPath = path.join(
+  __dirname,
+  "../../cra-client/public/index.html"
+);
 router.use(express.static(staticJoinedPath, { index: false }));
-const joinedPath = path.join(__dirname, "../../cra-client/public/", "index.html");
+const joinedPath = path.join(
+  __dirname,
+  "../../cra-client/public/",
+  "index.html"
+);
 /**
  * Process login url,
  */
@@ -82,12 +93,12 @@ router.get("/login", (req, res) => {
 
 router.post("/servers/*", (req, res) => {
   const incomingUrl = req.url;
-  // Disabling logging as CodeQL does not like user supplied values being logged. 
+  // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("/servers/* post called " + incomingUrl);
   const body = req.body;
   // Disabling logging as CodeQL does not like user supplied values being logged.
   //console.log("Got body:", body);
-  const servers = (req.app.get('servers'));
+  const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
     const instance = getAxiosInstance(incomingUrl);
     instance
@@ -113,16 +124,16 @@ router.post("/servers/*", (req, res) => {
 
 /**
  * Middleware to proxy put requests that start with /servers.
- * The outbound call is made with https. 
+ * The outbound call is made with https.
  */
 router.put("/servers/*", (req, res) => {
   const incomingUrl = req.url;
-  // Disabling logging as CodeQL does not like user supplied values being logged. 
+  // Disabling logging as CodeQL does not like user supplied values being logged.
   //console.log("/servers/* put called " + incomingUrl);
   const body = req.body;
   // Disabling logging as CodeQL does not like user supplied values being logged.
   //console.log("Got body:", body);
-  const servers = (req.app.get('servers'));
+  const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
     const instance = getAxiosInstance(incomingUrl);
     instance
@@ -148,13 +159,13 @@ router.put("/servers/*", (req, res) => {
 
 /**
  * Middleware to proxy delete requests that start with /servers.
- * The outbound call is made with https. 
+ * The outbound call is made with https.
  */
 router.delete("/servers/*", (req, res) => {
   const incomingUrl = req.url;
   // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("/servers/* delete called " + incomingUrl);
-  const servers = (req.app.get('servers'));
+  const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
     const instance = getAxiosInstance(incomingUrl);
     instance
@@ -180,13 +191,13 @@ router.delete("/servers/*", (req, res) => {
 
 /**
  * Middleware to proxy get requests that start with /servers.
- * The outbound call is made with https. 
+ * The outbound call is made with https.
  */
 router.get("/servers/*", (req, res) => {
   const url = req.url;
   // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("/servers/* get called " + url);
-  const servers = (req.app.get('servers'));
+  const servers = req.app.get("servers");
   if (validateURL(url, servers)) {
     const instance = getAxiosInstance(url);
     instance
@@ -213,14 +224,14 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
   const incomingPath = req.path;
   // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("/open-metadata/admin-services/* get called " + incomingPath);
-  if (!(validateAdminURL(incomingPath))) {
+  if (!validateAdminURL(incomingPath)) {
     res.status(400).send("Error, invalid supplied URL: " + incomingPath);
     return;
   }
-  const servers = (req.app.get('servers'));
+  const servers = req.app.get("servers");
   const urlRoot = servers[req.query.tenantId].remoteURL;
   const apiReq = {
-    method: 'get',
+    method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
       // ca: - at some stage add the certificate authority
@@ -230,8 +241,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
-    }
-  }
+    },
+  };
   axios(apiReq)
     .then(function (response) {
       // console.log({response});
@@ -244,30 +255,27 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
       }
     })
     .catch(function (error) {
-      console.error({error});
+      console.error({ error });
       res.status(400).send(error);
-    })
+    });
 });
 
 router.post("/open-metadata/admin-services/*", (req, res) => {
   const incomingUrl = req.url;
   // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("/open-metadata/admin-services/* post called " + incomingUrl);
-  if (!(validateAdminURL(incomingUrl))) {
+  if (!validateAdminURL(incomingUrl)) {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
     return;
   }
-  const {
-    config,
-    tenantId,
-  } = req.body;
-  const servers = (req.app.get('servers'));
+  const { config, tenantId } = req.body;
+  const servers = req.app.get("servers");
   const urlRoot = servers[tenantId].remoteURL;
   const apiReq = {
-    method: 'post',
+    method: "post",
     url: urlRoot + incomingUrl,
-    headers: { 
-      'Content-Type': 'application/json',
+    headers: {
+      "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
@@ -296,22 +304,20 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
 
 router.delete("/open-metadata/admin-services/*", (req, res) => {
   const incomingUrl = req.url;
-  console.debug("/open-metadata/admin-services/* delete called " + incomingUrl);
-  if (!(validateAdminURL(incomingUrl))) {
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.debug("/open-metadata/admin-services/* delete called " + incomingUrl);
+  if (!validateAdminURL(incomingUrl)) {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
     return;
   }
-  const {
-    config,
-    tenantId,
-  } = req.body;
-  const servers = (req.app.get('servers'));
+  const { config, tenantId } = req.body;
+  const servers = req.app.get("servers");
   const urlRoot = servers[tenantId].remoteURL;
   const apiReq = {
-    method: 'delete',
+    method: "delete",
     url: urlRoot + incomingUrl,
-    headers: { 
-      'Content-Type': 'application/json',
+    headers: {
+      "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
       // ca: - at some stage add the certificate authority
@@ -347,10 +353,10 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
   //   res.status(400).send("Error, invalid supplied URL: " + incomingPath);
   //   return;
   // }
-  const servers = (req.app.get('servers'));
+  const servers = req.app.get("servers");
   const urlRoot = servers[req.query.tenantId].remoteURL;
   const apiReq = {
-    method: 'get',
+    method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
       // ca: - at some stage add the certificate authority
@@ -358,20 +364,20 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
       key,
       rejectUnauthorized: false,
     }),
-  }
+  };
   axios(apiReq)
     .then(function (response) {
       const resBody = response.data;
       if (resBody.relatedHTTPCode == 200) {
         res.json(resBody);
       } else {
-        throw new Error(resBody.exceptionErrorMessage)
+        throw new Error(resBody.exceptionErrorMessage);
       }
     })
     .catch(function (error) {
-      console.error({error});
+      console.error({ error });
       res.status(400).send(error);
-    })
+    });
 });
 
 module.exports = router;
