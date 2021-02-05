@@ -18,11 +18,9 @@ const loginLimiter = rateLimit({
   max: 100 // limit each IP to 100 requests per windowMs
 });
 
-const cert = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keys/server.cert"
-);
-const key = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keys/server.key"
+
+const keystore = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keystore.p12"
 );
 
 /**
@@ -241,10 +239,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      pfx: keystore,
+      passphrase: 'egeria'
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -286,10 +282,8 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      pfx: keystore,
+      passphrase: 'egeria'
     }),
   };
   if (config) apiReq.data = config;
@@ -327,10 +321,8 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      pfx: keystore,
+      passphrase: 'egeria'
     }),
   };
   if (config) apiReq.data = config;
@@ -366,10 +358,8 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      pfx: keystore,
+      passphrase: 'egeria'
     }),
   };
   axios(apiReq)
