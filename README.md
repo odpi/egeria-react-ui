@@ -121,7 +121,7 @@ The version in the package.json can be updated using he command 'npm version pre
 
 ## SSL configuration
 
-By default the Egeria React UI uses a keystore.p12 file in ssl, this is a copy of file 'https://github.com/odpi/egeria/blob/master/keystore.p12'. These files should be kept the same. This keystore file allows Egeria to run securely in a demo environment; it is not appropriate for production, which should be appropriately secured.      
+By default the Egeria React UI uses a keystore.p12 file in ssl, this is a copy of file 'https://github.com/odpi/egeria/blob/master/keystore.p12'. These files should be kept the same if you are using the provided self-signed certificate. This keystore file allows Egeria to runs simply in a demo/development; it is not appropriate for production, which should be appropriately secured.      
 
 ## Release Notes
 
