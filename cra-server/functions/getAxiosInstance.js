@@ -27,7 +27,6 @@ const getAxiosInstance = (url) => {
       remoteServerName +
       "/open-metadata/view-services/" +
       remainingURL;
-    console.log("downstream url " + downStreamURL);
     const instance = axios.create({
       baseURL: downStreamURL,
       httpsAgent: new https.Agent({
