@@ -58,8 +58,9 @@ router.get("/logout", function (req, res) {
 });
 
 router.get("/user", (req, res) => {
-  console.log('/user');
-  console.log(req.user);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.log('/user');
+  // console.log(req.user);
   if (req.user) {
     res.json({ user: req.user });
   } else {
@@ -74,15 +75,18 @@ const joinedPath = path.join(__dirname, "../../cra-client/public/", "index.html"
  * Process login url,
  */
 router.get("/login", (req, res) => {
-  console.log("/login called " + joinedPath);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  //  console.log("/login called " + joinedPath);
   res.sendFile(joinedPath);
 });
 
 router.post("/servers/*", (req, res) => {
   const incomingUrl = req.url;
-  console.log("/servers/* post called " + incomingUrl);
+  // Disabling logging as CodeQL does not like user supplied values being logged. 
+  // console.log("/servers/* post called " + incomingUrl);
   const body = req.body;
-  console.log("Got body:", body);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  //console.log("Got body:", body);
   const servers = (req.app.get('servers'));
   if (validateURL(incomingUrl, servers)) {
     const instance = getAxiosInstance(incomingUrl);
@@ -113,9 +117,11 @@ router.post("/servers/*", (req, res) => {
  */
 router.put("/servers/*", (req, res) => {
   const incomingUrl = req.url;
-  console.log("/servers/* put called " + incomingUrl);
+  // Disabling logging as CodeQL does not like user supplied values being logged. 
+  //console.log("/servers/* put called " + incomingUrl);
   const body = req.body;
-  console.log("Got body:", body);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  //console.log("Got body:", body);
   const servers = (req.app.get('servers'));
   if (validateURL(incomingUrl, servers)) {
     const instance = getAxiosInstance(incomingUrl);
@@ -146,7 +152,8 @@ router.put("/servers/*", (req, res) => {
  */
 router.delete("/servers/*", (req, res) => {
   const incomingUrl = req.url;
-  console.log("/servers/* delete called " + incomingUrl);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.log("/servers/* delete called " + incomingUrl);
   const servers = (req.app.get('servers'));
   if (validateURL(incomingUrl, servers)) {
     const instance = getAxiosInstance(incomingUrl);
@@ -177,7 +184,8 @@ router.delete("/servers/*", (req, res) => {
  */
 router.get("/servers/*", (req, res) => {
   const url = req.url;
-  console.log("/servers/* get called " + url);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.log("/servers/* get called " + url);
   const servers = (req.app.get('servers'));
   if (validateURL(url, servers)) {
     const instance = getAxiosInstance(url);
@@ -203,7 +211,8 @@ router.get("/servers/*", (req, res) => {
 // Handle admin services
 router.get("/open-metadata/admin-services/*", (req, res) => {
   const incomingPath = req.path;
-  console.log("/open-metadata/admin-services/* get called " + incomingPath);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.log("/open-metadata/admin-services/* get called " + incomingPath);
   if (!(validateAdminURL(incomingPath))) {
     res.status(400).send("Error, invalid supplied URL: " + incomingPath);
     return;
@@ -242,7 +251,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
 
 router.post("/open-metadata/admin-services/*", (req, res) => {
   const incomingUrl = req.url;
-  console.log("/open-metadata/admin-services/* post called " + incomingUrl);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.log("/open-metadata/admin-services/* post called " + incomingUrl);
   if (!(validateAdminURL(incomingUrl))) {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
     return;
@@ -330,7 +340,8 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
 // Handle platform services
 router.get("/open-metadata/platform-services/*", (req, res) => {
   const incomingPath = req.path;
-  console.log("/open-metadata/platform-services/* get called " + incomingPath);
+  // Disabling logging as CodeQL does not like user supplied values being logged.
+  // console.log("/open-metadata/platform-services/* get called " + incomingPath);
   // TODO: Add validator for platform url
   // if (!(validatePlatformURL(incomingPath))) {
   //   res.status(400).send("Error, invalid supplied URL: " + incomingPath);
