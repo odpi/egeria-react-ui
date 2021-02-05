@@ -6,10 +6,17 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const https = require("https");
+const rateLimit = require("express-rate-limit");
 
 const getAxiosInstance = require("../functions/getAxiosInstance");
 const validateURL = require("../validations/validateURL");
 const validateAdminURL = require("../validations/validateAdminURL");
+
+// required for codeQL to ensure that logins are rate limitted
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 
 const cert = fs.readFileSync(
   path.join(__dirname, "../../") + "ssl/keys/server.cert"
@@ -23,7 +30,7 @@ const key = fs.readFileSync(
  * The login is performed using passport' local authentication (http://www.passportjs.org/docs/authenticate/).
  * TODO support other authentication style e.g oauth and ldap both of which passport supports.
  */
-router.post("/login", function (req, res, next) {
+router.post("/login", loginLimiter, function (req, res, next) {
   console.debug("/login");
   // get passport instance from app
   const passport = req.app.get("passport");
