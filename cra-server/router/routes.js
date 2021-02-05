@@ -20,7 +20,7 @@ const key = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.ke
  * TODO support other authentication style e.g oauth and ldap both of which passport supports.
  */
 router.post("/login", function (req, res, next) {
-  console.log("/login");
+  console.debug("/login");
   // get passport instance from app
   const passport = (req.app.get('passport'));
   passport.authenticate("local", function (err, user, next) {
@@ -48,7 +48,7 @@ router.post("/login", function (req, res, next) {
  * logout - destroy the session
  */
 router.get("/logout", function (req, res) {
-  console.log("/logout");
+  console.debug("/logout");
   req.session.destroy(function (err) {
     // https://stackoverflow.com/questions/13758207/why-is-passportjs-in-node-not-removing-session-on-logout
     //  explicity clear the cookie.
@@ -93,8 +93,8 @@ router.post("/servers/*", (req, res) => {
     instance
       .post("", body)
       .then(function (response) {
-        console.log("response.data");
-        console.log(response.data);
+        console.debug("response.data");
+        console.debug(response.data);
         const resBody = response.data;
         res.setHeader("Content-Type", "application/json");
         res.json(resBody);
@@ -128,8 +128,8 @@ router.put("/servers/*", (req, res) => {
     instance
       .put("", body)
       .then(function (response) {
-        console.log("response.data");
-        console.log(response.data);
+        console.debug("response.data");
+        console.debug(response.data);
         const resBody = response.data;
         res.setHeader("Content-Type", "application/json");
         res.json(resBody);
@@ -160,8 +160,8 @@ router.delete("/servers/*", (req, res) => {
     instance
       .delete()
       .then(function (response) {
-        console.log("response.data");
-        console.log(response.data);
+        console.debug("response.data");
+        console.debug(response.data);
         const resBody = response.data;
         res.setHeader("Content-Type", "application/json");
         res.json(resBody);
@@ -289,14 +289,14 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       res.json(resBody);
     })
     .catch(function (error) {
-      console.log(error);
+      console.debug(error);
       res.status(400).send(error);
     });
 });
 
 router.delete("/open-metadata/admin-services/*", (req, res) => {
   const incomingUrl = req.url;
-  console.log("/open-metadata/admin-services/* delete called " + incomingUrl);
+  console.debug("/open-metadata/admin-services/* delete called " + incomingUrl);
   if (!(validateAdminURL(incomingUrl))) {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
     return;
