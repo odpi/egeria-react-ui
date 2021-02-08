@@ -85,12 +85,12 @@ router.get("/user", (req, res) => {
 
 const staticJoinedPath = path.join(
   __dirname,
-  "../../cra-client/public/index.html"
+  "../../cra-client/build/index.html"
 );
 router.use(express.static(staticJoinedPath, { index: false }));
 const joinedPath = path.join(
   __dirname,
-  "../../cra-client/public/",
+  "../../cra-client/build/",
   "index.html"
 );
 /**
