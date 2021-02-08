@@ -116,7 +116,7 @@ Note that the 2 Egeria React UI npm packages are not, at this time, published to
 
 ## SSL configuration
 
-By default the Egeria React UI uses a truststroe.p12 and keystore.p12 files for ssl. The p12 files are copies of files 'https://github.com/odpi/egeria/blob/master/keystore.p12' and 'https://github.com/odpi/egeria/blob/master/truststore.p12', which are the definitive source. The keystore and trustore files allow Egeria to run simply in a demo/development; this is not appropriate for production, which should be appropriately secured.     
+By default the Egeria React UI uses a truststore.p12 and keystore.p12 files for ssl. The p12 files are copies of files 'https://github.com/odpi/egeria/blob/master/keystore.p12' and 'https://github.com/odpi/egeria/blob/master/truststore.p12', which are the definitive sources of these files. The keystore and trustore files allow Egeria to run simply in a demo/development; this is not appropriate for production, which should be appropriately secured.     
 
 # A note to the developers managing the creation of new versions
 
