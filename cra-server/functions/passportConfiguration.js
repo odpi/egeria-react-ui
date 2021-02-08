@@ -42,7 +42,6 @@ const passportConfiguration = (passport) => {
    * Deserialise the user. This means look up the id in the database (db).  
    */
   passport.deserializeUser(function (id, cb) {
-    console.log("deserializeUser called with id " + id);
     db.users.findById(id, function (err, user) {
       // Disabling logging as CodeQL does not like user supplied values being logged.  
       // console.log("passport.deserializeUser user is " + user + ",err is" + err);
