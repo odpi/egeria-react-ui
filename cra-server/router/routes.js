@@ -25,6 +25,16 @@ const key = fs.readFileSync(
   path.join(__dirname, "../../") + "ssl/keys/server.key"
 );
 
+const keystore = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keystore.p12"
+);
+
+const truststore = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/truststore.p12"
+);
+
+passphrase= 'egeria';
+
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
  * The login is performed using passport' local authentication (http://www.passportjs.org/docs/authenticate/).
@@ -241,10 +251,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -286,10 +295,9 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -327,10 +335,9 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -366,10 +373,9 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
   };
   axios(apiReq)
