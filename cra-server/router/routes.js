@@ -15,12 +15,14 @@ const validateAdminURL = require("../validations/validateAdminURL");
 // required for codeQL to ensure that logins are rate limitted
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
 });
 
-
-const keystore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keystore.p12"
+const cert = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keys/server.cert"
+);
+const key = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keys/server.key"
 );
 
 /**
@@ -239,8 +241,10 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      pfx: keystore,
-      passphrase: 'egeria'
+      // ca: - at some stage add the certificate authority
+      cert,
+      key,
+      rejectUnauthorized: false,
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -282,8 +286,10 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      pfx: keystore,
-      passphrase: 'egeria'
+      // ca: - at some stage add the certificate authority
+      cert,
+      key,
+      rejectUnauthorized: false,
     }),
   };
   if (config) apiReq.data = config;
@@ -321,8 +327,10 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      pfx: keystore,
-      passphrase: 'egeria'
+      // ca: - at some stage add the certificate authority
+      cert,
+      key,
+      rejectUnauthorized: false,
     }),
   };
   if (config) apiReq.data = config;
@@ -358,8 +366,10 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      pfx: keystore,
-      passphrase: 'egeria'
+      // ca: - at some stage add the certificate authority
+      cert,
+      key,
+      rejectUnauthorized: false,
     }),
   };
   axios(apiReq)
