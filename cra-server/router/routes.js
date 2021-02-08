@@ -18,13 +18,6 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
-const cert = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keys/server.cert"
-);
-const key = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keys/server.key"
-);
-
 const keystore = fs.readFileSync(
   path.join(__dirname, "../../") + "ssl/keystore.p12"
 );
