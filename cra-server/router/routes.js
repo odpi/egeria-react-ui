@@ -18,10 +18,11 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
+// used for client authentication (so we can trust the server)
 const keystore = fs.readFileSync(
   path.join(__dirname, "../../") + "ssl/keystore.p12"
 );
-
+// server for server authentication (so the server can trust us)
 const truststore = fs.readFileSync(
   path.join(__dirname, "../../") + "ssl/truststore.p12"
 );
