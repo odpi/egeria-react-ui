@@ -93,7 +93,6 @@ Navigate to the `cra-client` and `cra-server` directories. Run `npm install` ins
 
 After a couple of minutes while it builds, for tenant aaa, you should be able to login to the user interface using `http://localhost:3000/aaa/login`.
 
-
 ### Demo login 
 
 In your web browser go to https://localhost:9443/aaa/ : 

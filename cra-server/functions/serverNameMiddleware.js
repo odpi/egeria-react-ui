@@ -26,13 +26,15 @@ const serverNameMiddleWare = (req, res, next) => {
 
   if (segmentNumber > 1) {
     const segment1 = segmentArray.slice(1, 2).join("/");
-    console.log("segment1 " + segment1);
+    // Disabling logging as CodeQL does not like user supplied values being logged.
+    // console.log("segment1 " + segment1);
 
     if (segment1 != "servers" && segment1 != "open-metadata" && segment1 != "user") {
       // in a production scenario we are looking at login, favicon.ico and bundle.js for for now look for those in the last segment
       // TODO once we have development webpack, maybe the client should send a /js/ or a /static/ segment after the servername so we know to keep the subsequent segments.
 
       const lastSegment = segmentArray.slice(-1);
+      // Disabling logging as CodeQL does not like user supplied values being logged.
       // console.log("Last segment is " + lastSegment);
       if (
         lastSegment == "bundle.js" ||
@@ -47,6 +49,7 @@ const serverNameMiddleWare = (req, res, next) => {
       req.query.serverName = segment1;
     }
   }
+  // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("after " + req.url);
   next();
 

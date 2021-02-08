@@ -2,12 +2,9 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 
 const getServerInfoFromEnv = () => {
-
-  console.log(" getServerInfoFromEnv() 1");
   let modifiableServers = {};
   // capitals as Windows can be case sensitive.
   const env_prefix = "EGERIA_PRESENTATIONSERVER_SERVER_";
-  // console.log(process.env);
 
   const env = process.env;
   
@@ -15,7 +12,6 @@ const getServerInfoFromEnv = () => {
     try {
       if (envVariable.startsWith(env_prefix)) {
         // Found an environment variable with out prefix
-        console.log(" getServerInfoFromEnv() 2");
         if (envVariable.length == env_prefix.length - 1) {
           console.log(
             "there is no server name specified in the environment Variable envVariable.length=" +

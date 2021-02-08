@@ -45,8 +45,8 @@ export default function UpdateNode(props) {
 
     // TODO consider moving this up to a node controller as per the CRUD pattern.
     // in the meantime this will be self contained.
-
-    console.log("issueUpdate " + url);
+    // Disabling logging as CodeQL does not like user supplied values being logged.
+    // console.log("issueUpdate " + url);
     issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
   };
   const onSuccessfulGet = (json) => {

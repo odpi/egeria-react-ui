@@ -46,7 +46,8 @@ export default function GlossaryQuickTerms(props) {
     e.preventDefault();
     setRestCallInProgress(true);
     if (terms.length > 0) {
-      console.log("issueUpdate " + url);
+      // Disabling logging as CodeQL does not like user supplied values being logged.
+      // console.log("issueUpdate " + url);
       issueRestCreate(url, terms, onSuccessfulCreate, onErrorCreate);
     } else {
       alert("Nothing to create");
