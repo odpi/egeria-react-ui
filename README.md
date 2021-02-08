@@ -114,6 +114,10 @@ code is a release candidate (rc) for the next version of Egeria (2.7.0 in this e
 
 Note that the 2 Egeria React UI npm packages are not, at this time, published to NPM.  
 
+## SSL configuration
+
+By default the Egeria React UI uses a truststroe.p12 and keystore.p12 files for ssl. The p12 files are copies of files 'https://github.com/odpi/egeria/blob/master/keystore.p12' and 'https://github.com/odpi/egeria/blob/master/truststore.p12', which are the definitive source. The keystore and trustore files allow Egeria to run simply in a demo/development; this is not appropriate for production, which should be appropriately secured.     
+
 # A note to the developers managing the creation of new versions
 
 The version in the package.json can be updated using he command 'npm version preminor -preid rc' or can be editted directly in the package.json file.
