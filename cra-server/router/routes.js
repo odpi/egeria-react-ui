@@ -18,12 +18,16 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
-const cert = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keys/server.cert"
+// used for client authentication (so we can trust the server)
+const keystore = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/keystore.p12"
 );
-const key = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keys/server.key"
+// server for server authentication (so the server can trust us)
+const truststore = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/truststore.p12"
 );
+
+passphrase= 'egeria';
 
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
@@ -81,12 +85,12 @@ router.get("/user", (req, res) => {
 
 const staticJoinedPath = path.join(
   __dirname,
-  "../../cra-client/public/index.html"
+  "../../cra-client/build/index.html"
 );
 router.use(express.static(staticJoinedPath, { index: false }));
 const joinedPath = path.join(
   __dirname,
-  "../../cra-client/public/",
+  "../../cra-client/build/",
   "index.html"
 );
 /**
@@ -241,10 +245,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -286,10 +289,9 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -327,10 +329,9 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -366,10 +367,9 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      // ca: - at some stage add the certificate authority
-      cert,
-      key,
-      rejectUnauthorized: false,
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase
     }),
   };
   axios(apiReq)
