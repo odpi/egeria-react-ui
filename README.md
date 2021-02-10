@@ -73,9 +73,17 @@ where
 
 It is possible for multiple localServerName environment variables to be specified that each point to different 'view servers', this is the multi tenant support. The server name being the tenant name. 
 
-Example:
-EGERIA_PRESENTATIONSERVER_SERVER_aaa={"remoteServerName":"cocoView1","remoteURL":"https://localhost:9443"}
+Since this environment variable is typically handled by the shell and includes a json fragment, when setting it you need to be sure
+to 'escape' quotation characters, so you would type:
 
+```bash
+EGERIA_PRESENTATIONSERVER_SERVER_aaa="{\"remoteServerName\":\"cocoView1\",\"remoteURL\":\"https://localhost:9443\"}"
+```
+We can see this is set as we expect
+```
+$ echo $EGERIA_PRESENTATIONSERVER_SERVER_aaa
+{"remoteServerName":"cocoView1","remoteURL":"https://localhost:9443"}
+```
 
 ### Running the presentation server in production mode 
 To run the presentation server in production mode, the javascipt and resources need to be [minified](https://reactjs.org/docs/optimizing-performance.html). To do this manually, navigate into `cra-client`, then run `npm run build`. The cra-client folder now should contain a `build` folder containing the artifiacts to run in production.  
