@@ -11,23 +11,29 @@ const rateLimit = require("express-rate-limit");
 const getAxiosInstance = require("../functions/getAxiosInstance");
 const validateURL = require("../validations/validateURL");
 const validateAdminURL = require("../validations/validateAdminURL");
+const getSecurityInfoFromEnv = require("../functions/getSecurityInfoFromEnv");
 
 // required for codeQL to ensure that logins are rate limitted
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
 });
+const security = getSecurityInfoFromEnv();
+console.log("security.ca " + security.ca);
+console.log("security.pfx " + security.pfx);
+console.log("security.pfx_passphrase " + security.pfx_passphrase);
 
 // used for client authentication (so we can trust the server)
-const keystore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keystore.p12"
+const pfx = fs.readFileSync(
+  path.join(__dirname, "../../") + security.pfx
 );
 // server for server authentication (so the server can trust us)
-const truststore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/truststore.p12"
+const ca = fs.readFileSync(
+  path.join(__dirname, "../../") + security.ca
 );
 
-passphrase= 'egeria';
+passphrase= security.pfx_passphrase;
+
 
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
@@ -245,8 +251,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase
     }),
     headers: {
@@ -289,8 +295,8 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase
     }),
   };
@@ -329,8 +335,8 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase
     }),
   };
@@ -367,8 +373,8 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase
     }),
   };

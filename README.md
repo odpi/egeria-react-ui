@@ -59,11 +59,14 @@ service has a downstream dependancy as well, for example the Glossary Author Vie
 
 ### The presentation server configuration 
 
-The presentation server is an Express web server that serves the web resources, handles authentication and passes through rest calls to the view service. It is intended to be a thin layer in front of the view services. The presentation server lives in the folder called 'cra-server', it requires environment variables to be set to tell it where to send rest requests to for each tenant. If these is a file called .env in the 'cra-server folder then the contents of the file will be parsed and used as the envieronment variables. There is a sample .env file [.env_sample](cra-server/.env_sample).
+The presentation server is an Express web server that serves the web resources, handles authentication and passes through rest calls to the view service. It is intended to be a thin layer in front of the view services. The presentation server lives in the folder called 'cra-server', it requires environment variables to be set to tell it where to send rest requests to for each tenant. If there is a file called .env in the 'cra-server folder then the contents of the file will be parsed and used as the envieronment variables. There is a sample .env file [.env_sample](cra-server/.env_sample).
 
-#### The presentation server environment variable
+### The presentation server environment variables
 
-The environment variable is: 
+There are two types of environment variables that the presentation server looks for, environment variables that define aspects of security an environment varaibles that define the tenants and their associated remote servers.     
+
+#### The tenant environment variables
+These environment variable take the form: 
 EGERIA_PRESENTATIONSERVER_SERVER_\<localServerName\>={"remoteServerName":"\<remoteServerName\>","remoteURL":"\<remoteURL\>"}
 
 where
@@ -75,6 +78,20 @@ It is possible for multiple localServerName environment variables to be specifie
 
 Example:
 EGERIA_PRESENTATIONSERVER_SERVER_aaa={"remoteServerName":"cocoView1","remoteURL":"https://localhost:9443"}
+
+#### The security environment variables.
+
+Environment variables used to secure communications between the presentation server and the view servers
+*EGERIA_PRESENTATIONSERVER_EGERIA_CA* This is the ca option as defined in the [node documentation](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options).  
+*EGERIA_PRESENTATIONSERVER_EGERIA_PFX* This is the pfx option as defined in the [node documentation](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options) 
+*EGERIA_PRESENTATIONSERVER_EGERIA_PFX_PASSPHRASE* This is the passphrase option as defined in the [node documentation](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options) 
+
+Environment variables used to secure communications between the browser and the presention server
+*EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_CERT* This is the file location of the certificate to be used to secure communications between the browser and the presentation server
+*EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_PASSPHRASE* This is the location of the file containing the key used to secure communications between the browser and the presentation server
+
+Valid values need to be supplied for all the above values or the egeria_react_ui will not start. Where the value is a file location, thecurrent direcotry is-
+the one whihc has cra-client and cra-server as subfolders (this is true in production and development).  
 
 
 ### Running the presentation server in production mode 
