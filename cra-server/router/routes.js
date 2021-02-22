@@ -19,9 +19,6 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 const security = getSecurityInfoFromEnv();
-console.log("security.ca " + security.ca);
-console.log("security.pfx " + security.pfx);
-console.log("security.pfx_passphrase " + security.pfx_passphrase);
 
 // used for client authentication (so we can trust the server)
 const pfx = fs.readFileSync(

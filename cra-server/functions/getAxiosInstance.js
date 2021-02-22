@@ -9,13 +9,6 @@ const getServerInfoFromEnv = require('./getServerInfoFromEnv');
 const getSecurityInfoFromEnv = require('./getSecurityInfoFromEnv');
 
 const security = getSecurityInfoFromEnv();
-
-console.log("security.browser_cert " + security.browser_cert);
-console.log("security.browser_passphrase " + security.browser_passphrase);
-console.log("security.ca " + security.ca);
-console.log("security.pfx " + security.pfx);
-console.log("security.pfx_passphrase " + security.pfx_passphrase);
-
 const cert = fs.readFileSync(path.join(__dirname, '../../') + security.browser_cert);
 const key = fs.readFileSync(path.join(__dirname, '../../') + security.browser_passphrase);
 
