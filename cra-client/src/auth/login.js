@@ -53,7 +53,6 @@ const Login = () => {
           } else {
             setErrorMsg("Login Failed");
           }
-          setErrorMsg("Login Failed with " + res);
         }
       })
       .catch(res => {
