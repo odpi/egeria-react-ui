@@ -33,7 +33,7 @@ const serverNameMiddleWare = (req, res, next) => {
     // the supplied url always starts with a /
     const segment1 = segmentArray.slice(1, 2).join("/");
     // Disabling logging as CodeQL does not like user supplied values being logged.
-    console.log("A segment1 " + segment1);
+    // console.log("A segment1 " + segment1);
     const lastSegment = segmentArray.slice(-1);
     const lastSegmentStr = lastSegment[0];
     // Disabling logging as CodeQL does not like user supplied values being logged.
