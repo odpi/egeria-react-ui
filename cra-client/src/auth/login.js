@@ -13,8 +13,8 @@ import {
   Form,
   FormGroup,
   TextInput,
-  Button
-} from 'carbon-components-react';
+  Button,
+} from "carbon-components-react";
 
 const Login = () => {
   const identificationContext = useContext(IdentificationContext);
@@ -23,29 +23,32 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState();
   let history = useHistory();
 
-  const handleOnClick = e => {
+  const handleOnClick = (e) => {
     console.log("login handleClick(()");
     e.preventDefault();
-    const url = identificationContext.getBrowserURL('login') + "?" + new URLSearchParams({
-      username: userId,
-      password: password
-  });
+    const url =
+      identificationContext.getBrowserURL("login") +
+      "?" +
+      new URLSearchParams({
+        username: userId,
+        password: password,
+      });
     fetch(url, {
       method: "post",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     })
-      .then(res => res.json())
-      .then(res => {
+      .then((res) => res.json())
+      .then((res) => {
         if (res.status === "success") {
           console.log("login worked " + JSON.stringify(res));
           identificationContext.setUserId(userId);
           identificationContext.setUser(res.user);
           identificationContext.setAuthenticated(true);
-          // TODO original url prop. 
-          const path = identificationContext.getBrowserURL(''); 
+          // TODO original url prop.
+          const path = identificationContext.getBrowserURL("");
           history.push(path);
         } else {
           if (res.errno) {
@@ -54,13 +57,15 @@ const Login = () => {
             setErrorMsg("Login Failed");
           }
         }
-      })
-      .catch(res => {
-        setErrorMsg("Create Failed - logic error");
-      });
+        })
+        .catch(res => {
+          alert("The URL is not valid. You will be asked to put in a valid Server Name.");
+          history.replace('/');
+        }
+      );
   };
 
-  const handleOnChange = event => {
+  const handleOnChange = (event) => {
     const value = event.target.value;
     sessionStorage.setItem("egeria-userId", value);
     setUserId(value);
@@ -99,10 +104,10 @@ const Login = () => {
                   id="login-password"
                   name="password"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   required
-                  />
+                />
               </FormGroup>
               <Button
                 type="submit"
@@ -122,4 +127,3 @@ const Login = () => {
 };
 
 export default Login;
-
