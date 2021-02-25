@@ -22,7 +22,7 @@ const getServerInfoFromEnv = () => {
           );
         } else {
           const serverName = envVariable.substr(env_prefix.length);
-          console.log("Found server name " + serverName);
+          // console.log("Found server name " + serverName);
           const serverDetailsStr = env[envVariable];
           const serverDetails = JSON.parse(serverDetailsStr);
           if (
