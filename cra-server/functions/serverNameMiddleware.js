@@ -17,6 +17,9 @@
  *   /coco1/abc/de => /abc/de?servername=coco1
  *   /display.ico => /display.ico
  *
+ * This middleware also validates that the server name that has been supplied is valid (i.e. is defined in our list of servers.
+ * So we can have a better user experience, the login screen is displayed for /<server name> and /<server name>/login even if the <server name>
+ * is invalid. The request will fail on the login post.        
  */
 const serverNameMiddleWare = (req, res, next) => {
   // Disabling logging as CodeQL does not like user supplied values being logged.
@@ -75,7 +78,6 @@ const serverNameMiddleWare = (req, res, next) => {
   }
 
   if (noServerfound) {
-    // send to the root so the user can input the Server Name
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // Invalid tenant - this is forbidden
     res.status(403).send("Error, forbidden URL. Please supply a valid Server Name in the URL.");
