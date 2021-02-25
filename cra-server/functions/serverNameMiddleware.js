@@ -29,18 +29,14 @@ const serverNameMiddleWare = (req, res, next) => {
   // '/' goes to "" and ""
   // "/ddd" goes to "" and "ddd"
   const segmentNumber = segmentArray.length;
-<<<<<<< HEAD
-  let errorMsg = undefined;
-=======
+
   let noServerfound = false;
   const servers = req.app.get("servers");
->>>>>>> 004fe8caae23b896be2be118df2b4eeb3f6f8911
 
   if (segmentNumber > 1) {
     // the supplied url always starts with a /
     const segment1 = segmentArray.slice(1, 2).join("/");
     // Disabling logging as CodeQL does not like user supplied values being logged.
-<<<<<<< HEAD
     // console.log("segment1 " + segment1);
     const lastSegment = segmentArray.slice(-1);
     const lastSegmentStr =lastSegment[0];
@@ -64,33 +60,7 @@ const serverNameMiddleWare = (req, res, next) => {
         lastSegmentStr == "bundle.js" ||
         lastSegmentStr == "favicon.ico" 
       ) {
-=======
-    // console.log("A segment1 " + segment1);
-    const lastSegment = segmentArray.slice(-1);
-    const lastSegmentStr = lastSegment[0];
-    // Disabling logging as CodeQL does not like user supplied values being logged.
-    // console.log("Last segment is " + lastSegmentStr);
 
-    if (
-      segment1 != "servers" &&
-      segment1 != "open-metadata" &&
-      segment1 != "user" &&
-       // we want the login screen to be displayed with the get - so we can properly handle the invalid server name - so don't check the server in this case   
-      !(segmentNumber == 2 && req.method === 'GET')
-    ) {
-      // in a production scenario we are looking at login, favicon.ico and bundle.js for for now look for those in the last segment
-      // TODO once we have development webpack, maybe the client should send a /js/ or a /static/ segment after the servername so we know to keep the subsequent segments.
-      // console.log("req.method "+ req.method); 
-      if (lastSegmentStr.startsWith("login") && req.method === 'POST') {
-        // segment1 should be the serverName - so validate that it is
-
-        if (servers[segment1] === undefined) {
-          //Not in the array of servers
-          noServerfound = true;
-        }
-      }
-      if (lastSegmentStr == "bundle.js" || lastSegmentStr == "favicon.ico") {
->>>>>>> 004fe8caae23b896be2be118df2b4eeb3f6f8911
         req.url = "/" + lastSegment;
       } else {
         // we want the login screen to be displayed with the get - so we can properly handle the invalid server name - so don't check the server in this case  
@@ -106,17 +76,6 @@ const serverNameMiddleWare = (req, res, next) => {
       }
     }
   }
-<<<<<<< HEAD
-  // Disabling logging as CodeQL does not like user supplied values being logged.
-  // console.log("after " + req.url);
-  if (errorMsg === undefined) {
-    next();
-  } else {
-    // send to the root so the user can inout the Server Name 
-    res.redirect("/");
-  }
-}
-=======
 
   if (noServerfound) {
     // Disabling logging as CodeQL does not like user supplied values being logged.
@@ -128,6 +87,5 @@ const serverNameMiddleWare = (req, res, next) => {
     next();
   }
 };
->>>>>>> 004fe8caae23b896be2be118df2b4eeb3f6f8911
 
 module.exports = serverNameMiddleWare;
