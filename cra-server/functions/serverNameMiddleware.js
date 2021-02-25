@@ -42,12 +42,14 @@ const serverNameMiddleWare = (req, res, next) => {
     if (
       segment1 != "servers" &&
       segment1 != "open-metadata" &&
-      segment1 != "user"
+      segment1 != "user" &&
+       // we want the login screen to be displayed with the get - so we can properly handle the invalid server name - so don't check the server in this case   
+      !(segmentNumber == 2 && req.method === 'GET')
     ) {
       // in a production scenario we are looking at login, favicon.ico and bundle.js for for now look for those in the last segment
       // TODO once we have development webpack, maybe the client should send a /js/ or a /static/ segment after the servername so we know to keep the subsequent segments.
-
-      if (lastSegmentStr.startsWith("login")) {
+      // console.log("req.method "+ req.method); 
+      if (lastSegmentStr.startsWith("login") && req.method === 'POST') {
         // segment1 should be the serverName - so validate that it is
 
         if (servers[segment1] === undefined) {
@@ -55,19 +57,19 @@ const serverNameMiddleWare = (req, res, next) => {
           noServerfound = true;
         }
       }
-
       if (lastSegmentStr == "bundle.js" || lastSegmentStr == "favicon.ico") {
         req.url = "/" + lastSegment;
       } else {
-        // remove the server name and pass through
-        req.url = "/" + segmentArray.slice(2).join("/");
-      }
-      if (servers[segment1] === undefined) {
-        //Not in the array of servers
-        noServerfound = true;
-      } else {
-        // we have a valid server name 
-        req.query.serverName = segment1;
+        // we want the login screen to be displayed with the get - so we can properly handle the invalid server name - so don't check the server in this case  
+        if (servers[segment1] === undefined && !((lastSegmentStr.startsWith("login") && req.method === 'GET'))) {
+          //Not in the array of servers
+          noServerfound = true;
+        } else {
+          // remove the server name and pass through
+          req.url = "/" + segmentArray.slice(2).join("/");
+          // we have a valid server name 
+          req.query.serverName = segment1;
+        } 
       }
     }
   }
@@ -75,8 +77,8 @@ const serverNameMiddleWare = (req, res, next) => {
   if (noServerfound) {
     // send to the root so the user can input the Server Name
     // Disabling logging as CodeQL does not like user supplied values being logged.
-    // console.log("redirect to  /");
-    res.redirect("/");
+    // Invalid tenant - this is forbidden
+    res.status(403).send("Error, forbidden URL. Please supply a valid Server Name in the URL.");
   } else {
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("after " + req.url);
