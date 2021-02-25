@@ -54,7 +54,7 @@ exports.findById = function (id, cb) {
 
 exports.findByUsername = function(username, cb) {
 process.nextTick(function() {
-console.log("findByUsername");
+// console.log("findByUsername");
 for (var i = 0, len = records.length; i < len; i++) {
   var record = records[i];
   if (record.username === username) {

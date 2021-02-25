@@ -29,7 +29,7 @@ const NoServerName = () => {
   return (
     <div>
       <Egeriacolor />
-      <div>Please supply a server name:</div>
+      <div>Please supply a VALID server name:</div>
       <Grid>
         <Row>
           <Column
