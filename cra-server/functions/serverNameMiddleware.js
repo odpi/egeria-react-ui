@@ -19,27 +19,37 @@
  *
  */
 const serverNameMiddleWare = (req, res, next) => {
-
+  // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("before " + req.url);
   const segmentArray = req.url.split("/");
   const segmentNumber = segmentArray.length;
+  let errorMsg = undefined;
 
   if (segmentNumber > 1) {
     const segment1 = segmentArray.slice(1, 2).join("/");
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("segment1 " + segment1);
-
+    const lastSegment = segmentArray.slice(-1);
+    const lastSegmentStr =lastSegment[0];
+    // Disabling logging as CodeQL does not like user supplied values being logged.
+    // console.log("Last segment is " + lastSegmentStr);
+   
     if (segment1 != "servers" && segment1 != "open-metadata" && segment1 != "user") {
       // in a production scenario we are looking at login, favicon.ico and bundle.js for for now look for those in the last segment
       // TODO once we have development webpack, maybe the client should send a /js/ or a /static/ segment after the servername so we know to keep the subsequent segments.
+     
+      if ( lastSegmentStr.startsWith("login")) {
+        // segment1 should be the serverName - so validate that it is 
+        const servers = req.app.get("servers");
+        if (servers[segment1] === undefined) {
+          //Not in the array of servers
+          errorMsg = "Not a valid server";
+        } 
+      }
 
-      const lastSegment = segmentArray.slice(-1);
-      // Disabling logging as CodeQL does not like user supplied values being logged.
-      // console.log("Last segment is " + lastSegment);
       if (
-        lastSegment == "bundle.js" ||
-        lastSegment == "favicon.ico" ||
-        lastSegment == "login"
+        lastSegmentStr == "bundle.js" ||
+        lastSegmentStr == "favicon.ico" 
       ) {
         req.url = "/" + lastSegment;
       } else {
@@ -51,8 +61,12 @@ const serverNameMiddleWare = (req, res, next) => {
   }
   // Disabling logging as CodeQL does not like user supplied values being logged.
   // console.log("after " + req.url);
-  next();
-
+  if (errorMsg === undefined) {
+    next();
+  } else {
+    // send to the root so the user can inout the Server Name 
+    res.redirect("/");
+  }
 }
 
 module.exports = serverNameMiddleWare;

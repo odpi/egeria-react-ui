@@ -41,7 +41,7 @@ var records = [
 
 exports.findById = function (id, cb) {
   process.nextTick(function () {
-    console.log("findByUserId");
+    // console.log("findByUserId");
     for (var i = 0, len = records.length; i < len; i++) {
       var record = records[i];
       if (record.id === id) {
