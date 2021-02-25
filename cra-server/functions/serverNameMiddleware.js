@@ -17,9 +17,9 @@
  *   /coco1/abc/de => /abc/de?servername=coco1
  *   /display.ico => /display.ico
  *
- * This middleware also validates that the server name that has been supplied is valid (i.e. is defined in our list of servers.
+ * This middleware also validates that the server name that has been supplied is valid (i.e. is defined in our list of servers).
  * So we can have a better user experience, the login screen is displayed for /<server name> and /<server name>/login even if the <server name>
- * is invalid. The request will fail on the login post.        
+ * is invalid. The request will fail on the login post if the <server name> is not known.      
  */
 const serverNameMiddleWare = (req, res, next) => {
   // Disabling logging as CodeQL does not like user supplied values being logged.
