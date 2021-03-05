@@ -17,7 +17,7 @@ updates:
   reviewers:
   - davidradl
 - package-ecosystem: "github-actions"
-  directory: "/.github/workflows"
+  directory: "/"
   schedule:
     interval: weekly
   open-pull-requests-limit: 25
