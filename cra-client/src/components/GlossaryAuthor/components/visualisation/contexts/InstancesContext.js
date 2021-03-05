@@ -241,11 +241,11 @@ const InstancesContextProvider = (props) => {
    * the category does not match the other aspects, they will be very confused.
    */
   const setFocusNode = useCallback(
-    (expNode) => {
+    (node) => {
 
     const newFocus = { instanceCategory : "Node",
-                       instanceGUID : expNode.systemsAttributes.guid,
-                       instance : expNode };
+                       instanceGUID : node.systemsAttributes.guid,
+                       instance : node };
     setFocus( newFocus );
   },
   []
@@ -290,13 +290,13 @@ const InstancesContextProvider = (props) => {
    */
 
   /*
-   * processRetrievedNode accepts an expNode, checks whether it is already known and if not,
+   * processRetrievedNode accepts an node, checks whether it is already known and if not,
    * creates a traversal to add the Node to a new gen
    */
-  const processRetrievedNode = useCallback(
-    (expNode) => {
+  const processRetrievedNode = 
+    (node) => {
 
-    const nodeGUID = expNode.systemAttributes.guid;
+    const nodeGUID = node.systemAttributes.guid;
 
     let genId;
     if (guidToGenId[nodeGUID] !== undefined) {
@@ -304,7 +304,7 @@ const InstancesContextProvider = (props) => {
        * Node is already known
        */
       genId = guidToGenId[nodeGUID];
-      expNode.gen = genId;
+      node.gen = genId;
 
 
     }
@@ -316,12 +316,12 @@ const InstancesContextProvider = (props) => {
        * The genId is in the digest and will be one beyond the current latest gen
        */  
       genId = getLatestActiveGenId() + 1;
-      expNode.gen = genId;
+      node.gen = genId;
 
       let traversal             = {};
       traversal.nodes           = {};
       traversal.lines           = {};
-      traversal.nodes[nodeGUID] = expNode.nodeDigest;
+      traversal.nodes[nodeGUID] = node;
      
       traversal.operation       = "getNode";
 
@@ -334,11 +334,9 @@ const InstancesContextProvider = (props) => {
     /*
      * Because this is processing the retrieval of a single node, that node becomes the focus
      */
-    setFocusNode(expNode);
+    setFocusNode(node);
 
-  },
-  [addGen, getLatestActiveGenId, guidToGenId, gens, setFocusNode]
-  );
+  }
 
   /*
    * processRetrievedLine accepts an expLine, checks whether it is already known and if not,
@@ -611,10 +609,14 @@ const InstancesContextProvider = (props) => {
    */
   const onSuccessfulLoadNode = (json) => {
     console.log("onSuccessful Load Node");
+    let node= undefined;
     if (json.result.length === 1) {
-      const node = json.result[0];
+      node = json.result[0];
       console.log("Node Loaded " + node.name);
-      // setCurrentNode(node);
+    } 
+    if (node) {
+      processRetrievedNode(node);
+      return;
     } else {
       onErrorLoadNode("Error did not get a node from the server");
     }

@@ -253,7 +253,7 @@ export default function Diagram(props) {
       .attr('y2',            node_radius*2.0)
       .attr('stroke',       egeria_primary_color_string)       
       .attr('stroke-width', '2px')        
-      .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})   // The node's id is the entityGUID
+      .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})   // The node's id is the node GUID
       ;
 
     enter_set.append('circle')

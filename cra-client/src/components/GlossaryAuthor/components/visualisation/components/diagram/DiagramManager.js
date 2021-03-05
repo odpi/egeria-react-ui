@@ -24,8 +24,8 @@ export default function DiagramManager(props) {
   const instancesContext = useContext(InstancesContext);
 
   /*
-   * nodeArray is stateful contiguous array of nodes - which resemble entity digests.
-   * linkArray is a stateful contiguous array of links - which resemble relationship digests.
+   * nodeArray is stateful contiguous array of nodes - which resemble node digests.
+   * linkArray is a stateful contiguous array of links - which resemble Line.
    * A contiguous arays are needed for D3 to databind.
    * nodeArray and linkArray are updated when the gens change - this re-renders DiagramManager and 
    * it picks up the change in gens - see below. It's important that nodeArray and linkArray are updated 
@@ -54,13 +54,13 @@ export default function DiagramManager(props) {
 
   /*
    * The parseGen function accepts a gen and creates the associated nodes and links
-   * based on the entities and relationships in the gen. 
+   * based on the nodes and lines in the gen. 
    */
   const parseGen = useCallback(
     (gen) => {
 
     /*
-     * Parse Entities
+     * Parse nodes
      */
   
     /*
@@ -74,20 +74,18 @@ export default function DiagramManager(props) {
     let newNodesMap   = Object.assign({},allNodes);   
 
     /*
-     * Retrieve the entity digests from the gen 
+     * Retrieve the node digests from the gen 
      */
-    const entsMap = gen.entities;
+    const entsMap = gen.nodes;
 
     Object.keys(entsMap).forEach(k => {
      
-      const entityDigest = gen.entities[k];  
+      const node = gen.nodes[k];  
 
       var newNode = {};
-      newNode.id                     = entityDigest.entityGUID;
-      newNode.label                  = entityDigest.label;
-      newNode.gen                    = entityDigest.gen;
-      newNode.metadataCollectionName = entityDigest.metadataCollectionName;
-      newNode.metadataCollectionId   = entityDigest.metadataCollectionId;
+      newNode.id                     = node.systemAttributes.guid;
+      newNode.label                  = node.name;   
+      newNode.gen                    = node.gen;
       /*
        * Initialise position to null so that node is given appropriate starting posiiton 
        * by the diagram
@@ -109,7 +107,7 @@ export default function DiagramManager(props) {
 
 
     /*
-     * Parse Relationships
+     * Parse lines
      */
     
 
@@ -121,30 +119,28 @@ export default function DiagramManager(props) {
 
   
     /*
-     * Retrieve the relationship digests from the gen
+     * Retrieve the line digests from the gen
      */
-    const relsMap = gen.relationships;
+    const relsMap = gen.lines;
     Object.keys(relsMap).forEach(k => {
       /*
-       * gen.relationships is the map of digests - pull out the relationshipGUID from the digest.
+       * gen.lines is the map of lines - pull out the lineGUID from the line.
        */
-      const relationshipDigest = gen.relationships[k];  
+      const line = gen.lines[k];  
 
       var newLink = {};
-      newLink.id                     = relationshipDigest.relationshipGUID;
-      newLink.label                  = relationshipDigest.label;
+      newLink.id                     = line.systemAttributes.guid;
+      newLink.label                  = line.name;
       /*
        * Need to get each node from its GUID...it must already be in the gens but you would need to 
        * ask InstancesContext to map the guid to the gen and then again to look up the guid in that gen
-       * OR you perform parseEntities and parseRelationships together and look in newNodesMap.
-       * If the entity is in this latest gen (quite likely given exploration) the asynchronous state
-       * update to allNodes - performed when parsing entities (above) - will not have happened yet.
+       * OR you perform parseNodes and parseLines together and look in newNodesMap.
+       * If the node is in this latest gen (quite likely given exploration) the asynchronous state
+       * update to allNodes - performed when parsing nodes (above) - will not have happened yet.
        */
-      newLink.source                 = newNodesMap[relationshipDigest.end1GUID];  
-      newLink.target                 = newNodesMap[relationshipDigest.end2GUID];
-      newLink.gen                    = relationshipDigest.gen;
-      newLink.metadataCollectionName = relationshipDigest.metadataCollectionName;  
-      newLink.metadataCollectionId   = relationshipDigest.metadataCollectionId;
+      newLink.source                 = newNodesMap[line.end1GUID];  
+      newLink.target                 = newNodesMap[line.end2GUID];
+      newLink.gen                    = line.gen;
 
       /*
        * Look through existing links (newlinksArray) to find multi-edges and set idx accordingly
@@ -176,7 +172,7 @@ export default function DiagramManager(props) {
 
   /*
    * The removeGen function accepts a genId and removes the associated nodes and links
-   * based on the entities and relationships in that gen. It does not have the gen available
+   * based on the nodes and lines in that gen. It does not have the gen available
    * as it has already been deleted (unavoidable with React state management). If rescanning 
    * proves to be a performance problem, consider maintaining a gen-keyed map to use as an 
    * index.
@@ -185,7 +181,7 @@ export default function DiagramManager(props) {
     (genId) => {
 
     /*
-     * Remove Entities
+     * Remove Nodes
      */
   
     /*
@@ -226,7 +222,7 @@ export default function DiagramManager(props) {
 
 
     /*
-     * Remove Relationships
+     * Remove lines
      */
     
     /*
@@ -263,7 +259,7 @@ export default function DiagramManager(props) {
     () => {
 
     /*
-     * Clear Entities
+     * Clear Nodes
      */
 
     if (nodeArray.length > 0) {
@@ -285,7 +281,7 @@ export default function DiagramManager(props) {
       setAllNodes(newNodesMap);  
 
       /*
-       * Clear Relationships
+       * Clear lines
        */
   
       if (linkArray.length > 0) {
@@ -307,24 +303,24 @@ export default function DiagramManager(props) {
  
 
   /*
-   * Request that the InstancesContext loads the entity from the repository and makes it the focus.
+   * Request that the InstancesContext loads the node from the repository and makes it the focus.
    */
   const onNodeClick = useCallback(
 
     (guid) => {
-      instancesContext.changeFocusEntity(guid);
+      instancesContext.changeFocusNode(guid);
     },
     [instancesContext]
   );
 
 
   /*
-   * Request that the InstancesContext loads the relationship from the repository and makes it the focus.
+   * Request that the InstancesContext loads the line from the repository and makes it the focus.
    */
   const onLinkClick = useCallback(
 
     (guid) => {
-      instancesContext.changeFocusRelationship(guid);
+      instancesContext.changeFocusLine(guid);
     },
     [instancesContext]
   );
