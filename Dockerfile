@@ -7,7 +7,7 @@
 
 # The npm build for the UI must have fully completed prior to this
 
-FROM node:14-alpine
+FROM node:15-alpine
 
 # Thes are optional tags used to add additional metadata into the docker image
 # These may be supplied by the pipeline in future - until then they will default
