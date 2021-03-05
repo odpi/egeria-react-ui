@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright Contributors to the ODPi Egeria project.
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/cra-client"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 25
+  reviewers:
+  - davidradl
+- package-ecosystem: npm
+  directory: "/cra-server"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 25
+  reviewers:
+  - davidradl
+- package-ecosystem: "github-actions"
+  directory: "/.github/workflows"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 25
+  reviewers:
+  - planetf1
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 5
+  reviewers:
+  - planetf1
