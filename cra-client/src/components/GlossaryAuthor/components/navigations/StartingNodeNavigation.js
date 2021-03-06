@@ -305,11 +305,6 @@ export default function StartingNodeNavigation({
                   <Edit32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && (
-                <Link to={getGraphNodeUrl()}>
-                   <DataVis32 kind="primary" />
-                </Link>
-              )}
               {selectedNodeGuid && !onSelectCallback &&
                (
                   <Link to={getGraphNodeUrl}>
