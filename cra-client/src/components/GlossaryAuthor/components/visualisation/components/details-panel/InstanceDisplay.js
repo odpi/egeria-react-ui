@@ -35,10 +35,10 @@ export default function InstanceDisplay() {
     const focusGen = instancesContext.getFocusGen();
 
     if (focusCategory === "Node") {
-      return <NodeDisplay expEntity={instancesContext.getFocusEntity()} />
+      return <NodeDisplay node={instancesContext.getFocusNode()} />
     }
     else if (focusCategory === "Line") {
-      return <LineDisplay expRelationship={instancesContext.getFocusRelationship()} />
+      return <LineDisplay line={instancesContext.getFocusLine()} />
     }
   }
 }

@@ -35,50 +35,56 @@ export default function NodeDisplay(props) {
   };
 
 
-
-  const expNode    = props.expNode;
-
-  // const entity       = expNode.entityDetail;
-  // const entityDigest = expNode.entityDigest;
-
-  // const label        = entityDigest.label;
-  // const gen          = entityDigest.gen;
+  const node         = props.node;
+  const label        = node.name;
+  const description  = node.description;
+  const qualifiedName= node.qualifiedName;
+  const gen          = node.gen;
+  const typeName     = node.nodeType.label; 
+  const systemAttributes = node.systemAttributes;    
 
   return (
     <div className="instance-details-container">
-      {/* <div className="instance-details-item">Node : {label}</div>
-      <div className="instance-details-item">Type : {entity.type.typeDefName}</div>
-      <div className="instance-details-item">Version : {entity.version}</div>
-      <div className="instance-details-item">Status : <InstanceStatusDisplay inst={entity} /></div>
-      <div className="instance-details-item">Properties : { !entity.properties ? "empty" :
-        <InstancePropertiesDisplay properties={entity.properties} />}</div>
-      <button className="collapsible-non-bold" id="querySummary" onClick={flipSection}> Rex Retrieval : </button>
+      <div className="instance-details-item">Name : {label}</div>
+      <div className="instance-details-item">Type : {typeName}</div>
+      <div className="instance-details-item">Description : {description}</div>
+      <div className="instance-details-item">Qualified Name : {qualifiedName}</div>
+      <div className="instance-details-item">Type : {typeName}</div>
+      <div className="instance-details-item">Version : {systemAttributes.version}</div>
+      {/* <div className="instance-details-item">Status : <InstanceStatusDisplay inst={entity} /></div> */}
+         {/* TODO Node specific properties */}
+
+      <button className="collapsible-non-bold" id="querySummary" onClick={flipSection}> Generation information : </button>
       <div className="content">
         <div className="instance-details-item">Added in gen : {gen}</div>
       </div>
 
-
-      <button className="collapsible-non-bold" id="controlProps" onClick={flipSection}> System attributes : </button>
+      <button className="collapsible-non-bold" id="controlProps" onClick={flipSection}>System Attributes: </button>
       <div className="content">
         <ul className="details-sublist">
-          <li className="details-sublist-item">createdBy : {entity.createdBy}</li>
-          <li className="details-sublist-item">createTime : {entity.createTime}</li>
-          <li className="details-sublist-item">updatedBy : {entity.updatedBy ? entity.updatedBy : "empty"}</li>
-          <li className="details-sublist-item">updateTime : {entity.updateTime ? entity.updateTime : "empty"}</li>
-          <li className="details-sublist-item">maintainedBy : { !entity.maintainedBy ? "empty" :
+          <li className="details-sublist-item">Version : {systemAttributes.version}</li>
+          <div className="instance-details-item">GUID : {systemAttributes.guid}</div>
+          <li className="details-sublist-item">createdBy : {systemAttributes.createdBy}</li>
+          <li className="details-sublist-item">createTime : {systemAttributes.createTime}</li>
+          <li className="details-sublist-item">updatedBy : {systemAttributes.updatedBy ? systemAttributes.updatedBy : "empty"}</li>
+          <li className="details-sublist-item">updateTime : {systemAttributes.updateTime ? systemAttributes.updateTime : "empty"}</li>
+          <li className="details-sublist-item">maintainedBy : { !systemAttributes.maintainedBy ? "empty" :
             <ul className="details-sublist">
-              {entity.maintainedBy.sort().map( (mtr) => <li className="details-sublist-item" key={mtr}> {mtr}</li> )}
+              {systemAttributes.maintainedBy.sort().map( (mtr) => <li className="details-sublist-item" key={mtr}> {mtr}</li> )}
             </ul>
             }
           </li>
-          <li className="details-sublist-item">instanceLicense : {entity.instanceLicense ? entity.instanceLicense : "empty"}</li>
-        </ul> */}
-      {/* </div> */}
+          <li className="details-sublist-item">instanceLicense : {systemAttributes.instanceLicense ? systemAttributes.instanceLicense : "empty"}</li>
+          {/* <li className="details-sublist-item">instanceProvenanceType : {entity.instanceProvenanceType ? entity.instanceProvenanceType : "empty"}</li>
+          <li className="details-sublist-item">replicatedBy : {entity.replicatedBy ? entity.replicatedBy : "empty"}</li> */}
+        </ul>
+      </div>
     </div>
   );
 }
 
+
 NodeDisplay.propTypes = {
-  expNode: PropTypes.object
+  node: PropTypes.object
 };
   

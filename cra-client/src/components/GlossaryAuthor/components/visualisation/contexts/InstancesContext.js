@@ -41,17 +41,17 @@ const InstancesContextProvider = (props) => {
 
 
    /*
-   * setFocusEntity sets the category, instance, guid for the focus instance.
+   * setFocusNode sets the category, instance, guid for the focus instance.
    * This operation is atomic (all three aspects are updated as one state change) to avoid sequqncing,
    * e.g. if the category were set first - it would trigger other components to re-render - and if
    * the category does not match the other aspects, they will be very confused.
    */
-  const setFocusEntity = useCallback(
-    (expEntity) => {
+  const setFocusNode = useCallback(
+    (node) => {
 
-    const newFocus = { instanceCategory : "Entity",
-                       instanceGUID : expEntity.entityDetail.guid,
-                       instance : expEntity };
+    const newFocus = { instanceCategory : "Node",
+                       instanceGUID : node.systemAttributes.guid,
+                       instance : node };
     setFocus( newFocus );
   },
   []
@@ -120,6 +120,8 @@ const InstancesContextProvider = (props) => {
    */
   const [gens,         setGens]           = useState([]); 
   const [guidToGenId , setGuidToGenId]    = useState({}); 
+  const [guidToNodeType , setGuidToNodeType]  = useState({}); 
+
 
   /* 
    * The latestGenId is not just the length of the gens array - it indicates the id of the most recent
@@ -233,24 +235,6 @@ const InstancesContextProvider = (props) => {
   },
   [gens,setGens,guidToGenId,setGuidToGenId,setLatestActiveGenId ]
   );
-
-  /*
-   * setFocusNode sets the category, instance, guid for the focus instance.
-   * This operation is atomic (all three aspects are updated as one state change) to avoid sequqncing,
-   * e.g. if the category were set first - it would trigger other components to re-render - and if
-   * the category does not match the other aspects, they will be very confused.
-   */
-  const setFocusNode = useCallback(
-    (node) => {
-
-    const newFocus = { instanceCategory : "Node",
-                       instanceGUID : node.systemsAttributes.guid,
-                       instance : node };
-    setFocus( newFocus );
-  },
-  []
-  );
-
 
   /*
    * Get the GUID of the focus instance
@@ -601,7 +585,21 @@ const InstancesContextProvider = (props) => {
    */
   const loadNode =  (nodeGUID, nodeType) => {
     console.log("loadNode");
+  
+    if (nodeType === undefined) {
+      nodeType = guidToNodeType[nodeGUID];
+      if (nodeType === undefined) {
+        alert("No nodetype!!! ");
+      }
+    }
     const url = nodeType.url + "/" + nodeGUID;
+
+    if (!guidToNodeType[nodeGUID]) {
+      let newGuidToNodeType = guidToNodeType;
+      newGuidToNodeType[nodeGUID] = nodeType;
+      setGuidToNodeType(newGuidToNodeType);
+    }
+   
     issueRestGet(url, onSuccessfulLoadNode, onErrorLoadNode);
   }
   /*
