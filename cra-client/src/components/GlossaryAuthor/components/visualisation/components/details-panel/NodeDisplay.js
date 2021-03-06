@@ -40,7 +40,7 @@ export default function NodeDisplay(props) {
   const description  = node.description;
   const qualifiedName= node.qualifiedName;
   const gen          = node.gen;
-  const typeName     = node.nodeType.label; 
+  const typeName     = node.nodeType; 
   const systemAttributes = node.systemAttributes;    
 
   return (
