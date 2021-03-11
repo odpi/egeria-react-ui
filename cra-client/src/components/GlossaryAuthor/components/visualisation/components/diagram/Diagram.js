@@ -12,6 +12,13 @@ import * as DiagramUtils                                   from "./DiagramUtils"
 
 import { InstancesContext }                                from "../../contexts/InstancesContext";
 
+// import termImage                                               from "../../../../../../images/odpi/Egeria_term_32";
+// import categoryImage                                           from "../../../../../../images/odpi/Egeria_category_32";
+// import glossaryImage                                           from "../../../../../../images/odpi/Egeria_glossary_32";
+
+// import termImage                                               from "../../../../../../imagesHolder/odpi/odpi/ODPiEgeria_Icon_glossaryterm";
+// import categoryImage                                           from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_glossarycategory.svg";
+// import glossaryImage                                           from "../../../../../../imagesHolder/odpi/Egeria_glossary.svg";
 
 
 
@@ -256,7 +263,20 @@ export default function Diagram(props) {
       .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})   // The node's id is the node GUID
       ;
 
-    enter_set.append('circle')
+
+
+    // enter_set.append("svg")
+    //   .attr("xlink:href", d => nodeImage(d))
+    //   .attr("x", -16)
+    //   .attr("y", -16)
+    //   .attr("width",32)
+    //   .attr("height",32)
+    //   .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
+    //   // .on("contextmenu", d => {
+    //   //   nodeRightClicked(d);})
+    //   ;  
+
+      enter_set.append('circle')
       .attr('r',            node_radius)
       .attr('stroke',       egeria_primary_color_string)       
       .attr('stroke-width', '2px')
@@ -327,6 +347,72 @@ export default function Diagram(props) {
     d.fx = null;
     d.fy = null;
   }
+ /*
+  * Create a context menu customized to the category of node that the user has right-clicked
+  */
+//  const createContextMenu = useCallback(
+//    (d, menuItems) => {
+//      menuFactory(d, menuItems);
+//      d3.event.preventDefault();
+//    },
+//    []
+//  );
+ /*
+     * menuFactory will create and display a context-sensitive menu based on the node and
+     * set of menu items
+     */
+    // const menuFactory = (data, menuItems) => {
+
+    //   d3.selectAll(".contextMenu").remove();
+
+    //   /*
+    //    * Draw the menu
+    //    */
+    //   const svg = d3.select(d3Container.current);
+
+    //   svg.append('g')
+    //      .attr('class', "contextMenu")
+    //      .selectAll('tmp')
+    //      .data(menuItems).enter()
+    //      .append('g')
+    //      .attr('class', "menuEntry")
+    //      .style({'cursor': 'pointer'});
+
+    //   /*
+    //    * Draw menu entries
+    //    */
+    //   d3.selectAll(".menuEntry")
+    //     .append('rect')
+    //     .attr('x', data.x)
+    //     .attr('y', (d, i) => { return data.y + 10 + (i * 25); })
+    //     .attr('rx', 0)
+    //     .attr('width', 125)
+    //     .attr('height', 25)
+    //     .on('click', (d) => { d.action(data) });
+
+    //   d3.selectAll(".menuEntry")
+    //     .append('text')
+    //     .text((d) => { return d.title; })
+
+    //     .attr("fill",         "#444")
+    //     .attr("font-family",  "sans-serif")
+    //     .attr("font-size",    "12px")
+    //     .attr("stroke-width", "0")
+
+    //     .attr('x', data.x)
+    //     .attr('y', (d, i) => { return data.y + 10 +(i * 25); })
+    //     .attr('dx', 5)
+    //     .attr('dy', 15)
+    //     .on('click', (d) => { d.action(data) });
+
+    //   /*
+    //    * Other interactions
+    //    */
+    //   d3.select('body')
+    //     .on('click', () => {
+    //       d3.select(".contextMenu").remove();
+    //     });
+    // }
 
  
   const nodeClicked = (guid) => {
@@ -337,6 +423,74 @@ export default function Diagram(props) {
     props.onLinkClick(guid);
   }
 
+  // const nodeRightClicked = useCallback(
+  //   (d) => {
+
+  //     let createMenu = false;
+  //     let menuItems;
+
+  //     if (resourcesContext.focus.guid !== d.id) {
+  //       /*
+  //        * The user right-clicked a non-focus resource
+  //        *
+  //        * If the node is of a suitable type (i.e. one that can become the focus) present a
+  //        * context menu to enable the the user to explicitly make it the focus.
+  //        */
+  //       switch (d.category) {
+  //         case "platform":
+  //         case "server-instance":
+  //           menuItems = nonFocusMenuItems;
+  //           createMenu = true;
+  //           break;
+  //         default:
+  //           /* Node type not expected to be made focus */
+  //           break;
+  //       }
+  //     }
+  //     else {
+  //       /*
+  //        * The user right-clicked the focus resource
+  //        */
+  //       switch (d.category) {
+  //         case "platform":
+  //           menuItems = platformMenuItems;
+  //           createMenu = true;
+  //           break;
+  //         case "server-instance":
+  //           menuItems = serverMenuItems;
+  //           createMenu = true;
+  //           break;
+  //         default:
+  //           /*
+  //            * The user right-clicked on a node with a type that does not have a context menu - ignore
+  //            */
+  //           break;
+  //       }
+  //     }
+  //     if (createMenu) {
+  //       createContextMenu(d, menuItems)
+  //       d3.event.preventDefault();
+  //     }
+  //   },
+  //   [createContextMenu, nonFocusMenuItems, platformMenuItems, resourcesContext.focus.guid, serverMenuItems]
+  // );
+
+  // const nodeImage = (d) => {
+  //   switch (d.category) {
+  //     case "Glossary":
+  //       return glossaryImage;
+
+  //     case "Category":
+  //       return categoryImage;
+
+  //     case "Term":
+  //       return termImage;
+
+  //     default:
+  //       return null;
+
+  //   }
+  // }
 
   /*
    *  This function is called to determine the color of a node - if the node is selected then a decision

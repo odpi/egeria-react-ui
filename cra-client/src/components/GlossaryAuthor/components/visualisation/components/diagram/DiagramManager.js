@@ -85,6 +85,7 @@ export default function DiagramManager(props) {
       var newNode = {};
       console.log("node !!! " + JSON.stringify(node));
       newNode.id                     = node.nodeGUID;
+      newNode.category               = node.nodeType;
       newNode.label                  = node.name;   
       newNode.gen                    = node.gen;
       /*
