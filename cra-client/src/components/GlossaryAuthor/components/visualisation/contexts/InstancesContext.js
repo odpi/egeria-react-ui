@@ -644,30 +644,6 @@ const InstancesContextProvider = (props) => {
       onErrorLoadNode("Error did not get a node from the server");
     }
   };
-  // const onSuccessfulLoadNode = useCallback(
-
-  //   (json) => {
-
-  //     if (json !== null) {
-  //       if (json.relatedHTTPCode === 200) {
-  //         /*
-  //          * Should have an expandedNodeDetail, if the Node was not found the response
-  //          * will have included a non 200 status code and an NodeNotKnownException
-  //          */
-  //         let expNode = json.expandedNodeDetail;
-  //         if (expNode) {
-  //           processRetrievedNode(expNode);
-  //           return;
-  //         }
-  //       }
-  //     }
-  //     /*
-  //      * On failure ...
-  //      */
-  //     reportFailedOperation("get Node",json);
-  //   },
-  //   [ processRetrievedNode, reportFailedOperation]
-  // );
 
   const onErrorLoadNode = (message) => {
     reportFailedOperation("Get Node", message);
@@ -776,8 +752,8 @@ const InstancesContextProvider = (props) => {
          * The line was retrieved from the server identified by serverName in the gen.
          */
         if (guidToGenId[lineGUID] !== undefined) {
-          const genId = guidToGenId[lineGUID];
-          const gen = gens[genId - 1];
+          // const genId = guidToGenId[lineGUID];
+          // const gen = gens[genId - 1];
 
           loadLine(lineGUID);
         }

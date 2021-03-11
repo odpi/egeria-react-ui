@@ -131,7 +131,7 @@ export default function DiagramManager(props) {
 
       var newLink = {};
       newLink.id                     = line.lineGUID;
-      newLink.label                  = line.name;
+      newLink.label                  = line.label;
       /*
        * Need to get each node from its GUID...it must already be in the gens but you would need to 
        * ask InstancesContext to map the guid to the gen and then again to look up the guid in that gen
