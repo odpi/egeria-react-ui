@@ -94,7 +94,7 @@ export default function TraversalResultHandler(props) {
        * Display results if there are any, otherwise display empty result...
        */
 
-      let resultsPresent = (nodeTypes   && nodeTypes.length         > 0)   ||
+      let resultsPresent = (nodeTypes   && nodeTypes.length   > 0)   ||
                            (lineTypes   && lineTypes.length   > 0)   
                            ;
                       

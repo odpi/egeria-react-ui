@@ -14,7 +14,7 @@ import RexInterfaceImage                     from './RexInterface.png';
 
 import SearchResultsImage                   from './SearchResults.png';
 
-import "./gav.scss";
+import "./glove.scss";
 
 const imageRefs = {
     image1 : RexInterfaceImage,

@@ -83,7 +83,8 @@ export default function DiagramManager(props) {
       const node = gen.nodes[k];  
 
       var newNode = {};
-      newNode.id                     = node.systemAttributes.guid;
+      console.log("node !!! " + JSON.stringify(node));
+      newNode.id                     = node.nodeGUID;
       newNode.label                  = node.name;   
       newNode.gen                    = node.gen;
       /*
@@ -129,7 +130,7 @@ export default function DiagramManager(props) {
       const line = gen.lines[k];  
 
       var newLink = {};
-      newLink.id                     = line.systemAttributes.guid;
+      newLink.id                     = line.lineGUID;
       newLink.label                  = line.name;
       /*
        * Need to get each node from its GUID...it must already be in the gens but you would need to 
@@ -138,6 +139,7 @@ export default function DiagramManager(props) {
        * If the node is in this latest gen (quite likely given exploration) the asynchronous state
        * update to allNodes - performed when parsing nodes (above) - will not have happened yet.
        */
+      console.log("line " + JSON.stringify(line));
       newLink.source                 = newNodesMap[line.end1GUID];  
       newLink.target                 = newNodesMap[line.end2GUID];
       newLink.gen                    = line.gen;

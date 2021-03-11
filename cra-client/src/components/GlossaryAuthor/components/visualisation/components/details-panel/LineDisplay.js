@@ -59,10 +59,10 @@ export default function LineDisplay(props) {
       <div className="instance-details-item">
         Line Ends :
         {/* <div className="details-sub-container">
-          Line end 1 : <LineEndDisplay lineEnd={line.lineEnd1} />
+          Line end 1 : <LineEndDisplay lineEnd={line.end1} />
         </div>
         <div className="details-sub-container">
-          Line end 2 : <LineEndDisplay lineEnd={line.lineEnd2} />
+          Line end 2 : <LineEndDisplay lineEnd={line.end2} />
         </div> */}
       </div>
 

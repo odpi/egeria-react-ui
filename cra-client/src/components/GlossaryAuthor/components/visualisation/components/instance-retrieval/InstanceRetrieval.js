@@ -8,7 +8,6 @@ import { IdentificationContext } from "../../../../../../contexts/Identification
 import { InstancesContext } from "../../contexts/InstancesContext";
 import { withRouter } from "react-router-dom";
 import "./instance-retriever.scss";
-import getNodeType from "../../../properties/NodeTypes";
 const InstanceRetrieval = (props) => {
   useEffect(
     () => {
@@ -32,13 +31,8 @@ const InstanceRetrieval = (props) => {
       const nodeTypeKey = secondLastSegment.substring("visualise-".length);
       console.log("nodeTypeKey" + nodeTypeKey);
 
-      const nodeType = getNodeType(
-        identificationContext.getRestURL("glossary-author"),
-        nodeTypeKey
-      );
-      console.log("nodeType" + nodeType);
       //TODO pass through the onSuccess and onErrors
-      instancesContext.loadNode(guidToLoad, nodeType);
+      instancesContext.loadNode(guidToLoad, nodeTypeKey);
     }
   };
 

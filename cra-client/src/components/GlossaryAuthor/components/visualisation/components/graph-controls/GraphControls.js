@@ -5,6 +5,8 @@ import React, { useContext, useState, useRef }   from "react";
 
 import PropTypes                                 from "prop-types";
 
+import { IdentificationContext }                    from "../../../../../../contexts/IdentificationContext";
+
 import { InstancesContext }                      from "../../contexts/InstancesContext";
 
 import { InteractionContext }                    from "../../contexts/InteractionContext";
@@ -13,11 +15,13 @@ import TraversalResultHandler                    from "./TraversalResultHandler"
 
 import HistoryResultHandler                      from "./HistoryResultHandler";
 
-import "../../gav.scss";
+import "../../glove.scss";
+import { issueRestGet } from "../../../RestCaller";
 
 
 export default function GraphControls(props) {
 
+  const identificationContext = useContext(IdentificationContext);
   const instancesContext        = useContext(InstancesContext);
 
   const interactionContext      = useContext(InteractionContext);
@@ -70,79 +74,66 @@ export default function GraphControls(props) {
       return;
     }
 
-
+    const preTraversalURL = identificationContext.getRestURL("glossary-author")+ "/graph-counts/" + nodeGUID;
     /*
      * No filtering is applied to the pre-traversal...
      */
-    // repositoryServerContext.repositoryPOST("instances/pre-traversal",
-    //   { nodeGUID : nodeGUID,
-    //     depth      : 1            },  // depth is always limited to 1
-    //     _preTraversal); 
+     issueRestGet(preTraversalURL, onSuccessfulPreTraversal, onErrorPreTraversal);
   }
 
 
   /*
    * Handle completion of explore
    */
-  const _preTraversal = (json) => {  
+  const onSuccessfulPreTraversal = (json) => {  
 
     if (statusRef.current !== "cancelled" && statusRef.current !== "complete") {
-
-      if (json !== null) {
-
-        if (json.relatedHTTPCode === 200) {
 
           /*
            * Should have a traversal object        
            */
-          let rexPreTraversal = json.rexPreTraversal;
-          if (rexPreTraversal !== null) {
-            processPreTraversalResponse(rexPreTraversal);
+          let glovePreTraversal = json.result;
+          if (glovePreTraversal  !== null) {
+            processPreTraversalResponse(glovePreTraversal);
           }
           setStatus("complete");
           return;
-        }
-      }
-      /*
-       * On failure ...
-       */
-      interactionContext.reportFailedOperation("prepare for traversal",json);
-      setStatus("cancelled");
     }
     else {
       setStatus("idle");
     }
   };
-  
+  const onErrorPreTraversal = (message) => {
+    setStatus("cancelled");
+    interactionContext.reportFailedOperation("prepare for traversal", message);
+  }  
  
-  const processPreTraversalResponse = (rexPreTraversal) => {
+  const processPreTraversalResponse = (glovePreTraversal) => {
     /*
      * Display traversal filters. On the submit handler launch the real (filtered) traversal
      * and push the result up to the InstancesContext.
      *
-     * Unpack the RexPreTraversal fields
+     * Unpack the glovePreTraversal fields
      *    private String                      nodeGUID;                    --  must be non-null
      *    private Map<String, NodeLineStats>  nodeInstanceCounts;          --  the keys are NodeType names. The map can be null meaning no filtering by NodeType
      *    private Map<String, NodeLineStats>  lineInstanceCounts;          --  the keys are LineType names.  The map can be null meaning no filtering by LineType
      *    private Integer                     depth;
      */
-
     let localPreTraversalResults = {};
-
+   
     /*
      * Process the node instance stats...
      */
     localPreTraversalResults.nodeTypes = [];
-    const nodeInstanceCounts = rexPreTraversal.nodeInstanceCounts;
-    if (nodeInstanceCounts != null) {
-      const typeNames = Object.keys(nodeInstanceCounts);
+    const nodeCounts = glovePreTraversal[0].nodeCounts;
+    if (nodeCounts != null) {
+      const typeNames = Object.keys(nodeCounts);
       typeNames.forEach(typeName => {
-        const count = nodeInstanceCounts[typeName].count;
-        const typeGUID = nodeInstanceCounts[typeName].typeGUID;
+        const count = nodeCounts[typeName].count;
         /*
-         * Stash the typeName, typeGUID (and count) in this.preTraversal for later access
+         * Stash the typeName and count in this.preTraversal for later access
          */
-        localPreTraversalResults.nodeTypes.push( { 'name' : typeName  , 'guid' : typeGUID , 'count' : count , 'checked' : false });
+        localPreTraversalResults.nodeTypes.push( { 'name' : typeName  , 'count' : count , 'checked' : false });
       });
       localPreTraversalResults.nodeTypes.sort((a, b) => (a.name > b.name) ? 1 : -1);
     }
@@ -151,16 +142,15 @@ export default function GraphControls(props) {
      * Process the line instance stats...
      */
     localPreTraversalResults.lineTypes = [];
-    const lineInstanceCounts = rexPreTraversal.lineInstanceCounts;
-    if (lineInstanceCounts != null) {
-      const typeNames = Object.keys(lineInstanceCounts);
+    const lineCounts = glovePreTraversal[0].lineCounts;
+    if (lineCounts != null) {
+      const typeNames = Object.keys(lineCounts);
       typeNames.forEach(typeName => {
-        const count = lineInstanceCounts[typeName].count;
-        const typeGUID = lineInstanceCounts[typeName].typeGUID;
+        const count = lineCounts[typeName].count;
         /*
-         * Stash the typeName, typeGUID (and count) in this.preTraversal for later access
+         * Stash the typeName and count in this.preTraversal for later access
          */
-        localPreTraversalResults.lineTypes.push( { 'name' : typeName, 'guid' : typeGUID  , 'count' : count , 'checked' : false });
+        localPreTraversalResults.lineTypes.push( { 'name' : typeName, 'count' : count , 'checked' : false });
       });
       localPreTraversalResults.lineTypes.sort((a, b) => (a.name > b.name) ? 1 : -1);
     }
@@ -198,8 +188,7 @@ export default function GraphControls(props) {
       }
     });
 
-
-    instancesContext.explore(selectedNodeTypeNames, selectedLineTypeNames);
+    instancesContext.explore( instancesContext.getFocusGUID(), selectedNodeTypeNames, selectedLineTypeNames);
 
     /*
      * Clear the traversal results

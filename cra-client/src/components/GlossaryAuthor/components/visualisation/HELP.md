@@ -2,16 +2,16 @@
 
 &nbsp;
 
-The Glossary Author Visualiser (GAV) interface provides a way to visualise glossary artifacts in Egeria. It is possible to retrieve nodes and lines, view their properties and display them as a graph of interconnected objects. The instances are presented both textually (on the left side) and diagrammatically (on the right side).
+The GLOssary author Visualiser and Explorer (GLOVE) interface provides a way to visualise glossary artifacts in Egeria. It is possible to retrieve nodes and lines, view their properties and display them as a graph of interconnected objects. The instances are presented both textually (on the left side) and diagrammatically (on the right side).
 
 &nbsp;
 
-![Glossary Author Visualiser Interface](image1)
+![GLOssary author Visualiser and Explorer  Interface](image1)
 
 &nbsp;
 
-### Using the Gav Interface
-When the Gav interface first loads, it displays a partifcular glossary artifact (A Glossary Category or Term). This os the focus node.
+### Using the GLOVE Interface
+When the GLOVE interface first loads, it displays a partifcular glossary artifact (A Glossary Category or Term). This os the focus node.
 
 &nbsp;
 

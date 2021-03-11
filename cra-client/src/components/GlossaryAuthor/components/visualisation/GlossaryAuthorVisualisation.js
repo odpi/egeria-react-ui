@@ -24,7 +24,7 @@ import HelpHandler                     from "./HelpHandler";
 import QuestionMarkImage               from "./question-mark-32.png";
 import HelpMarkdown                    from './HELP.md';
 
-import "./gav.scss";
+import "./glove.scss";
 
 export default function GlossaryAuthorVisualisation(props) {
 
@@ -116,12 +116,12 @@ export default function GlossaryAuthorVisualisation(props) {
   )
   return (
 
-    <div className="gav-container" ref={containerDiv}>
+    <div className="glove-container" ref={containerDiv}>
 
       <InteractionContextProvider>
             <InstancesContextProvider>
 
-              <div className="gav-top">
+              <div className="glove-top">
 
                 <div className="title">
                   <p>Glossary Author Visualisation</p>
@@ -136,7 +136,7 @@ export default function GlossaryAuthorVisualisation(props) {
                                    onSubmit            = { submitHelpModal } />
                 </div>
 
-                <div className="gav-top-middle">
+                <div className="glove-top-middle">
                   <InstanceRetrieval/>
                 </div>
 
@@ -144,9 +144,9 @@ export default function GlossaryAuthorVisualisation(props) {
 
               </div>
 
-              <div className="gav-content">
+              <div className="glove-content">
 
-                <div className="gav-lhs">
+                <div className="glove-lhs">
                   <hr />
                
                   <GraphControls />
@@ -154,7 +154,7 @@ export default function GlossaryAuthorVisualisation(props) {
                   <DetailsPanel />
                 </div>
 
-                <div className="gav-rhs">
+                <div className="glove-rhs">
                   <DiagramManager height={workingHeight-300} width={workingWidth-500}/>
                 </div>
 

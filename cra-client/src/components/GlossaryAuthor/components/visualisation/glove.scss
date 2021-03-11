@@ -3,7 +3,7 @@
 
 
 
-.gav-container {
+.glove-container {
   position         : absolute;
   top              : 0px;
   left             : 260px;
@@ -15,7 +15,7 @@
   border-color     : rgb(72, 205, 209) ;*/
 }
 
-.gav-top {
+.glove-top {
   display          : flex;
   flex-flow        : row;
   width            : 100%; 
@@ -29,21 +29,21 @@
   border-color     : purple ;*/
 }
 
-.gav-top-left {
+.glove-top-left {
   flex             : 0 0 auto;
   /*border-style   : solid;
   border-width     : 3px;
   border-color     : rgb(55, 0, 255) ;*/
 }
 
-.gav-top-middle {
+.glove-top-middle {
   flex             : 0 0 auto;
   /*border-style   : solid;
   border-width     : 3px;
   border-color     : rgb(255, 0, 170) ;*/
 }
 
-.gav-top-right {
+.glove-top-right {
   flex             : 0 0 auto;
   /*border-style   : solid;
   border-width     : 3px;
@@ -51,7 +51,7 @@
 }
 
 
-.gav-content {
+.glove-content {
   flex             : 2;
   display          : flex;
   flex-flow        : row;
@@ -62,7 +62,7 @@
   color            : 'black';
 }
 
-.gav-lhs {
+.glove-lhs {
   flex             : 0 0 auto;
   width            : 450px;
   overflow         : auto;
@@ -75,7 +75,7 @@
   border-color     : green ;*/
 }
 
-.gav-rhs {
+.glove-rhs {
   flex             : 1 1 auto;
   padding          : 10px;
   font-size        : 10px;
