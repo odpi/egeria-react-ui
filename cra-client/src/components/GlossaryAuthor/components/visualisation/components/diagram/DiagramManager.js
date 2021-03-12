@@ -352,6 +352,7 @@ export default function DiagramManager(props) {
           /* Graph has been cleared */
           clearGraph();
           setLastGenProcessed(latestActiveGenId);
+          // instancesContext.changeFocusNode(guid);
         }
         else {
           /*
@@ -359,6 +360,7 @@ export default function DiagramManager(props) {
            */
           removeGen(latestActiveGenId+1);
           setLastGenProcessed(latestActiveGenId);
+
         }
       }
 

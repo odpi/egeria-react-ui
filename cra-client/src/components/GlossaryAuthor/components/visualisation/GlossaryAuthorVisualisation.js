@@ -124,7 +124,7 @@ export default function GlossaryAuthorVisualisation(props) {
               <div className="glove-top">
 
                 <div className="title">
-                  <p>Glossary Author Visualisation</p>
+                  <p>Glossary author visualisation explorer (glove) </p>
 
                   <input type="image"  src={QuestionMarkImage} alt="image of question mark"
                      onClick = { () => displayHelp() }  >

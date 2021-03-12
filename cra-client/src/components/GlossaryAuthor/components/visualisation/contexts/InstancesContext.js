@@ -625,7 +625,7 @@ const InstancesContextProvider = (props) => {
   const loadNode = (nodeGUID, nodeTypeKey) => {
     console.log("loadNode");
     if (nodeTypeKey === undefined) {
-      nodeTypeKey = guidToNodeType[nodeGUID];
+       nodeTypeKey = guidToNodeType[nodeGUID];
     }
     if (nodeTypeKey === undefined) {
       alert("No nodetype!!! ");
@@ -639,7 +639,7 @@ const InstancesContextProvider = (props) => {
       const url = nodeType.url + "/" + nodeGUID;
 
       if (!guidToNodeType[nodeGUID]) {
-        addNewGuidToNodeType(nodeGUID, nodeType, "loadNode");
+        addNewGuidToNodeType(nodeGUID, nodeType.key, "loadNode");
       }
 
       issueRestGet(url, onSuccessfulLoadNode, onErrorLoadNode);
@@ -973,6 +973,13 @@ const InstancesContextProvider = (props) => {
      * Now replace the map...
      */
     setGuidToGenId(newGUIDMap);
+    if (newGUIDMap.length === 1) {
+      // if there is one node - then we need to reload it to populate the details and to give it focus.
+      for (let nodeGUID in newGUIDMap) {
+        loadNode(nodeGUID);
+      }
+    
+    }
   }, [clearFocusInstance, focus.instanceGUID, gens, guidToGenId]);
 
   /*
@@ -984,13 +991,10 @@ const InstancesContextProvider = (props) => {
      * Reset the focusInstance
      */
     clearFocusInstance();
+    const firstGen = Object.assign({}, gens[0]);
+    // firstGen should have the original node in it.
+    const originalNode = firstGen.nodes[0];
 
-    const firstGen = gens[0];
-    let traversal = {};
-    traversal.nodes = {};
-    traversal.lines = {};
-    traversal.nodes = Object.assign([], gens[0].nodes);
-    traversal.operation = "Get Node after clear";
     /*
      * Empty the graph
      */
@@ -1003,8 +1007,7 @@ const InstancesContextProvider = (props) => {
      */
     const emptymap = {};
     setGuidToGenId(emptymap);
-    // the first gen back in
-    addGen(traversal);
+    loadNode(originalNode.nodeGUID, originalNode.nodeType);
   }, [clearFocusInstance]);
 
   /*
