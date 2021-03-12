@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { issueRestGet } from "../../RestCaller";
 import getNodeType from "../../properties/NodeTypes";
+import getLineType from "../../properties/LineTypes";
 
 import { IdentificationContext } from "../../../../../contexts/IdentificationContext";
 
@@ -123,6 +124,7 @@ const InstancesContextProvider = (props) => {
   const [gens, setGens] = useState([]);
   const [guidToGenId, setGuidToGenId] = useState({});
   const [guidToNodeType, setGuidToNodeType] = useState({});
+  const [guidToLineType, setGuidToLineType] = useState({});
 
   /*
    * The latestGenId is not just the length of the gens array - it indicates the id of the most recent
@@ -318,6 +320,18 @@ const InstancesContextProvider = (props) => {
       setGuidToNodeType(newGuidToNodeType);
     }
   }
+    // Add a new entry into the guid to nodetype map.
+    function addNewGuidToLineType(guid, lineType, msg) {
+      let newGuidToLineType = guidToLineType;
+      if (newGuidToLineType[guid] === undefined) {
+        console.log("Adding guid" + guid + ",type " + lineType + ", msg=" + msg);
+        console.log(
+          "Adding guid" + guid + ",type json " + JSON.stringify(lineType)
+        );
+        newGuidToLineType[guid] = lineType;
+        setGuidToLineType(newGuidToLineType);
+      }
+    }
 
   /*
    * processRetrievedLine accepts an expLine, checks whether it is already known and if not,
@@ -326,6 +340,7 @@ const InstancesContextProvider = (props) => {
   const processRetrievedLine = useCallback(
     (line) => {
       const lineGUID = line.systemAttributes.guid;
+      const lineType = line.lineType;
       let end1 = line.end1;
       let end2 = line.end2;
       const end1GUID = end1.nodeGuid;
@@ -351,6 +366,7 @@ const InstancesContextProvider = (props) => {
         lineDigest.label = line.lineType;
         lineDigest.end1GUID = end1GUID;
         lineDigest.end2GUID = end2GUID;
+        lineDigest.lineGUID = lineGUID;
 
         let traversal = {};
         traversal.nodes = {};
@@ -417,6 +433,7 @@ const InstancesContextProvider = (props) => {
         }
         addNewGuidToNodeType(end1GUID, end1.nodeType, "end1");
         addNewGuidToNodeType(end2GUID, end2.nodeType, "end2");
+        addNewGuidToLineType(lineGUID,lineType, "processed retrieved Line")
 
         /*
          * Add the traversal to the sequence of gens in the graph.
@@ -487,6 +504,7 @@ const InstancesContextProvider = (props) => {
         lineDigests[lineGUID] = lineDigest;
         addNewGuidToNodeType(line.end1.nodeGuid, line.end1.nodetype,"processRetrievedTraversal end1");
         addNewGuidToNodeType(line.end2.nodeGuid, line.end2.nodetype,"processRetrievedTraversal end2");
+        addNewGuidToLineType(lineGUID, line.lineType);
       }
       traversal.nodes = nodeDigests;
       traversal.lines = lineDigests;
@@ -652,37 +670,82 @@ const InstancesContextProvider = (props) => {
   /*
    * Callback for completion of loadLine
    */
-  const _loadLine = useCallback(
-    (json) => {
-      if (json !== null) {
-        if (json.relatedHTTPCode === 200) {
-          /*
-           * Should have an expandedLine, if the Line was not found the response
-           * will have included a non 200 status code and a LineNotKnownException
-           */
-          let expLine = json.expandedLine;
-          if (expLine !== null) {
-            processRetrievedLine(expLine);
-            return;
-          }
-        }
-      }
-      /*
-       * On failure ...
-       */
-      reportFailedOperation("Get Line", json);
-    },
-    [processRetrievedLine, reportFailedOperation]
-  );
+  // const _loadLine = useCallback(
+  //   (json) => {
+  //     if (json !== null) {
+  //       if (json.relatedHTTPCode === 200) {
+  //         /*
+  //          * Should have an expandedLine, if the Line was not found the response
+  //          * will have included a non 200 status code and a LineNotKnownException
+  //          */
+  //         let expLine = json.expandedLine;
+  //         if (expLine !== null) {
+  //           processRetrievedLine(expLine);
+  //           return;
+  //         }
+  //       }
+  //     }
+  //     /*
+  //      * On failure ...
+  //      */
+  //     reportFailedOperation("Get Line", json);
+  //   },
+  //   [processRetrievedLine, reportFailedOperation]
+  // );
 
   /*
    * Function to get Line by GUID from the specified repository server
    */
-  const loadLine = (lineGUID) => {
-    // repositoryServerContext.callPOST(
-    //                                  "instances/line",
-    //                                  { lineGUID : lineGUID },
-    //                                  _loadLine);
+  // const loadLine = (lineGUID) => {
+  //   // repositoryServerContext.callPOST(
+  //   //                                  "instances/line",
+  //   //                                  { lineGUID : lineGUID },
+  //   //                                  _loadLine);
+  // };
+  const loadLine = (lineGUID, lineTypeKey) => {
+    console.log("loadLine");
+    if (lineTypeKey === undefined) {
+      lineTypeKey = guidToLineType[lineGUID];
+    }
+    if (lineTypeKey === undefined) {
+      alert("No line type!!! ");
+    } else {
+      lineTypeKey = lineTypeKey.toLowerCase();
+      const lineType = getLineType(
+        identificationContext.getRestURL("glossary-author"),
+        lineTypeKey
+      );
+
+      const url = lineType.url + "/" + lineGUID;
+
+      if (!guidToLineType[lineGUID]) {
+        addNewGuidToLineType(lineGUID, lineType, "loadLine");
+      }
+
+      issueRestGet(url, onSuccessfulLoadLine, onErrorLoadLine);
+    }
+  };
+
+  /*
+   * Callback for completion of loadNode
+   */
+  const onSuccessfulLoadLine = (json) => {
+    console.log("onSuccessful Load Line");
+    let line = undefined;
+    if (json.result.length === 1) {
+      line = json.result[0];
+      console.log("Line Loaded " + line.name);
+    }
+    if (line) {
+      processRetrievedLine(line);
+      return;
+    } else {
+      onErrorLoadLine("Error did not get a node from the server");
+    }
+  };
+
+  const onErrorLoadLine = (message) => {
+    reportFailedOperation("Get Line", message);
   };
 
   /*
@@ -869,9 +932,9 @@ const InstancesContextProvider = (props) => {
      */
 
     /*
-     *  Check there is at least one gen.
+     *  Check there is at least two gens.
      */
-    if (gens.length <= 0) {
+    if (gens.length <= 1) {
       return;
     }
 
@@ -922,6 +985,12 @@ const InstancesContextProvider = (props) => {
      */
     clearFocusInstance();
 
+    const firstGen = gens[0];
+    let traversal = {};
+    traversal.nodes = {};
+    traversal.lines = {};
+    traversal.nodes = Object.assign([], gens[0].nodes);
+    traversal.operation = "Get Node after clear";
     /*
      * Empty the graph
      */
@@ -934,6 +1003,8 @@ const InstancesContextProvider = (props) => {
      */
     const emptymap = {};
     setGuidToGenId(emptymap);
+    // the first gen back in
+    addGen(traversal);
   }, [clearFocusInstance]);
 
   /*
@@ -1140,12 +1211,9 @@ const InstancesContextProvider = (props) => {
         clear,
         getHistory,
         loadNode,
-        // _loadNode,
         loadLine,
-        _loadLine,
         processRetrievedTraversal,
         explore,
-        // _explore,
         setGens,
         getLatestActiveGenId,
         removeGen,

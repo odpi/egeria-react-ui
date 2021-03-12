@@ -166,14 +166,14 @@ const getNodeType = (GlossaryAuthorURL, key) => {
   };
   console.log("looking for key " +key);
   let nodeType = nodeTypes[key];
-  
+
   if (nodeType) {
     nodeType.url =
      GlossaryAuthorURL +
       "/" +
       nodeType.plural;
   } else {
-    nodeType = nodeTypes["unSet"];
+    nodeType = nodeTypes["notSet"];
   }
   return nodeType;
 };
