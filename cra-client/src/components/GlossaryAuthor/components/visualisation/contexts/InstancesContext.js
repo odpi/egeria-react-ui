@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { issueRestGet } from "../../RestCaller";
 import getNodeType from "../../properties/NodeTypes";
 import getLineType from "../../properties/LineTypes";
+import { useHistory } from 'react-router'
 
 import { IdentificationContext } from "../../../../../contexts/IdentificationContext";
 
@@ -23,6 +24,7 @@ export const InstancesContextConsumer = InstancesContext.Consumer;
 
 const InstancesContextProvider = (props) => {
   const identificationContext = useContext(IdentificationContext);
+  const history = useHistory()
   /*
    * The focusInstance is the instance (Node or Line) that is the user's current
    * focus. It's GUID is stored in focusInstanceGUID and its category is in focusInstanceCategory.
@@ -983,32 +985,11 @@ const InstancesContextProvider = (props) => {
   }, [clearFocusInstance, focus.instanceGUID, gens, guidToGenId]);
 
   /*
-   * Clear the state of the session - this includes the gens, the focus and the guidToGenId map.
-   * Reset the searchCategory to Node and the CategoryToLoad to Node.
+   * refresh the page 
    */
-  const clear = useCallback(() => {
-    /*
-     * Reset the focusInstance
-     */
-    clearFocusInstance();
-    const firstGen = Object.assign({}, gens[0]);
-    // firstGen should have the original node in it.
-    const originalNode = firstGen.nodes[0];
-
-    /*
-     * Empty the graph
-     */
-    const emptyArray = [];
-    setGens(emptyArray);
-    setLatestActiveGenId(0);
-
-    /*
-     * Empty the map
-     */
-    const emptymap = {};
-    setGuidToGenId(emptymap);
-    loadNode(originalNode.nodeGUID, originalNode.nodeType);
-  }, [clearFocusInstance]);
+  const clear  = () => {
+    history.go(0);
+  };
 
   /*
    * getHistory compiles a history list describing the exploration from gen 1 onwards.
