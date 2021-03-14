@@ -46,7 +46,7 @@ const getLineType = (GlossaryAuthorURL, key) => {
       plural: "category-anchors",
       typeName: "CategoryAnchor"
     },
-    categoryhierachy: {
+    categoryhierachylink: {
       key: "category-hierarchy",
       plural: "category-hierarchies",
       typeName: "CategoryHierarchyLink"
@@ -148,8 +148,9 @@ const getLineType = (GlossaryAuthorURL, key) => {
       typeName: "undefined",
     },
   };
-
+  console.log("getLineType key " + key);
   let lineType = LineTypes[key];
+  console.log("getLineType Linetype " + lineType);
   if (lineType.isRelatedTerm) {
     // add in the related term attributes
     lineType["attributes"] = relatedTermAttributes;
@@ -158,7 +159,7 @@ const getLineType = (GlossaryAuthorURL, key) => {
   if (lineType) {
     lineType.url =
       GlossaryAuthorURL +
-      "/" +
+      "/relationships/" +
       lineType.plural;
   } else {
     console.log("No line type for key " + key);

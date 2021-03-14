@@ -30,93 +30,69 @@ export default function LineDisplay(props) {
     }
   };
 
-  const expLine = props.expLine;
+  // const expLine = props.expLine;
 
-  const line = expLine.line;
-  const lineDigest = expLine.lineDigest;
-  const label = lineDigest.label;
-  const gen = lineDigest.gen;
+  // const line = expLine.line;
+  // const lineDigest = expLine.lineDigest;
+  // const label = lineDigest.label;
+  // const gen = lineDigest.gen;
+  const line         = props.line;
+  const label        = line.name;
+  const gen          = line.gen;
+  const typeName     = line.lineType; 
+  const systemAttributes = line.systemAttributes;    
 
   return (
     <div className="instance-details-container">
       <div className="instance-details-item">Line : {label}</div>
-      <div className="instance-details-item">
-        Type : {line.type.typeDefName}
-      </div>
-      <div className="instance-details-item">Version : {line.version}</div>
-      <div className="instance-details-item">
+      {/* {JSON.stringify(line)} */}
+      {/* <div className="instance-details-item">Version : {line.version}</div> */}
+      {/* <div className="instance-details-item">
         Status : <InstanceStatusDisplay inst={line} />
-      </div>
-      <div className="instance-details-item">
+      </div> */}
+      {/* <div className="instance-details-item">
         Properties :{" "}
         {!line.properties ? (
           "empty"
         ) : (
-          <InstancePropertiesDisplay properties={line.properties} />
+          <InstancePropertiesDisplay properties={line.attributes} />
         )}
-      </div>
+      </div> */}
+       <div className="instance-details-item">Description : {line.description}</div>
       <div className="instance-details-item">GUID : {line.guid}</div>
-      <div className="instance-details-item">
-        Line Ends :
-        {/* <div className="details-sub-container">
-          Line end 1 : <LineEndDisplay lineEnd={line.end1} />
-        </div>
-        <div className="details-sub-container">
-          Line end 2 : <LineEndDisplay lineEnd={line.end2} />
-        </div> */}
-      </div>
+      <div className="instance-details-item">Description : {line.description}</div>
+      Line End1 - {line.end1.name} : 
+      <div className="instance-details-item">Node type : {line.end1.nodeType} </div>
+      <div className="instance-details-item">Node GUID : {line.end1.nodeGuid} </div>
+      <div className="instance-details-item">Description : {line.end1.description} </div>
+      Line End2 - {line.end2.name} : 
+      <div className="instance-details-item">Node type : {line.end2.nodeType} </div>
+      <div className="instance-details-item">Node GUID : {line.end2.nodeGuid} </div>
+      <div className="instance-details-item">Description : {line.end2.description} </div>
 
-      <button
-        className="collapsible-non-bold"
-        id="querySummary"
-        onClick={flipSection}
-      >
-        {" "}
-        Glossary Author Visualisation Retrieval :{" "}
-      </button>
+      <button className="collapsible-non-bold" id="querySummary" onClick={flipSection}> Generation information : </button>
       <div className="content">
         <div className="instance-details-item">Added in gen : {gen}</div>
       </div>
 
-      <button
-        className="collapsible-non-bold"
-        id="controlProps"
-        onClick={flipSection}
-      >
-        {" "}
-        OMRS Control Properties :{" "}
-      </button>
+      <button className="collapsible-non-bold" id="controlProps" onClick={flipSection}>System Attributes: </button>
       <div className="content">
         <ul className="details-sublist">
-          <li className="details-sublist-item">createdBy : {line.createdBy}</li>
-          <li className="details-sublist-item">
-            createTime : {line.createTime}
+          <li className="details-sublist-item">Version : {systemAttributes.version}</li>
+          <div className="instance-details-item">GUID : {systemAttributes.guid}</div>
+          <li className="details-sublist-item">createdBy : {systemAttributes.createdBy}</li>
+          <li className="details-sublist-item">createTime : {systemAttributes.createTime}</li>
+          <li className="details-sublist-item">updatedBy : {systemAttributes.updatedBy ? systemAttributes.updatedBy : "empty"}</li>
+          <li className="details-sublist-item">updateTime : {systemAttributes.updateTime ? systemAttributes.updateTime : "empty"}</li>
+          <li className="details-sublist-item">maintainedBy : { !systemAttributes.maintainedBy ? "empty" :
+            <ul className="details-sublist">
+              {systemAttributes.maintainedBy.sort().map( (mtr) => <li className="details-sublist-item" key={mtr}> {mtr}</li> )}
+            </ul>
+            }
           </li>
-          <li className="details-sublist-item">
-            updatedBy : {line.updatedBy ? line.updatedBy : "empty"}
-          </li>
-          <li className="details-sublist-item">
-            updateTime : {line.updateTime ? line.updateTime : "empty"}
-          </li>
-          <li className="details-sublist-item">
-            maintainedBy{" "}
-            {!line.maintainedBy ? (
-              "empty"
-            ) : (
-              <ul className="details-sublist">
-                {line.maintainedBy.sort().map((mtr) => (
-                  <li className="details-sublist-item" key={mtr}>
-                    {" "}
-                    {mtr}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-          <li className="details-sublist-item">
-            instanceLicense :{" "}
-            {line.instanceLicense ? line.instanceLicense : "empty"}
-          </li>
+          <li className="details-sublist-item">instanceLicense : {systemAttributes.instanceLicense ? systemAttributes.instanceLicense : "empty"}</li>
+          {/* <li className="details-sublist-item">instanceProvenanceType : {entity.instanceProvenanceType ? entity.instanceProvenanceType : "empty"}</li>
+          <li className="details-sublist-item">replicatedBy : {entity.replicatedBy ? entity.replicatedBy : "empty"}</li> */}
         </ul>
       </div>
     </div>

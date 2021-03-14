@@ -68,11 +68,11 @@ const InstancesContextProvider = (props) => {
    * the category does not match the other aspects, they will be very confused.
    */
   const setFocusLine = useCallback(
-    (expLine) => {
+    (line) => {
       const newFocus = {
         instanceCategory: "Line",
-        instanceGUID: expLine.line.guid,
-        instance: expLine,
+        instanceGUID: line.guid,
+        instance: line,
       };
       setFocus(newFocus);
     },
@@ -341,7 +341,7 @@ const InstancesContextProvider = (props) => {
    */
   const processRetrievedLine = useCallback(
     (line) => {
-      const lineGUID = line.systemAttributes.guid;
+      const lineGUID = line.guid;
       const lineType = line.lineType;
       let end1 = line.end1;
       let end2 = line.end2;
