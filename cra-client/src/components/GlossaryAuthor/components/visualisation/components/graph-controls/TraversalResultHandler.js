@@ -239,6 +239,6 @@ TraversalResultHandler.propTypes = {
   selectCallback       : PropTypes.func.isRequired, 
   setAllCallback       : PropTypes.func.isRequired, 
   //spec                 : PropTypes.object,
-  nodeTypes          : PropTypes.array,                    
-  lineTypes    : PropTypes.array
+  nodeTypes            : PropTypes.array,                    
+  lineTypes            : PropTypes.array
 };

@@ -1090,7 +1090,7 @@ const InstancesContextProvider = (props) => {
           }
 
           /*
-           * Line Type Filters - show type names rather than type GUIDs
+           * Line Type Filters - show type names 
            */
           querySummary = querySummary.concat(" Line Type Filters: ");
           var lineTypeNames = genContent.LineTypeNames;
@@ -1108,32 +1108,32 @@ const InstancesContextProvider = (props) => {
 
           break;
 
-        case "NodeSearch":
-          /*
-           * Format querySummary as "Node Search Expression [<expr>] <guid>"
-           */
-          querySummary = querySummary.concat(" Node Search: ");
-          querySummary = querySummary.concat(
-            " Expression [" + genContent.searchText + "]"
-          );
-          break;
+        // case "NodeSearch":
+        //   /*
+        //    * Format querySummary as "Node Search Expression [<expr>] <guid>"
+        //    */
+        //   querySummary = querySummary.concat(" Node Search: ");
+        //   querySummary = querySummary.concat(
+        //     " Expression [" + genContent.searchText + "]"
+        //   );
+        //   break;
 
-        case "lineSearch":
-          /*
-           * Format querySummary as "Line Search Expression [<expr>] <guid>"
-           */
-          querySummary = querySummary.concat(" Line Search: ");
-          querySummary = querySummary.concat(
-            " Expression [" + genContent.searchText + "]"
-          );
-          break;
+        // case "lineSearch":
+        //   /*
+        //    * Format querySummary as "Line Search Expression [<expr>] <guid>"
+        //    */
+        //   querySummary = querySummary.concat(" Line Search: ");
+        //   querySummary = querySummary.concat(
+        //     " Expression [" + genContent.searchText + "]"
+        //   );
+        //   break;
 
         default:
           /*
            *  Found a gen result with no operation type.
            *  Add error message to gen so this is noticed in history....
            */
-          querySummary = "Operation not recognised!";
+          querySummary = "Operation " + genContent.operation + " not recognised!";
           break;
       }
 

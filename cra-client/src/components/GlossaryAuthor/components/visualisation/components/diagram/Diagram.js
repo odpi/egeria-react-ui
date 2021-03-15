@@ -16,9 +16,9 @@ import { InstancesContext }                                from "../../contexts/
 // import categoryImage                                           from "../../../../../../images/odpi/Egeria_category_32";
 // import glossaryImage                                           from "../../../../../../images/odpi/Egeria_glossary_32";
 
-// import termImage                                               from "../../../../../../imagesHolder/odpi/odpi/ODPiEgeria_Icon_glossaryterm";
-// import categoryImage                                           from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_glossarycategory.svg";
-// import glossaryImage                                           from "../../../../../../imagesHolder/odpi/Egeria_glossary.svg";
+import termImage                                               from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_glossaryterm.svg";
+import categoryImage                                           from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_glossarycategory.svg";
+import glossaryImage                                           from "../../../../../../imagesHolder/odpi/Egeria_glossary.svg";
 
 
 
@@ -264,25 +264,24 @@ export default function Diagram(props) {
       ;
 
 
+    enter_set.append("svg:image")
+      .attr("xlink:href", d => nodeImage(d))
+      .attr("x", -16)
+      .attr("y", -16)
+      .attr("width",32)
+      .attr("height",32)
+      .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
+      // .on("contextmenu", d => {
+      //   nodeRightClicked(d);})
+      ;  
 
-    // enter_set.append("svg")
-    //   .attr("xlink:href", d => nodeImage(d))
-    //   .attr("x", -16)
-    //   .attr("y", -16)
-    //   .attr("width",32)
-    //   .attr("height",32)
-    //   .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
-    //   // .on("contextmenu", d => {
-    //   //   nodeRightClicked(d);})
-    //   ;  
-
-      enter_set.append('circle')
-      .attr('r',            node_radius)
-      .attr('stroke',       egeria_primary_color_string)       
-      .attr('stroke-width', '2px')
-      .attr('fill',         'white')      
-      .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})  // The node's id is the nodeGUID
-      ;
+      // enter_set.append('circle')
+      // .attr('r',            node_radius)
+      // .attr('stroke',       egeria_primary_color_string)       
+      // .attr('stroke-width', '2px')
+      // .attr('fill',         'white')      
+      // .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})  // The node's id is the nodeGUID
+      // ;
 
     enter_set.append('text')  
       .attr("fill",         "#444")
@@ -475,22 +474,22 @@ export default function Diagram(props) {
   //   [createContextMenu, nonFocusMenuItems, platformMenuItems, resourcesContext.focus.guid, serverMenuItems]
   // );
 
-  // const nodeImage = (d) => {
-  //   switch (d.category) {
-  //     case "Glossary":
-  //       return glossaryImage;
+  const nodeImage = (d) => {
+    switch (d.category) {
+      case "Glossary":
+        return glossaryImage;
 
-  //     case "Category":
-  //       return categoryImage;
+      case "Category":
+        return categoryImage;
 
-  //     case "Term":
-  //       return termImage;
+      case "Term":
+        return termImage;
 
-  //     default:
-  //       return null;
+      default:
+        return null;
 
-  //   }
-  // }
+    }
+  }
 
   /*
    *  This function is called to determine the color of a node - if the node is selected then a decision
@@ -506,44 +505,47 @@ export default function Diagram(props) {
      * that can be allocated, by which time we are at 100% black. If this number proves to
      * be insufficient, we can shorten the two-stops or assign a single hue, e.g. green.
      */
-    let colorString = repositoryToColor[d.metadataCollectionId];
-    if (colorString !== undefined) {
-      return colorString;
-    }
-    else {
 
-      /*
-       * Assign first available color
-       */
-      let assigned = false;
-      for (let col in possibleColors) {
-        colorString = possibleColors[col];
-        if (colorToRepository[colorString] === undefined) {
-          /*
-           * Color is available
-           */
-          repositoryToColor[d.metadataCollectionId] = colorString;
-          colorToRepository[colorString] = d.metadataCollectionId;
-          return colorString;
-        }
-      }
-      if (!assigned) {
+    return '#EEE';
 
-        /*
-         * Ran out of available colors for repositories!
-         *
-         * Assign a color that we know is not in the possible colors to this
-         * repo and any further ones we discover. Remember this for consistency
-         * - i.e. this repository will use this color for the remainder of this
-         * exploration. There may be multiple repositories sharing this same color
-         * so do not update the colorToRepository map. If a color frees up it will
-         * be allocated to a new repository, but not to repositories remembered below.
-         */
-        const col = '#000';
-        this.repositoryToColor[d.metadataCollectionId] = col;
-        return col;
-      }
-    }
+    // let colorString = repositoryToColor[d.metadataCollectionId];
+    // if (colorString !== undefined) {
+    //   return colorString;
+    // }
+    // else {
+
+    //   /*
+    //    * Assign first available color
+    //    */
+    //   let assigned = false;
+    //   for (let col in possibleColors) {
+    //     colorString = possibleColors[col];
+    //     if (colorToRepository[colorString] === undefined) {
+    //       /*
+    //        * Color is available
+    //        */
+    //       repositoryToColor[d.metadataCollectionId] = colorString;
+    //       colorToRepository[colorString] = d.metadataCollectionId;
+    //       return colorString;
+    //     }
+    //   }
+    //   if (!assigned) {
+
+    //     /*
+    //      * Ran out of available colors for repositories!
+    //      *
+    //      * Assign a color that we know is not in the possible colors to this
+    //      * repo and any further ones we discover. Remember this for consistency
+    //      * - i.e. this repository will use this color for the remainder of this
+    //      * exploration. There may be multiple repositories sharing this same color
+    //      * so do not update the colorToRepository map. If a color frees up it will
+    //      * be allocated to a new repository, but not to repositories remembered below.
+    //      */
+    //     const col = '#000';
+    //     this.repositoryToColor[d.metadataCollectionId] = col;
+    //     return col;
+    //   }
+    // }
   }
 
 

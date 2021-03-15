@@ -323,8 +323,8 @@ export default function GraphControls(props) {
                                 //spec                  = { traversalSpecification }
                                 selectCallback        = { selectCallback }
                                 setAllCallback        = { setAllCallback }
-                                nodeTypes           = {preTraversalNodeTypes}
-                                lineTypes     = {preTraversalLineTypes}
+                                nodeTypes             = {preTraversalNodeTypes}
+                                lineTypes             = {preTraversalLineTypes}
                                 onCancel              = { cancelTraversalModal }
                                 onSubmit              = { submitTraversalModal } />
 
