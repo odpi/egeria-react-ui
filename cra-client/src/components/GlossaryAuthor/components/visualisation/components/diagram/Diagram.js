@@ -34,7 +34,7 @@ export default function Diagram(props) {
    * We need a force-directed sim, which ideally should be created on load of the component.
    * and only restarted when the data is updated. Unfortunately it cannot be made part of the
    * Diagram's state, otherwise animation does not work. This is true whether one attempts to
-   * use useState or useRef. So, unfortunately, it seeems to be necessary to make it soft.
+   * use useState or useRef. So, unfortunately, it seems to be necessary to make it soft.
    * This will mean that every rendering will cause the first useEffect to re-create it and
    * initialise it. It will be lost and recreated on each render.
    */
@@ -581,7 +581,8 @@ export default function Diagram(props) {
       .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");
 
     nodes.selectAll('text')
-      .attr("fill", d => (d.id === focusGUID) ? egeria_text_color_string : "#444" );
+      .attr("fill", d => (d.id === focusGUID) ? egeria_text_color_string : "#444" )
+      .style("text-decoration", d => (d.id === focusGUID) ? "underline" : "none" );
     
     const links = svg.selectAll(".link")
 
