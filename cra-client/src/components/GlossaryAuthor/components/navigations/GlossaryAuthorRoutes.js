@@ -10,14 +10,15 @@ import CategoryAuthorNavigation from "./GlossaryAuthorNavigation";
 import GlossaryAuthorCategoriesNavigation from "./GlossaryAuthorCategoriesNavigation";
 import GlossaryAuthorChildCategoriesNavigation from "./GlossaryAuthorChildCategoriesNavigation";
 import GlossaryAuthorTermsNavigation from "./GlossaryAuthorTermsNavigation";
+import GlossaryAuthorGraphNavigation from "./GlossaryAuthorGraphNavigation";
 // children components
 import GlossaryChildren from "../GlossaryChildren";
 import CategoryChildren from "../CategoryChildren";
-// create glossary 
+// create glossary
 import CreateGlossary from "../create/CreateGlossary";
 // update glossary
 import UpdateGlossary from "../update/UpdateGlossary";
-// create Terms components 
+// create Terms components
 import CreateTerm from "../create/CreateTerm";
 import CreateTermWizard from "../wizards/CreateTermWizard";
 import CreateCategorizedTerm from "../create/CreateCategorizedTerm";
@@ -36,7 +37,7 @@ import UpdateCategory from "../update/UpdateCategory";
 export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
   console.log("glossaryAuthorURL=" + glossaryAuthorURL);
 
-  // the top paths 
+  // the top paths
   function getGlossariesPath() {
     let path;
     const currentLocationArray = glossaryAuthorURL.split("/");
@@ -96,6 +97,7 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
     console.log("getCategoriesAddPath " + path);
     return path;
   }
+
   // top path + edit
   function getGlossariesEditPath() {
     return getGlossariesPath() + "/edit-glossary/:guidtoedit";
@@ -107,21 +109,37 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
     return getCategoriesPath() + "/edit-category/:guidtoedit";
   }
 
+  // top path + graph
+  function getGlossariesGraphPath() {
+    return getGlossariesPath() + "/visualise-glossary/:startguidforgraph";
+  }
+  function getTermsGraphPath() {
+    return getTermsPath()+ "/visualise-term/:startguidforgraph";
+  }
+  function getCategoriesGraphPath() {
+    return getCategoriesPath() + "/visualise-category/:startguidforgraph";
+  }
+
   // quickterms for glossary
   function getGlossaryQuickTermsPath() {
     const path = getGlossariesPath() + "/:glossaryguid/quick-terms";
     console.log("getQuickTerms " + path);
     return path;
   }
-    // quickterms for category
-    function getCategoryQuickTermsPath() {
-      const path = getCategoriesPath() + "/:categoryguid/quick-category-terms";
-      console.log("getCategoryQuickTerms " + path);
-      return path;
-    }
+  // quickterms for category
+  function getCategoryQuickTermsPath() {
+    const path = getCategoriesPath() + "/:categoryguid/quick-category-terms";
+    console.log("getCategoryQuickTerms " + path);
+    return path;
+  }
   // glossary children
   function getGlossaryChildrenPath() {
     const path = getGlossariesPath() + "/:glossaryguid/children";
+    console.log("getGlossaryChildren " + path);
+    return path;
+  }
+  function getGlossaryChildrenGraphPath() {
+    const path = getGlossariesPath() + "/visualise-glossary/:startguidforgraph";
     console.log("getGlossaryChildren " + path);
     return path;
   }
@@ -157,53 +175,64 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
     console.log("getGlossaryCategoriesChildrenPath " + path);
     return path;
   }
-    // category children
-    function getCategoryChildrenPath() {
-      const path = getCategoriesPath() + "/:categoryguid/children";
-      console.log("getCategoriesChildren " + path);
-      return path;
-    }
-    function getCategoryChildrenAddTermPath() {
-      const path = getCategoryTermsChildrenPath() + "/add-term";
-      console.log("getCategoryChildrenAddTermPath() " + path);
-      return path;
-    }
-    function getCategoryChildrenAddCategoryPath() {
-      const path = getCategoryCategoriesChildrenPath() + "/add-category";
-      console.log("getCategoryChildrenAddCategoryPath() " + path);
-      return path;
-    }
-    function getCategoryChildrenEditTermPath() {
-      const path = getCategoryTermsChildrenPath() + "/edit-term/:guidtoedit";
-      console.log("getCategoryChildrenEditTermPath() " + path);
-      return path;
-    }
-    function getCategoryChildrenEditCategoryPath() {
-      const path =
-        getCategoryCategoriesChildrenPath() + "/edit-category/:guidtoedit";
-      console.log("getCategoryChildrenEditCategoryPath() " + path);
-      return path;
-    }
-  
-    function getCategoryTermsChildrenPath() {
-      const path = getCategoryChildrenPath() + "/terms";
-      console.log("getCategoryTermsChildrenPath " + path);
-      return path;
-    }
-    function getCategoryCategoriesChildrenPath() {
-      const path = getCategoryChildrenPath() + "/categories/children";
-      console.log("getCategoryCategoriesChildrenPath " + path);
-      return path;
-    }
+  // category children
+  function getCategoryChildrenPath() {
+    const path = getCategoriesPath() + "/:categoryguid/children";
+    console.log("getCategoriesChildren " + path);
+    return path;
+  }
+  function getCategoryChildrenGraphPath() {
+    const path = getCategoriesPath() + "/visualise-category/:startguidforgraph";
+    console.log("getCategoriesChildrenGraph " + path);
+    return path;
+  }
+  function getCategoryChildrenAddTermPath() {
+    const path = getCategoryTermsChildrenPath() + "/add-term";
+    console.log("getCategoryChildrenAddTermPath() " + path);
+    return path;
+  }
+  function getCategoryChildrenAddCategoryPath() {
+    const path = getCategoryCategoriesChildrenPath() + "/add-category";
+    console.log("getCategoryChildrenAddCategoryPath() " + path);
+    return path;
+  }
+  function getCategoryChildrenEditTermPath() {
+    const path = getCategoryTermsChildrenPath() + "/edit-term/:guidtoedit";
+    console.log("getCategoryChildrenEditTermPath() " + path);
+    return path;
+  }
+  function getCategoryChildrenEditCategoryPath() {
+    const path =
+      getCategoryCategoriesChildrenPath() + "/edit-category/:guidtoedit";
+    console.log("getCategoryChildrenEditCategoryPath() " + path);
+    return path;
+  }
+
+  function getCategoryTermsChildrenPath() {
+    const path = getCategoryChildrenPath() + "/terms";
+    console.log("getCategoryTermsChildrenPath " + path);
+    return path;
+  }
+  function getCategoryCategoriesChildrenPath() {
+    const path = getCategoryChildrenPath() + "/categories/children";
+    console.log("getCategoryCategoriesChildrenPath " + path);
+    return path;
+  }
 
   return (
     <Switch>
       <Route path={getGlossariesAddPath()} component={CreateGlossary}></Route>
       <Route path={getTermsAddPath()} component={CreateTermWizard}></Route>
-      <Route path={getCategoriesAddPath()} component={CreateCategoryWizard}></Route>
+      <Route
+        path={getCategoriesAddPath()}
+        component={CreateCategoryWizard}
+      ></Route>
       <Route path={getGlossariesEditPath()} component={UpdateGlossary}></Route>
+      <Route path={getGlossariesGraphPath()} component={GlossaryAuthorGraphNavigation}></Route>
       <Route path={getTermsEditPath()} component={UpdateTerm}></Route>
+      <Route path={getTermsGraphPath()} component={GlossaryAuthorGraphNavigation}></Route>
       <Route path={getCategoriesEditPath()} component={UpdateCategory}></Route>
+      <Route path={getCategoriesGraphPath()} component={GlossaryAuthorGraphNavigation}></Route>
       <Redirect path={glossaryAuthorURL} exact to={getGlossariesPath()} />
       <Route
         exact
@@ -241,10 +270,17 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
         component={UpdateCategory}
       ></Route>
 
-      <Route path={getGlossaryQuickTermsPath()} component={GlossaryQuickTerms}></Route>
+      <Route
+        path={getGlossaryQuickTermsPath()}
+        component={GlossaryQuickTerms}
+      ></Route>
       <Route
         path={getGlossaryChildrenPath()}
         component={GlossaryChildren}
+      ></Route>
+      <Route  
+        path={getGlossaryChildrenGraphPath()}
+        component={GlossaryAuthorGraphNavigation}
       ></Route>
       <Route
         path={getGlossaryTermsChildrenPath()}
@@ -269,7 +305,11 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
         component={CategoryChildren}
         exact
       ></Route>
-       <Route
+      <Route  
+        path={getCategoryChildrenGraphPath()}
+        component={GlossaryAuthorGraphNavigation}
+      ></Route>
+      <Route
         path={getCategoryChildrenAddTermPath()}
         exact
         component={CreateCategorizedTerm}
@@ -290,7 +330,10 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
         component={UpdateCategory}
       ></Route>
 
-      <Route path={getCategoryQuickTermsPath()} component={CreateCategorizedQuickTerms}></Route>
+      <Route
+        path={getCategoryQuickTermsPath()}
+        component={CreateCategorizedQuickTerms}
+      ></Route>
       <Route
         path={getCategoryTermsChildrenPath()}
         component={GlossaryAuthorTermsNavigation}
@@ -299,6 +342,7 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
         path={getCategoryCategoriesChildrenPath()}
         component={GlossaryAuthorChildCategoriesNavigation}
       ></Route>
+
       <Route path="/" render={() => <h1>Route not recognised</h1>}></Route>
       {/* <Route render={() => <h1>Route not recognised!!</h1>}></Route> */}
     </Switch>

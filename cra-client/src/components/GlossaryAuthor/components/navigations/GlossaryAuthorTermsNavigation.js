@@ -6,6 +6,7 @@ import { IdentificationContext } from "../../../../contexts/IdentificationContex
 import Add32 from "../../../../images/carbon/Egeria_add_32";
 import Delete32 from "../../../../images/carbon/Egeria_delete_32";
 import Edit32 from "../../../../images/carbon/Egeria_edit_32";
+import DataVis32 from "../../../../images/carbon/Egeria_datavis_32";
 import Term32 from "../../../../images/odpi/Egeria_term_32";
 import { LocalNodeCard, NodeCardSection } from "../NodeCard/NodeCard";
 import { withRouter } from "react-router-dom";
@@ -148,6 +149,10 @@ const GlossaryAuthorTermsNavigation = (props) => {
   function getEditNodeUrl() {
     return props.match.url + "/terms/edit-term/" + selectedNodeGuid;
   }
+  function getGraphNodeUrl() {
+    return props.match.url + "/terms/visualise-term/" + selectedNodeGuid;
+  }
+
   const isSelected = (nodeGuid) => {
     return nodeGuid === selectedNodeGuid;
   };
@@ -166,6 +171,11 @@ const GlossaryAuthorTermsNavigation = (props) => {
               {selectedNodeGuid && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
+                </Link>
+              )}
+              {selectedNodeGuid && (
+                <Link to={getGraphNodeUrl()}>
+                   <DataVis32 kind="primary" />
                 </Link>
               )}
               {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}

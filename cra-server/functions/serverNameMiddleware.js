@@ -29,6 +29,7 @@ const serverNameMiddleWare = (req, res, next) => {
   // '/' goes to "" and ""
   // "/ddd" goes to "" and "ddd"
   const segmentNumber = segmentArray.length;
+
   let noServerfound = false;
   const servers = req.app.get("servers");
 
@@ -36,31 +37,30 @@ const serverNameMiddleWare = (req, res, next) => {
     // the supplied url always starts with a /
     const segment1 = segmentArray.slice(1, 2).join("/");
     // Disabling logging as CodeQL does not like user supplied values being logged.
-    // console.log("A segment1 " + segment1);
+    // console.log("segment1 " + segment1);
     const lastSegment = segmentArray.slice(-1);
-    const lastSegmentStr = lastSegment[0];
+    const lastSegmentStr =lastSegment[0];
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("Last segment is " + lastSegmentStr);
-
-    if (
-      segment1 != "servers" &&
-      segment1 != "open-metadata" &&
-      segment1 != "user" &&
-       // we want the login screen to be displayed with the get - so we can properly handle the invalid server name - so don't check the server in this case   
-      !(segmentNumber == 2 && req.method === 'GET')
-    ) {
+   
+    if (segment1 != "servers" && segment1 != "open-metadata" && segment1 != "user") {
       // in a production scenario we are looking at login, favicon.ico and bundle.js for for now look for those in the last segment
       // TODO once we have development webpack, maybe the client should send a /js/ or a /static/ segment after the servername so we know to keep the subsequent segments.
-      // console.log("req.method "+ req.method); 
-      if (lastSegmentStr.startsWith("login") && req.method === 'POST') {
-        // segment1 should be the serverName - so validate that it is
-
+     
+      if ( lastSegmentStr.startsWith("login")) {
+        // segment1 should be the serverName - so validate that it is 
+        const servers = req.app.get("servers");
         if (servers[segment1] === undefined) {
           //Not in the array of servers
-          noServerfound = true;
-        }
+          errorMsg = "Not a valid server";
+        } 
       }
-      if (lastSegmentStr == "bundle.js" || lastSegmentStr == "favicon.ico") {
+
+      if (
+        lastSegmentStr == "bundle.js" ||
+        lastSegmentStr == "favicon.ico" 
+      ) {
+
         req.url = "/" + lastSegment;
       } else {
         // we want the login screen to be displayed with the get - so we can properly handle the invalid server name - so don't check the server in this case  

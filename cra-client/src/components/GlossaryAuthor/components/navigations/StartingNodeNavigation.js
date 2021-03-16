@@ -8,6 +8,7 @@ import { Pagination, Toggle } from "carbon-components-react";
 import Add32 from "../../../../images/carbon/Egeria_add_32";
 import Delete32 from "../../../../images/carbon/Egeria_delete_32";
 import Edit32 from "../../../../images/carbon/Egeria_edit_32";
+import DataVis32 from "../../../../images/carbon/Egeria_datavis_32";
 import Term32 from "../../../../images/odpi/Egeria_term_32";
 import ParentChild32 from "../../../../images/carbon/Egeria_parent_child_32";
 import GlossaryImage from "../../../../images/odpi/Egeria_glossary_32";
@@ -231,6 +232,9 @@ export default function StartingNodeNavigation({
   function getEditNodeUrl() {
     return match.path + "/edit-" + nodeTypeName + "/" + selectedNodeGuid;
   }
+  function getGraphNodeUrl() {
+    return match.path + "/visualise-" + nodeTypeName + "/" + selectedNodeGuid;
+  }
   const onFilterCriteria = (e) => {
     setFilterCriteria(e.target.value);
   };
@@ -283,6 +287,7 @@ export default function StartingNodeNavigation({
                     <Term32 kind="primary" />
                   </Link>
                 )}
+                
               {selectedNodeGuid &&
                 !onSelectCallback &&
                 nodeTypeName === "category" && (
@@ -300,6 +305,12 @@ export default function StartingNodeNavigation({
                   <Edit32 kind="primary" />
                 </Link>
               )}
+              {selectedNodeGuid && !onSelectCallback &&
+               (
+                  <Link to={getGraphNodeUrl}>
+                     <DataVis32 kind="primary" />
+                  </Link>
+                )}
               {selectedNodeGuid && !onSelectCallback && (
                 <Delete32 onClick={() => onClickDelete()} />
               )}

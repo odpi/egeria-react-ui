@@ -7,6 +7,7 @@ import { IdentificationContext } from "../../../../contexts/IdentificationContex
 import Add32 from "../../../../images/carbon/Egeria_add_32";
 import Delete32 from "../../../../images/carbon/Egeria_delete_32";
 import Edit32 from "../../../../images/carbon/Egeria_edit_32";
+import DataVis32 from "../../../../images/carbon/Egeria_datavis_32";
 import ParentChild32 from "../../../../images/carbon/Egeria_parent_child_32";
 import Term32 from "../../../../images/odpi/Egeria_term_32";
 
@@ -157,6 +158,9 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
   function getEditNodeUrl() {
     return props.match.url + "/categories/edit-category/" + selectedNodeGuid;
   }
+  function getGraphNodeUrl() {
+    return props.match.url + "/categories/visualise-category/" + selectedNodeGuid;
+  }
   const isSelected = (nodeGuid) => {
     return nodeGuid === selectedNodeGuid;
   };
@@ -182,6 +186,11 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
                   <Edit32 kind="primary" />
                 </Link>
               )}
+              {selectedNodeGuid && (
+                <Link to={getGraphNodeUrl()}>
+                   <DataVis32 kind="primary" />
+                </Link>
+              )} 
               {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}
             </div>
           </article>

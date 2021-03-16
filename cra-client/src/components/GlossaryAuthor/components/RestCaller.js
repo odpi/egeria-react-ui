@@ -85,7 +85,7 @@ export async function issueRestCreate(url, body, onSuccessful, onError) {
       } else {
         // got nothing
         msg =
-          "Error. Create request succeded but there were no results. Contact your administrator to review the server logs for errors.";
+          "Error. Create request succeeded but there were no results. Contact your administrator to review the server logs for errors.";
       }
     } else {
       msg = processErrorJson("Create", json, response);

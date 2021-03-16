@@ -57,11 +57,12 @@ export default function GlossaryQuickTerms(props) {
     setRestCallInProgress(false);
     let workingTermsWithStatus = [];
     for (let i = 0; i < terms.length; i++) {
+      console.log("json.result[i] " + json.result[i]);
       let workingTermWithStatus = terms[i];
       if (terms[i].name.trim() === "") {
         workingTermWithStatus.status = "Error - blank name";
       } else if (json.result[i].relatedHTTPCode === "200") {
-        workingTermWithStatus = json.result[i].result[0];
+        // workingTermWithStatus = json.result[i].result[0];
         workingTermWithStatus.status = "Success";
       } else {
         workingTermWithStatus.status = "Error";
