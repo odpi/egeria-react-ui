@@ -30,12 +30,6 @@ export default function LineDisplay(props) {
     }
   };
 
-  // const expLine = props.expLine;
-
-  // const line = expLine.line;
-  // const lineDigest = expLine.lineDigest;
-  // const label = lineDigest.label;
-  // const gen = lineDigest.gen;
   const line         = props.line;
   const label        = line.name;
   const gen          = line.gen;
@@ -45,20 +39,8 @@ export default function LineDisplay(props) {
   return (
     <div className="instance-details-container">
       <div className="instance-details-item">Line : {label}</div>
-      {/* {JSON.stringify(line)} */}
-      {/* <div className="instance-details-item">Version : {line.version}</div> */}
-      {/* <div className="instance-details-item">
-        Status : <InstanceStatusDisplay inst={line} />
-      </div> */}
-      {/* <div className="instance-details-item">
-        Properties :{" "}
-        {!line.properties ? (
-          "empty"
-        ) : (
-          <InstancePropertiesDisplay properties={line.attributes} />
-        )}
-      </div> */}
-       <div className="instance-details-item">Description : {line.description}</div>
+    
+      <div className="instance-details-item">Description : {line.description}</div>
       <div className="instance-details-item">GUID : {line.guid}</div>
       <div className="instance-details-item">Description : {line.description}</div>
       Line End1 - {line.end1.name} : 
@@ -91,8 +73,6 @@ export default function LineDisplay(props) {
             }
           </li>
           <li className="details-sublist-item">instanceLicense : {systemAttributes.instanceLicense ? systemAttributes.instanceLicense : "empty"}</li>
-          {/* <li className="details-sublist-item">instanceProvenanceType : {entity.instanceProvenanceType ? entity.instanceProvenanceType : "empty"}</li>
-          <li className="details-sublist-item">replicatedBy : {entity.replicatedBy ? entity.replicatedBy : "empty"}</li> */}
         </ul>
       </div>
     </div>

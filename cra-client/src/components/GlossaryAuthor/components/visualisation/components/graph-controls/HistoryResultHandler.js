@@ -75,18 +75,6 @@ export default function HistoryResultHandler(props) {
                   {item.query}
                 </div>
               </div>
-              {/* <div className="inscolumn">
-                <ul>
-                  {item.instances.map(inst => (
-                    <li key={inst.label}>{inst.category} {inst.label} ({inst.guid})
-                           { (inst.provenance === "refCopy" ||
-                             inst.provenance === "home"     ||
-                             inst.provenance === "proxy")
-                             ? " ("+inst.provenance+")" : "" }
-                    </li>
-                  ))}                                     
-                </ul>
-              </div> */}
             </div>
           ))}
         </div>

@@ -30,8 +30,6 @@ const InstanceRetrieval = (props) => {
       const secondLastSegment = urlSegments[urlSegments.length - 2];
       const nodeTypeKey = secondLastSegment.substring("visualise-".length);
       console.log("nodeTypeKey" + nodeTypeKey);
-
-      //TODO pass through the onSuccess and onErrors
       instancesContext.loadNode(guidToLoad, nodeTypeKey);
     }
   };

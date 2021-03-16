@@ -569,7 +569,6 @@ export default function Diagram(props) {
     nodes.attr('cy',function(d) { return d.y = Math.max(node_margin, Math.min(height -     node_margin, d.y)); });
     nodes.attr('transform', function(d) { return "translate(" + d.x + "," + d.y + ")";});
     
-
     /*
      * Highlight a selected node, if it is the instance that has been selected or just loaded
      * (in which case it is selected)
@@ -689,7 +688,6 @@ export default function Diagram(props) {
     }
   };
 
-
  useEffect(
   () => {
     if ( d3Container.current ) {
@@ -708,7 +706,6 @@ export default function Diagram(props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [ loc_force, createMarker  ]
 )
-
 
 useEffect(
   () => {

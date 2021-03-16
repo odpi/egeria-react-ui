@@ -15,8 +15,8 @@ export default function TraversalResultHandler(props) {
 
   const interactionContext    = useContext(InteractionContext);
 
-  const nodeTypes           = props.nodeTypes; 
-  const lineTypes     = props.lineTypes; 
+  const nodeTypes             = props.nodeTypes; 
+  const lineTypes             = props.lineTypes; 
   const selectCallback        = props.selectCallback;
   const setAllCallback        = props.setAllCallback;
     
@@ -122,8 +122,6 @@ export default function TraversalResultHandler(props) {
       }
     
       else {
-
-
         let resultsDisplay = (
 
           <div>
@@ -238,7 +236,6 @@ TraversalResultHandler.propTypes = {
   onSubmit             : PropTypes.func.isRequired, 
   selectCallback       : PropTypes.func.isRequired, 
   setAllCallback       : PropTypes.func.isRequired, 
-  //spec                 : PropTypes.object,
   nodeTypes            : PropTypes.array,                    
   lineTypes            : PropTypes.array
 };

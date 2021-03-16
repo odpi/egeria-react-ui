@@ -548,8 +548,8 @@ const InstancesContextProvider = (props) => {
 
       /*
        * Process lines...
-       * These are in a map of RexExpandedLine objects, inside of
-       * which are the RexLineDigest objects.
+       * These are in a map of NodeDigest objects, inside of
+       * which are the LineDigest objects.
        * Anything that is known should be removed from the traversal.
        * Anything new can remain and should be assigned the next gen.
        */
@@ -669,41 +669,7 @@ const InstancesContextProvider = (props) => {
     reportFailedOperation("Get Node", message);
   };
 
-  /*
-   * Callback for completion of loadLine
-   */
-  // const _loadLine = useCallback(
-  //   (json) => {
-  //     if (json !== null) {
-  //       if (json.relatedHTTPCode === 200) {
-  //         /*
-  //          * Should have an expandedLine, if the Line was not found the response
-  //          * will have included a non 200 status code and a LineNotKnownException
-  //          */
-  //         let expLine = json.expandedLine;
-  //         if (expLine !== null) {
-  //           processRetrievedLine(expLine);
-  //           return;
-  //         }
-  //       }
-  //     }
-  //     /*
-  //      * On failure ...
-  //      */
-  //     reportFailedOperation("Get Line", json);
-  //   },
-  //   [processRetrievedLine, reportFailedOperation]
-  // );
-
-  /*
-   * Function to get Line by GUID from the specified repository server
-   */
-  // const loadLine = (lineGUID) => {
-  //   // repositoryServerContext.callPOST(
-  //   //                                  "instances/line",
-  //   //                                  { lineGUID : lineGUID },
-  //   //                                  _loadLine);
-  // };
+  
   const loadLine = (lineGUID, lineTypeKey) => {
     console.log("loadLine");
     if (lineTypeKey === undefined) {
@@ -749,19 +715,6 @@ const InstancesContextProvider = (props) => {
   const onErrorLoadLine = (message) => {
     reportFailedOperation("Get Line", message);
   };
-
-  /*
-   * Function to get Line by GUID from the repository
-   */
-  // const loadLine = useCallback(
-  //   (lineGUID) => {
-
-  //     repositoryServerContext.repositoryPOST("instances/line",
-  //                                            { lineGUID : lineGUID },
-  //                                            _loadLine);
-  //   },
-  //   [_loadLine, repositoryServerContext]
-  // );
 
   /*
    * clearFocusInstance resets the category, instance, guid for the focus instance
@@ -1107,26 +1060,6 @@ const InstancesContextProvider = (props) => {
           } else querySummary = querySummary.concat("none");
 
           break;
-
-        // case "NodeSearch":
-        //   /*
-        //    * Format querySummary as "Node Search Expression [<expr>] <guid>"
-        //    */
-        //   querySummary = querySummary.concat(" Node Search: ");
-        //   querySummary = querySummary.concat(
-        //     " Expression [" + genContent.searchText + "]"
-        //   );
-        //   break;
-
-        // case "lineSearch":
-        //   /*
-        //    * Format querySummary as "Line Search Expression [<expr>] <guid>"
-        //    */
-        //   querySummary = querySummary.concat(" Line Search: ");
-        //   querySummary = querySummary.concat(
-        //     " Expression [" + genContent.searchText + "]"
-        //   );
-        //   break;
 
         default:
           /*

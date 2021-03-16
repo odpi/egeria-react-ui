@@ -160,8 +160,6 @@ export default function GraphControls(props) {
 
   };
 
-
-
   /*
    * Handler for submit of traversal results modal
    */

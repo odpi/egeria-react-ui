@@ -34,7 +34,6 @@ export default function NodeDisplay(props) {
     }
   };
 
-
   const node         = props.node;
   const label        = node.name;
   const description  = node.description;
@@ -51,8 +50,7 @@ export default function NodeDisplay(props) {
       <div className="instance-details-item">Qualified Name : {qualifiedName}</div>
       <div className="instance-details-item">Type : {typeName}</div>
       <div className="instance-details-item">Version : {systemAttributes.version}</div>
-      {/* <div className="instance-details-item">Status : <InstanceStatusDisplay inst={entity} /></div> */}
-         {/* TODO Node specific properties */}
+      {/* TODO Node specific properties */}
 
       <button className="collapsible-non-bold" id="querySummary" onClick={flipSection}> Generation information : </button>
       <div className="content">
@@ -75,8 +73,6 @@ export default function NodeDisplay(props) {
             }
           </li>
           <li className="details-sublist-item">instanceLicense : {systemAttributes.instanceLicense ? systemAttributes.instanceLicense : "empty"}</li>
-          {/* <li className="details-sublist-item">instanceProvenanceType : {entity.instanceProvenanceType ? entity.instanceProvenanceType : "empty"}</li>
-          <li className="details-sublist-item">replicatedBy : {entity.replicatedBy ? entity.replicatedBy : "empty"}</li> */}
         </ul>
       </div>
     </div>
