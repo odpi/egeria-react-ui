@@ -6,7 +6,7 @@ The GLOssary author Visualiser and Explorer (GLOVE) interface provides a way to 
 
 &nbsp;
 
-![GLOssary author Visualiser and Explorer  Interface](image1)
+![GLOssary author Visualiser and Explorer Interface](image1)
 
 &nbsp;
 

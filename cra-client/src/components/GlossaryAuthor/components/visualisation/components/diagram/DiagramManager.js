@@ -306,7 +306,7 @@ export default function DiagramManager(props) {
  
 
   /*
-   * Request that the InstancesContext loads the node from the repository and makes it the focus.
+   * Request that the InstancesContext loads the node from the view server and give it the focus.
    */
   const onNodeClick = useCallback(
 
@@ -318,7 +318,7 @@ export default function DiagramManager(props) {
 
 
   /*
-   * Request that the InstancesContext loads the line from the repository and makes it the focus.
+   * Request that the InstancesContext loads the line from the view server and give it the focus.
    */
   const onLinkClick = useCallback(
 

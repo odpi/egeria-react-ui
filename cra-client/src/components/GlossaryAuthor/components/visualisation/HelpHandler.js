@@ -8,18 +8,7 @@ import PropTypes                              from "prop-types";
 
 import { InteractionContext }                 from "./contexts/InteractionContext";
 
-import ReactMarkdown                          from 'react-markdown';
-
-import RexInterfaceImage                     from './RexInterface.png';
-
-import SearchResultsImage                   from './SearchResults.png';
-
 import "./glove.scss";
-
-const imageRefs = {
-    image1 : RexInterfaceImage,
-    image2 : SearchResultsImage
-};
 
 
 export default function HelpHandler(props) {
@@ -37,10 +26,6 @@ export default function HelpHandler(props) {
   const submitCallback = () => {
     interactionContext.hidePortal();
     props.onSubmit();
-  }
-
-  const transformImageURI = (uri) => {
-    return imageRefs[uri];
   }
 
   const triggerPortal = () => {
@@ -77,27 +62,16 @@ export default function HelpHandler(props) {
        * There is readme information to display... 
        */
 
-      let resultsDisplay = (         
-
-        <div>
-          <ReactMarkdown source={help.markdown} transformImageUri={transformImageURI}/>
-        </div>
-      );
-
-
       dialogDisplay = (
       
         <div className="dialog-text">
           
           <p  className="dialog-text">
-          Help text for Egeria Repository Explorer (Rex) user interface:
+          Help text for Glossary Author Visualisation Explorer (glove)  user interface:
           </p>    
    
           <hr></hr>
-               
-          <div className="history-results-area">                        
-            {resultsDisplay}
-          </div>
+              
 
           <div className="dismiss-button-container">                     
             <button className="multiselect-button" onClick={cancelCallback}>  Cancel  </button>

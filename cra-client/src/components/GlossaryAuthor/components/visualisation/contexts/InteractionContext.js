@@ -21,8 +21,8 @@ export const InteractionContextConsumer = InteractionContext.Consumer;
 const InteractionContextProvider = (props) => {
 
   /*
-   * To manage user input and confirmations (e.g. search inputs, search results, pre-traversal results, etc.)
-   * the RepositoryExplorer component provides one portal, which can be summoned by any child component with
+   * To manage user input and confirmations (e.g. pre-traversal results, etc.)
+   * the Glossary author visualisation Explorer component provides one portal, which can be summoned by any child component with
    * the content, parameters and callbacks the component needs.
    */
 
@@ -87,15 +87,6 @@ const InteractionContextProvider = (props) => {
    * manner that matches the context and concepts the user will be familiar with. For example,
    * use a phrase like "get types for server" rather than "loadTypes".
    * The second parameter is a json response object that has the fields from the associated
-   * RexViewServiceException. The main fields to note are (with example values):
-   *  relatedHTTPCode                 :  400,
-   *  exceptionClassName              : 'org.odpi.openmetadata.viewservices.rex.api.ffdc.RexViewServiceException',
-   *  actionDescription               : 'getTypeExplorer',
-   *  exceptionErrorMessage           : 'The repository explorer view service operation getTypeExplorer found that platform for server Metadata_Server2 is not available',
-   *  exceptionErrorMessageId         : 'OMVS-REPOSITORY-EXPLORER-400-006',
-   *  exceptionErrorMessageParameters : [ 'getTypeExplorer', 'Metadata_Server2' ],
-   *  exceptionSystemAction           : 'The system reported that the platform is not reachable using the provided URL.',
-   *  exceptionUserAction             : 'Check the platform is running and check the repository explorer resource endpoint configuration for the server and its platform.'
    * The exceptionErrorMessageParameters will already have been substituted into the exceptionErrorMessage,
    * so there should be no need to perform any formatting; that is all done by the view service.
    *
@@ -135,7 +126,7 @@ const InteractionContextProvider = (props) => {
       }}
     >      
 
-    <div id="rex-portal" ref={portalAnchor}></div>
+    <div id="glove-portal" ref={portalAnchor}></div>
       <Portal show={portalVisible} anchorCB={getPortalAnchor} cancelCallback={portalCancel} submitCallback={portalSubmit}>
           {portalContent}
       </Portal>
