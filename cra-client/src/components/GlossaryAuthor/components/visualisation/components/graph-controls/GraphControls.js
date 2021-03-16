@@ -63,14 +63,14 @@ export default function GraphControls(props) {
     const focusCat = instancesContext.getFocusCategory();
 
     if (focusCat !== "Node") {
-      alert("Please select an node from which to explore...");
+      alert("Please select a node from which to explore...");
       return;
     }
 
     const nodeGUID = instancesContext.getFocusGUID();
 
     if (nodeGUID === "") {
-      alert("Please select an node from which to explore...");
+      alert("Please select a node from which to explore...");
       return;
     }
 

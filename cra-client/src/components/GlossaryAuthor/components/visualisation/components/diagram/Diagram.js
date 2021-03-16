@@ -576,7 +576,7 @@ export default function Diagram(props) {
      */
 
     nodes.selectAll('circle')
-      .attr("fill", d => (d.id === focusGUID) ? egeria_primary_color_string : nodeColor(d) );
+      .attr("fill", d => (d.id === focusGUID) ? egeria_primary_color_string : "#444" );
 
       nodes.selectAll('line')      
       .attr('stroke', d => (pinningRef.current && d.fx !== undefined && d.fx !== null) ? egeria_primary_color_string : "none");

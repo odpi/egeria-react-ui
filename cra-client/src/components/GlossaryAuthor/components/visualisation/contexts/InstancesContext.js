@@ -913,10 +913,10 @@ const InstancesContextProvider = (props) => {
     }
 
     if (nodeQueryParam) {
-      url = url + "," + nodeQueryParam;
+      url = url + "&" + nodeQueryParam;
     }
     if (lineQueryParam) {
-      url = url + "," + lineQueryParam;
+      url = url + "&" + lineQueryParam;
     }
     // encode it
     url = encodeURI(url);

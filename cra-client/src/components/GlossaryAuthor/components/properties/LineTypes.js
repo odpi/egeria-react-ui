@@ -46,9 +46,9 @@ const getLineType = (GlossaryAuthorURL, key) => {
       plural: "category-anchors",
       typeName: "CategoryAnchor"
     },
-    categoryhierachylink: {
-      key: "category-hierarchy",
-      plural: "category-hierarchies",
+    categoryhierarchylink: {
+      key: "category-hierarchy-link",
+      plural: "category-hierarchy-links",
       typeName: "CategoryHierarchyLink"
     },
     projectscopes: {
