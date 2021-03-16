@@ -45,26 +45,6 @@ familiar with.
 5) Undo undoes the last generation. 
 6) Clear clears all the generation back to the first generation which contains the original node
 7) Glove differs from the Repository Explorer in that it does not have a typeexplorer. The repository explorer creates displayable content in the view service including labels. For Glove, the information used to display artifacts is defined in the client side javascript. It is keyed off 2 files NodeTypes and lineTypes. These files contain the shape of the nodes and line respectively, how to display them and the url to use when issuing rest calls for them.
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ----
 License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
