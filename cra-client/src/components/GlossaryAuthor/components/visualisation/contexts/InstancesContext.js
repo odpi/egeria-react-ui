@@ -6,7 +6,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { issueRestGet } from "../../RestCaller";
 import getNodeType from "../../properties/NodeTypes";
-import getLineType from "../../properties/LineTypes";
+import getRelationshipType from "../../properties/RelationshipTypes";
 import { useHistory } from 'react-router'
 
 import { IdentificationContext } from "../../../../../contexts/IdentificationContext";
@@ -26,7 +26,7 @@ const InstancesContextProvider = (props) => {
   const identificationContext = useContext(IdentificationContext);
   const history = useHistory()
   /*
-   * The focusInstance is the instance (Node or Line) that is the user's current
+   * The focusInstance is the instance (Node or Relationship) that is the user's current
    * focus. It's GUID is stored in focusInstanceGUID and its category is in focusInstanceCategory.
    * These things all move together - as demonstrated in functions such as setFocusNode().
    * When the focus instance is changed (e.g. by clicking on an instance in the diagram) the
@@ -62,17 +62,17 @@ const InstancesContextProvider = (props) => {
   }, []);
 
   /*
-   * setFocusLine sets the category, instance, guid for the focus instance.
+   * setFocusRelationship sets the category, instance, guid for the focus instance.
    * This operation is atomic (all three aspects are updated as one state change) to avoid sequqncing,
    * e.g. if the category were set first - it would trigger other components to re-render - and if
    * the category does not match the other aspects, they will be very confused.
    */
-  const setFocusLine = useCallback(
-    (line) => {
+  const setFocusRelationship = useCallback(
+    (relationship) => {
       const newFocus = {
-        instanceCategory: "Line",
-        instanceGUID: line.guid,
-        instance: line,
+        instanceCategory: "Relationship",
+        instanceGUID: relationship.guid,
+        instance: relationship,
       };
       setFocus(newFocus);
     },
@@ -87,9 +87,9 @@ const InstancesContextProvider = (props) => {
    * that were retrieved as the result of an Explore traversal starting from an existing Node.
    * A gen (traversal) has the following fields:
    *   nodes       - a map from Node GUID to Node digest containing the instances
-   *   lines  - a map from line GUID to line digest containing the instances
+   *   relationships  - a map from relationship GUID to relationship digest containing the instances
    *   operation      - the operation that was performed to retrieve this traversal, e.g:
-   *                      "NodeSearch", "lineSearch"
+   *                      "NodeSearch", "relationshipsearch"
    *                    This is recorded in the traversal, to provide an informative summary in history
    *   searchText     - the searchText that was used to find the set of instance in the traversal
    *                    (The search category is implicit from the operaton and the nature of the instances)
@@ -117,7 +117,7 @@ const InstancesContextProvider = (props) => {
    * guidToGenId
    * -----------
    * In addition to the gens themselves there is a map for quick existence checking and retrieval:
-   *   guidToGenId     - maps the instance (Node or line) to the identifier of the gen it is in (if any)
+   *   guidToGenId     - maps the instance (Node or relationship) to the identifier of the gen it is in (if any)
    *
    * Initial State and Progress:
    * At the start of a session, or following a clear operation (or successive undo operations) guidToGenId
@@ -126,7 +126,7 @@ const InstancesContextProvider = (props) => {
   const [gens, setGens] = useState([]);
   const [guidToGenId, setGuidToGenId] = useState({});
   const [guidToNodeType, setGuidToNodeType] = useState({});
-  const [guidToLineType, setGuidToLineType] = useState({});
+  const [guidToRelationshipType, setGuidToRelationshipType] = useState({});
 
   /*
    * The latestGenId is not just the length of the gens array - it indicates the id of the most recent
@@ -192,7 +192,7 @@ const InstancesContextProvider = (props) => {
   const addGen = useCallback(
     (traversal) => {
       /*
-       * The traversal contains new instances (nodes and/or lines) - that do
+       * The traversal contains new instances (nodes and/or relationships) - that do
        * not already existing in previous gens.
        */
 
@@ -206,12 +206,12 @@ const InstancesContextProvider = (props) => {
       /*
        * Look for new instances in the traversal, and add them to the new gen.
        * If it was an Node that was processed, this function will only have been called if the Node
-       * needs adding to the new gen - so no checking would be required. However, if it was a line
+       * needs adding to the new gen - so no checking would be required. However, if it was a relationship
        * that was processed it carries a pair of Node digests and they may or may not have been already
-       * known; the line processor will have already checked for pre-existence and set their genIds
+       * known; the relationship processor will have already checked for pre-existence and set their genIds
        * accordingly.This function needs to check each Node's genId - and only add the ones for the new
        * gen.
-       * If an Node is from the new gen, record it in the guidToGenId map. Lines will always be
+       * If an Node is from the new gen, record it in the guidToGenId map. relationships will always be
   
        * from the new gen.
        * Because the map is immutable, corral the changes in a cloned map and apply them in one replace operation
@@ -222,7 +222,7 @@ const InstancesContextProvider = (props) => {
       eKeys.forEach((e) => {
         newEntries[e] = newGen;
       });
-      const rKeys = Object.keys(traversal.lines);
+      const rKeys = Object.keys(traversal.relationships);
       rKeys.forEach((r) => {
         newEntries[r] = newGen;
       });
@@ -289,7 +289,7 @@ const InstancesContextProvider = (props) => {
 
       let traversal = {};
       traversal.nodes = {};
-      traversal.lines = {};
+      traversal.relationships = {};
 
       let nodeDigest = {};
       nodeDigest.nodeGUID = nodeGUID;
@@ -323,61 +323,61 @@ const InstancesContextProvider = (props) => {
     }
   }
     // Add a new entry into the guid to nodetype map.
-    function addNewGuidToLineType(guid, lineType, msg) {
-      let newGuidToLineType = guidToLineType;
-      if (newGuidToLineType[guid] === undefined) {
-        console.log("Adding guid" + guid + ",type " + lineType + ", msg=" + msg);
+    function addNewGuidToRelationshipType(guid, relationshipType, msg) {
+      let newGuidToRelationshipType = guidToRelationshipType;
+      if (newGuidToRelationshipType[guid] === undefined) {
+        console.log("Adding guid" + guid + ",type " + relationshipType + ", msg=" + msg);
         console.log(
-          "Adding guid" + guid + ",type json " + JSON.stringify(lineType)
+          "Adding guid" + guid + ",type json " + JSON.stringify(relationshipType)
         );
-        newGuidToLineType[guid] = lineType;
-        setGuidToLineType(newGuidToLineType);
+        newGuidToRelationshipType[guid] = relationshipType;
+        setGuidToRelationshipType(newGuidToRelationshipType);
       }
     }
 
   /*
-   * processRetrievedLine accepts an expLine, checks whether it is already known and if not,
-   * creates a traversal to add the Line to a new gen
+   * prrocessRetrievedRelationship accepts an exprelationship, checks whether it is already known and if not,
+   * creates a traversal to add the relationship to a new gen
    */
-  const processRetrievedLine = useCallback(
-    (line) => {
-      const lineGUID = line.guid;
-      const lineType = line.lineType;
-      let end1 = line.end1;
-      let end2 = line.end2;
+  const prrocessRetrievedRelationship = useCallback(
+    (relationship) => {
+      const relationshipGUID = relationship.guid;
+      const relationshipType = relationship.relationshipType;
+      let end1 = relationship.end1;
+      let end2 = relationship.end2;
       const end1GUID = end1.nodeGuid;
       const end2GUID = end2.nodeGuid;
 
       let genId;
-      if (guidToGenId[lineGUID] !== undefined) {
+      if (guidToGenId[relationshipGUID] !== undefined) {
         /*
-         * Line is already known
+         * relationship is already known
          */
-        genId = guidToGenId[lineGUID];
-        line.gen = genId;
+        genId = guidToGenId[relationshipGUID];
+        relationship.gen = genId;
       } else {
         /*
-         * Line is not already known
+         * relationship is not already known
          *
-         * Construct a traversal for the Line and add it to the gens.
+         * Construct a traversal for the relationship and add it to the gens.
          * The genId is in the digest and will be one beyond the current latest gen
          */
         genId = getLatestActiveGenId() + 1;
-        let lineDigest = {};
-        lineDigest.gen = genId;
-        lineDigest.label = line.lineType;
-        lineDigest.end1GUID = end1GUID;
-        lineDigest.end2GUID = end2GUID;
-        lineDigest.lineGUID = lineGUID;
+        let relationshipDigest = {};
+        relationshipDigest.gen = genId;
+        relationshipDigest.label = relationship.relationshipType;
+        relationshipDigest.end1GUID = end1GUID;
+        relationshipDigest.end2GUID = end2GUID;
+        relationshipDigest.relationshipGUID = relationshipGUID;
 
         let traversal = {};
         traversal.nodes = {};
-        traversal.lines = {};
-        traversal.lines[lineGUID] = lineDigest;
-        traversal.operation = "getLine";
+        traversal.relationships = {};
+        traversal.relationships[relationshipGUID] = relationshipDigest;
+        traversal.operation = "getRelationship";
 
         /*
-         * We need to retrieve the end node digests from the expLine and find out
+         * We need to retrieve the end node digests from the expRelationship and find out
          * whether each end node is new or known, so they can either keep their gens or be
          * assigned the next gen...
          */
@@ -435,7 +435,7 @@ const InstancesContextProvider = (props) => {
         }
         addNewGuidToNodeType(end1GUID, end1.nodeType, "end1");
         addNewGuidToNodeType(end2GUID, end2.nodeType, "end2");
-        addNewGuidToLineType(lineGUID,lineType, "processed retrieved Line")
+        addNewGuidToRelationshipType(relationshipGUID,relationshipType, "processed retrieved Relationship")
 
         /*
          * Add the traversal to the sequence of gens in the graph.
@@ -444,11 +444,11 @@ const InstancesContextProvider = (props) => {
       }
 
       /*
-       * Because this is processing the retrieval of a single Line, that Line becomes the focus
+       * Because this is processing the retrieval of a single relationship, that relationship becomes the focus
        */
-      setFocusLine(line);
+      setFocusRelationship(relationship);
     },
-    [addGen, getLatestActiveGenId, guidToGenId, setFocusLine]
+    [addGen, getLatestActiveGenId, guidToGenId, setFocusRelationship]
   );
 
   /*
@@ -462,12 +462,12 @@ const InstancesContextProvider = (props) => {
        * into the form needed by Glove.
        * This means that it should have:
        *   a map of nodeGUID       --> { nodeGUID, label, gen }
-       *   a map of lineGUID --> { lineGUID, end1GUID, end2GUID, idx, label, gen }
+       *   a map of relationshipGUID --> { relationshipGUID, end1GUID, end2GUID, idx, label, gen }
        *
        * Alternatively this could be a traversal object resulting from a search and subsequent user
        * selection of search results.
        *
-       * For each node and line in the traversal response we need to determine whether it
+       * For each node and relationship in the traversal response we need to determine whether it
        * is known or new. Anything known is dropped from the traversal, which is then pushed to the
        * logically next gen, setting the gen in each digest accordingly.
        */
@@ -481,7 +481,7 @@ const InstancesContextProvider = (props) => {
        */
       let traversal = {};
       let nodeDigests = [];
-      let lineDigests = [];
+      let relationshipDigests = [];
       for (const nodeGUID in results.nodes) {
         const node = results.nodes[nodeGUID];
         let nodeDigest = {};
@@ -493,23 +493,23 @@ const InstancesContextProvider = (props) => {
         addNewGuidToNodeType(nodeGUID, node.nodeType,"processRetrievedTraversal node");
       }
 
-      for (const lineGUID in results.lines) {
-        const line = results.lines[lineGUID];
-        let lineDigest = {};
-        lineDigest.lineGUID = lineGUID;
-        lineDigest.gen = 0;
-        lineDigest.label = line.lineType;
-        lineDigest.end1GUID = line.end1.nodeGuid;
-        lineDigest.end2GUID = line.end2.nodeGuid;
-        lineDigest.end1Node = line.end1.nodetype;
-        lineDigest.end2Node = line.end2.nodetype;
-        lineDigests[lineGUID] = lineDigest;
-        addNewGuidToNodeType(line.end1.nodeGuid, line.end1.nodetype,"processRetrievedTraversal end1");
-        addNewGuidToNodeType(line.end2.nodeGuid, line.end2.nodetype,"processRetrievedTraversal end2");
-        addNewGuidToLineType(lineGUID, line.lineType);
+      for (const relationshipGUID in results.relationships) {
+        const relationship = results.relationships[relationshipGUID];
+        let relationshipDigest = {};
+        relationshipDigest.relationshipGUID = relationshipGUID;
+        relationshipDigest.gen = 0;
+        relationshipDigest.label = relationship.RelationshipType;
+        relationshipDigest.end1GUID = relationship.end1.nodeGuid;
+        relationshipDigest.end2GUID = relationship.end2.nodeGuid;
+        relationshipDigest.end1Node = relationship.end1.nodetype;
+        relationshipDigest.end2Node = relationship.end2.nodetype;
+        relationshipDigests[relationshipGUID] = relationshipDigest;
+        addNewGuidToNodeType(relationship.end1.nodeGuid, relationship.end1.nodetype,"processRetrievedTraversal end1");
+        addNewGuidToNodeType(relationship.end2.nodeGuid, relationship.end2.nodetype,"processRetrievedTraversal end2");
+        addNewGuidToRelationshipType(relationshipGUID, relationship.relationshipType);
       }
       traversal.nodes = nodeDigests;
-      traversal.lines = lineDigests;
+      traversal.relationships = relationshipDigests;
 
       const genId = getLatestActiveGenId() + 1;
 
@@ -547,37 +547,37 @@ const InstancesContextProvider = (props) => {
       }
 
       /*
-       * Process lines...
+       * Process relationships...
        * These are in a map of NodeDigest objects, inside of
-       * which are the LineDigest objects.
+       * which are the relationshipDigest objects.
        * Anything that is known should be removed from the traversal.
        * Anything new can remain and should be assigned the next gen.
        */
-      const lines = traversal.lines;
-      if (lines) {
-        const rKeys = Object.keys(lines);
+      const relationships = traversal.relationships;
+      if (relationships) {
+        const rKeys = Object.keys(relationships);
 
         rKeys.forEach((lKey) => {
-          const lineGUID = lKey;
+          const relationshipGUID = lKey;
 
           /*
-           * Determine whether line is already known ...
+           * Determine whether relationship is already known ...
            */
-          let lineKnown = false;
-          if (guidToGenId[lineGUID] !== undefined) {
-            lineKnown = true;
+          let relationshipKnown = false;
+          if (guidToGenId[relationshipGUID] !== undefined) {
+            relationshipKnown = true;
           }
-          if (lineKnown === true) {
+          if (relationshipKnown === true) {
             /*
-             * Remove the line from the traversal
+             * Remove the relationship from the traversal
              */
-            delete traversal.lines[lineGUID];
+            delete traversal.relationships[relationshipGUID];
           } else {
             /*
-             * line is new.
-             * Update the new line's gen
+             * relationship is new.
+             * Update the new relationship's gen
              */
-            traversal.lines[lineGUID].gen = genId;
+            traversal.relationships[relationshipGUID].gen = genId;
           }
         });
       }
@@ -593,11 +593,11 @@ const InstancesContextProvider = (props) => {
       const no_nodes =
         traversal.nodes === undefined ||
         Object.keys(traversal.nodes).length === 0;
-      const no_lines =
-        traversal.lines === undefined ||
-        Object.keys(traversal.lines).length === 0;
+      const no_relationships =
+        traversal.relationships === undefined ||
+        Object.keys(traversal.relationships).length === 0;
 
-      if (no_nodes && no_lines) {
+      if (no_nodes && no_relationships) {
         /*
          * This is not an error - it just means everything in the traversal was already known,
          * which can happen.
@@ -670,50 +670,50 @@ const InstancesContextProvider = (props) => {
   };
 
   
-  const loadLine = (lineGUID, lineTypeKey) => {
-    console.log("loadLine");
-    if (lineTypeKey === undefined) {
-      lineTypeKey = guidToLineType[lineGUID];
+  const loadRelationship = (relationshipGUID, relationshipTypeKey) => {
+    console.log("loadRelationship");
+    if (relationshipTypeKey === undefined) {
+      relationshipTypeKey = guidToRelationshipType[relationshipGUID];
     }
-    if (lineTypeKey === undefined) {
-      alert("No line type!!! ");
+    if (relationshipTypeKey === undefined) {
+      alert("No Relationship type!!! ");
     } else {
-      lineTypeKey = lineTypeKey.toLowerCase();
-      const lineType = getLineType(
+      relationshipTypeKey = relationshipTypeKey.toLowerCase();
+      const relationshipType = getRelationshipType(
         identificationContext.getRestURL("glossary-author"),
-        lineTypeKey
+        relationshipTypeKey
       );
 
-      const url = lineType.url + "/" + lineGUID;
+      const url = relationshipType.url + "/" + relationshipGUID;
 
-      if (!guidToLineType[lineGUID]) {
-        addNewGuidToLineType(lineGUID, lineType, "loadLine");
+      if (!guidToRelationshipType[relationshipGUID]) {
+        addNewGuidToRelationshipType(relationshipGUID, relationshipType, "loadRelationship");
       }
 
-      issueRestGet(url, onSuccessfulLoadLine, onErrorLoadLine);
+      issueRestGet(url, onSuccessfulLoadRelationship, onErrorLoadRelationship);
     }
   };
 
   /*
    * Callback for completion of loadNode
    */
-  const onSuccessfulLoadLine = (json) => {
-    console.log("onSuccessful Load Line");
-    let line = undefined;
+  const onSuccessfulLoadRelationship = (json) => {
+    console.log("onSuccessful Load Relationship");
+    let relationship = undefined;
     if (json.result.length === 1) {
-      line = json.result[0];
-      console.log("Line Loaded " + line.name);
+      relationship = json.result[0];
+      console.log("Relationship Loaded " + relationship.name);
     }
-    if (line) {
-      processRetrievedLine(line);
+    if (relationship) {
+      prrocessRetrievedRelationship(relationship);
       return;
     } else {
-      onErrorLoadLine("Error did not get a node from the server");
+      onErrorLoadRelationship("Error did not get a node from the server");
     }
   };
 
-  const onErrorLoadLine = (message) => {
-    reportFailedOperation("Get Line", message);
+  const onErrorLoadRelationship = (message) => {
+    reportFailedOperation("Get Relationship", message);
   };
 
   /*
@@ -755,29 +755,29 @@ const InstancesContextProvider = (props) => {
   );
 
   /*
-   * A component has requested that the focus is changed to the Line with the specified GUID.
+   * A component has requested that the focus is changed to the Relationship with the specified GUID.
    */
-  const changeFocusLine = useCallback(
-    (lineGUID) => {
+  const changeFocusRelationship = useCallback(
+    (relationshipGUID) => {
       /*
-       * If the line is the current focus - deselect it.
+       * If the Relationship is the current focus - deselect it.
        */
 
-      if (lineGUID === focus.instanceGUID) {
+      if (relationshipGUID === focus.instanceGUID) {
         clearFocusInstance();
       } else {
         /*
-         * The line was retrieved from the server identified by serverName in the gen.
+         * The relationship was retrieved from the server identified by serverName in the gen.
          */
-        if (guidToGenId[lineGUID] !== undefined) {
-          // const genId = guidToGenId[lineGUID];
+        if (guidToGenId[relationshipGUID] !== undefined) {
+          // const genId = guidToGenId[relationshipGUID];
           // const gen = gens[genId - 1];
 
-          loadLine(lineGUID);
+          loadRelationship(relationshipGUID);
         }
       }
     },
-    [clearFocusInstance, focus.instanceGUID, gens, guidToGenId, loadLine]
+    [clearFocusInstance, focus.instanceGUID, gens, guidToGenId, loadRelationship]
   );
 
   /*
@@ -786,7 +786,7 @@ const InstancesContextProvider = (props) => {
   const getFocusCategory = useCallback(() => {
     if (
       focus.instanceCategory === "Node" ||
-      focus.instanceCategory === "Line"
+      focus.instanceCategory === "Relationship"
     ) {
       return focus.instanceCategory;
     }
@@ -808,8 +808,8 @@ const InstancesContextProvider = (props) => {
   /*
    * Helper function to retrieve focus Node
    */
-  const getFocusLine = useCallback(() => {
-    if (focus.instanceCategory === "Line") {
+  const getFocusRelationship = useCallback(() => {
+    if (focus.instanceCategory === "Relationship") {
       if (focus.instance !== null) {
         return focus.instance;
       }
@@ -838,7 +838,7 @@ const InstancesContextProvider = (props) => {
    * Function to explore the neighborhood around the current focus node
    * Parmeters: list of typeNames for each of te three categories.
    */
-  const explore = (nodeGUID, nodeFilter, lineFilter) => {
+  const explore = (nodeGUID, nodeFilter, relationshipFilter) => {
     let url =
       identificationContext.getRestURL("glossary-author") +
       "/graph/" +
@@ -854,22 +854,22 @@ const InstancesContextProvider = (props) => {
       nodeFilterStr = nodeFilterStr.slice(0, -1);
       nodeQueryParam = "nodeFilter=" + nodeFilterStr;
     }
-    let lineQueryParam = undefined;
-    if (lineFilter && lineFilter.length > 0) {
-      let lineFilterStr = "";
-      for (var i = 0; i < lineFilter.length; i++) {
-        lineFilterStr = lineFilterStr + lineFilter[i] + ",";
+    let relationshipQueryParam = undefined;
+    if (relationshipFilter && relationshipFilter.length > 0) {
+      let relationshipFilterStr = "";
+      for (var i = 0; i < relationshipFilter.length; i++) {
+        relationshipFilterStr = relationshipFilterStr + relationshipFilter[i] + ",";
       }
       // remove the last character
-      lineFilterStr = lineFilterStr.slice(0, -1);
-      lineQueryParam = "lineFilter=" + lineFilterStr;
+      relationshipFilterStr = relationshipFilterStr.slice(0, -1);
+      relationshipQueryParam = "relationshipFilter=" + relationshipFilterStr;
     }
 
     if (nodeQueryParam) {
       url = url + "&" + nodeQueryParam;
     }
-    if (lineQueryParam) {
-      url = url + "&" + lineQueryParam;
+    if (relationshipQueryParam) {
+      url = url + "&" + relationshipQueryParam;
     }
     // encode it
     url = encodeURI(url);
@@ -920,7 +920,7 @@ const InstancesContextProvider = (props) => {
     eKeys.forEach((e) => {
       delete newGUIDMap[e];
     });
-    const rKeys = Object.keys(removedGen.lines);
+    const rKeys = Object.keys(removedGen.relationships);
     rKeys.forEach((r) => {
       delete newGUIDMap[r];
     });
@@ -956,7 +956,7 @@ const InstancesContextProvider = (props) => {
      *   private String               nodeGUID;                 -- must be non-null
      *   private String               nodeTypeName              -- must be non-null
      *   private List<String>         nodeTypeNames;            -- a list of type names or null
-     *   private List<String>         lineTypeNames;            -- a list of type names or null
+     *   private List<String>         relationshipTypeNames;            -- a list of type names or null
      *   private Integer              depth;                    -- the depth used to create the subgraph
      *   private Integer              gen;                      -- which generation this subgraph pertains to
      *
@@ -964,15 +964,15 @@ const InstancesContextProvider = (props) => {
      *   An instance summary is much smaller than the full instance.
      *   The nodes map is keyed by nodeGUID and the value part consists of
      *       { nodeGUID, label, gen }
-     *   The lines map is keyed by lineGUID and the value part consists of
-     *       { lineGUID, end1GUID, end2GUID, idx, label, gen }
-     *   The above value types are described by the RexNodeDigest and RexLineDigest Java classes.
-     *   private Map<String,RexNodeDigest>         nodes;
-     *   private Map<String,RexLineDigest>   lines;
+     *   The relationships map is keyed by relationshipGUID and the value part consists of
+     *       { relationshipGUID, end1GUID, end2GUID, idx, label, gen }
+     *   The above value types are described by the NodeDigest and RelationshipDigest Java classes.
+     *   private Map<String,NodeDigest>           nodes;
+     *   private Map<String,RelationshipDigest>   relationships;
      *
      *   The traversal is augmented in the client by the addition of an operation field. This is only meaningful in the
      *   client code.
-     *   private String                operation  - has values { 'getNode' | 'getLine' | 'traversal' }
+     *   private String                operation  - has values { 'getNode' | 'getRelationship' | 'traversal' }
      */
 
     for (let i = 0; i < gens.length; i++) {
@@ -998,11 +998,11 @@ const InstancesContextProvider = (props) => {
           querySummary = querySummary.concat(" Node retrieval using GUID");
           break;
 
-        case "getLine":
+        case "getRelationship":
           /*
-           * Format querySummary as "Line retrieval \n GUID: <guid>"
+           * Format querySummary as "Relationship retrieval \n GUID: <guid>"
            */
-          querySummary = querySummary.concat(" Line retrieval using GUID");
+          querySummary = querySummary.concat(" Relationship retrieval using GUID");
           break;
 
         case "traversal":
@@ -1043,13 +1043,13 @@ const InstancesContextProvider = (props) => {
           }
 
           /*
-           * Line Type Filters - show type names 
+           * Relationship Type Filters - show type names 
            */
-          querySummary = querySummary.concat(" Line Type Filters: ");
-          var lineTypeNames = genContent.LineTypeNames;
-          if (lineTypeNames !== undefined && lineTypeNames !== null) {
+          querySummary = querySummary.concat(" Relationship Type Filters: ");
+          var relationshipTypeNames = genContent.RelationshipTypeNames;
+          if (relationshipTypeNames !== undefined && relationshipTypeNames !== null) {
             let first = true;
-            lineTypeNames.forEach(function (rtn) {
+            relationshipTypeNames.forEach(function (rtn) {
               if (first) {
                 first = false;
                 querySummary = querySummary.concat(rtn);
@@ -1084,13 +1084,13 @@ const InstancesContextProvider = (props) => {
         });
       }
 
-      const lines = genContent.lines;
-      for (let guid in lines) {
-        const rel = lines[guid];
+      const relationships = genContent.relationships;
+      for (let guid in relationships) {
+        const rel = relationships[guid];
         instanceList.push({
-          category: "Line",
+          category: "Relationship",
           label: rel.label,
-          guid: rel.lineGUID,
+          guid: rel.relationshipGUID,
         });
       }
       var historyItem = {
@@ -1120,15 +1120,15 @@ const InstancesContextProvider = (props) => {
         setFocusNode,
         getFocusNode,
         changeFocusNode,
-        getFocusLine,
-        setFocusLine,
-        changeFocusLine,
+        getFocusRelationship,
+        setFocusRelationship,
+        changeFocusRelationship,
         getFocusCategory,
         clearFocusInstance,
         clear,
         getHistory,
         loadNode,
-        loadLine,
+        loadRelationship,
         processRetrievedTraversal,
         explore,
         setGens,

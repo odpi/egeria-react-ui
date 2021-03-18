@@ -11,7 +11,7 @@ import InstancePropertiesDisplay from "./InstancePropertiesDisplay";
 
 import "./details-panel.scss";
 
-export default function LineDisplay(props) {
+export default function RelationshipDisplay(props) {
   /*
    * Handler for flopping a collapsible
    */
@@ -30,27 +30,27 @@ export default function LineDisplay(props) {
     }
   };
 
-  const line         = props.line;
-  const label        = line.name;
-  const gen          = line.gen;
-  const typeName     = line.lineType; 
-  const systemAttributes = line.systemAttributes;    
+  const relationship         = props.relationship;
+  const label        = relationship.name;
+  const gen          = relationship.gen;
+  const typeName     = relationship.relationshipType; 
+  const systemAttributes = relationship.systemAttributes;    
 
   return (
     <div className="instance-details-container">
-      <div className="instance-details-item">Line : {label}</div>
+      <div className="instance-details-item">relationship : {label}</div>
     
-      <div className="instance-details-item">Description : {line.description}</div>
-      <div className="instance-details-item">GUID : {line.guid}</div>
-      <div className="instance-details-item">Description : {line.description}</div>
-      Line End1 - {line.end1.name} : 
-      <div className="instance-details-item">Node type : {line.end1.nodeType} </div>
-      <div className="instance-details-item">Node GUID : {line.end1.nodeGuid} </div>
-      <div className="instance-details-item">Description : {line.end1.description} </div>
-      Line End2 - {line.end2.name} : 
-      <div className="instance-details-item">Node type : {line.end2.nodeType} </div>
-      <div className="instance-details-item">Node GUID : {line.end2.nodeGuid} </div>
-      <div className="instance-details-item">Description : {line.end2.description} </div>
+      <div className="instance-details-item">Description : {relationship.description}</div>
+      <div className="instance-details-item">GUID : {relationship.guid}</div>
+      <div className="instance-details-item">Description : {relationship.description}</div>
+      relationship End1 - {relationship.end1.name} : 
+      <div className="instance-details-item">Node type : {relationship.end1.nodeType} </div>
+      <div className="instance-details-item">Node GUID : {relationship.end1.nodeGuid} </div>
+      <div className="instance-details-item">Description : {relationship.end1.description} </div>
+      relationship End2 - {relationship.end2.name} : 
+      <div className="instance-details-item">Node type : {relationship.end2.nodeType} </div>
+      <div className="instance-details-item">Node GUID : {relationship.end2.nodeGuid} </div>
+      <div className="instance-details-item">Description : {relationship.end2.description} </div>
 
       <button className="collapsible-non-bold" id="querySummary" onClick={flipSection}> Generation information : </button>
       <div className="content">
@@ -79,6 +79,6 @@ export default function LineDisplay(props) {
   );
 }
 
-LineDisplay.propTypes = {
-  expLine: PropTypes.object,
+RelationshipDisplay.propTypes = {
+  exprelationship: PropTypes.object,
 };

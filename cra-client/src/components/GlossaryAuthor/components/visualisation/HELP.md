@@ -2,7 +2,7 @@
 
 &nbsp;
 
-The GLOssary author Visualiser and Explorer (GLOVE) interface provides a way to visualise glossary artifacts in Egeria. It is possible to retrieve nodes and lines, view their properties and display them as a graph of interconnected objects. The instances are presented both textually (on the left side) and diagrammatically (on the right side).
+The GLOssary author Visualiser and Explorer (GLOVE) interface provides a way to visualise glossary artifacts in Egeria. It is possible to retrieve nodes and relationships, view their properties and display them as a graph of interconnected objects. The instances are presented both textually (on the left side) and diagrammatically (on the right side).
 
 &nbsp;
 
@@ -15,7 +15,7 @@ When the GLOVE interface first loads, it displays a partifcular glossary artifac
 
 &nbsp;
 
-You can explore the neighborhood around the focus node by clicking on the Explore button to perform a graph traversal. This will present a dialog that allows you to refine the graph traversal by filtering the types of nodes and lines that will be retrieved. When the traversal is complete, the nodes and lines are added to the graph.
+You can explore the neighborhood around the focus node by clicking on the Explore button to perform a graph traversal. This will present a dialog that allows you to refine the graph traversal by filtering the types of nodes and relationships that will be retrieved. When the traversal is complete, the nodes and relationships are added to the graph.
 
 &nbsp;
 

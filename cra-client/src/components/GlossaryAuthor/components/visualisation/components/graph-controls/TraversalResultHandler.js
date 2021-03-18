@@ -16,7 +16,7 @@ export default function TraversalResultHandler(props) {
   const interactionContext    = useContext(InteractionContext);
 
   const nodeTypes             = props.nodeTypes; 
-  const lineTypes             = props.lineTypes; 
+  const relationshipTypes     = props.relationshipTypes; 
   const selectCallback        = props.selectCallback;
   const setAllCallback        = props.setAllCallback;
     
@@ -25,8 +25,8 @@ export default function TraversalResultHandler(props) {
     selectCallback("Node", evt.target.id);    
   }
 
-  const lineFilterChanged = (evt) => {
-    selectCallback("Line",evt.target.id);    
+  const relationshipFilterChanged = (evt) => {
+    selectCallback("Relationship",evt.target.id);    
   }
 
   const checkAll = () => {    
@@ -73,7 +73,7 @@ export default function TraversalResultHandler(props) {
             <li className="dialog-list-item">If ANY (or all) types are checked, the traversal will be restricted to the checked types.</li>
           </ul>          
           <p  className="dialog-text">
-          A neighboring node can be reached if its node type and connecting line type 
+          A neighboring node can be reached if its node type and connecting relationship type 
           are permitted.      
           </p>       
           <hr></hr>                 
@@ -95,7 +95,7 @@ export default function TraversalResultHandler(props) {
        */
 
       let resultsPresent = (nodeTypes   && nodeTypes.length   > 0)   ||
-                           (lineTypes   && lineTypes.length   > 0)   
+                           (relationshipTypes   && relationshipTypes.length   > 0)   
                            ;
                       
 
@@ -140,11 +140,11 @@ export default function TraversalResultHandler(props) {
                   ))}    
                 </div>
                 <div className="column">
-                  <p className="dialog-text"><b>Line types</b></p>
-                  {lineTypes.map(type => ( 
+                  <p className="dialog-text"><b>relationship types</b></p>
+                  {relationshipTypes.map(type => ( 
                     <div key={type.name}>
                       <label  className="traversal-filter-label" key={type.name}> 
-                        <input type="checkbox" id={type.name} value={type.checked} onChange={lineFilterChanged} checked={type.checked}/>
+                        <input type="checkbox" id={type.name} value={type.checked} onChange={relationshipFilterChanged} checked={type.checked}/>
                         {type.name} ( {type.count} )         
                       </label> 
                       <br/> 
@@ -171,7 +171,7 @@ export default function TraversalResultHandler(props) {
               <li  className="dialog-list-item">If ANY (or all) types are checked, the traversal will be restricted to the checked types.</li>
             </ul>        
             <p  className="dialog-text">
-            A neighboring node can be reached if its node type is permitted and the connecting line type is permitted.
+            A neighboring node can be reached if its node type is permitted and the connecting relationship type is permitted.
             </p>   
             <hr></hr>               
             <div className="traversal-results-area">                            
@@ -221,7 +221,7 @@ export default function TraversalResultHandler(props) {
 
    
   };
-  useEffect (componentDidMount ,[ props.status, props.nodeTypes, props.lineTypes ]);
+  useEffect (componentDidMount ,[ props.status, props.nodeTypes, props.relationshipTypes ]);
   
   /*
    * Render nothing - this component is invisible but controls what is displayed by the portal
@@ -237,5 +237,5 @@ TraversalResultHandler.propTypes = {
   selectCallback       : PropTypes.func.isRequired, 
   setAllCallback       : PropTypes.func.isRequired, 
   nodeTypes            : PropTypes.array,                    
-  lineTypes            : PropTypes.array
+  relationshipTypes    : PropTypes.array
 };

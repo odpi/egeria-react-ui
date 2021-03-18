@@ -25,7 +25,7 @@ export default function DiagramManager(props) {
 
   /*
    * nodeArray is stateful contiguous array of nodes - which resemble node digests.
-   * linkArray is a stateful contiguous array of links - which resemble Line.
+   * linkArray is a stateful contiguous array of links - which resemble Relationship.
    * A contiguous arays are needed for D3 to databind.
    * nodeArray and linkArray are updated when the gens change - this re-renders DiagramManager and 
    * it picks up the change in gens - see below. It's important that nodeArray and linkArray are updated 
@@ -54,7 +54,7 @@ export default function DiagramManager(props) {
 
   /*
    * The parseGen function accepts a gen and creates the associated nodes and links
-   * based on the nodes and lines in the gen. 
+   * based on the nodes and relationships in the gen. 
    */
   const parseGen = useCallback(
     (gen) => {
@@ -109,7 +109,7 @@ export default function DiagramManager(props) {
 
 
     /*
-     * Parse lines
+     * Parse relationships
      */
     
 
@@ -121,29 +121,29 @@ export default function DiagramManager(props) {
 
   
     /*
-     * Retrieve the line digests from the gen
+     * Retrieve the relationship digests from the gen
      */
-    const relsMap = gen.lines;
+    const relsMap = gen.relationships;
     Object.keys(relsMap).forEach(k => {
       /*
-       * gen.lines is the map of lines - pull out the lineGUID from the line.
+       * gen.relationships is the map of relationships - pull out the relationshipGUID from the relationship.
        */
-      const line = gen.lines[k];  
+      const relationship = gen.relationships[k];  
 
       var newLink = {};
-      newLink.id                     = line.lineGUID;
-      newLink.label                  = line.label;
+      newLink.id                     = relationship.relationshipGUID;
+      newLink.label                  = relationship.label;
       /*
        * Need to get each node from its GUID...it must already be in the gens but you would need to 
        * ask InstancesContext to map the guid to the gen and then again to look up the guid in that gen
-       * OR you perform parseNodes and parseLines together and look in newNodesMap.
+       * OR you perform parseNodes and parseRelationships together and look in newNodesMap.
        * If the node is in this latest gen (quite likely given exploration) the asynchronous state
        * update to allNodes - performed when parsing nodes (above) - will not have happened yet.
        */
-      console.log("line " + JSON.stringify(line));
-      newLink.source                 = newNodesMap[line.end1GUID];  
-      newLink.target                 = newNodesMap[line.end2GUID];
-      newLink.gen                    = line.gen;
+      console.log("relationship " + JSON.stringify(relationship));
+      newLink.source                 = newNodesMap[relationship.end1GUID];  
+      newLink.target                 = newNodesMap[relationship.end2GUID];
+      newLink.gen                    = relationship.gen;
 
       /*
        * Look through existing links (newlinksArray) to find multi-edges and set idx accordingly
@@ -175,7 +175,7 @@ export default function DiagramManager(props) {
 
   /*
    * The removeGen function accepts a genId and removes the associated nodes and links
-   * based on the nodes and lines in that gen. It does not have the gen available
+   * based on the nodes and relationships in that gen. It does not have the gen available
    * as it has already been deleted (unavoidable with React state management). If rescanning 
    * proves to be a performance problem, consider maintaining a gen-keyed map to use as an 
    * index.
@@ -225,7 +225,7 @@ export default function DiagramManager(props) {
 
 
     /*
-     * Remove lines
+     * Remove relationships
      */
     
     /*
@@ -284,7 +284,7 @@ export default function DiagramManager(props) {
       setAllNodes(newNodesMap);  
 
       /*
-       * Clear lines
+       * Clear relationships
        */
   
       if (linkArray.length > 0) {
@@ -318,12 +318,12 @@ export default function DiagramManager(props) {
 
 
   /*
-   * Request that the InstancesContext loads the line from the view server and give it the focus.
+   * Request that the InstancesContext loads the relationship from the view server and give it the focus.
    */
   const onLinkClick = useCallback(
 
     (guid) => {
-      instancesContext.changeFocusLine(guid);
+      instancesContext.changeFocusRelationship(guid);
     },
     [instancesContext]
   );

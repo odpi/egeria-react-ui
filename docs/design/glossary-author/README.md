@@ -37,14 +37,14 @@ There is a similar look to the Glossary , Category and Term pages, they all:
 ** Glove design
 
 Glove uses a similar interaction pattern to the Repository Explorer. The key architectureal differences are:
-1) Glove works with Subject Area Nodes and Lines (not OMRS entities and relationships). So it works with concepts that the glossary author is 
+1) Glove works with Subject Area Nodes and Relationships (not OMRS entities and relationships). So it works with concepts that the glossary author is 
 familiar with.
 2) Glove is started by pressing the visualisation button having selected a node from search results. The Glove UI will display this node as its initial state. 
-3) Exploration of this selected node, shows a pre travesal screen with the number of each node or line - so the user can filter what should be displayed. When this is completed, the user is shown the additional nodes (kneon as a generation or gen) on the canvas. 
+3) Exploration of this selected node, shows a pre travesal screen with the number of each node or relationship - so the user can filter what should be displayed. When this is completed, the user is shown the additional nodes (kneon as a generation or gen) on the canvas. 
 4) The additional nodes on the canvas can be explored producing new gens. It is possible to undo a gen and there is a history.
 5) Undo undoes the last generation. 
 6) Clear clears all the generation back to the first generation which contains the original node
-7) Glove differs from the Repository Explorer in that it does not have a typeexplorer. The repository explorer creates displayable content in the view service including labels. For Glove, the information used to display artifacts is defined in the client side javascript. It is keyed off 2 files NodeTypes and lineTypes. These files contain the shape of the nodes and line respectively, how to display them and the url to use when issuing rest calls for them.
+7) Glove differs from the Repository Explorer in that it does not have a typeexplorer. The repository explorer creates displayable content in the view service including labels. For Glove, the information used to display artifacts is defined in the client side javascript. It is keyed off 2 files NodeTypes and RelationshipTypes. These files contain the shape of the nodes and relationship respectively, how to display them and the url to use when issuing rest calls for them.
 
 ----
 License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),

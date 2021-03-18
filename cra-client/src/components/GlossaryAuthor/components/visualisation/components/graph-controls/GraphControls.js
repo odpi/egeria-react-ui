@@ -50,7 +50,7 @@ export default function GraphControls(props) {
   const [history, setHistory]          = useState([]); 
 
   const [preTraversalNodeTypes, setPreTraversalNodeTypes]       = useState([]); 
-  const [preTraversalLineTypes, setPreTraversalLineTypes]       = useState([]); 
+  const [preTraversalRelationshipTypes, setPreTraversalRelationshipTypes]       = useState([]); 
 
   /*
    * Handler for Explore button - initiate a pre-traversal
@@ -115,8 +115,8 @@ export default function GraphControls(props) {
      *
      * Unpack the glovePreTraversal fields
      *    private String                      nodeGUID;                    --  must be non-null
-     *    private Map<String, NodeLineStats>  nodeInstanceCounts;          --  the keys are NodeType names. The map can be null meaning no filtering by NodeType
-     *    private Map<String, NodeLineStats>  lineInstanceCounts;          --  the keys are LineType names.  The map can be null meaning no filtering by LineType
+     *    private Map<String, NodeRelationshipStats>  nodeInstanceCounts;          --  the keys are NodeType names. The map can be null meaning no filtering by NodeType
+     *    private Map<String, NodeRelationshipStats>  relationshipInstanceCounts;          --  the keys are RelationshipType names.  The map can be null meaning no filtering by RelationshipType
      *    private Integer                     depth;
      */
     let localPreTraversalResults = {};
@@ -139,24 +139,24 @@ export default function GraphControls(props) {
     }
 
     /*
-     * Process the line instance stats...
+     * Process the relationship instance stats...
      */
-    localPreTraversalResults.lineTypes = [];
-    const lineCounts = glovePreTraversal[0].lineCounts;
-    if (lineCounts != null) {
-      const typeNames = Object.keys(lineCounts);
+    localPreTraversalResults.relationshipTypes = [];
+    const relationshipCounts = glovePreTraversal[0].relationshipCounts;
+    if (relationshipCounts != null) {
+      const typeNames = Object.keys(relationshipCounts);
       typeNames.forEach(typeName => {
-        const count = lineCounts[typeName].count;
+        const count = relationshipCounts[typeName].count;
         /*
          * Stash the typeName and count in this.preTraversal for later access
          */
-        localPreTraversalResults.lineTypes.push( { 'name' : typeName, 'count' : count , 'checked' : false });
+        localPreTraversalResults.relationshipTypes.push( { 'name' : typeName, 'count' : count , 'checked' : false });
       });
-      localPreTraversalResults.lineTypes.sort((a, b) => (a.name > b.name) ? 1 : -1);
+      localPreTraversalResults.relationshipTypes.sort((a, b) => (a.name > b.name) ? 1 : -1);
     }
 
     setPreTraversalNodeTypes(localPreTraversalResults.nodeTypes);
-    setPreTraversalLineTypes(localPreTraversalResults.lineTypes);
+    setPreTraversalRelationshipTypes(localPreTraversalResults.relationshipTypes);
 
   };
 
@@ -167,7 +167,7 @@ export default function GraphControls(props) {
 
     /*     
      * Invoke the InstancesComtext explore operation - passing it the filters which 
-     * for entities and lines are converted to typeGUIDs. Classifcations are 
+     * for entities and relationships are converted to typeGUIDs. Classifcations are 
      * passed as a list of names, so don't need conversion but we just want the 'name'.
      * The explore will perform the full traversal and processes the retrieved instance graph.
      */
@@ -179,20 +179,20 @@ export default function GraphControls(props) {
       }
     });
 
-    let selectedLineTypeNames = [];
-    preTraversalLineTypes.forEach(type=> {
+    let selectedRelationshipTypeNames = [];
+    preTraversalRelationshipTypes.forEach(type=> {
       if (type.checked) {
-        selectedLineTypeNames.push(type.name);
+        selectedRelationshipTypeNames.push(type.name);
       }
     });
 
-    instancesContext.explore( instancesContext.getFocusGUID(), selectedNodeTypeNames, selectedLineTypeNames);
+    instancesContext.explore( instancesContext.getFocusGUID(), selectedNodeTypeNames, selectedRelationshipTypeNames);
 
     /*
      * Clear the traversal results
      */
     setPreTraversalNodeTypes([]);
-    setPreTraversalLineTypes([]);
+    setPreTraversalRelationshipTypes([]);
 
     /* 
      * Hide the traversal dialog
@@ -239,9 +239,9 @@ export default function GraphControls(props) {
       setPreTraversalNodeTypes(updates);
     }
 
-    if (category === "Line") {
+    if (category === "Relationship") {
       let updates = [];
-      preTraversalLineTypes.forEach((type) => {
+      preTraversalRelationshipTypes.forEach((type) => {
         let newtype = type;
         if (type.name === name) {
           newtype.checked = !(type.checked);
@@ -251,7 +251,7 @@ export default function GraphControls(props) {
       /*
        * Reflect the change in checked state in the pre-traversal list
        */
-      setPreTraversalLineTypes( updates );
+      setPreTraversalRelationshipTypes( updates );
     } 
 
   }
@@ -270,14 +270,14 @@ export default function GraphControls(props) {
     setPreTraversalNodeTypes(updates);
 
     /*
-     * Set all line types to checked...
+     * Set all relationship types to checked...
      */
     updates = [];
-    preTraversalLineTypes.forEach((type) => {
+    preTraversalRelationshipTypes.forEach((type) => {
       let newtype = Object.assign(type, {checked : checked});
       updates.push( newtype );
     });
-    setPreTraversalLineTypes(updates);
+    setPreTraversalRelationshipTypes(updates);
 
   }
 
@@ -322,7 +322,7 @@ export default function GraphControls(props) {
                                 selectCallback        = { selectCallback }
                                 setAllCallback        = { setAllCallback }
                                 nodeTypes             = {preTraversalNodeTypes}
-                                lineTypes             = {preTraversalLineTypes}
+                                relationshipTypes     = {preTraversalRelationshipTypes}
                                 onCancel              = { cancelTraversalModal }
                                 onSubmit              = { submitTraversalModal } />
 
