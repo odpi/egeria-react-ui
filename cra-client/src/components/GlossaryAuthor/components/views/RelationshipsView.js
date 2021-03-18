@@ -6,18 +6,18 @@ import { FormGroup } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import Close16 from "../../../../images/carbon/Egeria_close_16";
 
-function LinesView(props) {
-  console.log("LinesView");
+function RelationshipsView(props) {
+  console.log("RelationshipsView");
 
   const glossaryAuthorCRUDContext = useContext(GlossaryAuthorCRUDContext);
-  console.log("LinesView glossaryAuthorCRUDContext", glossaryAuthorCRUDContext);
-  const onClickLine = (e) => {
-    console.log("onClickLine");
+  console.log("RelationshipsView glossaryAuthorCRUDContext", glossaryAuthorCRUDContext);
+  const onClickRelationship = (e) => {
+    console.log("onClickRelationship");
     alert("Got " + e.target.id);
     e.preventDefault();
   };
   const handleOnClose = (e) => {
-    console.log("LinesView handleOnClose");
+    console.log("RelationshipsView handleOnClose");
     e.preventDefault();
     props.onClose();
   };
@@ -34,7 +34,7 @@ function LinesView(props) {
       <FormGroup>
         <div>
           <h4>
-            Lines for{" "}
+            Relationships for{" "}
             {glossaryAuthorCRUDContext.currentNodeType
               ? glossaryAuthorCRUDContext.currentNodeType.typeName
               : ""}
@@ -42,35 +42,35 @@ function LinesView(props) {
             <Info16 />
           </h4>
         </div>
-        {glossaryAuthorCRUDContext.selectedNodeLines && (
+        {glossaryAuthorCRUDContext.selectedNodeRelationships && (
           <div>
             <div className="flex-grid-halves">
               <div className="col">
-                <button className={`nodeline-button lineShape nodeline-title`} disabled>
-                  Lines
+                <button className={`noderelationship-button relationshipShape noderelationship-title`} disabled>
+                  Relationships
                 </button>
               </div>
               <div className="col">
-                <button className={`nodeline-button nodeShape nodeline-title`} disabled>
+                <button className={`noderelationship-button nodeShape noderelationship-title`} disabled>
                   Connected Nodes
                 </button>
               </div>
             </div>
-            {glossaryAuthorCRUDContext.selectedNodeLines.map((line) => {
+            {glossaryAuthorCRUDContext.selectedNodeRelationships.map((relationship) => {
               return (
                 <div className="flex-grid-halves">
-                  <div key={line.guid} className="col">
+                  <div key={relationship.guid} className="col">
                     <button
-                      id={line.guid}
-                      className={`nodeline-button lineShape clickable`}
-                      onClick={onClickLine}
+                      id={relationship.guid}
+                      className={`noderelationship-button relationshipShape clickable`}
+                      onClick={onClickRelationship}
                     >
-                      {line.name}
+                      {relationship.name}
                     </button>
                   </div>
                   <div className="col">
                     <button
-                      className={`nodeline-button nodeShape clickable`}
+                      className={`noderelationship-button nodeShape clickable`}
                       onClick={onClickNode}
                     >
                       Term TestName
@@ -86,4 +86,4 @@ function LinesView(props) {
   );
 }
 
-export default LinesView;
+export default RelationshipsView;

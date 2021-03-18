@@ -9,7 +9,7 @@ import PropTypes             from "prop-types";
 
 import NodeDisplay         from "./NodeDisplay";
 
-import LineDisplay     from "./LineDisplay";
+import RelationshipDisplay     from "./RelationshipDisplay";
 
 
 
@@ -37,8 +37,8 @@ export default function InstanceDisplay() {
     if (focusCategory === "Node") {
       return <NodeDisplay node={instancesContext.getFocusNode()} />
     }
-    else if (focusCategory === "Line") {
-      return <LineDisplay line={instancesContext.getFocusLine()} />
+    else if (focusCategory === "Relationship") {
+      return <RelationshipDisplay relationship={instancesContext.getFocusRelationship()} />
     }
   }
 }

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-const getLineType = (GlossaryAuthorURL, key) => {
+const getRelationshipType = (GlossaryAuthorURL, key) => {
   const relatedTermAttributes = [
     {
       key: "description",
@@ -35,7 +35,7 @@ const getLineType = (GlossaryAuthorURL, key) => {
     },
   ];
 
-  const LineTypes = {
+  const RelationshipTypes = {
     termanchor: {
       key: "term-anchor",
       plural: "term-anchors",
@@ -148,24 +148,24 @@ const getLineType = (GlossaryAuthorURL, key) => {
       typeName: "undefined",
     },
   };
-  console.log("getLineType key " + key);
-  let lineType = LineTypes[key];
-  console.log("getLineType Linetype " + lineType);
-  if (lineType.isRelatedTerm) {
+  console.log("getRelationshipType key " + key);
+  let relationshipType = RelationshipTypes[key];
+  console.log("getRelationshipType RelationshipType " + relationshipType);
+  if (relationshipType.isRelatedTerm) {
     // add in the related term attributes
-    lineType["attributes"] = relatedTermAttributes;
+    relationshipType["attributes"] = relatedTermAttributes;
   }
-  lineType["summaryResponseAttributes"] = summaryResponseAttributes;
-  if (lineType) {
-    lineType.url =
+  relationshipType["summaryResponseAttributes"] = summaryResponseAttributes;
+  if (relationshipType) {
+    relationshipType.url =
       GlossaryAuthorURL +
       "/relationships/" +
-      lineType.plural;
+      relationshipType.plural;
   } else {
-    console.log("No line type for key " + key);
-    lineType = lineType["notSet"];
+    console.log("No relationship type for key " + key);
+    relationshipType = relationshipType["notSet"];
   }
-  return lineType;
+  return relationshipType;
 };
 
-export default getLineType;
+export default getRelationshipType;

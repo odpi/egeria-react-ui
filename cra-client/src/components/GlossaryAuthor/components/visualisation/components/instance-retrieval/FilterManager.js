@@ -10,14 +10,14 @@ import "./filter.scss";
 /*
  * When FilterManager is rendered it populates the type selectors with types.
  *
- * The node and line type selectors allow the user to select a single type,
+ * The node and relationship type selectors allow the user to select a single type,
  * to be used on the search.
  */
 
 export default function FilterManager(props) {
   // leave off project for now
   const nodeTypes = ["Category", "Glossary", "Term"];
-  const lineTypes = [
+  const relationshipTypes = [
     "TermAnchor",
     "CategoryAnchor",
     "HasA",
@@ -45,21 +45,21 @@ export default function FilterManager(props) {
     typeSelected("Node", typeName);
   };
 
-  const lineSelectorHandler = (e) => {
+  const relationshipSelectorHandler = (e) => {
     const typeName = e.target.value;
-    typeSelected("Line", typeName);
+    typeSelected("Relationship", typeName);
   };
 
   /*
    * The type selectors are cross-coupled - node selection clears
-   * lines selector and v.v.
+   * relationships selector and v.v.
    */
   const typeSelected = (category, typeName) => {
     switch (category) {
       case "Node":
-        resetLineTypeSelector();
+        resetRelationshipTypeSelector();
         break;
-      case "Line":
+      case "Relationship":
         resetNodeTypeSelector();
         break;
       default:
@@ -78,10 +78,10 @@ export default function FilterManager(props) {
   };
 
   /*
-   * Reset the line type selector
+   * Reset the Relationship type selector
    */
-  const resetLineTypeSelector = () => {
-    const selector = document.getElementById("lineTypeSelector");
+  const resetRelationshipTypeSelector = () => {
+    const selector = document.getElementById("RelationshipTypeSelector");
     selector.value = "none";
   };
 
@@ -108,18 +108,18 @@ export default function FilterManager(props) {
 
       <br />
 
-      <label htmlFor="lineTypeSelector">Line types: </label>
+      <label htmlFor="relationshipTypeSelector">Relationship types: </label>
       <select
         className="typeSelector"
-        id="lineTypeSelector"
-        name="lineTypeSelector"
-        onChange={lineSelectorHandler}
+        id="relationshipTypeSelector"
+        name="relationshipTypeSelector"
+        onChange={relationshipSelectorHandler}
       >
         <option value="none" defaultValue>
           Restrict search to a selected type...
         </option>
 
-        {lineTypes.map((typeName) => (
+        {relationshipTypes.map((typeName) => (
           <option key={typeName} value={typeName}>
             {" "}
             {typeName}{" "}
