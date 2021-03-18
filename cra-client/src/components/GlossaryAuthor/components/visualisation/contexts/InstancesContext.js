@@ -24,7 +24,8 @@ export const InstancesContextConsumer = InstancesContext.Consumer;
 
 const InstancesContextProvider = (props) => {
   const identificationContext = useContext(IdentificationContext);
-  const history = useHistory()
+  const history = useHistory();
+
   /*
    * The focusInstance is the instance (Node or Relationship) that is the user's current
    * focus. It's GUID is stored in focusInstanceGUID and its category is in focusInstanceCategory.
@@ -298,6 +299,7 @@ const InstancesContextProvider = (props) => {
       nodeDigest.name = node.name;
       traversal.nodes[nodeGUID] = nodeDigest;
       traversal.operation = "getNode";
+      traversal.nodeGUID = nodeGUID;
       addNewGuidToNodeType(nodeGUID, node.nodeType,"unknown retrieved node");
       /*
        * Add the traversal to the sequence of gens in the graph.
@@ -435,7 +437,9 @@ const InstancesContextProvider = (props) => {
         }
         addNewGuidToNodeType(end1GUID, end1.nodeType, "end1");
         addNewGuidToNodeType(end2GUID, end2.nodeType, "end2");
-        addNewGuidToRelationshipType(relationshipGUID,relationshipType, "processed retrieved Relationship")
+        addNewGuidToRelationshipType(relationshipGUID,relationshipType, "processed retrieved relationship")
+        traversal.relationshipGUID=relationshipGUID;
+        traversal.operation="getRelationship";
 
         /*
          * Add the traversal to the sequence of gens in the graph.
@@ -498,7 +502,7 @@ const InstancesContextProvider = (props) => {
         let relationshipDigest = {};
         relationshipDigest.relationshipGUID = relationshipGUID;
         relationshipDigest.gen = 0;
-        relationshipDigest.label = relationship.RelationshipType;
+        relationshipDigest.label = relationship.relationshipType;
         relationshipDigest.end1GUID = relationship.end1.nodeGuid;
         relationshipDigest.end2GUID = relationship.end2.nodeGuid;
         relationshipDigest.end1Node = relationship.end1.nodetype;
@@ -611,7 +615,10 @@ const InstancesContextProvider = (props) => {
          * gen set)
          */
         traversal.gen = genId;
-
+        traversal.operation = "traversal";
+        traversal.nodeGUID = results.rootNodeGuid;
+        traversal.nodeFilter = results.nodeFilter;
+        traversal.relationshipFilter = results.relationshipFilter;
         /*
          * Add the traversal to the sequence of gens in the graph. Then generate the graph-changed event.
          */
@@ -983,19 +990,14 @@ const InstancesContextProvider = (props) => {
        *  Build the query description
        */
 
-      /*
-       * The querySummary always starts with the Repository Server's name
-       */
-
-      const serverName = genContent.serverName;
-      let querySummary = "[" + serverName + "]";
+      let querySummary = "";
 
       switch (genContent.operation) {
         case "getNode":
           /*
            * Format querySummary as "Node retrieval \n GUID: <guid>"
            */
-          querySummary = querySummary.concat(" Node retrieval using GUID");
+          querySummary = querySummary.concat(" Node retrieval using GUID " + genContent.nodeGUID);
           break;
 
         case "getRelationship":
@@ -1003,6 +1005,7 @@ const InstancesContextProvider = (props) => {
            * Format querySummary as "Relationship retrieval \n GUID: <guid>"
            */
           querySummary = querySummary.concat(" Relationship retrieval using GUID");
+
           break;
 
         case "traversal":
@@ -1018,46 +1021,24 @@ const InstancesContextProvider = (props) => {
             const rootGenNumber = guidToGenId[nodeGUID];
             const rootGen = gens[rootGenNumber - 1];
             const rootDigest = rootGen.nodes[nodeGUID];
-            const rootLabel = rootDigest.label;
+            const rootLabel = rootDigest.name;
             querySummary = querySummary.concat(
-              " Traversal from Node " + rootLabel
+              " Traversal from " + rootDigest.nodeType + " with name '" + rootLabel +"' and GUID of '" + nodeGUID + "'"
             );
-            querySummary = querySummary.concat(" Depth: " + genContent.depth);
-
+          
             /*
              * Node Type Filters - show type names rather than type GUIDs
              */
             querySummary = querySummary.concat(" Node Type Filters: ");
-            var nodeTypeNames = genContent.NodeTypeNames;
-            if (nodeTypeNames !== undefined && nodeTypeNames !== null) {
-              let first = true;
-              nodeTypeNames.forEach(function (etn) {
-                if (first) {
-                  first = false;
-                  querySummary = querySummary.concat(etn);
-                } else {
-                  querySummary = querySummary.concat(", " + etn);
-                }
-              });
-            } else querySummary = querySummary.concat("none");
+            querySummary = querySummary.concat(genContent.nodeFilter);
           }
 
           /*
            * Relationship Type Filters - show type names 
            */
-          querySummary = querySummary.concat(" Relationship Type Filters: ");
-          var relationshipTypeNames = genContent.RelationshipTypeNames;
-          if (relationshipTypeNames !== undefined && relationshipTypeNames !== null) {
-            let first = true;
-            relationshipTypeNames.forEach(function (rtn) {
-              if (first) {
-                first = false;
-                querySummary = querySummary.concat(rtn);
-              } else {
-                querySummary = querySummary.concat(", " + rtn);
-              }
-            });
-          } else querySummary = querySummary.concat("none");
+
+            querySummary = querySummary.concat(" Relationship Type Filters: ");
+            querySummary = querySummary.concat(genContent.relationshipFilter);
 
           break;
 
@@ -1078,8 +1059,8 @@ const InstancesContextProvider = (props) => {
       for (let guid in nodes) {
         const ent = nodes[guid];
         instanceList.push({
-          category: "Node",
-          label: ent.label,
+          category: ent.nodeType,
+          label: ent.name,
           guid: ent.nodeGUID,
         });
       }
