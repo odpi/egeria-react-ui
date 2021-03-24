@@ -44,7 +44,7 @@ function NodeChildren(props) {
     setParentNodeTypeName(parentElement.type);
 
     setSelectedContentIndex(index);
-  }, []);
+  });
 
   let history = useHistory();
 

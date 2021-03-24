@@ -33,8 +33,16 @@ There is a similar look to the Glossary , Category and Term pages, they all:
 * Additional buttons appear for different artifacts
     * a quick terms button is present for glossaries, this allows the user to quickly add a number of glossary terms at the same time. 
     * a children button is present for glossary and category;  this shows the child terms and caterories
-            
-** Glove design
+
+## Routing in the Glossary Author
+
+The Glossary Author is has a rnumber of react routes. If the code needs to load a new page then it updates the url and the react router then loads that page. In addition to the url location, there are query parameters on the url, these detail the state of the page. for example whether a checkbox is selected or not. This means that a utl can be pasted into the browser, and the page will render basedon the contents of the url. Bookmarking is therefore possible.
+
+The react routes key off the last segment of the location, for example urls ending with /add will load the CreateNode component. In this way common components can be used for add edit, visualisation, and showing children without many routes entries. It also means that it is possible to navigate to a categories childrens children and still be able to have the expected add edit and visualisation capability.     
+
+
+
+## Glove design
 
 Glove uses a similar interaction pattern to the Repository Explorer. The key architectureal differences are:
 1) Glove works with Subject Area Nodes and Relationships (not OMRS entities and relationships). So it works with concepts that the glossary author is 
