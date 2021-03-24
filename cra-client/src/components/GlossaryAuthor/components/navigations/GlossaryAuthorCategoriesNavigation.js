@@ -42,8 +42,12 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   const getChildren = () => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-    const url = encodeURI(props.getCategoriesURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
-    issueRestGet(url, onSuccessfulGetChildren, onErrorGetChildren);
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+    issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
   };
 
   const onToggleTop = () => {
@@ -90,6 +94,14 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
       results.pop();
     }
     if (results && results.length > 0) {
+      results.map(function (row) {
+        row.id = row.systemAttributes.guid;
+        if (selectedNodeGuid && selectedNodeGuid === row.id) {
+          row.isSelected = true;
+          selectedInResults = true;
+        }
+        return row;
+      });
       setNodes(results);
     } else {
       setNodes([]);
@@ -153,13 +165,17 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   function getAddCategoryUrl() {
     console.log("getAddCategoryUrl " + props);
-    return props.match.url + "/categories/add-category";
+    return props.match.url + "/add";
   }
   function getEditNodeUrl() {
-    return props.match.url + "/categories/edit-category/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/edit";
   }
   function getGraphNodeUrl() {
-    return props.match.url + "/categories/visualise-category/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/visualise";
+  }
+  function getSelectedCategoryChildrenURL() {
+    // default to categories
+    return props.match.url + "/" + selectedNodeGuid + "/categories";
   }
   const isSelected = (nodeGuid) => {
     return nodeGuid === selectedNodeGuid;
@@ -167,6 +183,8 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
   };
+
+
   return (
     <div>
       <div className="bx--grid">
@@ -177,7 +195,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
                 <Add32 kind="primary" />
               </Link>
               {selectedNodeGuid && (
-                <Link to={props.getCategoriesURL}>
+                <Link to={getSelectedCategoryChildrenURL}>
                   <ParentChild32 kind="primary" />
                 </Link>
               )}

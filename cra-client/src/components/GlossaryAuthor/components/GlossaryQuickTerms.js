@@ -206,7 +206,7 @@ export default function GlossaryQuickTerms(props) {
                             defaultValue={item.status}
                             readOnly
                           />
-                          <div className="left-20" alias="white_check_mark" src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png">✅</div>
+                          <span role="img" aria-label="When present, this image indicates that the Term has been successfully created" className="left-20" alias="white_check_mark" src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png">✅</span>
                         </div>
                       )}
                       {item.status !== "Success" && (

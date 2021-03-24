@@ -8,39 +8,55 @@ import GlossaryAuthorTermsNavigation from "./navigations/GlossaryAuthorTermsNavi
 import GlossaryAuthorCategoriesNavigation from "./navigations/GlossaryAuthorCategoriesNavigation";
 import GlossaryAuthorChildCategoriesNavigation from "./navigations/GlossaryAuthorChildCategoriesNavigation";
 import getNodeType from "./properties/NodeTypes";
+import getPathTypesAndGuids from "./properties/PathAnalyser";
 import { useHistory, withRouter } from "react-router-dom";
-
+/**
+ * NodeChildren is driven by the GlossaryAuthorRoutes, with a path ending in Terms or Categories.
+ * The second last segment should be the parent guid and the thrid last segment should be the parent type
+ * so the current path should be ...../<plural parent type>/<parent guid>/<plural child type>
+ * @param {*} props
+ * @returns
+ */
 function NodeChildren(props) {
   const identificationContext = useContext(IdentificationContext);
   console.log("NodeChildren(props) " + props);
   const [selectedContentIndex, setSelectedContentIndex] = useState(0);
+  const [parentNodeTypeName, setParentNodeTypeName] = useState();
+  const [parentGuid, setParentGuid] = useState();
+
   /**
    * this useEffect is required so that the content in the content switcher is kept in step with the url.
    * This is required when the back button is pressed returning from a child component.
    */
   useEffect(() => {
-    const arrayOfURLSegments = window.location.pathname.split("/");
-    const lastSegment = arrayOfURLSegments[arrayOfURLSegments.length - 1];
+    const pathName = props.location.pathname;
+    const childTypeName = pathName.substring(pathName.lastIndexOf('/') + 1);
+    const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
+    // set up the nodeType
+
     let index = 0;
-    if (lastSegment === "terms") {
+    if (childTypeName === "term") {
       index = 1;
     }
-    console.log(
-      "NodeChildren useEffect url=" +
-        window.location.pathname +
-        " ,lastSegment=" +
-        lastSegment +
-        " ,index=" +
-        index
-    );
+    // set the parent information
+    const parentElement = pathAnalysis[pathAnalysis.length - 1];
+    setParentGuid(parentElement.guid);
+    setParentNodeTypeName(parentElement.type);
+
     setSelectedContentIndex(index);
   }, []);
-  const guid = props.parentguid;
+
   let history = useHistory();
 
   const onChange = (e) => {
     const chosenContent = `${e.name}`;
-    const url = props.match.url + "/" + chosenContent;
+    let url = props.match.url;
+    console.log("url 1 " + url);
+
+    url = url.substring(0, url.lastIndexOf('/'));
+    console.log("url 2 " + url);
+    url = url + "/" + chosenContent;
+    console.log("url 3 " + url);
     console.log("pushing url " + url);
 
     // Use replace rather than push so the content switcher changes are not navigated through the back button, which would be uninituitive.
@@ -56,14 +72,20 @@ function NodeChildren(props) {
     let childName;
     if (selectedContentIndex === 1) {
       childName = "terms";
-    } else if (props.parentNodeTypeName === "glossary") {
+    } else if (parentNodeTypeName === "glossary") {
       childName = "categories";
-    } else if (props.parentNodeTypeName === "category") {
+    } else if (parentNodeTypeName === "category") {
       childName = "child-categories";
     }
-    console.log("getChildrenURL guid " + guid);
     const url =
-      getNodeType(identificationContext.getRestURL("glossary-author"), props.parentNodeTypeName).url + "/" + guid + "/" + childName;
+      getNodeType(
+        identificationContext.getRestURL("glossary-author"),
+        parentNodeTypeName
+      ).url +
+      "/" +
+      parentGuid +
+      "/" +
+      childName;
     console.log("getChildrenURL url " + url);
     return url;
   };
@@ -75,16 +97,18 @@ function NodeChildren(props) {
         <Switch name="terms" text="Terms" />
       </ContentSwitcher>
 
-      {selectedContentIndex === 0 &&  (props.parentNodeTypeName === "glossary") && (
-        <GlossaryAuthorCategoriesNavigation
-          getCategoriesURL={getChildrenURL()}
-        />
-      )}
-          {selectedContentIndex === 0 &&  (props.parentNodeTypeName === "category") && (
-        <GlossaryAuthorChildCategoriesNavigation
-          getCategoriesURL={getChildrenURL()}
-        />
-      )}
+      {selectedContentIndex === 0 &&
+        parentNodeTypeName === "glossary" && (
+          <GlossaryAuthorCategoriesNavigation
+            getCategoriesURL={getChildrenURL()}
+          />
+        )}
+      {selectedContentIndex === 0 &&
+        parentNodeTypeName === "category" && (
+          <GlossaryAuthorChildCategoriesNavigation
+            getCategoriesURL={getChildrenURL()}
+          />
+        )}
       {selectedContentIndex === 1 && (
         <GlossaryAuthorTermsNavigation getTermsURL={getChildrenURL()} />
       )}

@@ -7,17 +7,16 @@ import {
   Button,
 } from "carbon-components-react";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
-import CreateNode from "../create/CreateNode";
+import CreateNodeUnderGlossary from "./CreateNodeUnderGlossary";
 import getNodeType from "../properties/NodeTypes.js";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
-
 export default function CreateNodeWizard(props) {
   const identificationContext = useContext(IdentificationContext);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [glossaryGuid, setGlossaryGuid] = useState();
   const [nodeCreated, setNodeCreated] = useState();
-  console.log("CreateNodeWizard");
-  const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), props.nodeTypeName);
+  console.log("CreateNodeWizard props = " + JSON.stringify(props));
+
   const handleChoseGlossaryOnClick = (e) => {
     e.preventDefault();
     if (currentStepIndex === 0) {
@@ -44,22 +43,22 @@ export default function CreateNodeWizard(props) {
     setNodeCreated(true);
   };
   const getTitle = () => {
-    return "Create " + nodeType.typeName + " Wizard";
+    return "Create " + props.currentNodeType.typeName + " Wizard";
   };
   const step1Title = () => {
-    return "Choose a Glossary that you want the " + nodeType.typeName + " to be created in.";
+    return "Choose a Glossary that you want the " + props.currentNodeType.typeName + " to be created in.";
   };
   const getStep1Description = () => {
-    return "Step 1: A glossary needs to be chosen before a " +nodeType.key + " can be created";
+    return "Step 1: A glossary needs to be chosen before a " +props.currentNodeType.key + " can be created";
   };
   const step2Title = () => {
-    return "Create the " + nodeType.typeName + " in the chosen Glossary.";
+    return "Create the " + props.currentNodeType.typeName + " in the chosen Glossary.";
   };
   const getStep2Label = () => {
-    return "Create " + nodeType.typeName;
+    return "Create " + props.currentNodeType.typeName;
   };
   const getStep2Description = () => {
-    return "Step2:  Create " + nodeType.typeName + " in the chosen Glossary"
+    return "Step2:  Create " + props.currentNodeType.typeName + " in the chosen Glossary"
   };
 
   return (
@@ -106,8 +105,8 @@ export default function CreateNodeWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <CreateNode
-              currentNodeType={nodeType}
+            <CreateNodeUnderGlossary
+              currentNodeType={props.currentNodeType}
               glossaryGuid={glossaryGuid}
               onCreateCallback={onCreate}
             />

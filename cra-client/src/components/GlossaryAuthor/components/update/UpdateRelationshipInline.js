@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useContext, useEffect } from "react";
-import getPathTypesAndGuids from "../properties/PathAnalyser";
-import { IdentificationContext } from "../../../../contexts/IdentificationContext";
-import getNodeType from "../properties/NodeTypes.js";
+import React, { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -21,38 +18,24 @@ import {
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import { issueRestUpdate, issueRestGet } from "../RestCaller";
-import { useHistory } from "react-router-dom";
 
-export default function UpdateNode(props) {
-  const identificationContext = useContext(IdentificationContext);
-  const [nodeType, setNodeType] = useState();
-  const [guidToEdit, setGuidToEdit] = useState();
+export default function UpdateRelationshipInline(props) {
+  const [updateBody, setUpdateBody] = useState({});
+  const [currentRelationship, setCurrentRelationship] = useState();
+  const [errorMsg, setErrorMsg] = useState();
 
   useEffect(() => {
-    const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
-    // we need to set up the nodeType and guid to edit
-
-    const lastElement = pathAnalysis[pathAnalysis.length - 1];
-    setGuidToEdit(lastElement.guid);
-    const gotNodeType = getNodeType(
-      identificationContext.getRestURL("glossary-author"),
-      lastElement.type
-    );
-    setNodeType(gotNodeType);
+    setCurrentRelationship(props.relationship);
   }, [props]);
 
-  const [updateBody, setUpdateBody] = useState({});
-  const [currentNode, setCurrentNode] = useState();
-  const [errorMsg, setErrorMsg] = useState();
-  console.log("UpdateNode");
-  let history = useHistory();
+  console.log("UpdateRelationshipInline");
 
-  const initialGet = () => {
-    issueRestGet(getUrl(), onSuccessfulGet, onErrorGet);
-    return "Getting details";
-  };
+  const url = getUrl();
   function getUrl() {
-    return nodeType.url + "/" + guidToEdit;
+    console.log("URL ");
+    const relationship = props.relationship;
+    const guid = relationship.systemAttributes.guid;
+    return props.currentRelationshipType.url + "/" + guid;
   }
 
   const handleClickUpdate = (e) => {
@@ -64,39 +47,29 @@ export default function UpdateNode(props) {
     // in the meantime this will be self contained.
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("issueUpdate " + url);
-    issueRestUpdate(getUrl(), body, onSuccessfulUpdate, onErrorUpdate);
-  };
-  const onSuccessfulGet = (json) => {
-    console.log("onSuccessfulGet");
-    if (json.result.length === 1) {
-      const node = json.result[0];
-      setCurrentNode(node);
-    } else {
-      onErrorGet("Error did not get a node from the server");
-    }
-  };
-  const onErrorGet = (msg) => {
-    console.log("Error on Get " + msg);
-    setErrorMsg(msg);
-    setCurrentNode(undefined);
+    issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
   };
   const onSuccessfulUpdate = (json) => {
     console.log("onSuccessfulUpdate");
     if (json.result.length === 1) {
-      const node = json.result[0];
-      setCurrentNode(node);
+      const relationship = json.result[0];
+      relationship.gen = currentRelationship.gen;
+      setCurrentRelationship(relationship);
     } else {
-      onErrorGet("Error did not get a node from the server");
+      setErrorMsg("Error got an attempting to update.");
+      setCurrentRelationship(undefined);
     }
   };
   const onErrorUpdate = (msg) => {
     console.log("Error on Update " + msg);
     setErrorMsg(msg);
-    setCurrentNode(undefined);
+    setCurrentRelationship(undefined);
   };
 
   function updateLabelId(labelKey) {
-    return "text-input-update" + nodeType.name + "-" + labelKey;
+    return (
+      "text-input-update" + props.currentRelationshipType.name + "-" + labelKey
+    );
   }
   const setAttribute = (item, value) => {
     console.log("setAttribute " + item.key + ",value=" + value);
@@ -117,7 +90,7 @@ export default function UpdateNode(props) {
 
   const getSystemDataRowData = () => {
     let rowData = [];
-    const systemAttributes = currentNode.systemAttributes;
+    const systemAttributes = currentRelationship.systemAttributes;
     for (var prop in systemAttributes) {
       let row = {};
       row.id = prop;
@@ -131,20 +104,19 @@ export default function UpdateNode(props) {
     }
     return rowData;
   };
-
-  const onClickBack = () => {
-    console.log("Back clicked");
-    // use history, as there is another window history object in scope in the event listener
-    console.log(history);
-    // go  back
-    history.goBack();
-  };
   return (
     <div>
-      {/* the useEffect will run after the render and set the nodeType, allowing the initalGet to run and set currentNode */}
-      {currentNode === undefined && nodeType && initialGet()}
-      {currentNode !== undefined &&
-        nodeType.attributes.map((item) => {
+      {currentRelationship !== undefined && (
+        <div className="bx--form-item">
+          <label className="bx--label">
+            Version {currentRelationship.systemAttributes.version} of the
+            selected {currentRelationship.relationshipType} is from generation{" "}
+            {currentRelationship.gen}
+          </label>
+        </div>
+      )}
+      {currentRelationship !== undefined && props.currentRelationshipType.attributes &&
+        props.currentRelationshipType.attributes.map((item) => {
           return (
             <div className="bx--form-item" key={item.key}>
               <label htmlFor={updateLabelId(item.key)} className="bx--label">
@@ -154,15 +126,15 @@ export default function UpdateNode(props) {
                 id={updateLabelId(item.key)}
                 type="text"
                 className="bx--text-input"
-                defaultValue={currentNode[item.key]}
-                key={currentNode[item.key]}
+                defaultValue={currentRelationship[item.key]}
+                key={currentRelationship[item.key]}
                 onChange={(e) => setAttribute(item, e.target.value)}
                 placeholder={item.label}
               ></input>
             </div>
           );
         })}
-      {currentNode !== undefined && (
+      {currentRelationship !== undefined && (
         <Accordion>
           <AccordionItem title="Advanced options">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
@@ -182,7 +154,7 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
-      {currentNode !== undefined && (
+      {currentRelationship !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">
             <div className="bx--form-item">
@@ -229,14 +201,6 @@ export default function UpdateNode(props) {
         type="button"
       >
         Update
-      </Button>
-      <Button
-        kind="secondary"
-        className="bx--btn bx--btn--primary"
-        onClick={onClickBack}
-        type="button"
-      >
-        Back
       </Button>
     </div>
   );

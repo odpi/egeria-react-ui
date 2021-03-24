@@ -153,10 +153,10 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
 
   function getAddCategoryUrl() {
     console.log("getAddCategoryUrl " + props);
-    return props.match.url + "/categories/add-category";
+    return props.match.url + "/categories/add";
   }
   function getEditNodeUrl() {
-    return props.match.url + "/categories/edit-category/" + selectedNodeGuid;
+    return props.match.url + "/categories/edit/" + selectedNodeGuid;
   }
   function getGraphNodeUrl() {
     return props.match.url + "/categories/visualise-category/" + selectedNodeGuid;

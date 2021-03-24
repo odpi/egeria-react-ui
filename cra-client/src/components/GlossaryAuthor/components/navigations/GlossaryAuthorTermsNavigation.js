@@ -144,13 +144,13 @@ const GlossaryAuthorTermsNavigation = (props) => {
   };
 
   function getAddNodeUrl() {
-    return props.match.url + "/terms/add-term";
+    return props.match.url + "/add";
   }
   function getEditNodeUrl() {
-    return props.match.url + "/terms/edit-term/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/edit";
   }
   function getGraphNodeUrl() {
-    return props.match.url + "/terms/visualise-term/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/visualise" ;
   }
 
   const isSelected = (nodeGuid) => {
