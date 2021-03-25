@@ -35,7 +35,7 @@ function NodeChildren(props) {
     // set up the nodeType
 
     let index = 0;
-    if (childTypeName === "term") {
+    if (childTypeName === "terms") {
       index = 1;
     }
     // set the parent information
