@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useContext } from "react";
+import React, { useState} from "react";
 import {
   ProgressIndicator,
   ProgressStep,
@@ -8,10 +8,7 @@ import {
 } from "carbon-components-react";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 import CreateNodeUnderGlossary from "./CreateNodeUnderGlossary";
-import getNodeType from "../properties/NodeTypes.js";
-import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 export default function CreateNodeWizard(props) {
-  const identificationContext = useContext(IdentificationContext);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [glossaryGuid, setGlossaryGuid] = useState();
   const [nodeCreated, setNodeCreated] = useState();
@@ -108,6 +105,7 @@ export default function CreateNodeWizard(props) {
             <CreateNodeUnderGlossary
               currentNodeType={props.currentNodeType}
               glossaryGuid={glossaryGuid}
+              parentCategoryGuid={props.parentCategoryGuid}
               onCreateCallback={onCreate}
             />
           </div>

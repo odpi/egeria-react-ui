@@ -39,7 +39,7 @@ export default function UpdateNode(props) {
       lastElement.type
     );
     setNodeType(gotNodeType);
-  }, [props]);
+  }, [props, identificationContext]);
 
   const [updateBody, setUpdateBody] = useState({});
   const [currentNode, setCurrentNode] = useState();

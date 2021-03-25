@@ -41,7 +41,6 @@ The Glossary Author is has a rnumber of react routes. If the code needs to load 
 The react routes key off the last segment of the location, for example urls ending with /add will load the CreateNode component. In this way common components can be used for add edit, visualisation, and showing children without many routes entries. It also means that it is possible to navigate to a categories childrens children and still be able to have the expected add edit and visualisation capability.     
 
 
-
 ## Glove design
 
 Glove uses a similar interaction pattern to the Repository Explorer. The key architectureal differences are:

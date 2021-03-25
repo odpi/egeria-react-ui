@@ -72,11 +72,9 @@ function NodeChildren(props) {
     let childName;
     if (selectedContentIndex === 1) {
       childName = "terms";
-    } else if (parentNodeTypeName === "glossary") {
+    } else {
       childName = "categories";
-    } else if (parentNodeTypeName === "category") {
-      childName = "child-categories";
-    }
+    } 
     const url =
       getNodeType(
         identificationContext.getRestURL("glossary-author"),

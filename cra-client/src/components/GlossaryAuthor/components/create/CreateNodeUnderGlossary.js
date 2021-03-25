@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState } from "react";
+import React, { useState, useEffect,  useContext } from "react";
+import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import {
   Accordion,
   AccordionItem,
@@ -14,21 +15,43 @@ import {
   TableRow,
   TableCell,
   TableHeader,
-  TableBody,
+  TableBody
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
+import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
 
 export default function CreateNodeUnderGlossary(props) {
+  const identificationContext = useContext(IdentificationContext);
+
   const [createBody, setCreateBody] = useState({});
+  const [createdRelationship, setCreatedRelationship] = useState();
   const [createdNode, setCreatedNode] = useState();
+  const [createdCompleteNode, setCreatedCompleteNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [restCallInProgress, setRestCallInProgress] = useState(false);
 
   let history = useHistory();
 
-  console.log("CreateNodeUnderGlossary currentNodeType attributes" + JSON.stringify(props.currentNodeType.attributes));
+  useEffect(() => {
+    if (createdNode && createdRelationship && props.parentCategoryGuid) {
+      // we need to wait for the relationship to be created before we can say that the node has been successfully created.
+      creationTasksComplete(createdNode);
+    } else  if (createdNode) {
+      // there is no relationship to create
+      creationTasksComplete(createdNode);
+    }
+  
+  }, [createdNode, createdRelationship, props]);
+
+
+
+  console.log(
+    "CreateNodeUnderGlossary currentNodeType attributes" +
+      JSON.stringify(props.currentNodeType.attributes)
+  );
+  
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -50,30 +73,86 @@ export default function CreateNodeUnderGlossary(props) {
       glossary.guid = props.glossaryGuid;
       body.glossary = glossary;
     }
+
     // TODO consider moving this up to a node controller as per the CRUD pattern.
     // inthe meantime this will be self contained.
     const url = props.currentNodeType.url;
     console.log("issueCreate " + url);
-    issueRestCreate(url, body, onSuccessfulCreate, onErrorCreate);
+    issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
   };
-  const onSuccessfulCreate = (json) => {
+  const onSuccessfulNodeCreate = (json) => {
     setRestCallInProgress(false);
-    console.log("onSuccessfulCreate");
+
+    console.log("onSuccessfulNodeCreate");
     if (json.result.length === 1) {
       const node = json.result[0];
+      if (props.parentCategoryGuid) {
+        // there is a parent category we need to knit to
+        knitToParentCategory(node);
+      } 
       setCreatedNode(node);
-      if (props.onCreateCallback) {
-        props.onCreateCallback();
-      }
     } else {
       onErrorGet("Error did not get a node from the server");
     }
   };
-  const onErrorCreate = (msg) => {
+  const onSuccessfulParentRelationshipCreate = (json) => {
+    setRestCallInProgress(false);
+    console.log("onSuccessfulParentRelationshipCreate");
+    if (json.result.length === 1) {
+        const relationship = json.result[0];
+        setCreatedRelationship(relationship);
+    } else {
+      onErrorGet("Error linking the created Node to it's category parent");
+    }
+  };
+  const onErrorParentRelationshipCreate = (msg) => {
+    setRestCallInProgress(false);
+    console.log("Error while attempting to create Relationship" + msg);
+    setErrorMsg(msg);
+    setCreatedCompleteNode(undefined);
+  };
+  const knitToParentCategory = (node) => {
+   const glossaryAuthorURL = identificationContext.getRestURL("glossary-author"); 
+    let url;
+    let body= {};
+    let end1 = {};
+    let end2 = {};
+    end1.class = "Category"
+    end1.nodeGuid = props.parentCategoryGuid;
+    end1.nodeType = "Category";
+  
+    end2 = {};
+    end2.nodeGuid = node.systemAttributes.guid;
+    if (node.nodeType === "Term") {
+      // create termcategorisation relationship
+      url = getRelationshipType(glossaryAuthorURL,"categorization").url;
+      body.relationshipType = "TermCategorization";
+      body.class = "Categorization";
+      end2.class = "Term"
+      end2.nodeType = "Term";
+    } else {
+      // category create the category hierarchy relationship
+      url = getRelationshipType(glossaryAuthorURL,"categoryhierarchylink").url;
+      body.relationshipType = "CategoryHierarchyLink";
+      body.class = "CategoryHierarchyLink";
+      end2.class = "Category"
+    }
+    body.end1= end1;
+    body.end2= end2;
+    issueRestCreate(url, body, onSuccessfulParentRelationshipCreate, onErrorParentRelationshipCreate);
+
+  };
+  const creationTasksComplete = (node) => {
+    setCreatedCompleteNode(node);
+    if (props.onCreateCallback) {
+      props.onCreateCallback();
+    }
+  };
+  const onErrorNodeCreate = (msg) => {
     setRestCallInProgress(false);
     console.log("Error on Create " + msg);
     setErrorMsg(msg);
-    setCreatedNode(undefined);
+    setCreatedCompleteNode(undefined);
   };
   const validateForm = () => {
     //TODO consider marking name as manditory in the nodetype definition
@@ -83,6 +162,8 @@ export default function CreateNodeUnderGlossary(props) {
   };
   const onErrorGet = (msg) => {
     console.log("Error on Create " + msg);
+    setCreatedNode(undefined);
+    setCreatedRelationship(undefined)
     setErrorMsg(msg);
   };
   const createLabelIdForAttribute = (labelKey) => {
@@ -109,14 +190,14 @@ export default function CreateNodeUnderGlossary(props) {
   ];
 
   const getCreatedTableTitle = () => {
-    return "Successfully created " + createdNode.name;
+    return "Successfully created " + createdCompleteNode.name;
   };
 
   const getCreatedTableAttrRowData = () => {
     let rowData = [];
     const attributes = props.currentNodeType.attributes;
 
-    for (var prop in createdNode) {
+    for (var prop in createdCompleteNode) {
       if (
         prop !== "systemAttributes" &&
         prop !== "glossary" &&
@@ -137,7 +218,7 @@ export default function CreateNodeUnderGlossary(props) {
           }
         }
 
-        let value = createdNode[prop];
+        let value = createdCompleteNode[prop];
         // TODO deal with the other types (and null? and arrays?) properly
         value = JSON.stringify(value);
         row.value = value;
@@ -148,7 +229,7 @@ export default function CreateNodeUnderGlossary(props) {
   };
   const getSystemDataRowData = () => {
     let rowData = [];
-    const systemAttributes = createdNode.systemAttributes;
+    const systemAttributes = createdCompleteNode.systemAttributes;
     for (var prop in systemAttributes) {
       let row = {};
       row.id = prop;
@@ -164,7 +245,7 @@ export default function CreateNodeUnderGlossary(props) {
   };
 
   const createAnother = () => {
-    setCreatedNode(undefined);
+    setCreatedCompleteNode(undefined);
   };
   const onClickBack = () => {
     console.log("Back clicked");
@@ -181,7 +262,7 @@ export default function CreateNodeUnderGlossary(props) {
           withOverlay={true}
         />
       )}
-      {!restCallInProgress && createdNode !== undefined && (
+      {!restCallInProgress && createdCompleteNode !== undefined && (
         <div>
           <DataTable
             isSortable
@@ -285,7 +366,7 @@ export default function CreateNodeUnderGlossary(props) {
         </div>
       )}
 
-      {!restCallInProgress && createdNode === undefined && (
+      {!restCallInProgress && createdCompleteNode === undefined && (
         <div>
           <form>
             <div>
@@ -297,7 +378,7 @@ export default function CreateNodeUnderGlossary(props) {
             </div>
 
             {props.currentNodeType &&
-              createdNode === undefined &&
+              createdCompleteNode === undefined &&
               props.currentNodeType.attributes &&
               props.currentNodeType.attributes.map((item) => {
                 return (

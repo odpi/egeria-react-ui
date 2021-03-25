@@ -21,8 +21,8 @@ export default function GlossaryAuthorGraphNavigation(props) {
       identificationContext.getRestURL("glossary-author"),
       lastElement.type
     );
-    setNodeType(gotNodeType);
-  }, [props]);
+    setNodeType(gotNodeType, identificationContext);
+  }, [props, identificationContext]);
   return (
     <div>
       {nodeType !== undefined && (

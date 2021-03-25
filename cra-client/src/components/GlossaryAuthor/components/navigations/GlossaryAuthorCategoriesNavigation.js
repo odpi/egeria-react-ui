@@ -27,18 +27,23 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
   const [onlyTop, setOnlyTop] = useState(false);
-  const [completeResults, setCompleteResults] = useState([]);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [results, setResults] = useState([]);
 
   console.log("GlossaryAuthorCategoriesNavigation " + props);
 
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "category");
+  // issue a new rest call to get children if the user has shanged the state of the ui.
   useEffect(() => {
     getChildren();
   }, [selectedNodeGuid, onlyTop, pageSize, pageNumber]);
+  // refresh the nodes if the results - from the get children rest call completed
+  useEffect(() => {
+    refreshNodes();
+  }, [results]);
 
   const getChildren = () => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
@@ -83,13 +88,11 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   // Refresh the displayed nodes search results
   // this involves taking the results and pagination options and calculating nodes that is the subset needs to be displayed
-  // The results, page size and page number are passed as arguments, rather than picked up from state, as the state updates
-  // are done asynchronously in a render cycle.
 
-  function refreshNodes(results, passedPageSize, passedPageNumber) {
+  function refreshNodes() {
     let selectedInResults = false;
     setTotal(results.length);
-    if (results.length > passedPageSize) {
+    if (results.length > pageSize) {
       // remove the last element.  
       results.pop();
     }
@@ -153,14 +156,14 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const onSuccessfulGetChildren = (json) => {
     setErrorMsg("");
     console.log("onSuccessfulGetChildren " + json.result);
-    refreshNodes(json.result, pageSize, pageNumber);
-    setCompleteResults(json.result);
+    setResults(json.result);
+
   };
 
   const onErrorGetChildren = (msg) => {
     console.log("Error on get children " + msg);
     setErrorMsg(msg);
-    setNodes([]);
+    setResults([]);
   };
 
   function getAddCategoryUrl() {

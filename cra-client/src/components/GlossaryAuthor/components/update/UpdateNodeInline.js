@@ -17,7 +17,7 @@ import {
   TableBody,
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
-import { issueRestUpdate, issueRestGet } from "../RestCaller";
+import { issueRestUpdate } from "../RestCaller";
 
 export default function UpdateNodeInline(props) {
   const [updateBody, setUpdateBody] = useState({});
