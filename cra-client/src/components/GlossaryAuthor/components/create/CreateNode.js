@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { withRouter } from "react-router-dom";
 import getPathTypesAndGuids from "../properties/PathAnalyser";
-import CreateNodeUnderGlossary from "./CreateNodeUnderGlossary";
+import CreateNodePage from "./CreateNodePage";
 import CreateNodeWizard from "./CreateNodeWizard";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import getNodeType from "../properties/NodeTypes.js";
@@ -20,7 +20,7 @@ function CreateNode(props) {
   useEffect(() => {
     const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
     const pathAnalysisLength = pathAnalysis.length;
-    if (pathAnalysis[0].types === "glossaries") {
+    if (pathAnalysis[0].types === "glossaries" && pathAnalysisLength > 1 ) {
       // we need to set up the glossaryGuid
       setGlossaryGuid(pathAnalysis[0].guid);
     }
@@ -43,20 +43,25 @@ function CreateNode(props) {
 
   return (
     <div>
-      {nodeTypeToBeCreated !== undefined &&
-        nodeTypeToBeCreated.key === "glossary" && (
-          <CreateNodeUnderGlossary
+      {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key === "glossary" && (
+          <CreateNodePage
             currentNodeType={nodeTypeToBeCreated}
             glossaryGuid={glossaryGuid}
           />
         )}
-      {nodeTypeToBeCreated !== undefined &&
-        nodeTypeToBeCreated.key !== "glossary" && (
+       {/* {nodeTypeToBeCreated !== undefined && glossaryGuid !== undefined && (
+          <CreateNodePage
+            currentNodeType={nodeTypeToBeCreated}
+            glossaryGuid={glossaryGuid}
+          />
+        )}  */}
+      {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key !== "glossary" && (
           <CreateNodeWizard
             currentNodeType={nodeTypeToBeCreated}
             parentCategoryGuid={parentCategoryGuid}
           />
         )}
+        {/* // TODO decide whether we should default the glossary for children */}
     </div>
   );
 }

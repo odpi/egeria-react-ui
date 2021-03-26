@@ -22,7 +22,7 @@ import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
 
-export default function CreateNodeUnderGlossary(props) {
+export default function CreateNodePage(props) {
   const identificationContext = useContext(IdentificationContext);
 
   const [createBody, setCreateBody] = useState({});

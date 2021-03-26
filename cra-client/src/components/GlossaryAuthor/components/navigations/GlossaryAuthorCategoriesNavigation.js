@@ -51,7 +51,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
     // this rest URL might be for category children of a category or category childen of a glossary
 
-    const restURL = encodeURI(props.getCategoriesURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+    const restURL = encodeURI(props.getCategoriesRestURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
     issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
   };
 

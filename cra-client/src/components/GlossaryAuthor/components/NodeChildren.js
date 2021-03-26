@@ -30,7 +30,7 @@ function NodeChildren(props) {
    */
   useEffect(() => {
     const pathName = props.location.pathname;
-    const childTypeName = pathName.substring(pathName.lastIndexOf('/') + 1);
+    const childTypeName = pathName.substring(pathName.lastIndexOf("/") + 1);
     const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
     // set up the nodeType
 
@@ -53,7 +53,7 @@ function NodeChildren(props) {
     let url = props.match.url;
     console.log("url 1 " + url);
 
-    url = url.substring(0, url.lastIndexOf('/'));
+    url = url.substring(0, url.lastIndexOf("/"));
     console.log("url 2 " + url);
     url = url + "/" + chosenContent;
     console.log("url 3 " + url);
@@ -68,13 +68,35 @@ function NodeChildren(props) {
       setSelectedContentIndex(0);
     }
   };
-  const getChildrenURL = () => {
+  /**
+   * We need to check whether the parent information stored in state is up to date, by comparing it to
+   * the parent guid we canget from the path. We need to do this because the setting of the current parent is done in a useEffect which runs after
+   * the first render. Once the useFffect runs the parentGuid in state will be asynchronously updated, when it is
+   * updated then this function will return true and the rendering can run.
+   * @returns whether the parent guid in state is up to date with the current location.
+   */
+
+  const isStale = () => {
+    const pathName = props.location.pathname;
+    const childTypeName = pathName.substring(pathName.lastIndexOf("/") + 1);
+    const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
+    const parentElement = pathAnalysis[pathAnalysis.length - 1];
+    const currentParentGuid = parentElement.guid;
+    let isStale = true;
+    if (currentParentGuid === parentGuid) {
+      isStale = false;
+    }
+    return isStale;
+  };
+
+  const getChildrenRestURL = () => {
     let childName;
     if (selectedContentIndex === 1) {
       childName = "terms";
     } else {
       childName = "categories";
-    } 
+    }
+
     const url =
       getNodeType(
         identificationContext.getRestURL("glossary-author"),
@@ -84,7 +106,7 @@ function NodeChildren(props) {
       parentGuid +
       "/" +
       childName;
-    console.log("getChildrenURL url " + url);
+    console.log("getChildrenRestURL url " + url);
     return url;
   };
 
@@ -95,20 +117,24 @@ function NodeChildren(props) {
         <Switch name="terms" text="Terms" />
       </ContentSwitcher>
 
-      {selectedContentIndex === 0 &&
-        parentNodeTypeName === "glossary" && (
+      {!isStale() &&
+        selectedContentIndex === 0 &&
+        parentNodeTypeName === "glossary" &&
+        parentGuid && (
           <GlossaryAuthorCategoriesNavigation
-            getCategoriesURL={getChildrenURL()}
+            getCategoriesRestURL={getChildrenRestURL()}
           />
         )}
-      {selectedContentIndex === 0 &&
-        parentNodeTypeName === "category" && (
+      {!isStale() &&
+        selectedContentIndex === 0 &&
+        parentNodeTypeName === "category" &&
+        parentGuid && (
           <GlossaryAuthorChildCategoriesNavigation
-            getCategoriesURL={getChildrenURL()}
+            getCategoriesRestURL={getChildrenRestURL()}
           />
         )}
-      {selectedContentIndex === 1 && (
-        <GlossaryAuthorTermsNavigation getTermsURL={getChildrenURL()} />
+      {!isStale() && selectedContentIndex === 1 && parentGuid && (
+        <GlossaryAuthorTermsNavigation getTermsURL={getChildrenRestURL()} />
       )}
     </div>
   );

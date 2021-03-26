@@ -7,7 +7,7 @@ import {
   Button,
 } from "carbon-components-react";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
-import CreateNodeUnderGlossary from "./CreateNodeUnderGlossary";
+import CreateNodePage from "./CreateNodePage";
 export default function CreateNodeWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [glossaryGuid, setGlossaryGuid] = useState();
@@ -102,7 +102,7 @@ export default function CreateNodeWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <CreateNodeUnderGlossary
+            <CreateNodePage
               currentNodeType={props.currentNodeType}
               glossaryGuid={glossaryGuid}
               parentCategoryGuid={props.parentCategoryGuid}
