@@ -19,7 +19,6 @@ import { useHistory, withRouter } from "react-router-dom";
  */
 function NodeChildren(props) {
   const identificationContext = useContext(IdentificationContext);
-  console.log("NodeChildren(props) " + props);
   const [selectedContentIndex, setSelectedContentIndex] = useState(0);
   const [parentNodeTypeName, setParentNodeTypeName] = useState();
   const [parentGuid, setParentGuid] = useState();
@@ -51,13 +50,8 @@ function NodeChildren(props) {
   const onChange = (e) => {
     const chosenContent = `${e.name}`;
     let url = props.match.url;
-    console.log("url 1 " + url);
-
     url = url.substring(0, url.lastIndexOf("/"));
-    console.log("url 2 " + url);
     url = url + "/" + chosenContent;
-    console.log("url 3 " + url);
-    console.log("pushing url " + url);
 
     // Use replace rather than push so the content switcher changes are not navigated through the back button, which would be uninituitive.
     history.replace(url);

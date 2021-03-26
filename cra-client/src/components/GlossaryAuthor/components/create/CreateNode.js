@@ -49,12 +49,7 @@ function CreateNode(props) {
             glossaryGuid={glossaryGuid}
           />
         )}
-       {/* {nodeTypeToBeCreated !== undefined && glossaryGuid !== undefined && (
-          <CreateNodePage
-            currentNodeType={nodeTypeToBeCreated}
-            glossaryGuid={glossaryGuid}
-          />
-        )}  */}
+
       {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key !== "glossary" && (
           <CreateNodeWizard
             currentNodeType={nodeTypeToBeCreated}

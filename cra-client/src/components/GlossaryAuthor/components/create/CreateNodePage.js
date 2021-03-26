@@ -45,14 +45,6 @@ export default function CreateNodePage(props) {
   
   }, [createdNode, createdRelationship, props]);
 
-
-
-  console.log(
-    "CreateNodeUnderGlossary currentNodeType attributes" +
-      JSON.stringify(props.currentNodeType.attributes)
-  );
-  
-
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
    * @param {*} e end anomation event
@@ -64,7 +56,7 @@ export default function CreateNodePage(props) {
   };
 
   const handleClick = (e) => {
-    console.log("handleClick(()");
+    console.log("CreateNodePage handleClick(()");
     e.preventDefault();
     setRestCallInProgress(true);
     let body = createBody;

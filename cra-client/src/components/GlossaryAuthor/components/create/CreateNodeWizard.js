@@ -12,7 +12,7 @@ export default function CreateNodeWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [glossaryGuid, setGlossaryGuid] = useState();
   const [nodeCreated, setNodeCreated] = useState();
-  console.log("CreateNodeWizard props = " + JSON.stringify(props));
+  console.log("CreateNodeWizard");
 
   const handleChoseGlossaryOnClick = (e) => {
     e.preventDefault();
