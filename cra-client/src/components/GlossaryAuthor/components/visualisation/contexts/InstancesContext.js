@@ -631,16 +631,19 @@ const InstancesContextProvider = (props) => {
   /*
    * Function to get Node by GUID from the specified repository server
    */
-  const loadNode = (nodeGUID, nodeTypeKey) => {
+  const loadNode = (nodeGUID, nodeType) => {
     console.log("loadNode");
-    if (nodeTypeKey === undefined) {
+    let nodeTypeKey;
+    if (nodeType) {
+       nodeTypeKey = nodeType.key;
+    } else {
        nodeTypeKey = guidToNodeType[nodeGUID];
-    }
+    } 
     if (nodeTypeKey === undefined) {
       alert("No nodetype!!! ");
     } else {
       nodeTypeKey = nodeTypeKey.toLowerCase();
-      const nodeType = getNodeType(
+      nodeType = getNodeType(
         identificationContext.getRestURL("glossary-author"),
         nodeTypeKey
       );

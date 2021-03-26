@@ -1,84 +1,28 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React from "react";
-
-import PropTypes from "prop-types";
-
-import InstanceStatusDisplay from "./InstanceStatusDisplay";
-
-import InstancePropertiesDisplay from "./InstancePropertiesDisplay";
-
-import "./details-panel.scss";
+import React, { useContext} from "react";
+import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
+import UpdateRelationshipInline from "../../../update/UpdateRelationshipInline";
+import getRelationshipType from "../../../properties/RelationshipTypes";
 
 export default function RelationshipDisplay(props) {
-  /*
-   * Handler for flopping a collapsible
-   */
-  const flipSection = (evt) => {
-    /*
-     * Use currentTarget (not target) - because we need to operate relative to the button,
-     * which is where the handler is defined, in order for the content section to be the sibling.
-     */
-    const element = evt.currentTarget;
-    element.classList.toggle("active");
-    const content = element.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
+  const identificationContext = useContext(IdentificationContext);
+  const relationship = props.relationship;
+  const getCurrentRelationshipType = () => {
+    const relationshipType = getRelationshipType(
+      identificationContext.getRestURL("glossary-author"),
+      relationship.relationshipType.toLowerCase()
+    );
+    return relationshipType;
   };
 
-  const relationship         = props.relationship;
-  const label        = relationship.name;
-  const gen          = relationship.gen;
-  const typeName     = relationship.relationshipType; 
-  const systemAttributes = relationship.systemAttributes;    
-
   return (
-    <div className="instance-details-container">
-      <div className="instance-details-item">relationship : {label}</div>
-    
-      <div className="instance-details-item">Description : {relationship.description}</div>
-      <div className="instance-details-item">GUID : {relationship.guid}</div>
-      <div className="instance-details-item">Description : {relationship.description}</div>
-      relationship End1 - {relationship.end1.name} : 
-      <div className="instance-details-item">Node type : {relationship.end1.nodeType} </div>
-      <div className="instance-details-item">Node GUID : {relationship.end1.nodeGuid} </div>
-      <div className="instance-details-item">Description : {relationship.end1.description} </div>
-      relationship End2 - {relationship.end2.name} : 
-      <div className="instance-details-item">Node type : {relationship.end2.nodeType} </div>
-      <div className="instance-details-item">Node GUID : {relationship.end2.nodeGuid} </div>
-      <div className="instance-details-item">Description : {relationship.end2.description} </div>
-
-      <button className="collapsible-non-bold" id="querySummary" onClick={flipSection}> Generation information : </button>
-      <div className="content">
-        <div className="instance-details-item">Added in gen : {gen}</div>
-      </div>
-
-      <button className="collapsible-non-bold" id="controlProps" onClick={flipSection}>System Attributes: </button>
-      <div className="content">
-        <ul className="details-sublist">
-          <li className="details-sublist-item">Version : {systemAttributes.version}</li>
-          <div className="instance-details-item">GUID : {systemAttributes.guid}</div>
-          <li className="details-sublist-item">createdBy : {systemAttributes.createdBy}</li>
-          <li className="details-sublist-item">createTime : {systemAttributes.createTime}</li>
-          <li className="details-sublist-item">updatedBy : {systemAttributes.updatedBy ? systemAttributes.updatedBy : "empty"}</li>
-          <li className="details-sublist-item">updateTime : {systemAttributes.updateTime ? systemAttributes.updateTime : "empty"}</li>
-          <li className="details-sublist-item">maintainedBy : { !systemAttributes.maintainedBy ? "empty" :
-            <ul className="details-sublist">
-              {systemAttributes.maintainedBy.sort().map( (mtr) => <li className="details-sublist-item" key={mtr}> {mtr}</li> )}
-            </ul>
-            }
-          </li>
-          <li className="details-sublist-item">instanceLicense : {systemAttributes.instanceLicense ? systemAttributes.instanceLicense : "empty"}</li>
-        </ul>
-      </div>
+    <div>
+      <UpdateRelationshipInline
+        currentRelationshipType={getCurrentRelationshipType()}
+        relationship={relationship}
+      />
     </div>
   );
 }
-
-RelationshipDisplay.propTypes = {
-  exprelationship: PropTypes.object,
-};

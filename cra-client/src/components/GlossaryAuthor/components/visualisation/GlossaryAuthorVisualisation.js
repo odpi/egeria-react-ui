@@ -137,10 +137,8 @@ export default function GlossaryAuthorVisualisation(props) {
                 </div>
 
                 <div className="glove-top-middle">
-                  <InstanceRetrieval/>
+                  <InstanceRetrieval nodeType={props.nodeType} guid={props.guid} />
                 </div>
-
-                 {/* pass through guid and type into the instances context - instanceInitialize*/}
 
               </div>
 

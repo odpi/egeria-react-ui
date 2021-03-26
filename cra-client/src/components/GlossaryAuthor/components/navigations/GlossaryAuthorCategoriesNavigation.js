@@ -27,23 +27,32 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
   const [onlyTop, setOnlyTop] = useState(false);
-  const [completeResults, setCompleteResults] = useState([]);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [results, setResults] = useState([]);
 
   console.log("GlossaryAuthorCategoriesNavigation " + props);
 
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "category");
+  // issue a new rest call to get children if the user has shanged the state of the ui.
   useEffect(() => {
     getChildren();
   }, [selectedNodeGuid, onlyTop, pageSize, pageNumber]);
+  // refresh the nodes if the results - from the get children rest call completed
+  useEffect(() => {
+    refreshNodes();
+  }, [results]);
 
   const getChildren = () => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-    const url = encodeURI(props.getCategoriesURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
-    issueRestGet(url, onSuccessfulGetChildren, onErrorGetChildren);
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesRestURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+    issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
   };
 
   const onToggleTop = () => {
@@ -79,17 +88,23 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   // Refresh the displayed nodes search results
   // this involves taking the results and pagination options and calculating nodes that is the subset needs to be displayed
-  // The results, page size and page number are passed as arguments, rather than picked up from state, as the state updates
-  // are done asynchronously in a render cycle.
 
-  function refreshNodes(results, passedPageSize, passedPageNumber) {
+  function refreshNodes() {
     let selectedInResults = false;
     setTotal(results.length);
-    if (results.length > passedPageSize) {
+    if (results.length > pageSize) {
       // remove the last element.  
       results.pop();
     }
     if (results && results.length > 0) {
+      results.map(function (row) {
+        row.id = row.systemAttributes.guid;
+        if (selectedNodeGuid && selectedNodeGuid === row.id) {
+          row.isSelected = true;
+          selectedInResults = true;
+        }
+        return row;
+      });
       setNodes(results);
     } else {
       setNodes([]);
@@ -141,25 +156,29 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const onSuccessfulGetChildren = (json) => {
     setErrorMsg("");
     console.log("onSuccessfulGetChildren " + json.result);
-    refreshNodes(json.result, pageSize, pageNumber);
-    setCompleteResults(json.result);
+    setResults(json.result);
+
   };
 
   const onErrorGetChildren = (msg) => {
     console.log("Error on get children " + msg);
     setErrorMsg(msg);
-    setNodes([]);
+    setResults([]);
   };
 
   function getAddCategoryUrl() {
     console.log("getAddCategoryUrl " + props);
-    return props.match.url + "/categories/add-category";
+    return props.match.url + "/add";
   }
   function getEditNodeUrl() {
-    return props.match.url + "/categories/edit-category/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/edit";
   }
   function getGraphNodeUrl() {
-    return props.match.url + "/categories/visualise-category/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/visualise";
+  }
+  function getSelectedCategoryChildrenURL() {
+    // default to categories
+    return props.match.url + "/" + selectedNodeGuid + "/categories";
   }
   const isSelected = (nodeGuid) => {
     return nodeGuid === selectedNodeGuid;
@@ -167,6 +186,8 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
   };
+
+
   return (
     <div>
       <div className="bx--grid">
@@ -177,7 +198,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
                 <Add32 kind="primary" />
               </Link>
               {selectedNodeGuid && (
-                <Link to={props.getCategoriesURL}>
+                <Link to={getSelectedCategoryChildrenURL}>
                   <ParentChild32 kind="primary" />
                 </Link>
               )}

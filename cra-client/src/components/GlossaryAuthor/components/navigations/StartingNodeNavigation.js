@@ -202,14 +202,14 @@ export default function StartingNodeNavigation({
   };
 
   function getNodeChildrenUrl() {
-    return match.path + "/" + selectedNodeGuid + "/children";
+    return match.path + "/" + selectedNodeGuid + "/categories";
   }
   /**
    * The function returns another function; this is required by react Link. The below syntax is required to be able to handle the parameter.
    * Not working ...
    */
   const getNodeChildrenUrlUsingGuid = (guid) => () => {
-    return `${match.path}/${guid}/children`;
+    return `${match.path}/${guid}/categories`;
   };
 
   const onToggleCard = () => {
@@ -221,7 +221,7 @@ export default function StartingNodeNavigation({
     }
   };
   function getAddNodeUrl() {
-    return match.path + "/add-" + nodeTypeName;
+    return match.path + "/add";
   }
   function getGlossaryQuickTermsUrl() {
     return match.path + "/" + selectedNodeGuid + "/quick-terms";
@@ -230,10 +230,10 @@ export default function StartingNodeNavigation({
     return match.path + "/" + selectedNodeGuid + "/quick-category-terms";
   }
   function getEditNodeUrl() {
-    return match.path + "/edit-" + nodeTypeName + "/" + selectedNodeGuid;
+    return match.path + "/" + selectedNodeGuid + "/edit";
   }
   function getGraphNodeUrl() {
-    return match.path + "/visualise-" + nodeTypeName + "/" + selectedNodeGuid;
+    return match.path +  "/" + selectedNodeGuid + "/visualise";
   }
   const onFilterCriteria = (e) => {
     setFilterCriteria(e.target.value);
