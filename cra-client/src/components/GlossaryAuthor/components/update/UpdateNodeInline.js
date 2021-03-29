@@ -107,7 +107,8 @@ export default function UpdateNodeInline(props) {
       {currentNode !== undefined && (
         <div className="bx--form-item">
           <label className="bx--label">
-            Version {currentNode.systemAttributes.version} of the selected {currentNode.nodeType} is from generation {currentNode.gen}  
+            Version {currentNode.systemAttributes.version} of the selected{" "}
+            {currentNode.nodeType} is from generation {currentNode.gen}
           </label>
         </div>
       )}
@@ -121,6 +122,7 @@ export default function UpdateNodeInline(props) {
               <input
                 id={updateLabelId(item.key)}
                 type="text"
+                disabled={currentNode.readOnly}
                 className="bx--text-input"
                 defaultValue={currentNode[item.key]}
                 key={currentNode[item.key]}
@@ -191,13 +193,15 @@ export default function UpdateNodeInline(props) {
         </Accordion>
       )}
       <div style={{ color: "red" }}>{errorMsg}</div>
-      <Button
-        className="bx--btn bx--btn--primary"
-        onClick={handleClickUpdate}
-        type="button"
-      >
-        Update
-      </Button>
+      {currentNode && currentNode.readOnly === false && (
+        <Button
+          className="bx--btn bx--btn--primary"
+          onClick={handleClickUpdate}
+          type="button"
+        >
+          Update
+        </Button>
+      )}
     </div>
   );
 }

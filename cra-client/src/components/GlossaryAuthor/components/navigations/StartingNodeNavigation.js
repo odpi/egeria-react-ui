@@ -45,6 +45,7 @@ export default function StartingNodeNavigation({
   const debouncedFilterCriteria = useDebounce(filterCriteria, 500);
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
+  const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
 
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), nodeTypeName);
   // Here's where the API call happens
@@ -119,6 +120,31 @@ export default function StartingNodeNavigation({
       setSelectedNodeGuid(undefined);
     }
   }
+  const getSelectedNodeFromServer = (guid) => {
+    // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(nodeType.url + "/" + guid);
+    issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
+  };
+  const onSuccessfulGetSelectedNode = (json) => {
+    setErrorMsg("");
+    console.log("onSuccessful get selected node " + json.result);
+    // setResults(json.result);
+    const node = json.result[0];
+    let readOnly = false;
+    if (node.readOnly) {
+      readOnly = true;
+    }
+    setSelectedNodeReadOnly(readOnly);
+  };
+
+  const onErrorGetSelectedNode = (msg) => {
+    console.log("Error on get selected node " + msg);
+    setErrorMsg(msg);
+  };
   const processUserCriteriaAndIssueSearch = () => {
     // sort out the actual search criteria.
     let actualDebounceCriteria = debouncedFilterCriteria;
@@ -243,6 +269,9 @@ export default function StartingNodeNavigation({
   };
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
+    if (nodeGuid) {
+        getSelectedNodeFromServer(nodeGuid);
+    }
     if (onSelectCallback) {
       onSelectCallback(nodeGuid);
     }
@@ -300,7 +329,7 @@ export default function StartingNodeNavigation({
                   <ParentChild32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && !onSelectCallback && (
+              {selectedNodeGuid && !onSelectCallback && (selectedNodeReadOnly === false) && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
                 </Link>
@@ -311,7 +340,7 @@ export default function StartingNodeNavigation({
                      <DataVis32 kind="primary" />
                   </Link>
                 )}
-              {selectedNodeGuid && !onSelectCallback && (
+              {selectedNodeGuid && !onSelectCallback &&  (selectedNodeReadOnly === false) && (
                 <Delete32 onClick={() => onClickDelete()} />
               )}
             </div>

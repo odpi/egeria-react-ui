@@ -23,6 +23,7 @@ const GlossaryAuthorTermsNavigation = (props) => {
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "term");
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
+  const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -90,6 +91,28 @@ const GlossaryAuthorTermsNavigation = (props) => {
       setSelectedNodeGuid(undefined);
     }
   }
+  const getSelectedNodeFromServer = (guid) => {
+    // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
+    const restURL = encodeURI(props.getTermsRestURL + "/" + guid);
+    issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
+  };
+  const onSuccessfulGetSelectedNode = (json) => {
+    setErrorMsg("");
+    console.log("onSuccessful get selected node " + json.result);
+    // setResults(json.result);
+    const node = json.result[0];
+    let readOnly = false;
+    if (node.readOnly) {
+      readOnly = true;
+    }
+    setSelectedNodeReadOnly(readOnly);
+  };
+
+  const onErrorGetSelectedNode = (msg) => {
+    console.log("Error on get selected node " + msg);
+    setErrorMsg(msg);
+  };
+
   const onToggleCard = () => {
     console.log("onToggleCard");
     if (isCardView) {
@@ -158,6 +181,9 @@ const GlossaryAuthorTermsNavigation = (props) => {
   };
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
+    if (nodeGuid) {
+        getSelectedNodeFromServer(nodeGuid);
+    }
   };
   return (
     <div>
@@ -168,7 +194,7 @@ const GlossaryAuthorTermsNavigation = (props) => {
               <Link to={getAddNodeUrl}>
                 <Add32 kind="primary" />
               </Link>
-              {selectedNodeGuid && (
+              {selectedNodeGuid && (selectedNodeReadOnly === false) && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
                 </Link>
@@ -178,7 +204,7 @@ const GlossaryAuthorTermsNavigation = (props) => {
                    <DataVis32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}
+              {selectedNodeGuid && (selectedNodeReadOnly === false) && <Delete32 onClick={() => onClickDelete()} />}
             </div>
           </article>
         </NodeCardSection>

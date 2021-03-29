@@ -27,6 +27,7 @@ export default function UpdateNode(props) {
   const identificationContext = useContext(IdentificationContext);
   const [nodeType, setNodeType] = useState();
   const [guidToEdit, setGuidToEdit] = useState();
+  console.log("UpdateNode");
 
   useEffect(() => {
     const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);

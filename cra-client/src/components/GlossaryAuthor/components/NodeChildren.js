@@ -52,6 +52,8 @@ function NodeChildren(props) {
     let url = props.match.url;
     url = url.substring(0, url.lastIndexOf("/"));
     url = url + "/" + chosenContent;
+    console.log("url 3 " + url);
+    console.log("pushing url " + url);
 
     // Use replace rather than push so the content switcher changes are not navigated through the back button, which would be uninituitive.
     history.replace(url);
