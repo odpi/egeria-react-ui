@@ -28,7 +28,7 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
   const [nodes, setNodes] = useState([]);
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
-  // const [completeResults, setCompleteResults] = useState([]);
+  const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -171,6 +171,31 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
     setErrorMsg(msg);
     setNodes([]);
   };
+  const getSelectedNodeFromServer = (guid) => {
+    // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesRestURL + "/" + guid);
+    issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
+  };
+  const onSuccessfulGetSelectedNode = (json) => {
+    setErrorMsg("");
+    console.log("onSuccessful get selected node " + json.result);
+    // setResults(json.result);
+    const node = json.result[0];
+    let readOnly = false;
+    if (node.readOnly) {
+      readOnly = true;
+    }
+    setSelectedNodeReadOnly(readOnly);
+  };
+
+  const onErrorGetSelectedNode = (msg) => {
+    console.log("Error on get selected node " + msg);
+    setErrorMsg(msg);
+  };
 
   function getAddCategoryUrl() {
     console.log("getAddCategoryUrl " + props);
@@ -195,6 +220,9 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
   const setSelected = (nodeGuid) => {
     console.log("setSelected" + nodeGuid );
     setSelectedNodeGuid(nodeGuid);
+    if (nodeGuid) {
+        getSelectedNodeFromServer(nodeGuid);
+    }
   };
   return (
     <div>
@@ -210,7 +238,7 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
                   <ParentChild32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && (
+              {selectedNodeGuid  && (selectedNodeReadOnly === false) && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
                 </Link>
@@ -220,7 +248,7 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
                    <DataVis32 kind="primary" />
                 </Link>
               )} 
-              {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}
+              {selectedNodeGuid && (selectedNodeReadOnly === false) && <Delete32 onClick={() => onClickDelete()} />}
             </div>
           </article>
         </NodeCardSection>

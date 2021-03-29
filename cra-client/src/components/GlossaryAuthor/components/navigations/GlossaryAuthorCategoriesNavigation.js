@@ -26,6 +26,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const [nodes, setNodes] = useState([]);
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
+  const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
   const [onlyTop, setOnlyTop] = useState(false);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
@@ -54,6 +55,35 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
     const restURL = encodeURI(props.getCategoriesRestURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
     issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
   };
+
+  const getSelectedNodeFromServer = (guid) => {
+    // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesRestURL + "/" + guid);
+    issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
+  };
+
+  const onSuccessfulGetSelectedNode = (json) => {
+    setErrorMsg("");
+    console.log("onSuccessful get selected node " + json.result);
+    // setResults(json.result);
+    const node = json.result[0];
+    let readOnly = false;
+    if (node.readOnly) {
+      readOnly = true;
+    }
+    setSelectedNodeReadOnly(readOnly);
+  };
+
+  const onErrorGetSelectedNode = (msg) => {
+    console.log("Error on get selected node " + msg);
+    setErrorMsg(msg);
+    setResults([]);
+  };
+
 
   const onToggleTop = () => {
     console.log("onToggleTop");
@@ -112,6 +142,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
     // we have selectedNode but it is not in the search results - we must have deleted it.
     if (!selectedInResults) {
       setSelectedNodeGuid(undefined);
+      setSelectedNodeReadOnly(true);
     }
   }
   const onToggleCard = () => {
@@ -131,11 +162,11 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
     }
   };
   /**
-   * Delete the supplied glossary if it's guid matches the selected one.
-   * @param {*} glossary
+   * Delete the supplied category if it's guid matches the selected one.
+   * @param {*} category
    */
-  const deleteIfSelected = (glossary) => {
-    if (glossary.systemAttributes.guid === selectedNodeGuid) {
+  const deleteIfSelected = (category) => {
+    if (category.systemAttributes.guid === selectedNodeGuid) {
       const guid = selectedNodeGuid;
       const url = nodeType.url + "/" + guid;
       issueRestDelete(url, onSuccessfulDelete, onErrorDelete);
@@ -144,6 +175,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   const onSuccessfulDelete = () => {
     setSelectedNodeGuid(undefined);
+    setSelectedNodeReadOnly(true);
     // get the children again
     getChildren();
   };
@@ -185,6 +217,9 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   };
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
+    if (nodeGuid) {
+      getSelectedNodeFromServer(nodeGuid);
+    }
   };
 
 
@@ -202,7 +237,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
                   <ParentChild32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && (
+              {selectedNodeGuid && (selectedNodeReadOnly === false) && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
                 </Link>
@@ -213,7 +248,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
                 </Link>
               )}
                
-              {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}
+              {selectedNodeGuid  && (selectedNodeReadOnly === false) && <Delete32 onClick={() => onClickDelete()} />}
             </div>
           </article>
         </NodeCardSection>
