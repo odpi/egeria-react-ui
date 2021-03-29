@@ -5,9 +5,9 @@ name: Egeria react UI build
 
 on:
   push:
-    branches: [main]
+    branches: [main,release-*]
   pull_request:
-    branches: [main]
+    branches: [main,release-*]
 
 # Run client/server in parallel. 
 # Code checkout is small so low overhead, 
