@@ -1,6 +1,6 @@
 {
   "name": "egeria-react-ui-server",
-  "version": "2.8.0-rc.0",
+  "version": "2.9.0-rc.0",
   "private": true,
   "description": "Egeria React User Interface server component, also known as the presentation server.",
   "main": "index.js",

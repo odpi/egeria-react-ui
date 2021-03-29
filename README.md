@@ -124,7 +124,7 @@ The version in the package.json can be updated using he command 'npm version pre
 
 ## Release Notes
 
-This is the release 2.8 release candidate - currently under development.
+This is the release 2.9 release candidate - currently under development.
 
 ## Project structure
 This project is a [Create React App](https://reactjs.org/docs/create-a-new-react-app.html). 

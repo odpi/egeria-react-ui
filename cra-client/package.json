@@ -1,6 +1,6 @@
 {
   "name": "egeria-react-ui-client",
-  "version": "2.8.0-rc.0",
+  "version": "2.9.0-rc.0",
   "description": "Egeria React User Interface client component.",
   "private": true,
   "dependencies": {
