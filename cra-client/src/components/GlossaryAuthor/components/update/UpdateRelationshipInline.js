@@ -115,7 +115,8 @@ export default function UpdateRelationshipInline(props) {
           </label>
         </div>
       )}
-      {currentRelationship !== undefined && props.currentRelationshipType.attributes &&
+      {currentRelationship !== undefined &&
+        props.currentRelationshipType.attributes &&
         props.currentRelationshipType.attributes.map((item) => {
           return (
             <div className="bx--form-item" key={item.key}>
@@ -125,6 +126,7 @@ export default function UpdateRelationshipInline(props) {
               <input
                 id={updateLabelId(item.key)}
                 type="text"
+                disabled={currentRelationship.readOnly}
                 className="bx--text-input"
                 defaultValue={currentRelationship[item.key]}
                 key={currentRelationship[item.key]}
@@ -195,13 +197,15 @@ export default function UpdateRelationshipInline(props) {
         </Accordion>
       )}
       <div style={{ color: "red" }}>{errorMsg}</div>
-      <Button
-        className="bx--btn bx--btn--primary"
-        onClick={handleClickUpdate}
-        type="button"
-      >
-        Update
-      </Button>
+      {currentRelationship && currentRelationship.readOnly === false && (
+        <Button
+          className="bx--btn bx--btn--primary"
+          onClick={handleClickUpdate}
+          type="button"
+        >
+          Update
+        </Button>
+      )}
     </div>
   );
 }
