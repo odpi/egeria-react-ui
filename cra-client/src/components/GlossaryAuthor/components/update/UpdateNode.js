@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import getPathTypesAndGuids from "../properties/PathAnalyser";
+import { IdentificationContext } from "../../../../contexts/IdentificationContext";
+import getNodeType from "../properties/NodeTypes.js";
 import {
   Accordion,
   AccordionItem,
@@ -16,26 +19,41 @@ import {
   TableHeader,
   TableBody,
 } from "carbon-components-react";
-import { useParams } from "react-router-dom";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import { issueRestUpdate, issueRestGet } from "../RestCaller";
 import { useHistory } from "react-router-dom";
 
 export default function UpdateNode(props) {
+  const identificationContext = useContext(IdentificationContext);
+  const [nodeType, setNodeType] = useState();
+  const [guidToEdit, setGuidToEdit] = useState();
+  console.log("UpdateNode");
+
+  useEffect(() => {
+    const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
+    // we need to set up the nodeType and guid to edit
+
+    const lastElement = pathAnalysis[pathAnalysis.length - 1];
+    setGuidToEdit(lastElement.guid);
+    const gotNodeType = getNodeType(
+      identificationContext.getRestURL("glossary-author"),
+      lastElement.type
+    );
+    setNodeType(gotNodeType);
+  }, [props, identificationContext]);
+
   const [updateBody, setUpdateBody] = useState({});
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   console.log("UpdateNode");
-  const { guidtoedit } = useParams();
-  const url = getUrl();
   let history = useHistory();
 
   const initialGet = () => {
-    issueRestGet(url, onSuccessfulGet, onErrorGet);
+    issueRestGet(getUrl(), onSuccessfulGet, onErrorGet);
     return "Getting details";
   };
   function getUrl() {
-    return props.currentNodeType.url + "/" + guidtoedit;
+    return nodeType.url + "/" + guidToEdit;
   }
 
   const handleClickUpdate = (e) => {
@@ -47,7 +65,7 @@ export default function UpdateNode(props) {
     // in the meantime this will be self contained.
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("issueUpdate " + url);
-    issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
+    issueRestUpdate(getUrl(), body, onSuccessfulUpdate, onErrorUpdate);
   };
   const onSuccessfulGet = (json) => {
     console.log("onSuccessfulGet");
@@ -79,8 +97,8 @@ export default function UpdateNode(props) {
   };
 
   function updateLabelId(labelKey) {
-    return "text-input-update"+props.currentNodeType.name +"-"+ labelKey;
-  };
+    return "text-input-update" + nodeType.name + "-" + labelKey;
+  }
   const setAttribute = (item, value) => {
     console.log("setAttribute " + item.key + ",value=" + value);
     let myUpdateBody = updateBody;
@@ -124,9 +142,10 @@ export default function UpdateNode(props) {
   };
   return (
     <div>
-      {currentNode === undefined && initialGet()}
+      {/* the useEffect will run after the render and set the nodeType, allowing the initalGet to run and set currentNode */}
+      {currentNode === undefined && nodeType && initialGet()}
       {currentNode !== undefined &&
-        props.currentNodeType.attributes.map((item) => {
+        nodeType.attributes.map((item) => {
           return (
             <div className="bx--form-item" key={item.key}>
               <label htmlFor={updateLabelId(item.key)} className="bx--label">
@@ -204,7 +223,7 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
-       <div style={{ color: "red" }}>{errorMsg}</div>
+      <div style={{ color: "red" }}>{errorMsg}</div>
       <Button
         className="bx--btn bx--btn--primary"
         onClick={handleClickUpdate}

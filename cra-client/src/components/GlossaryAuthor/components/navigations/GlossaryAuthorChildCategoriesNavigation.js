@@ -7,6 +7,7 @@ import { IdentificationContext } from "../../../../contexts/IdentificationContex
 import Add32 from "../../../../images/carbon/Egeria_add_32";
 import Delete32 from "../../../../images/carbon/Egeria_delete_32";
 import Edit32 from "../../../../images/carbon/Egeria_edit_32";
+import DataVis32 from "../../../../images/carbon/Egeria_datavis_32";
 import ParentChild32 from "../../../../images/carbon/Egeria_parent_child_32";
 import Term32 from "../../../../images/odpi/Egeria_term_32";
 
@@ -17,6 +18,7 @@ import NodeTableView from "../views/NodeTableView";
 
 //import GlossaryImage from "../../../images/Egeria_glossary_32";
 import getNodeType from "../properties/NodeTypes.js";
+import getPathTypesAndGuids from "../properties/PathAnalyser";
 import { issueRestGet, issueRestDelete } from "../RestCaller";
 
 import { Link } from "react-router-dom";
@@ -26,11 +28,12 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
   const [nodes, setNodes] = useState([]);
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
-  const [completeResults, setCompleteResults] = useState([]);
+  const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  // const[childrenCategoriesRestURL, setChildrenCategoriesRestURL]  = useState();
 
   console.log("GlossaryAuthorChildCategoriesNavigation " + props);
 
@@ -38,10 +41,29 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
   useEffect(() => {
     getChildren();
   }, [selectedNodeGuid, pageSize, pageNumber]);
+  // useEffect(() => {
+  //   const pathName = props.location.pathname;
+  //   const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
+  //   // set up the nodeType
+
+  //   // set the parent information
+  //   const parentElement = pathAnalysis[pathAnalysis.length - 2];
+  //   // setParentGuid(parentElement.guid);
+  //   // setParentNodeTypeName(parentElement.type);
+
+  //   const url =
+  //     getNodeType(
+  //       identificationContext.getRestURL("glossary-author"),
+  //       parentElement.type
+  //     ).url +
+  //     "/" + parentElement.guid + "/categories"; 
+  //     setChildrenCategoriesRestURL(url);
+
+  // });
 
   const getChildren = () => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-    const url = encodeURI(props.getCategoriesURL + "?pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+    const url = encodeURI(props.getCategoriesRestURL + "?pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
     issueRestGet(url, onSuccessfulGetChildren, onErrorGetChildren);
   };
 
@@ -141,7 +163,7 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
     setErrorMsg("");
     console.log("onSuccessfulGetChildren " + json.result);
     refreshNodes(json.result, pageSize, pageNumber);
-    setCompleteResults(json.result);
+    // setCompleteResults(json.result);
   };
 
   const onErrorGetChildren = (msg) => {
@@ -149,19 +171,58 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
     setErrorMsg(msg);
     setNodes([]);
   };
+  const getSelectedNodeFromServer = (guid) => {
+    // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesRestURL + "/" + guid);
+    issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
+  };
+  const onSuccessfulGetSelectedNode = (json) => {
+    setErrorMsg("");
+    console.log("onSuccessful get selected node " + json.result);
+    // setResults(json.result);
+    const node = json.result[0];
+    let readOnly = false;
+    if (node.readOnly) {
+      readOnly = true;
+    }
+    setSelectedNodeReadOnly(readOnly);
+  };
+
+  const onErrorGetSelectedNode = (msg) => {
+    console.log("Error on get selected node " + msg);
+    setErrorMsg(msg);
+  };
 
   function getAddCategoryUrl() {
     console.log("getAddCategoryUrl " + props);
-    return props.match.url + "/categories/add-category";
+    return props.match.url + "/add";
   }
   function getEditNodeUrl() {
-    return props.match.url + "/categories/edit-category/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/edit" ;
+  }
+  function getGraphNodeUrl() {
+    return props.match.url + "/" + selectedNodeGuid + "/visualise" ;
+  }
+  function getChildrenUrl() {
+    // hard code to categories
+    const url = props.match.url + "/" + selectedNodeGuid + "/categories";
+    console.log("getChildrenUrl() " + url);
+    console.log("selectedNodeGuid " + selectedNodeGuid);
+    return url;
   }
   const isSelected = (nodeGuid) => {
     return nodeGuid === selectedNodeGuid;
   };
   const setSelected = (nodeGuid) => {
+    console.log("setSelected" + nodeGuid );
     setSelectedNodeGuid(nodeGuid);
+    if (nodeGuid) {
+        getSelectedNodeFromServer(nodeGuid);
+    }
   };
   return (
     <div>
@@ -173,16 +234,21 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
                 <Add32 kind="primary" />
               </Link>
               {selectedNodeGuid && (
-                <Link to={props.getCategoriesURL}>
+                <Link to={getChildrenUrl()}>
                   <ParentChild32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && (
+              {selectedNodeGuid  && (selectedNodeReadOnly === false) && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}
+              {selectedNodeGuid && (
+                <Link to={getGraphNodeUrl()}>
+                   <DataVis32 kind="primary" />
+                </Link>
+              )} 
+              {selectedNodeGuid && (selectedNodeReadOnly === false) && <Delete32 onClick={() => onClickDelete()} />}
             </div>
           </article>
         </NodeCardSection>

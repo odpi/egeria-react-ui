@@ -14,8 +14,8 @@ export default function TaskDropDown({ onChange }) {
       <option selected value="nodes">
         Node Authoring
       </option>
-      <option value="lines">
-        Line Authoring
+      <option value="relationships">
+        Relationship Authoring
       </option>
     </select>
   );

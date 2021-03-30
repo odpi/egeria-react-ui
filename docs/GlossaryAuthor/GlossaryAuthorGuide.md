@@ -13,7 +13,7 @@ Egeria has subject area open types that are described in [Area 3](https://egeria
 The Glossary Author exposes concepts (json objects) that map onto the open types. The Glossary Author concepts are intended to make it easier for a 
 user interface to author glossaries. 
 
-As metadata is often best thought of as a graph; the Glossary author user interface exposes the concept of a Graph containing only the concepts relevant  to a glossary author. The Graph is composed of Nodes (vertices) and Lines (edges).  
+As metadata is often best thought of as a graph; the Glossary author user interface exposes the concept of a Graph containing only the concepts relevant  to a glossary author. The Graph is composed of Nodes (vertices) and Relationships (edges).  
 
 Glossary, Category and Term are all types of Node. The Node object contains standard Egeria properties including:
 
@@ -87,7 +87,7 @@ By default top categories are displayed, these are categories that do not have a
 ## Future improvements
 - a breadcrumb will be added to show visually where in a nested hierarchy the nodes being displayed live.
 - Allow category hierarchies to be authored. i.e. child categories of categories
-- Allow lines to be authored
+- Allow Relationships to be authored
 - Use a D3 visualisation of glossary content similar to rex
 - add governance classification authoring
 - add spine object views

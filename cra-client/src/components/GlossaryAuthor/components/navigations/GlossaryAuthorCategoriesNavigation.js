@@ -6,6 +6,7 @@ import { IdentificationContext } from "../../../../contexts/IdentificationContex
 import Add32 from "../../../../images/carbon/Egeria_add_32";
 import Delete32 from "../../../../images/carbon/Egeria_delete_32";
 import Edit32 from "../../../../images/carbon/Egeria_edit_32";
+import DataVis32 from "../../../../images/carbon/Egeria_datavis_32";
 import ParentChild32 from "../../../../images/carbon/Egeria_parent_child_32";
 
 import Term32 from "../../../../images/odpi/Egeria_term_32";
@@ -25,25 +26,64 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const [nodes, setNodes] = useState([]);
   const [errorMsg, setErrorMsg] = useState();
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
+  const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
   const [onlyTop, setOnlyTop] = useState(false);
-  const [completeResults, setCompleteResults] = useState([]);
   const [isCardView, setIsCardView] = useState(true);
   const [total, setTotal] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [results, setResults] = useState([]);
 
   console.log("GlossaryAuthorCategoriesNavigation " + props);
 
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "category");
+  // issue a new rest call to get children if the user has shanged the state of the ui.
   useEffect(() => {
     getChildren();
   }, [selectedNodeGuid, onlyTop, pageSize, pageNumber]);
+  // refresh the nodes if the results - from the get children rest call completed
+  useEffect(() => {
+    refreshNodes();
+  }, [results]);
 
   const getChildren = () => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-    const url = encodeURI(props.getCategoriesURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
-    issueRestGet(url, onSuccessfulGetChildren, onErrorGetChildren);
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesRestURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+    issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
   };
+
+  const getSelectedNodeFromServer = (guid) => {
+    // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
+
+
+    // this rest URL might be for category children of a category or category childen of a glossary
+
+    const restURL = encodeURI(props.getCategoriesRestURL + "/" + guid);
+    issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
+  };
+
+  const onSuccessfulGetSelectedNode = (json) => {
+    setErrorMsg("");
+    console.log("onSuccessful get selected node " + json.result);
+    // setResults(json.result);
+    const node = json.result[0];
+    let readOnly = false;
+    if (node.readOnly) {
+      readOnly = true;
+    }
+    setSelectedNodeReadOnly(readOnly);
+  };
+
+  const onErrorGetSelectedNode = (msg) => {
+    console.log("Error on get selected node " + msg);
+    setErrorMsg(msg);
+    setResults([]);
+  };
+
 
   const onToggleTop = () => {
     console.log("onToggleTop");
@@ -78,17 +118,23 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   // Refresh the displayed nodes search results
   // this involves taking the results and pagination options and calculating nodes that is the subset needs to be displayed
-  // The results, page size and page number are passed as arguments, rather than picked up from state, as the state updates
-  // are done asynchronously in a render cycle.
 
-  function refreshNodes(results, passedPageSize, passedPageNumber) {
+  function refreshNodes() {
     let selectedInResults = false;
     setTotal(results.length);
-    if (results.length > passedPageSize) {
+    if (results.length > pageSize) {
       // remove the last element.  
       results.pop();
     }
     if (results && results.length > 0) {
+      results.map(function (row) {
+        row.id = row.systemAttributes.guid;
+        if (selectedNodeGuid && selectedNodeGuid === row.id) {
+          row.isSelected = true;
+          selectedInResults = true;
+        }
+        return row;
+      });
       setNodes(results);
     } else {
       setNodes([]);
@@ -96,6 +142,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
     // we have selectedNode but it is not in the search results - we must have deleted it.
     if (!selectedInResults) {
       setSelectedNodeGuid(undefined);
+      setSelectedNodeReadOnly(true);
     }
   }
   const onToggleCard = () => {
@@ -115,11 +162,11 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
     }
   };
   /**
-   * Delete the supplied glossary if it's guid matches the selected one.
-   * @param {*} glossary
+   * Delete the supplied category if it's guid matches the selected one.
+   * @param {*} category
    */
-  const deleteIfSelected = (glossary) => {
-    if (glossary.systemAttributes.guid === selectedNodeGuid) {
+  const deleteIfSelected = (category) => {
+    if (category.systemAttributes.guid === selectedNodeGuid) {
       const guid = selectedNodeGuid;
       const url = nodeType.url + "/" + guid;
       issueRestDelete(url, onSuccessfulDelete, onErrorDelete);
@@ -128,6 +175,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   const onSuccessfulDelete = () => {
     setSelectedNodeGuid(undefined);
+    setSelectedNodeReadOnly(true);
     // get the children again
     getChildren();
   };
@@ -140,29 +188,41 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   const onSuccessfulGetChildren = (json) => {
     setErrorMsg("");
     console.log("onSuccessfulGetChildren " + json.result);
-    refreshNodes(json.result, pageSize, pageNumber);
-    setCompleteResults(json.result);
+    setResults(json.result);
+
   };
 
   const onErrorGetChildren = (msg) => {
     console.log("Error on get children " + msg);
     setErrorMsg(msg);
-    setNodes([]);
+    setResults([]);
   };
 
   function getAddCategoryUrl() {
     console.log("getAddCategoryUrl " + props);
-    return props.match.url + "/categories/add-category";
+    return props.match.url + "/add";
   }
   function getEditNodeUrl() {
-    return props.match.url + "/categories/edit-category/" + selectedNodeGuid;
+    return props.match.url + "/" + selectedNodeGuid + "/edit";
+  }
+  function getGraphNodeUrl() {
+    return props.match.url + "/" + selectedNodeGuid + "/visualise";
+  }
+  function getSelectedCategoryChildrenURL() {
+    // default to categories
+    return props.match.url + "/" + selectedNodeGuid + "/categories";
   }
   const isSelected = (nodeGuid) => {
     return nodeGuid === selectedNodeGuid;
   };
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
+    if (nodeGuid) {
+      getSelectedNodeFromServer(nodeGuid);
+    }
   };
+
+
   return (
     <div>
       <div className="bx--grid">
@@ -173,16 +233,22 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
                 <Add32 kind="primary" />
               </Link>
               {selectedNodeGuid && (
-                <Link to={props.getCategoriesURL}>
+                <Link to={getSelectedCategoryChildrenURL}>
                   <ParentChild32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && (
+              {selectedNodeGuid && (selectedNodeReadOnly === false) && (
                 <Link to={getEditNodeUrl()}>
                   <Edit32 kind="primary" />
                 </Link>
               )}
-              {selectedNodeGuid && <Delete32 onClick={() => onClickDelete()} />}
+              {selectedNodeGuid && (
+                <Link to={getGraphNodeUrl()}>
+                   <DataVis32 kind="primary" />
+                </Link>
+              )}
+               
+              {selectedNodeGuid  && (selectedNodeReadOnly === false) && <Delete32 onClick={() => onClickDelete()} />}
             </div>
           </article>
         </NodeCardSection>

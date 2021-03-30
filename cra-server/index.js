@@ -36,6 +36,7 @@ app.set('servers', servers);
 if (env === 'production') {
   app.use(express.static(path.join(__dirname, '../cra-client/build')));
 }
+
 // This middleware method takes off the first segment which is the serverName and puts it into a query parameter
 app.use((req, res, next) => serverNameMiddleWare(req, res, next));
 

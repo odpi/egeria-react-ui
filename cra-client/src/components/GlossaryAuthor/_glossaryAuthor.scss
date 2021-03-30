@@ -83,12 +83,12 @@
 .search-item {
   margin: 10px;
 }
-// .line-node-container {
+// .relationship-node-container {
 //   height           : 100%;
 //   display          : flex;
 //   flex-flow        : row;
 // }
-// .line-node-item {
+// .relationship-node-item {
 //   margin: 10px;
 // }
 
@@ -103,26 +103,26 @@
   flex: 1;
 }
 
-.nodeline-button {
+.noderelationship-button {
   border: 0;
   color: white;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
+  display: inrelationship-block;
   font-size: 16px;
   margin:2px;
 }
 .clickable {
   background-color: #4CAF50; /* Green */
 }
-.line-shape {
+.relationship-shape {
   padding: 15px 32px;  
 }
 .node-shape {
   padding: 32px 32px;
 }
 
-.nodeline-title {
+.noderelationship-title {
   background-color: dimgray;
 }
 
