@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect,  useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import {
   Accordion,
@@ -15,7 +15,7 @@ import {
   TableRow,
   TableCell,
   TableHeader,
-  TableBody
+  TableBody,
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import getRelationshipType from "../properties/RelationshipTypes";
@@ -38,12 +38,18 @@ export default function CreateNodePage(props) {
     if (createdNode && createdRelationship && props.parentCategoryGuid) {
       // we need to wait for the relationship to be created before we can say that the node has been successfully created.
       creationTasksComplete(createdNode);
-    } else  if (createdNode) {
+    } else if (createdNode) {
       // there is no relationship to create
       creationTasksComplete(createdNode);
     }
-  
   }, [createdNode, createdRelationship, props]);
+
+  //nodeToCreate
+  useEffect(() => {
+    if (props.nodeToCreate) {
+      setCreateBody(props.nodeToCreate);
+    }
+  }, [props]);
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -54,9 +60,8 @@ export default function CreateNodePage(props) {
       .getElementById(createLabelIdForSubmitButton())
       .classList.remove("shaker");
   };
-
-  const handleClick = (e) => {
-    console.log("CreateNodePage handleClick(()");
+  const onClickToCreate = (e) => {
+    console.log("CreateNodePage onClickToCreate(()");
     e.preventDefault();
     setRestCallInProgress(true);
     let body = createBody;
@@ -72,6 +77,23 @@ export default function CreateNodePage(props) {
     console.log("issueCreate " + url);
     issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
   };
+  // const handleClick = (e) => {
+  //   console.log("CreateNodePage handleClick(()");
+  //   e.preventDefault();
+  //   setRestCallInProgress(true);
+  //   let body = createBody;
+  //   if (props.glossaryGuid) {
+  //     let glossary = {};
+  //     glossary.guid = props.glossaryGuid;
+  //     body.glossary = glossary;
+  //   }
+
+  //   // TODO consider moving this up to a node controller as per the CRUD pattern.
+  //   // inthe meantime this will be self contained.
+  //   const url = props.currentNodeType.url;
+  //   console.log("issueCreate " + url);
+  //   issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
+  // };
   const onSuccessfulNodeCreate = (json) => {
     setRestCallInProgress(false);
 
@@ -81,7 +103,7 @@ export default function CreateNodePage(props) {
       if (props.parentCategoryGuid) {
         // there is a parent category we need to knit to
         knitToParentCategory(node);
-      } 
+      }
       setCreatedNode(node);
     } else {
       onErrorGet("Error did not get a node from the server");
@@ -91,10 +113,15 @@ export default function CreateNodePage(props) {
     setRestCallInProgress(false);
     console.log("onSuccessfulParentRelationshipCreate");
     if (json.result.length === 1) {
-        const relationship = json.result[0];
-        setCreatedRelationship(relationship);
+      const relationship = json.result[0];
+      setCreatedRelationship(relationship);
     } else {
       onErrorGet("Error linking the created Node to it's category parent");
+    }
+  };
+  const onClickFilledInForm = () => {
+    if (props.onGotCreateDetails) {
+      props.onGotCreateDetails(createBody);
     }
   };
   const onErrorParentRelationshipCreate = (msg) => {
@@ -103,36 +130,43 @@ export default function CreateNodePage(props) {
     setErrorMsg(msg);
     setCreatedCompleteNode(undefined);
   };
+
   const knitToParentCategory = (node) => {
-   const glossaryAuthorURL = identificationContext.getRestURL("glossary-author"); 
+    const glossaryAuthorURL = identificationContext.getRestURL(
+      "glossary-author"
+    );
     let url;
-    let body= {};
+    let body = {};
     let end1 = {};
     let end2 = {};
-    end1.class = "Category"
+    end1.class = "Category";
     end1.nodeGuid = props.parentCategoryGuid;
     end1.nodeType = "Category";
-  
+
     end2 = {};
     end2.nodeGuid = node.systemAttributes.guid;
     if (node.nodeType === "Term") {
       // create termcategorisation relationship
-      url = getRelationshipType(glossaryAuthorURL,"categorization").url;
+      url = getRelationshipType(glossaryAuthorURL, "categorization").url;
       body.relationshipType = "TermCategorization";
       body.class = "Categorization";
-      end2.class = "Term"
+      end2.class = "Term";
       end2.nodeType = "Term";
     } else {
       // category create the category hierarchy relationship
-      url = getRelationshipType(glossaryAuthorURL,"categoryhierarchylink").url;
+      url = getRelationshipType(glossaryAuthorURL, "categoryhierarchylink").url;
       body.relationshipType = "CategoryHierarchyLink";
       body.class = "CategoryHierarchyLink";
-      end2.class = "Category"
+      end2.class = "Category";
     }
-    body.end1= end1;
-    body.end2= end2;
-    issueRestCreate(url, body, onSuccessfulParentRelationshipCreate, onErrorParentRelationshipCreate);
-
+    body.end1 = end1;
+    body.end2 = end2;
+    issueRestCreate(
+      url,
+      body,
+      onSuccessfulParentRelationshipCreate,
+      onErrorParentRelationshipCreate
+    );
   };
   const creationTasksComplete = (node) => {
     setCreatedCompleteNode(node);
@@ -155,7 +189,7 @@ export default function CreateNodePage(props) {
   const onErrorGet = (msg) => {
     console.log("Error on Create " + msg);
     setCreatedNode(undefined);
-    setCreatedRelationship(undefined)
+    setCreatedRelationship(undefined);
     setErrorMsg(msg);
   };
   const createLabelIdForAttribute = (labelKey) => {
@@ -411,18 +445,34 @@ export default function CreateNodePage(props) {
               </AccordionItem>
             </Accordion>
             <div style={{ color: "red" }}>{errorMsg}</div>
-            <div className="bx--form-item">
-              <button
-                id={createLabelIdForSubmitButton()}
-                className="bx--btn bx--btn--primary"
-                disabled={!validateForm()}
-                onClick={handleClick}
-                onAnimationEnd={handleOnAnimationEnd}
-                type="button"
-              >
-                Create
-              </button>
-            </div>
+            {!props.onGotCreateDetails && (
+              <div className="bx--form-item">
+                <button
+                  // id={createLabelIdForSubmitButton()}
+                  className="bx--btn bx--btn--primary"
+                  disabled={!validateForm()}
+                  onClick={onClickToCreate}
+                  onAnimationEnd={handleOnAnimationEnd}
+                  type="button"
+                >
+                  Create
+                </button>
+              </div>
+            )}
+            {props.onGotCreateDetails && (
+              <div className="bx--form-item">
+                <button
+                  // id={createLabelIdForSubmitButton()}
+                  className="bx--btn bx--btn--primary"
+                  // disabled={!validateForm()}
+                  onClick={onClickFilledInForm}
+                  onAnimationEnd={handleOnAnimationEnd}
+                  type="button"
+                >
+                  Use these values
+                </button>
+              </div>
+            )}
           </form>
         </div>
       )}
