@@ -8,6 +8,21 @@ import {
 } from "carbon-components-react";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 import CreateNodePage from "./CreateNodePage";
+
+
+/**
+ * This is a node creation wizard - that is used to creae categories and terms. The first page of the wizard 
+ * asks the user to input values for the Category or Term to create. The next page then asks the user for the glossary that the 
+ * Category or Term will be stored in, finally there is a confirmation screen, where the user can confirm the values 
+ * that will be used to create the Node. 
+ * 
+ * 
+ * This component drives the CreateNodePage component, which displays the node. There are callbacks to the wizard 
+ * when the user has finsished with entering creation content and chosen a glossary.   
+ *   
+ * @param {*} props 
+ * @returns 
+ */
 export default function CreateNodeWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [glossaryGuid, setGlossaryGuid] = useState();
@@ -21,11 +36,8 @@ export default function CreateNodeWizard(props) {
       setCurrentStepIndex(1);
     }
   };
-  const reEnterCreateDetails = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 1) {
-      setCurrentStepIndex(0);
-    }
+  const onRestart = () => {
+    setCurrentStepIndex(0);
   };
   const confirmCreateDetails = (e) => {
     e.preventDefault();
@@ -34,25 +46,6 @@ export default function CreateNodeWizard(props) {
     }
   };
 
-  // const handleChoseGlossaryOnClick = (e) => {
-  //   e.preventDefault();
-  //   if (currentStepIndex === 0) {
-  //     setCurrentStepIndex(1);
-  //   }
-  // };
-  // const handleReChooseGlossaryOnClick = (e) => {
-  //   e.preventDefault();
-  //   if (currentStepIndex === 1) {
-  //     setCurrentStepIndex(0);
-  //   }
-  // };
-  const validateGlossaryForm = () => {
-    let isValid = false;
-    if (glossaryGuid) {
-      isValid = true;
-    }
-    return isValid;
-  };
   const isValidForConfirm = () => {
     let isValid = false;
     if (glossaryGuid !== undefined && nodeToCreate !== undefined && nodeToCreate.name !== undefined && nodeToCreate.name !== ""  ) {
@@ -91,7 +84,7 @@ export default function CreateNodeWizard(props) {
     return "Create " + props.currentNodeType.typeName;
   };
   const getStep1Description = () => {
-    return "Step1:  Create a " + props.currentNodeType.typeName;
+    return "Step 1:  Create a " + props.currentNodeType.typeName;
   };
   const step2Title = () => {
     return "Set Glossary";
@@ -101,9 +94,6 @@ export default function CreateNodeWizard(props) {
       "Step 2: A glossary needs to be chosen, to store the " +
       props.currentNodeType.key
     );
-  };
-  const step3Title = () => {
-    return "Confirm create";
   };
   const getStep3Description = () => {
     return (
@@ -155,7 +145,7 @@ export default function CreateNodeWizard(props) {
         )}
         {currentStepIndex === 1 && !nodeCreated && (
           <div>
-            <Button kind="secondary" onClick={reEnterCreateDetails}>
+            <Button kind="secondary" onClick={onRestart}>
               Previous
             </Button>
             <Button kind="secondary" onClick={confirmCreateDetails}  disabled={!isValidForConfirm()}>
@@ -174,11 +164,12 @@ export default function CreateNodeWizard(props) {
         {currentStepIndex === 2 && (
           <div>
             <CreateNodePage
-              currentNodeType={props.currentNodeType}
+              currentNodeType={props.currentNodeType}      
               glossaryGuid={glossaryGuid}
               parentCategoryGuid={props.parentCategoryGuid}
               onCreateCallback={onCreate}
               nodeToCreate={nodeToCreate}
+          
             />
           </div>
         )}

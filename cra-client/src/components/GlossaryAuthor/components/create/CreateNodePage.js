@@ -21,7 +21,16 @@ import Info16 from "@carbon/icons-react/lib/information/16";
 import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
-
+/**
+ * Component to show the create page for a node. 
+ * 
+ * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node. 
+ * @param props.glossaryGuid this is the glossary guid that is to be used to create the node under
+ * @param props.parentCategoryGuid if specified this is the parent category underwhich to create the Node 
+ * @param props.onCreateCallback if specified this function is called when the create completes.
+ * @param props.nodeToCreate if specified this contain attributes to prefill the create screen with 
+ * @returns 
+ */
 export default function CreateNodePage(props) {
   const identificationContext = useContext(IdentificationContext);
 
@@ -97,23 +106,6 @@ export default function CreateNodePage(props) {
     console.log("issueCreate " + url);
     issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
   };
-  // const handleClick = (e) => {
-  //   console.log("CreateNodePage handleClick(()");
-  //   e.preventDefault();
-  //   setRestCallInProgress(true);
-  //   let body = createBody;
-  //   if (props.glossaryGuid) {
-  //     let glossary = {};
-  //     glossary.guid = props.glossaryGuid;
-  //     body.glossary = glossary;
-  //   }
-
-  //   // TODO consider moving this up to a node controller as per the CRUD pattern.
-  //   // inthe meantime this will be self contained.
-  //   const url = props.currentNodeType.url;
-  //   console.log("issueCreate " + url);
-  //   issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
-  // };
   const onSuccessfulNodeCreate = (json) => {
     setRestCallInProgress(false);
 
@@ -290,9 +282,9 @@ export default function CreateNodePage(props) {
     return rowData;
   };
 
-  const createAnother = () => {
-    setCreatedCompleteNode(undefined);
-  };
+  // const createAnother = () => {
+  //   setCreatedCompleteNode(undefined);
+  // };
   const onClickBack = () => {
     console.log("Back clicked");
     // use history, as there is another window history object in scope in the event listener
@@ -383,13 +375,6 @@ export default function CreateNodePage(props) {
               </div>
             </AccordionItem>
           </Accordion>
-          <button
-            className="bx--btn bx--btn--primary"
-            onClick={createAnother}
-            type="button"
-          >
-            Create Another
-          </button>
           {!props.onCreateCallback && (
             <button
               kind="secondary"
@@ -466,25 +451,34 @@ export default function CreateNodePage(props) {
             </Accordion>
             <div style={{ color: "red" }}>{errorMsg}</div>
             {!props.onGotCreateDetails && (
-              <div className="bx--form-item">
-                <button
-                  // id={createLabelIdForSubmitButton()}
-                  className="bx--btn bx--btn--primary"
-                  disabled={!validateForm()}
-                  onClick={onClickToCreate}
-                  onAnimationEnd={handleOnAnimationEnd}
-                  type="button"
-                >
-                  Create
-                </button>
+              <div className="flex-row-container">
+                <div className="bx--form-item">
+                  <button
+                    className="bx--btn bx--btn--primary"
+                    disabled={!validateForm()}
+                    onClick={onClickToCreate}
+                    onAnimationEnd={handleOnAnimationEnd}
+                    type="button"
+                  >
+                    Create
+                  </button>
+                </div>
+                <div className="bx--form-item">
+                  <button
+                    className="bx--btn--tertiary"
+                    kind="secondary"
+                    onClick={onClickBack}
+                    type="button"
+                  >
+                    Cancel create
+                  </button>
+                </div>
               </div>
             )}
             {props.onGotCreateDetails && (
               <div className="bx--form-item">
                 <button
-                  // id={createLabelIdForSubmitButton()}
                   className="bx--btn bx--btn--primary"
-                  // disabled={!validateForm()}
                   onClick={onClickFilledInForm}
                   onAnimationEnd={handleOnAnimationEnd}
                   type="button"
