@@ -14,7 +14,6 @@ import NodeChildren from "../NodeChildren";
 import CreateNode from "../create/CreateNode";
 // Quick terms
 import GlossaryQuickTerms from "../GlossaryQuickTerms";
-import CreateCategorizedQuickTerms from "../create/CreateCategorizedQuickTerms";
 // update Category
 import UpdateNode from "../update/UpdateNode";
 
@@ -94,9 +93,7 @@ export default function GlossaryAuthorRoutes({ glossaryAuthorURL }) {
       {/* edits */}
       <Route path={getGlossaryAuthorPathAny() + "edit"} exact component={UpdateNode}></Route>
 
-       {/* categorized quick terms  */}
-       <Route path={getGlossaryAuthorPathAny() + "quick-category-terms"} exact component={CreateCategorizedQuickTerms} ></Route>
-       {/* children   */}
+      {/* children   */}
        <Route path={getGlossaryAuthorPathAny() + "terms"} exact component={NodeChildren} ></Route>
        <Route path={getGlossaryAuthorPathAny() + "categories"} exact component={NodeChildren} ></Route>
        {/* visualise */}
