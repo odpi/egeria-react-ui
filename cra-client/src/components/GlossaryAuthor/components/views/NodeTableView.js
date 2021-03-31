@@ -107,7 +107,7 @@ export default function NodeTableView({nodeType, nodes, setSelected}) {
   };
 
   return (
-    <div className="top-search-container">
+    <div className="flex-row-container">
       <div className="top-search-item">
         <div className="search-container">
           {nodeType && nodeType.attributes.length > 3 && (

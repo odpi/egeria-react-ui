@@ -8,8 +8,7 @@ import getNodeType from "./properties/NodeTypes.js";
 import { Button, Form, FormGroup, TextInput, Loading } from "carbon-components-react";
 
 import { issueRestCreate } from "./RestCaller";
-import { useParams } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 export default function GlossaryQuickTerms(props) {
   const identificationContext = useContext(IdentificationContext);

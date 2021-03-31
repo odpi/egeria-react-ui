@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect,  useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import {
   Accordion,
@@ -15,13 +15,22 @@ import {
   TableRow,
   TableCell,
   TableHeader,
-  TableBody
+  TableBody,
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
-
+/**
+ * Component to show the create page for a node. 
+ * 
+ * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node. 
+ * @param props.glossaryGuid this is the glossary guid that is to be used to create the node under
+ * @param props.parentCategoryGuid if specified this is the parent category underwhich to create the Node 
+ * @param props.onCreateCallback if specified this function is called when the create completes.
+ * @param props.nodeToCreate if specified this contain attributes to prefill the create screen with 
+ * @returns 
+ */
 export default function CreateNodePage(props) {
   const identificationContext = useContext(IdentificationContext);
 
@@ -31,6 +40,7 @@ export default function CreateNodePage(props) {
   const [createdCompleteNode, setCreatedCompleteNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [restCallInProgress, setRestCallInProgress] = useState(false);
+  const [currentAttributes, setCurrentAttributes] = useState();
 
   let history = useHistory();
 
@@ -38,12 +48,37 @@ export default function CreateNodePage(props) {
     if (createdNode && createdRelationship && props.parentCategoryGuid) {
       // we need to wait for the relationship to be created before we can say that the node has been successfully created.
       creationTasksComplete(createdNode);
-    } else  if (createdNode) {
+    } else if (createdNode) {
       // there is no relationship to create
       creationTasksComplete(createdNode);
     }
-  
   }, [createdNode, createdRelationship, props]);
+
+  //nodeToCreate
+  useEffect(() => {
+    if (props.nodeToCreate) {
+      setCreateBody(props.nodeToCreate);
+    }
+    if (props.currentNodeType) {
+      let attributesWithValues = [];
+      let attributes = props.currentNodeType.attributes;
+      if (props.nodeToCreate) {
+        // now  scan through the props.nodeToCreate properties and add in any values there.
+        for (var i = 0; i < attributes.length; i++) {
+          const attributeKey = attributes[i].key;
+          const attributeValue = props.nodeToCreate[attributeKey];
+          let attributesWithValuesElement = attributes[i];
+          if (attributeValue !== undefined) {
+            attributesWithValuesElement.value = attributeValue;
+          }
+          attributesWithValues.push(attributesWithValuesElement);
+        }
+        setCurrentAttributes(attributesWithValues);
+      } else {
+        setCurrentAttributes(attributes);
+      }
+    }
+  }, [props]);
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -54,9 +89,8 @@ export default function CreateNodePage(props) {
       .getElementById(createLabelIdForSubmitButton())
       .classList.remove("shaker");
   };
-
-  const handleClick = (e) => {
-    console.log("CreateNodePage handleClick(()");
+  const onClickToCreate = (e) => {
+    console.log("CreateNodePage onClickToCreate(()");
     e.preventDefault();
     setRestCallInProgress(true);
     let body = createBody;
@@ -81,7 +115,7 @@ export default function CreateNodePage(props) {
       if (props.parentCategoryGuid) {
         // there is a parent category we need to knit to
         knitToParentCategory(node);
-      } 
+      }
       setCreatedNode(node);
     } else {
       onErrorGet("Error did not get a node from the server");
@@ -91,10 +125,15 @@ export default function CreateNodePage(props) {
     setRestCallInProgress(false);
     console.log("onSuccessfulParentRelationshipCreate");
     if (json.result.length === 1) {
-        const relationship = json.result[0];
-        setCreatedRelationship(relationship);
+      const relationship = json.result[0];
+      setCreatedRelationship(relationship);
     } else {
       onErrorGet("Error linking the created Node to it's category parent");
+    }
+  };
+  const onClickFilledInForm = () => {
+    if (props.onGotCreateDetails) {
+      props.onGotCreateDetails(createBody);
     }
   };
   const onErrorParentRelationshipCreate = (msg) => {
@@ -103,36 +142,43 @@ export default function CreateNodePage(props) {
     setErrorMsg(msg);
     setCreatedCompleteNode(undefined);
   };
+
   const knitToParentCategory = (node) => {
-   const glossaryAuthorURL = identificationContext.getRestURL("glossary-author"); 
+    const glossaryAuthorURL = identificationContext.getRestURL(
+      "glossary-author"
+    );
     let url;
-    let body= {};
+    let body = {};
     let end1 = {};
     let end2 = {};
-    end1.class = "Category"
+    end1.class = "Category";
     end1.nodeGuid = props.parentCategoryGuid;
     end1.nodeType = "Category";
-  
+
     end2 = {};
     end2.nodeGuid = node.systemAttributes.guid;
     if (node.nodeType === "Term") {
       // create termcategorisation relationship
-      url = getRelationshipType(glossaryAuthorURL,"categorization").url;
+      url = getRelationshipType(glossaryAuthorURL, "categorization").url;
       body.relationshipType = "TermCategorization";
       body.class = "Categorization";
-      end2.class = "Term"
+      end2.class = "Term";
       end2.nodeType = "Term";
     } else {
       // category create the category hierarchy relationship
-      url = getRelationshipType(glossaryAuthorURL,"categoryhierarchylink").url;
+      url = getRelationshipType(glossaryAuthorURL, "categoryhierarchylink").url;
       body.relationshipType = "CategoryHierarchyLink";
       body.class = "CategoryHierarchyLink";
-      end2.class = "Category"
+      end2.class = "Category";
     }
-    body.end1= end1;
-    body.end2= end2;
-    issueRestCreate(url, body, onSuccessfulParentRelationshipCreate, onErrorParentRelationshipCreate);
-
+    body.end1 = end1;
+    body.end2 = end2;
+    issueRestCreate(
+      url,
+      body,
+      onSuccessfulParentRelationshipCreate,
+      onErrorParentRelationshipCreate
+    );
   };
   const creationTasksComplete = (node) => {
     setCreatedCompleteNode(node);
@@ -155,7 +201,7 @@ export default function CreateNodePage(props) {
   const onErrorGet = (msg) => {
     console.log("Error on Create " + msg);
     setCreatedNode(undefined);
-    setCreatedRelationship(undefined)
+    setCreatedRelationship(undefined);
     setErrorMsg(msg);
   };
   const createLabelIdForAttribute = (labelKey) => {
@@ -236,9 +282,9 @@ export default function CreateNodePage(props) {
     return rowData;
   };
 
-  const createAnother = () => {
-    setCreatedCompleteNode(undefined);
-  };
+  // const createAnother = () => {
+  //   setCreatedCompleteNode(undefined);
+  // };
   const onClickBack = () => {
     console.log("Back clicked");
     // use history, as there is another window history object in scope in the event listener
@@ -329,13 +375,6 @@ export default function CreateNodePage(props) {
               </div>
             </AccordionItem>
           </Accordion>
-          <button
-            className="bx--btn bx--btn--primary"
-            onClick={createAnother}
-            type="button"
-          >
-            Create Another
-          </button>
           {!props.onCreateCallback && (
             <button
               kind="secondary"
@@ -371,8 +410,8 @@ export default function CreateNodePage(props) {
 
             {props.currentNodeType &&
               createdCompleteNode === undefined &&
-              props.currentNodeType.attributes &&
-              props.currentNodeType.attributes.map((item) => {
+              currentAttributes &&
+              currentAttributes.map((item) => {
                 return (
                   <div className="bx--form-item" key={item.key}>
                     <label
@@ -385,7 +424,7 @@ export default function CreateNodePage(props) {
                       id={createLabelIdForAttribute(item.key)}
                       type="text"
                       className="bx--text-input"
-                      value={item.name}
+                      value={item.value}
                       onChange={(e) => setAttribute(item, e.target.value)}
                       placeholder={item.label}
                     ></input>
@@ -411,18 +450,43 @@ export default function CreateNodePage(props) {
               </AccordionItem>
             </Accordion>
             <div style={{ color: "red" }}>{errorMsg}</div>
-            <div className="bx--form-item">
-              <button
-                id={createLabelIdForSubmitButton()}
-                className="bx--btn bx--btn--primary"
-                disabled={!validateForm()}
-                onClick={handleClick}
-                onAnimationEnd={handleOnAnimationEnd}
-                type="button"
-              >
-                Create
-              </button>
-            </div>
+            {!props.onGotCreateDetails && (
+              <div className="flex-row-container">
+                <div className="bx--form-item">
+                  <button
+                    className="bx--btn bx--btn--primary"
+                    disabled={!validateForm()}
+                    onClick={onClickToCreate}
+                    onAnimationEnd={handleOnAnimationEnd}
+                    type="button"
+                  >
+                    Create
+                  </button>
+                </div>
+                <div className="bx--form-item">
+                  <button
+                    className="bx--btn--tertiary"
+                    kind="secondary"
+                    onClick={onClickBack}
+                    type="button"
+                  >
+                    Cancel create
+                  </button>
+                </div>
+              </div>
+            )}
+            {props.onGotCreateDetails && (
+              <div className="bx--form-item">
+                <button
+                  className="bx--btn bx--btn--primary"
+                  onClick={onClickFilledInForm}
+                  onAnimationEnd={handleOnAnimationEnd}
+                  type="button"
+                >
+                  Use these values
+                </button>
+              </div>
+            )}
           </form>
         </div>
       )}

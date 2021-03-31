@@ -36,9 +36,14 @@ There is a similar look to the Glossary , Category and Term pages, they all:
 
 ## Routing in the Glossary Author
 
-The Glossary Author is has a rnumber of react routes. If the code needs to load a new page then it updates the url and the react router then loads that page. In addition to the url location, there are query parameters on the url, these detail the state of the page. for example whether a checkbox is selected or not. This means that a utl can be pasted into the browser, and the page will render basedon the contents of the url. Bookmarking is therefore possible.
+The Glossary Author is has a number of react routes. If the code needs to load a new page then it updates the url and the react router then loads that page. In addition to the url location, there are query parameters on the url, these detail the state of the page. for example whether a checkbox is selected or not. This means that a utl can be pasted into the browser, and the page will render basedon the contents of the url. Bookmarking is therefore possible.
 
 The react routes key off the last segment of the location, for example urls ending with /add will load the CreateNode component. In this way common components can be used for add edit, visualisation, and showing children without many routes entries. It also means that it is possible to navigate to a categories childrens children and still be able to have the expected add edit and visualisation capability.     
+
+## Breadcrumbs in the Glossary Author
+
+Breadcrumbs can be path based (basedon where a diplayed artifact live in the hierarchical structure) or location based (based on the users paths). The Glossary Author uses the lcoation based (users path).
+The breadcrumb has a bread crumb item for each of the segments in the url. The url takes the form of repeating plural type followed by a guid, than an optional action as the last segment. a link is put on each of the breadcrumb items, for the plrual types this is the search screen under the parent guid of a particular child type. The link for a Guid is the edit screen for that guid.   
 
 
 ## Glove design
