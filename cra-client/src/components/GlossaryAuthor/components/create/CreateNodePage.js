@@ -31,6 +31,7 @@ export default function CreateNodePage(props) {
   const [createdCompleteNode, setCreatedCompleteNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [restCallInProgress, setRestCallInProgress] = useState(false);
+  const [currentAttributes, setCurrentAttributes] = useState();
 
   let history = useHistory();
 
@@ -48,6 +49,25 @@ export default function CreateNodePage(props) {
   useEffect(() => {
     if (props.nodeToCreate) {
       setCreateBody(props.nodeToCreate);
+    }
+    if (props.currentNodeType) {
+      let attributesWithValues = [];
+      let attributes = props.currentNodeType.attributes;
+      if (props.nodeToCreate) {
+        // now  scan through the props.nodeToCreate properties and add in any values there.
+        for (var i = 0; i < attributes.length; i++) {
+          const attributeKey = attributes[i].key;
+          const attributeValue = props.nodeToCreate[attributeKey];
+          let attributesWithValuesElement = attributes[i];
+          if (attributeValue !== undefined) {
+            attributesWithValuesElement.value = attributeValue;
+          }
+          attributesWithValues.push(attributesWithValuesElement);
+        }
+        setCurrentAttributes(attributesWithValues);
+      } else {
+        setCurrentAttributes(attributes);
+      }
     }
   }, [props]);
 
@@ -405,8 +425,8 @@ export default function CreateNodePage(props) {
 
             {props.currentNodeType &&
               createdCompleteNode === undefined &&
-              props.currentNodeType.attributes &&
-              props.currentNodeType.attributes.map((item) => {
+              currentAttributes &&
+              currentAttributes.map((item) => {
                 return (
                   <div className="bx--form-item" key={item.key}>
                     <label
@@ -419,7 +439,7 @@ export default function CreateNodePage(props) {
                       id={createLabelIdForAttribute(item.key)}
                       type="text"
                       className="bx--text-input"
-                      value={item.name}
+                      value={item.value}
                       onChange={(e) => setAttribute(item, e.target.value)}
                       placeholder={item.label}
                     ></input>
