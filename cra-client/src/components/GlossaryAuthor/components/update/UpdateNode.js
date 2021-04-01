@@ -55,6 +55,13 @@ export default function UpdateNode(props) {
   function getUrl() {
     return nodeType.url + "/" + guidToEdit;
   }
+  const isDisabled = () => {
+    let isDisabled = false;
+    if (currentNode && currentNode.readOnly) {
+      isDisabled = true;
+    }
+    return isDisabled;
+  }
 
   const handleClickUpdate = (e) => {
     console.log("handleClickUpdate()");
@@ -156,6 +163,7 @@ export default function UpdateNode(props) {
                 type="text"
                 className="bx--text-input"
                 defaultValue={currentNode[item.key]}
+                disabled={isDisabled()}     
                 key={currentNode[item.key]}
                 onChange={(e) => setAttribute(item, e.target.value)}
                 placeholder={item.label}
@@ -224,9 +232,11 @@ export default function UpdateNode(props) {
         </Accordion>
       )}
       <div style={{ color: "red" }}>{errorMsg}</div>
+    
       <Button
         className="bx--btn bx--btn--primary"
         onClick={handleClickUpdate}
+        disabled={isDisabled()}                        
         type="button"
       >
         Update
