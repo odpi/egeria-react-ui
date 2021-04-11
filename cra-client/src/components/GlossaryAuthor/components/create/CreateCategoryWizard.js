@@ -23,7 +23,7 @@ import CreateNodePage from "./CreateNodePage";
  * @param {*} props 
  * @returns 
  */
-export default function CreateNodeWizard(props) {
+export default function CreateCategoryWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [glossaryGuid, setGlossaryGuid] = useState();
   const [nodeCreated, setNodeCreated] = useState();

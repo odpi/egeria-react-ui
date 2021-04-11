@@ -113,6 +113,8 @@ export default function UpdateNodeInline(props) {
         </div>
       )}
       {currentNode !== undefined &&
+        props.currentNodeType !== undefined &&
+        props.currentNodeType.attributes !== undefined &&
         props.currentNodeType.attributes.map((item) => {
           return (
             <div className="bx--form-item" key={item.key}>

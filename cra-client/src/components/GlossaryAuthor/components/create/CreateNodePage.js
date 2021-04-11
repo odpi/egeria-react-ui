@@ -22,14 +22,14 @@ import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
 /**
- * Component to show the create page for a node. 
- * 
- * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node. 
+ * Component to show the create page for a node.
+ *
+ * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
  * @param props.glossaryGuid this is the glossary guid that is to be used to create the node under
- * @param props.parentCategoryGuid if specified this is the parent category underwhich to create the Node 
+ * @param props.parentCategoryGuid if specified this is the parent category underwhich to create the Node
  * @param props.onCreateCallback if specified this function is called when the create completes.
- * @param props.nodeToCreate if specified this contain attributes to prefill the create screen with 
- * @returns 
+ * @param props.nodeToCreate if specified this contain attributes to prefill the create screen with
+ * @returns
  */
 export default function CreateNodePage(props) {
   const identificationContext = useContext(IdentificationContext);
@@ -197,6 +197,19 @@ export default function CreateNodePage(props) {
     //return createBody.name && createBody.name.length > 0;
 
     return true;
+  };
+  const getInputType = (item) => {
+    let type = "text";
+    if (item.type && item.type === "flag") {
+      type = "checkbox";
+    }
+    return type;
+  };
+  const getInputClass = (item) => {
+    if (item.type && item.type === "text") {
+      return "className=bx--text-input";
+    }
+    return "";
   };
   const onErrorGet = (msg) => {
     console.log("Error on Create " + msg);
@@ -411,26 +424,32 @@ export default function CreateNodePage(props) {
             {props.currentNodeType &&
               createdCompleteNode === undefined &&
               currentAttributes &&
-              currentAttributes.map((item) => {
-                return (
-                  <div className="bx--form-item" key={item.key}>
-                    <label
-                      htmlFor={createLabelIdForAttribute(item.key)}
-                      className="bx--label"
-                    >
-                      {item.label} <Info16 />
-                    </label>
-                    <input
-                      id={createLabelIdForAttribute(item.key)}
-                      type="text"
-                      className="bx--text-input"
-                      value={item.value}
-                      onChange={(e) => setAttribute(item, e.target.value)}
-                      placeholder={item.label}
-                    ></input>
-                  </div>
-                );
-              })}
+              currentAttributes
+                .filter(function (obj) {
+                  // if notCreate is only allow it not notCreate.  
+                  return !obj.notCreate;
+                })
+                .map((item) => {
+                  return (
+                    <div className="bx--form-item" key={item.key}>
+                      <label
+                        htmlFor={createLabelIdForAttribute(item.key)}
+                        className="bx--label"
+                      >
+                        {item.label} <Info16 />
+                      </label>
+                      <input
+                        id={createLabelIdForAttribute(item.key)}
+                        type={getInputType(item)}
+                        // className={getInputClass}
+                        // className="bx--text-input"
+                        value={item.value}
+                        onChange={(e) => setAttribute(item, e.target.value)}
+                        placeholder={item.label}
+                      ></input>
+                    </div>
+                  );
+                })}
             <Accordion>
               <AccordionItem title="Advanced options">
                 <DatePicker dateFormat="m/d/Y" datePickerType="range">
