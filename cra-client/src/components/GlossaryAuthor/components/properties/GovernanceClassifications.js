@@ -304,6 +304,7 @@ export const getGovernanceClassification = (key) => {
         {
           key: "confidence",
           label: "Confidence",
+          type: "integer",
         },
         {
           key: "steward",
@@ -338,6 +339,7 @@ export const getGovernanceClassification = (key) => {
         {
           key: "confidence",
           label: "Confidence",
+          type: "integer",
         },
         {
           key: "steward",
@@ -407,6 +409,7 @@ export const getGovernanceClassification = (key) => {
         {
           key: "confidence",
           label: "Confidence",
+          type: "integer",
         },
         {
           key: "steward",
@@ -435,16 +438,16 @@ export const getGovernanceClassification = (key) => {
           key: "associatedGUID",
           label: "Associated GUID",
         },
-        {
-          key: "archiveAfter",
-          label: "Archive after",
-          type: "date",
-        },
-        {
-          key: "deleteAfter",
-          label: "Delete after",
-          type: "date",
-        },
+        // {
+        //   key: "archiveAfter",
+        //   label: "Archive after",
+        //   type: "date",
+        // },
+        // {
+        //   key: "deleteAfter",
+        //   label: "Delete after",
+        //   type: "date",
+        // },
       ],
     },
     notSet: {

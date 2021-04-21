@@ -7,20 +7,6 @@ import {
 } from "../properties/GovernanceClassifications";
 // import enumValues from "../properties/GovernanceClassifications";
 import {
-  Accordion,
-  AccordionItem,
-  Checkbox,
-  DatePicker,
-  DatePickerInput,
-  DataTable,
-  Loading,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableHeader,
-  TableBody,
   Select,
   SelectItem,
 } from "carbon-components-react";
@@ -52,6 +38,10 @@ export default function CreateGovernanceClassification(props) {
   const setAttribute = (item, value) => {
     console.log("setAttribute " + item.key + ",value=" + value);
     let myCreateBody = createBody;
+    // if (value instanceof Date) {
+    //   // send as the number of milliseconds since 1970 rather than as a date object.
+    //   value = value.getTime();
+    // }
     myCreateBody[item.key] = value;
     // notify the caller when there is a change - so it is up to date with the latest changes
     props.onGovernanceClassificationSet(myCreateBody);
@@ -133,6 +123,17 @@ export default function CreateGovernanceClassification(props) {
           placeholder={item.label}
         ></input>
       );
+    } else if (item !== undefined && item.type === "date") {
+      return (
+        <input
+          id={createLabelIdForAttribute(item.key + "-date")}
+          type='date'
+          className="bx--text-input"
+          value={item.value}
+          onChange={(e) => setAttribute(item, e.target.value)}
+          placeholder={item.label}
+        ></input>
+      );  
     } else {
       return (
         <input
@@ -176,20 +177,6 @@ export default function CreateGovernanceClassification(props) {
             </div>
           );
         })}
-      {governanceClassification !== undefined &&
-        enabled === true &&
-        currentAttributes !== undefined && (
-          <div className="bx--form-item">
-            <button
-              className="bx--btn bx--btn--primary"
-              onClick={onClickFilledInForm}
-              // onAnimationEnd={handleOnAnimationEnd}
-              type="button"
-            >
-              Use these values
-            </button>
-          </div>
-        )}
     </div>
   );
 }

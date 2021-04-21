@@ -21,6 +21,8 @@ import Info16 from "@carbon/icons-react/lib/information/16";
 import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
+import { getGovernanceClassification } from "../properties/GovernanceClassifications";
+
 /**
  * Component to show the create page for a node.
  *
@@ -101,7 +103,7 @@ export default function CreateNodePage(props) {
     }
 
     // TODO consider moving this up to a node controller as per the CRUD pattern.
-    // inthe meantime this will be self contained.
+    // in the meantime this will be self contained.
     const url = props.currentNodeType.url;
     console.log("issueCreate " + url);
     issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
@@ -229,7 +231,7 @@ export default function CreateNodePage(props) {
     myCreateBody[item.key] = value;
     setCreateBody(myCreateBody);
   };
-  const createdTableHeaderData = [
+  const attributeTableHeaderData = [
     {
       header: "Attribute Name",
       key: "attrName",
@@ -247,13 +249,18 @@ export default function CreateNodePage(props) {
   const getCreatedTableAttrRowData = () => {
     let rowData = [];
     const attributes = props.currentNodeType.attributes;
-
+    console.log()
     for (var prop in createdCompleteNode) {
       if (
         prop !== "systemAttributes" &&
         prop !== "glossary" &&
         prop !== "classifications" &&
-        prop !== "class"
+        prop !== "class" &&
+        prop !== "governanceClassifications" &&
+        prop !== "confidence" &&
+        prop !== "confidentiality" &&
+        prop !== "criticality" &&
+        prop !== "retention"
       ) {
         let row = {};
         row.id = prop;
@@ -294,6 +301,30 @@ export default function CreateNodePage(props) {
     }
     return rowData;
   };
+  const getGovernanceClassificationDataRowData = (classification) => {
+    let rowData = [];
+    const classificationAttributes = getGovernanceClassification(classification).attributes;
+
+    if (createdCompleteNode.governanceClassifications !== undefined && createdCompleteNode.governanceClassifications[classification] !== undefined) {
+      const classificationFromServer = createdCompleteNode.governanceClassifications[classification];
+      for (var i = 0; i < classificationAttributes.length; i++) {
+         // only process the attribute if we know about it.
+        const attributeKey =classificationAttributes[i].key;
+        if (classificationFromServer[attributeKey] !== undefined) {
+          const attributeValueFromServer = classificationFromServer[attributeKey];
+          let row ={};
+          row.id = attributeKey;
+          row.attrName = classificationAttributes[i].label;
+          // TODO deal with the other types (and null? and arrays?) properly
+          row.value =JSON.stringify(attributeValueFromServer);
+          console.log("getGovernanceClassificationDataRowData " +classification + " " + row.value );
+          rowData.push(row);
+        }
+      }
+      // TODO "systemAttributes" of the classification
+    }
+    return rowData;
+  };
 
   // const createAnother = () => {
   //   setCreatedCompleteNode(undefined);
@@ -318,7 +349,7 @@ export default function CreateNodePage(props) {
           <DataTable
             isSortable
             rows={getCreatedTableAttrRowData()}
-            headers={createdTableHeaderData}
+            headers={attributeTableHeaderData}
             render={({ rows, headers, getHeaderProps }) => (
               <TableContainer title={getCreatedTableTitle()}>
                 <Table size="normal">
@@ -347,6 +378,168 @@ export default function CreateNodePage(props) {
               </TableContainer>
             )}
           />
+          <Accordion>
+            <AccordionItem title="Confidentiality Governance Classification">
+              <div className="bx--form-item">
+                <DataTable
+                  isSortable
+                  rows={getGovernanceClassificationDataRowData(
+                    "confidentiality"
+                  )}
+                  headers={attributeTableHeaderData}
+                  render={({ rows, headers, getHeaderProps }) => (
+                    <TableContainer title="Confidentiality">
+                      <Table size="normal">
+                        <TableHead>
+                          <TableRow>
+                            {headers.map((header) => (
+                              <TableHeader
+                                key={header.key}
+                                {...getHeaderProps({ header })}
+                              >
+                                {header.header}
+                              </TableHeader>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows.map((row) => (
+                            <TableRow key={row.id}>
+                              {row.cells.map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {cell.value}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                />
+              </div>
+            </AccordionItem>
+          </Accordion>
+          <Accordion>
+            <AccordionItem title="Confidence Governance Classification">
+              <div className="bx--form-item">
+                <DataTable
+                  isSortable
+                  rows={getGovernanceClassificationDataRowData("confidence")}
+                  headers={attributeTableHeaderData}
+                  render={({ rows, headers, getHeaderProps }) => (
+                    <TableContainer title="Confidence">
+                      <Table size="normal">
+                        <TableHead>
+                          <TableRow>
+                            {headers.map((header) => (
+                              <TableHeader
+                                key={header.key}
+                                {...getHeaderProps({ header })}
+                              >
+                                {header.header}
+                              </TableHeader>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows.map((row) => (
+                            <TableRow key={row.id}>
+                              {row.cells.map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {cell.value}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                />
+              </div>
+            </AccordionItem>
+          </Accordion>
+          <Accordion>
+            <AccordionItem title="Criticality Governance Classification">
+              <div className="bx--form-item">
+                <DataTable
+                  isSortable
+                  rows={getGovernanceClassificationDataRowData("criticality")}
+                  headers={attributeTableHeaderData}
+                  render={({ rows, headers, getHeaderProps }) => (
+                    <TableContainer title="Criticality">
+                      <Table size="normal">
+                        <TableHead>
+                          <TableRow>
+                            {headers.map((header) => (
+                              <TableHeader
+                                key={header.key}
+                                {...getHeaderProps({ header })}
+                              >
+                                {header.header}
+                              </TableHeader>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows.map((row) => (
+                            <TableRow key={row.id}>
+                              {row.cells.map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {cell.value}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                />
+              </div>
+            </AccordionItem>
+          </Accordion>
+          <Accordion>
+            <AccordionItem title="Retention Governance Classification">
+              <div className="bx--form-item">
+                <DataTable
+                  isSortable
+                  rows={getGovernanceClassificationDataRowData("retention")}
+                  headers={attributeTableHeaderData}
+                  render={({ rows, headers, getHeaderProps }) => (
+                    <TableContainer title="Retention">
+                      <Table size="normal">
+                        <TableHead>
+                          <TableRow>
+                            {headers.map((header) => (
+                              <TableHeader
+                                key={header.key}
+                                {...getHeaderProps({ header })}
+                              >
+                                {header.header}
+                              </TableHeader>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows.map((row) => (
+                            <TableRow key={row.id}>
+                              {row.cells.map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {cell.value}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                />
+              </div>
+            </AccordionItem>
+          </Accordion>
 
           <Accordion>
             <AccordionItem title="System Attributes">
@@ -354,7 +547,7 @@ export default function CreateNodePage(props) {
                 <DataTable
                   isSortable
                   rows={getSystemDataRowData()}
-                  headers={createdTableHeaderData}
+                  headers={attributeTableHeaderData}
                   render={({ rows, headers, getHeaderProps }) => (
                     <TableContainer title="System Attributes">
                       <Table size="normal">
@@ -426,7 +619,7 @@ export default function CreateNodePage(props) {
               currentAttributes &&
               currentAttributes
                 .filter(function (obj) {
-                  // if notCreate is only allow it not notCreate.  
+                  // if notCreate is only allow it not notCreate.
                   return !obj.notCreate;
                 })
                 .map((item) => {
@@ -450,7 +643,7 @@ export default function CreateNodePage(props) {
                     </div>
                   );
                 })}
-            <Accordion>
+            {/* <Accordion>
               <AccordionItem title="Advanced options">
                 <DatePicker dateFormat="m/d/Y" datePickerType="range">
                   <DatePickerInput
@@ -467,7 +660,7 @@ export default function CreateNodePage(props) {
                   />
                 </DatePicker>
               </AccordionItem>
-            </Accordion>
+            </Accordion> */}
             <div style={{ color: "red" }}>{errorMsg}</div>
             {!props.onGotCreateDetails && (
               <div className="flex-row-container">

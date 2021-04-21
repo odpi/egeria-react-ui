@@ -20,7 +20,6 @@ Glossary, Category and Term are all types of Node. The Node object contains stan
 * Name - name to be displayed.
 * qualfied name - readable unique name
 * guid - global unique identifier.
-* Effective start and end times - to indicate when the node is effective.    
 
 Glossary Author Node inheritance model, including the nodes that inherit from Term , Category and Glossary. 
  <img src="Glossary author Node.png" alt="Glossary author node model" width="200px" />

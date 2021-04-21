@@ -134,7 +134,7 @@ function NodeUpdateView(props) {
             );
           })}
 
-        <Accordion>
+        {/* <Accordion>
           <AccordionItem title="Effectivity">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
               <DatePickerInput
@@ -152,7 +152,7 @@ function NodeUpdateView(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-        <Accordion>
+        <Accordion> */}
           <AccordionItem title="System Attributes">
             <div className="bx--form-item">
               <DataTable

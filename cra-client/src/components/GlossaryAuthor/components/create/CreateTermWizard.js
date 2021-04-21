@@ -116,8 +116,10 @@ export default function CreateTermWizard(props) {
       let governanceClassifications = nodeToCreate.governanceClassifications;
       if (governanceClassifications === undefined) {
         governanceClassifications = {};
+        governanceClassifications.class = "GovernanceClassifications";
       }
       governanceClassifications.confidentiality = confidentiality;
+      governanceClassifications.confidentiality.class = "Confidentiality";
 
       let amendedNodeToCreate = nodeToCreate;
       amendedNodeToCreate.governanceClassifications = governanceClassifications;
@@ -125,13 +127,15 @@ export default function CreateTermWizard(props) {
     }
   };
   const onChangeConfidence = (confidence) => {
-    console.log("onChangeConfidencd " + JSON.stringify(confidence));
+    console.log("onChangeConfidence " + JSON.stringify(confidence));
     if (confidence !== undefined) {
       let governanceClassifications = nodeToCreate.governanceClassifications;
       if (governanceClassifications === undefined) {
         governanceClassifications = {};
+        governanceClassifications.class = "GovernanceClassifications";
       }
       governanceClassifications.confidence = confidence;
+      governanceClassifications.confidentiality.class = "Confidence";
 
       let amendedNodeToCreate = nodeToCreate;
       amendedNodeToCreate.governanceClassifications = governanceClassifications;
@@ -144,8 +148,10 @@ export default function CreateTermWizard(props) {
       let governanceClassifications = nodeToCreate.governanceClassifications;
       if (governanceClassifications === undefined) {
         governanceClassifications = {};
+        governanceClassifications.class = "GovernanceClassifications";
       }
       governanceClassifications.criticality = criticality;
+      governanceClassifications.confidentiality.class = "Criticality";
 
       let amendedNodeToCreate = nodeToCreate;
       amendedNodeToCreate.governanceClassifications = governanceClassifications;
@@ -158,8 +164,10 @@ export default function CreateTermWizard(props) {
       let governanceClassifications = nodeToCreate.governanceClassifications;
       if (governanceClassifications === undefined) {
         governanceClassifications = {};
+        governanceClassifications.class = "GovernanceClassifications";
       }
       governanceClassifications.retention = retention;
+      governanceClassifications.retention.class = "Retention";
 
       let amendedNodeToCreate = nodeToCreate;
       amendedNodeToCreate.governanceClassifications = governanceClassifications;

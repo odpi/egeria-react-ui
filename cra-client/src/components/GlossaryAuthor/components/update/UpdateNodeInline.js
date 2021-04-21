@@ -134,7 +134,7 @@ export default function UpdateNodeInline(props) {
             </div>
           );
         })}
-      {currentNode !== undefined && (
+      {/* {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Advanced options">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
@@ -153,7 +153,7 @@ export default function UpdateNodeInline(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-      )}
+      )} */}
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">
