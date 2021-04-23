@@ -22,7 +22,7 @@ import getNodeType from "../properties/NodeTypes.js";
 import { Link } from "react-router-dom";
 
 export default function StartingNodeNavigation({
-  match, 
+  match,
   nodeTypeName,
   onSelectCallback,
 }) {
@@ -47,7 +47,10 @@ export default function StartingNodeNavigation({
   const [selectedNodeGuid, setSelectedNodeGuid] = useState();
   const [selectedNodeReadOnly, setSelectedNodeReadOnly] = useState(true);
 
-  const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), nodeTypeName);
+  const nodeType = getNodeType(
+    identificationContext.getRestURL("glossary-author"),
+    nodeTypeName
+  );
   // Here's where the API call happens
   // We use useEffect since this is an asynchronous action
   useEffect(
@@ -90,17 +93,18 @@ export default function StartingNodeNavigation({
   function refreshNodes(results, passedPageSize, passedPageNumber) {
     let selectedInResults = false;
     // the total that we are trying to keep track of is all the previous pages plus the current results length.
-    // because we ask for one more thatn the page size the pagination widget should indicate a there is another page only if there really is  
+    // because we ask for one more thatn the page size the pagination widget should indicate a there is another page only if there really is
 
-    console.log("passed page number " +passedPageNumber);
-    console.log("passed page size " +passedPageSize);
+    console.log("passed page number " + passedPageNumber);
+    console.log("passed page size " + passedPageSize);
     console.log("resuilts length " + results.length);
     // define as a constant so that the + is an arithmetic + not a string concatination +.
-    const calculatedTotal =  ((passedPageNumber-1)*passedPageSize) + results.length;
+    const calculatedTotal =
+      (passedPageNumber - 1) * passedPageSize + results.length;
     console.log("total is going to be " + calculatedTotal);
     setTotal(calculatedTotal);
     if (results.length > passedPageSize) {
-      // remove the last element.  
+      // remove the last element.
       results.pop();
     }
     if (results && results.length > 0) {
@@ -122,7 +126,6 @@ export default function StartingNodeNavigation({
   }
   const getSelectedNodeFromServer = (guid) => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-
 
     // this rest URL might be for category children of a category or category childen of a glossary
 
@@ -163,7 +166,15 @@ export default function StartingNodeNavigation({
   // issue search for first page of nodes
   const issueNodeSearch = (criteria) => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-    const url = encodeURI(nodeType.url + "?searchCriteria=" + criteria + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+    const url = encodeURI(
+      nodeType.url +
+        "?searchCriteria=" +
+        criteria +
+        "&pageSize=" +
+        (pageSize + 1) +
+        "&startingFrom=" +
+        (pageNumber - 1) * pageSize
+    );
     issueRestGet(url, onSuccessfulSearch, onErrorSearch);
   };
 
@@ -192,7 +203,7 @@ export default function StartingNodeNavigation({
       // we are already on the first page so just refresh that content
       processUserCriteriaAndIssueSearch();
     } else {
-      // we are not on the first page, so set the page number to 1. Or we could end up showing an empty page with no pagination widget.   
+      // we are not on the first page, so set the page number to 1. Or we could end up showing an empty page with no pagination widget.
       setPageNumber(1);
     }
   };
@@ -212,7 +223,6 @@ export default function StartingNodeNavigation({
     });
     refreshNodes(json.result, pageSize, pageNumber);
     // setCompleteResults(json.result);
-
   };
 
   const onErrorSearch = (msg) => {
@@ -259,7 +269,7 @@ export default function StartingNodeNavigation({
     return match.path + "/" + selectedNodeGuid + "/edit";
   }
   function getGraphNodeUrl() {
-    return match.path +  "/" + selectedNodeGuid + "/visualise";
+    return match.path + "/" + selectedNodeGuid + "/visualise";
   }
   const onFilterCriteria = (e) => {
     setFilterCriteria(e.target.value);
@@ -270,7 +280,7 @@ export default function StartingNodeNavigation({
   const setSelected = (nodeGuid) => {
     setSelectedNodeGuid(nodeGuid);
     if (nodeGuid) {
-        getSelectedNodeFromServer(nodeGuid);
+      getSelectedNodeFromServer(nodeGuid);
     }
     if (onSelectCallback) {
       onSelectCallback(nodeGuid);
@@ -280,7 +290,7 @@ export default function StartingNodeNavigation({
   return (
     <div>
       <div className="bx--grid">
-        <NodeCardSection className="landing-page__r3">
+        <NodeCardSection className="landing-page__r3 top-margin-20">
           <article className="node-card__controls bx--col-sm-4 bx--col-md-1 bx--col-lg-1 bx--col-xlg-1 bx--col-max-1">
             Choose {nodeType.key}
           </article>
@@ -316,7 +326,7 @@ export default function StartingNodeNavigation({
                     <Term32 kind="primary" />
                   </Link>
                 )}
-                
+
               {selectedNodeGuid &&
                 !onSelectCallback &&
                 nodeTypeName === "category" && (
@@ -324,25 +334,30 @@ export default function StartingNodeNavigation({
                     <Term32 kind="primary" />
                   </Link>
                 )}
-              {selectedNodeGuid && !onSelectCallback && nodeTypeName !== "term" && (
-                <Link to={getNodeChildrenUrl}>
-                  <ParentChild32 kind="primary" />
-                </Link>
-              )}
-              {selectedNodeGuid && !onSelectCallback && (selectedNodeReadOnly === false) && (
-                <Link to={getEditNodeUrl()}>
-                  <Edit32 kind="primary" />
-                </Link>
-              )}
-              {selectedNodeGuid && !onSelectCallback &&
-               (
-                  <Link to={getGraphNodeUrl}>
-                     <DataVis32 kind="primary" />
+              {selectedNodeGuid &&
+                !onSelectCallback &&
+                nodeTypeName !== "term" && (
+                  <Link to={getNodeChildrenUrl}>
+                    <ParentChild32 kind="primary" />
                   </Link>
                 )}
-              {selectedNodeGuid && !onSelectCallback &&  (selectedNodeReadOnly === false) && (
-                <Delete32 onClick={() => onClickDelete()} />
+              {selectedNodeGuid &&
+                !onSelectCallback &&
+                selectedNodeReadOnly === false && (
+                  <Link to={getEditNodeUrl()}>
+                    <Edit32 kind="primary" />
+                  </Link>
+                )}
+              {selectedNodeGuid && !onSelectCallback && (
+                <Link to={getGraphNodeUrl}>
+                  <DataVis32 kind="primary" />
+                </Link>
               )}
+              {selectedNodeGuid &&
+                !onSelectCallback &&
+                selectedNodeReadOnly === false && (
+                  <Delete32 onClick={() => onClickDelete()} />
+                )}
             </div>
           </article>
         </NodeCardSection>
