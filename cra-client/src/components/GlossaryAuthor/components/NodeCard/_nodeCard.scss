@@ -26,7 +26,7 @@
   margin-top: $spacing-06;
   flex-grow: 1;
   @include type-style("body-long-01");
-  @include carbon--breakpoint-between(250px, md) {
+  @include carbon--breakpoint-between(321px, md) {
     max-width: 75%;
   }
 }
