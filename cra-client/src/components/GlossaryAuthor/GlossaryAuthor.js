@@ -7,7 +7,6 @@ import { Accordion, AccordionItem } from "carbon-components-react";
 import getNodeType from "./components/properties/NodeTypes.js";
 import { BrowserRouter } from "react-router-dom";
 import GlossaryAuthorRoutes from "./components/navigations/GlossaryAuthorRoutes";
-import GlossaryAuthorTaskRouting from "./components/GlossaryAuthorTaskRouting";
 import GlossaryAuthorBreadCrumb from "./components/GlossaryAuthorBreadCrumb";
 
 export default function GlossaryAuthor() {
@@ -127,8 +126,6 @@ export default function GlossaryAuthor() {
       {connected && (
         <div>
             <BrowserRouter>
-              {/* this will cause the change in URL */}
-              <GlossaryAuthorTaskRouting glossaryAuthorURL={glossaryAuthorURL} />
               <GlossaryAuthorBreadCrumb />
               {/* This will cause the view to be changed as a result of the url change */}
               <GlossaryAuthorRoutes glossaryAuthorURL={glossaryAuthorURL} />
