@@ -16,6 +16,8 @@ import {
   TableHeader,
   TableBody,
   TextInput,
+  TimePicker,
+  TimePickerSelect,
 } from "carbon-components-react";
 
 import { GlossaryAuthorCRUDContext } from "../../contexts/GlossaryAuthorCRUDContext";
@@ -26,7 +28,10 @@ function NodeUpdateView(props) {
   console.log("NodeUpdateView");
 
   const glossaryAuthorCRUDContext = useContext(GlossaryAuthorCRUDContext);
-  console.log("NodeUpdateView glossaryAuthorCRUDContext", glossaryAuthorCRUDContext);
+  console.log(
+    "NodeUpdateView glossaryAuthorCRUDContext",
+    glossaryAuthorCRUDContext
+  );
 
   const [errorMsg, setErrorMsg] = useState();
   const [updateBody, setUpdateBody] = useState({});
@@ -53,7 +58,8 @@ function NodeUpdateView(props) {
     body.nodeType = nodeType.typeName;
     if (nodeType.hasGlossary) {
       let glossary = {};
-      glossary.guid = glossaryAuthorCRUDContext.myGlossary.systemAttributes.guid;
+      glossary.guid =
+        glossaryAuthorCRUDContext.myGlossary.systemAttributes.guid;
       body.glossary = glossary;
     }
     props.onUpdate(body);
@@ -100,9 +106,9 @@ function NodeUpdateView(props) {
     },
   ];
   return (
-    <div> 
+    <div>
       <div className="close-title">
-        <Close16 onClick={handleOnClose}/>
+        <Close16 onClick={handleOnClose} />
       </div>
       <FormGroup>
         <div>
@@ -125,7 +131,9 @@ function NodeUpdateView(props) {
                   id={createLabelId(item.key)}
                   type="text"
                   className="bx--text-input"
-                  defaultValue={glossaryAuthorCRUDContext.selectedNode[item.key]}
+                  defaultValue={
+                    glossaryAuthorCRUDContext.selectedNode[item.key]
+                  }
                   key={glossaryAuthorCRUDContext.selectedNode[item.key]}
                   onChange={(e) => setAttribute(item, e.target.value)}
                   placeholder={item.label}
@@ -134,7 +142,7 @@ function NodeUpdateView(props) {
             );
           })}
 
-        {/* <Accordion>
+        <Accordion>
           <AccordionItem title="Effectivity">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
               <DatePickerInput
@@ -143,6 +151,16 @@ function NodeUpdateView(props) {
                 labelText="Effective from date"
                 type="text"
               />
+              <TimePicker id="time-picker1">
+                <TimePickerSelect id="time-picker-select-1" {...selectProps}>
+                  <SelectItem value="AM" text="AM" />
+                  <SelectItem value="PM" text="PM" />
+                </TimePickerSelect>
+                <TimePickerSelect id="time-picker-select-2" {...selectProps}>
+                  <SelectItem value="Time zone 1" text="Time zone 1" />
+                  <SelectItem value="Time zone 2" text="Time zone 2" />
+                </TimePickerSelect>
+              </TimePicker>
               <DatePickerInput
                 id="date-picker-range-end"
                 placeholder="mm/dd/yyyy"
@@ -152,7 +170,7 @@ function NodeUpdateView(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-        <Accordion> */}
+        <Accordion>
           <AccordionItem title="System Attributes">
             <div className="bx--form-item">
               <DataTable

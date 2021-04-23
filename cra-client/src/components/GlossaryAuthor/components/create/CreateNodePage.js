@@ -5,8 +5,6 @@ import { IdentificationContext } from "../../../../contexts/IdentificationContex
 import {
   Accordion,
   AccordionItem,
-  DatePicker,
-  DatePickerInput,
   DataTable,
   Loading,
   TableContainer,
@@ -17,11 +15,13 @@ import {
   TableHeader,
   TableBody,
 } from "carbon-components-react";
+import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import getRelationshipType from "../properties/RelationshipTypes";
 import { issueRestCreate } from "../RestCaller";
 import { useHistory } from "react-router-dom";
 import { getGovernanceClassification } from "../properties/GovernanceClassifications";
+import RequiredMessage from "../RequiredMessage";
 
 /**
  * Component to show the create page for a node.
@@ -144,6 +144,10 @@ export default function CreateNodePage(props) {
     setErrorMsg(msg);
     setCreatedCompleteNode(undefined);
   };
+  const debugging = (itemkey) => {
+    console.log("debug " + itemkey);
+    return createBody[itemkey];
+  };
 
   const knitToParentCategory = (node) => {
     const glossaryAuthorURL = identificationContext.getRestURL(
@@ -196,9 +200,15 @@ export default function CreateNodePage(props) {
   };
   const validateForm = () => {
     //TODO consider marking name as manditory in the nodetype definition
-    //return createBody.name && createBody.name.length > 0;
+    let isValid = false;
+    if (createBody.name && createBody.name.length > 0) {
+      isValid = true;
+      // setErrorMsg("");
+    } else {
+      // setErrorMsg("Please specify a value for name");
+    }
 
-    return true;
+    return isValid;
   };
   const getInputType = (item) => {
     let type = "text";
@@ -249,7 +259,7 @@ export default function CreateNodePage(props) {
   const getCreatedTableAttrRowData = () => {
     let rowData = [];
     const attributes = props.currentNodeType.attributes;
-    console.log()
+    console.log();
     for (var prop in createdCompleteNode) {
       if (
         prop !== "systemAttributes" &&
@@ -301,23 +311,42 @@ export default function CreateNodePage(props) {
     }
     return rowData;
   };
+  const getDateFormat = () => {
+    return "m/d/Y";
+  };
+  const getDateFormatPlaceHolder = () => {
+    return "mm/dd/yyyy";
+  };
+
   const getGovernanceClassificationDataRowData = (classification) => {
     let rowData = [];
-    const classificationAttributes = getGovernanceClassification(classification).attributes;
+    const classificationAttributes = getGovernanceClassification(classification)
+      .attributes;
 
-    if (createdCompleteNode.governanceClassifications !== undefined && createdCompleteNode.governanceClassifications[classification] !== undefined) {
-      const classificationFromServer = createdCompleteNode.governanceClassifications[classification];
+    if (
+      createdCompleteNode.governanceClassifications !== undefined &&
+      createdCompleteNode.governanceClassifications[classification] !==
+        undefined
+    ) {
+      const classificationFromServer =
+        createdCompleteNode.governanceClassifications[classification];
       for (var i = 0; i < classificationAttributes.length; i++) {
-         // only process the attribute if we know about it.
-        const attributeKey =classificationAttributes[i].key;
+        // only process the attribute if we know about it.
+        const attributeKey = classificationAttributes[i].key;
         if (classificationFromServer[attributeKey] !== undefined) {
-          const attributeValueFromServer = classificationFromServer[attributeKey];
-          let row ={};
+          const attributeValueFromServer =
+            classificationFromServer[attributeKey];
+          let row = {};
           row.id = attributeKey;
           row.attrName = classificationAttributes[i].label;
           // TODO deal with the other types (and null? and arrays?) properly
-          row.value =JSON.stringify(attributeValueFromServer);
-          console.log("getGovernanceClassificationDataRowData " +classification + " " + row.value );
+          row.value = JSON.stringify(attributeValueFromServer);
+          console.log(
+            "getGovernanceClassificationDataRowData " +
+              classification +
+              " " +
+              row.value
+          );
           rowData.push(row);
         }
       }
@@ -634,33 +663,34 @@ export default function CreateNodePage(props) {
                       <input
                         id={createLabelIdForAttribute(item.key)}
                         type={getInputType(item)}
-                        // className={getInputClass}
-                        // className="bx--text-input"
                         value={item.value}
                         onChange={(e) => setAttribute(item, e.target.value)}
                         placeholder={item.label}
                       ></input>
+                      {/* <RequiredMessage required={item.required} value={createBody[item.key]}></RequiredMessage>
+                       */}
+                      {/* {isInValidItem(item) ? (
+                        <span style={{ color: "red" }}>
+                          Required
+                        </span>
+                      ) : (
+                        ""
+                      )} */}
                     </div>
                   );
                 })}
-            {/* <Accordion>
-              <AccordionItem title="Advanced options">
-                <DatePicker dateFormat="m/d/Y" datePickerType="range">
-                  <DatePickerInput
-                    // id={}"date-picker-range-start"
-                    placeholder="mm/dd/yyyy"
-                    labelText="Effective from date"
-                    type="text"
-                  />
-                  <DatePickerInput
-                    // id="date-picker-range-end"
-                    placeholder="mm/dd/yyyy"
-                    labelText="Effective to date"
-                    type="text"
-                  />
-                </DatePicker>
+            <Accordion>
+              <AccordionItem title="Effectivity">
+                <DateTimePicker
+                  dateLabel="Effective from date"
+                  timeLabel="Effective from time"
+                />
+                <DateTimePicker
+                  dateLabel="Effective to date"
+                  timeLabel="Effective to time"
+                />
               </AccordionItem>
-            </Accordion> */}
+            </Accordion>
             <div style={{ color: "red" }}>{errorMsg}</div>
             {!props.onGotCreateDetails && (
               <div className="flex-row-container">

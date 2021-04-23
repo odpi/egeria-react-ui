@@ -13,6 +13,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
@@ -39,6 +40,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
@@ -109,6 +111,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
@@ -135,6 +138,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
