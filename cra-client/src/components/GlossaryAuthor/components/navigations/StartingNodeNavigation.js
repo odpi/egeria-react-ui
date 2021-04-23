@@ -291,11 +291,7 @@ export default function StartingNodeNavigation({
     <div>
       <div className="bx--grid">
         <NodeCardSection className="landing-page__r3 top-margin-20">
-<<<<<<< HEAD
           <article className="bx--col-sm-4 bx--col-md-1 bx--col-lg-1 bx--col-xlg-1 bx--col-max-1">
-=======
-          <article className="node-card__controls bx--col-sm-4 bx--col-md-1 bx--col-lg-1 bx--col-xlg-1 bx--col-max-1">
->>>>>>> 34c08b01ce283d6cc438eca3b01be016d913c003
             Choose {nodeType.key}
           </article>
           <article className="node-card__controls bx--col-sm-4 bx--col-md-2 bx--col-lg-4 bx--col-xlg-4 bx--col-max-4">
