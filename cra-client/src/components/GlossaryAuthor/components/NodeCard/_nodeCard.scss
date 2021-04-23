@@ -21,6 +21,7 @@
   }
 }
 
+
 .node-card__body {
   margin-top: $spacing-06;
   flex-grow: 1;
@@ -32,6 +33,11 @@
 .node-card__footer {
   display: flex;
   justify-content: space-between;
+}
+.overWrap {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 .node-card__controls {
