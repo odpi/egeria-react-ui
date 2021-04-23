@@ -53,13 +53,14 @@ const LocalNodeCard = (props) => {
       <div style={{ display: "none" }}>{props.guid}</div>
       <div>{props.icon}</div>
       {props.body !== undefined && props.body !== "" && (
-        <Accordion>
-          <AccordionItem title={getShortDescription()}>
-            {props.body}
-          </AccordionItem>
-        </Accordion>
+        <div>
+          <Accordion>
+            <AccordionItem title={getShortDescription()}>
+              <div className="overWrap">{props.body}</div>
+            </AccordionItem>
+          </Accordion>
+        </div>
       )}
-      
     </article>
   );
 };
