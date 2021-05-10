@@ -201,12 +201,6 @@ export default function CreateCategoryWizard(props) {
             >
               Next
             </Button>
-            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
-            <CreateNodeInput
-              currentNodeType={props.currentNodeType}
-              onAttributeChange={onAttributeChange}
-              nodeToCreate={nodeToCreate}
-            />
           </div>
         )}
         {currentStepIndex === 1 && (
@@ -224,12 +218,6 @@ export default function CreateCategoryWizard(props) {
             >
               Next
             </Button>
-            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
-            <StartingNodeNavigation
-              match={props.match}
-              nodeTypeName="glossary"
-              onSelectCallback={onGlossarySelect}
-            />
           </div>
         )}
         {currentStepIndex === 2 && (
@@ -244,12 +232,6 @@ export default function CreateCategoryWizard(props) {
             >
               Next
             </Button>
-            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
-            <StartingNodeNavigation
-              match={props.match}
-              nodeTypeName="category"
-              onSelectCallback={onParentCategorySelect}
-            />
           </div>
         )}
         {currentStepIndex === 3 &&
@@ -269,6 +251,38 @@ export default function CreateCategoryWizard(props) {
                 </Button>
               </div>
             )}
+      </div>
+      <div className="wizard-navigation-container">
+        {currentStepIndex === 0 && (
+          <div>
+            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
+            <CreateNodeInput
+              currentNodeType={props.currentNodeType}
+              onAttributeChange={onAttributeChange}
+              nodeToCreate={nodeToCreate}
+            />
+          </div>
+        )}
+        {currentStepIndex === 1 && (
+          <div>
+            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
+            <StartingNodeNavigation
+              match={props.match}
+              nodeTypeName="glossary"
+              onSelectCallback={onGlossarySelect}
+            />
+          </div>
+        )}
+        {currentStepIndex === 2 && (
+          <div>
+            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
+            <StartingNodeNavigation
+              match={props.match}
+              nodeTypeName="category"
+              onSelectCallback={onParentCategorySelect}
+            />
+          </div>
+        )}
         {currentStepIndex === 3 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep4Title()}</h3>

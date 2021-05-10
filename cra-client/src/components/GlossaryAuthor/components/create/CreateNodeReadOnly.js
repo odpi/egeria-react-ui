@@ -62,7 +62,7 @@ export default function CreateNodeReadOnly(props) {
       for (var prop in node) {
         if (
           prop !== "systemAttributes" &&
-          prop !== "glossary" &&
+          // prop !== "glossary" &&
           prop !== "classifications" &&
           prop !== "class" &&
           prop !== "governanceClassifications" &&

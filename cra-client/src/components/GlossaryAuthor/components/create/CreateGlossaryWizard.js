@@ -160,12 +160,6 @@ export default function CreateGlossaryWizard(props) {
             >
               Next
             </Button>
-            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
-            <CreateNodeInput
-              currentNodeType={props.currentNodeType}
-              onAttributeChange={onAttributeChange}
-              nodeToCreate={nodeToCreate}
-            />
           </div>
         )}
        
@@ -186,6 +180,20 @@ export default function CreateGlossaryWizard(props) {
                 </Button>
               </div>
             )}
+      </div>
+      <div className="wizard-navigation-container">
+        {currentStepIndex === 0 && (
+          <div>
+            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
+            <CreateNodeInput
+              currentNodeType={props.currentNodeType}
+              onAttributeChange={onAttributeChange}
+              nodeToCreate={nodeToCreate}
+            />
+          </div>
+        )}
+       
+
         {currentStepIndex === 1 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
