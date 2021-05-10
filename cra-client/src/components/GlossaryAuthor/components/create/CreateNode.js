@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { withRouter } from "react-router-dom";
 import getPathTypesAndGuids from "../properties/PathAnalyser";
-import CreateNodePage from "./CreateNodePage";
+import CreateGlossaryWizard from "./CreateGlossaryWizard";
 import CreateCategoryWizard from "./CreateCategoryWizard";
 import CreateTermWizard from "./CreateTermWizard";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
@@ -45,10 +45,8 @@ function CreateNode(props) {
   return (
     <div>
       {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key === "glossary" && (
-          <CreateNodePage
-            currentNodeType={nodeTypeToBeCreated}
-            glossaryGuid={glossaryGuid}
-          />
+         <CreateGlossaryWizard
+         currentNodeType={nodeTypeToBeCreated} />
         )}
 
       {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key === "term" && (

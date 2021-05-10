@@ -8,8 +8,6 @@ import {
   Accordion,
   AccordionItem,
   Button,
-  DatePicker,
-  DatePickerInput,
   DataTable,
   TableContainer,
   Table,
@@ -58,7 +56,7 @@ export default function UpdateNode(props) {
           // if we already have this property, pick up the existing relationships
           relationshipTypeArray = newRelationshipsMap[name];
         }
-        if (relationshipTypeArray == undefined) {
+        if (relationshipTypeArray === undefined) {
           relationshipTypeArray = [];
         }
         // calculate a data representation of the relationship that can be displayed in a table row

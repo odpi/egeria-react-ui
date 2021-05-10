@@ -6,16 +6,15 @@ import {
   ProgressStep,
   Button,
 } from "carbon-components-react";
-import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 import CreateNodeInput from "./CreateNodeInput";
 import CreateNodeReadOnly from "./CreateNodeReadOnly";
 import { useHistory } from "react-router-dom";
 
 /**
- * This is a category creation wizard. The first page of the wizard
- * asks the user to input values for the Category create. The next page then asks the user for the glossary that the
- * Category will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
- *  where the user can confirm the values that will be used to create the Category.
+ * This is a glossary creation wizard. The first page of the wizard
+ * asks the user to input values for the glossary create. The next page then asks the user for the glossary that the
+ * glossary will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
+ *  where the user can confirm the values that will be used to create the glossary.
  *
  * This component drives the CreateNodeInput component, which displays the node. There are callbacks to the wizard
  * when the user has finsished with entering creation content and chosen a glossary.
@@ -25,7 +24,7 @@ import { useHistory } from "react-router-dom";
  * @param {*} props
  * @returns
  */
-export default function CreateCategoryWizard(props) {
+export default function CreateGlossaryWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [nodeCreated, setNodeCreated] = useState();
   const [nodeToCreate, setNodeToCreate] = useState();
@@ -104,62 +103,31 @@ export default function CreateCategoryWizard(props) {
     setNodeToCreate(myNodeToCreate);
   };
 
-  const onParentCategorySelect = (guid) => {
-    if (guid !== undefined) {
-      let parentCategory = {};
-      parentCategory.guid = guid;
-      parentCategory.type = "Category";
-      // create a new object
-      let myCreateInput = {
-        ...nodeToCreate,
-        ["parentCategory"]: parentCategory,
-      };
-      setNodeToCreate(myCreateInput);
-    }
-  };
-
   const getTitle = () => {
     return "Create " + props.currentNodeType.typeName + " Wizard";
   };
   const getStep1Title = () => {
-    return "Supply Category properties";
+    return "Supply Glossary properties";
   };
   const getStep1Label = () => {
     return "Create";
   };
   const getStep1Description = () => {
-    return "Step 1: Create a category";
+    return "Step 1: Create a Glossary";
   };
+  
   const getStep2Title = () => {
-    return "Choose a glossary to store the Category in.";
-  };
-  const getStep2Label = () => {
-    return "Set Glossary";
-  };
-  const getStep2Description = () => {
-    return "Step 2: A glossary needs to be chosen, to store the Category.";
-  };
-  const getStep3Title = () => {
-    return "Optionally choose a category parent.";
-  };
-  const getStep3Label = () => {
-    return "Set Parent";
-  };
-  const getStep3Description = () => {
-    return "Step 3: A category can have an associated parent category. ";
-  };
-  const getStep4Title = () => {
-    let title = "Creating a new Category with these details.";
+    let title = "Creating a new Glossary with these details.";
     if (nodeCreated !== undefined) {
-      title = "Category Created";
+      title = "Glossary Created";
     }
     return title;
   };
-  const getStep4Label = () => {
+  const getStep2Label = () => {
     return "Confirm";
   };
-  const getStep4Description = () => {
-    return "Step 4: confirm the Category details, then create.";
+  const getStep2Description = () => {
+    return "Step 2: confirm the Glossary details, then create.";
   };
 
   const onCreate = (node) => {
@@ -180,16 +148,7 @@ export default function CreateCategoryWizard(props) {
           label={getStep2Label()}
           description={getStep2Description()}
         />
-        <ProgressStep
-          disabled={!isValidForConfirm()}
-          label={getStep3Label()}
-          description={getStep3Description()}
-        />
-        <ProgressStep
-          disabled={!isValidForConfirm()}
-          label={getStep4Label()}
-          description={getStep4Description()}
-        />
+
       </ProgressIndicator>
       <div className="wizard-navigation-container">
         {currentStepIndex === 0 && (
@@ -209,50 +168,8 @@ export default function CreateCategoryWizard(props) {
             />
           </div>
         )}
-        {currentStepIndex === 1 && (
-          <div>
-            <Button
-              kind="secondary"
-              onClick={previousStepAndRefreshNodeToCreate}
-            >
-              Previous
-            </Button>
-            <Button
-              kind="secondary"
-              onClick={nextStep}
-              disabled={!isValidForConfirm()}
-            >
-              Next
-            </Button>
-            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
-            <StartingNodeNavigation
-              match={props.match}
-              nodeTypeName="glossary"
-              onSelectCallback={onGlossarySelect}
-            />
-          </div>
-        )}
-        {currentStepIndex === 2 && (
-          <div>
-            <Button kind="secondary" onClick={previousStep}>
-              Previous
-            </Button>
-            <Button
-              kind="secondary"
-              onClick={nextStep}
-              disabled={!isValidForConfirm()}
-            >
-              Next
-            </Button>
-            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
-            <StartingNodeNavigation
-              match={props.match}
-              nodeTypeName="category"
-              onSelectCallback={onParentCategorySelect}
-            />
-          </div>
-        )}
-        {currentStepIndex === 3 &&
+       
+        {currentStepIndex === 1 &&
           nodeCreated === undefined && (
               <div>
                 <Button kind="secondary" onClick={previousStep}>
@@ -260,7 +177,7 @@ export default function CreateCategoryWizard(props) {
                 </Button>
               </div>
             )}
-        {currentStepIndex === 3 &&
+        {currentStepIndex === 1 &&
           nodeCreated !==
             undefined && (
               <div>
@@ -269,9 +186,9 @@ export default function CreateCategoryWizard(props) {
                 </Button>
               </div>
             )}
-        {currentStepIndex === 3 && (
+        {currentStepIndex === 1 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
+            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
             <CreateNodeReadOnly
               currentNodeType={props.currentNodeType}
               nodeToCreate={nodeToCreate}

@@ -58,6 +58,22 @@ familiar with.
 6) Clear clears all the generation back to the first generation which contains the original node
 7) Glove differs from the Repository Explorer in that it does not have a typeexplorer. The repository explorer creates displayable content in the view service including labels. For Glove, the information used to display artifacts is defined in the client side javascript. It is keyed off 2 files NodeTypes and RelationshipTypes. These files contain the shape of the nodes and relationship respectively, how to display them and the url to use when issuing rest calls for them.
 
+## Wizard design
+
+The wizards are used for creation. These wizard have a top level wizard component that is the 'model'. There are 2 child components one for input and one for readonly. For create these are  
+1) CreateNodeInput. This allows form based intput of the basic properties of the node
+2) CreateNodeReadOnly. This displays the properties to be created, a Create button , which when passed shows the created node. 
+
+Note that the form is a controlled component i.e. changed state is held in the wizard and the child components 
+are passed the latest version props. The props content in the child is converted to an array state variable that is used to drive the table or form content. Changes in the form go back to the parent in a callback, which then updates the model, whcih is sent through as updated props. 
+
+Note that changes to the state in the wizard, are performed by creating a new object, forcing a render.   
+
+
+
+
+
+
 ----
 License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
 Copyright Contributors to the ODPi Egeria project.

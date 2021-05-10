@@ -7,31 +7,30 @@ import {
   Button,
 } from "carbon-components-react";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
-import CreateNodePage from "./CreateNodePage";
-import CreateGovernanceClassification from "./CreateGovernanceClassification";
+import CreateNodeInput from "./CreateNodeInput";
+import CreateNodeReadOnly from "./CreateNodeReadOnly";
+import { useHistory } from "react-router-dom";
 
 /**
- * This is a node creation wizard - that is used to creae categories and terms. The first page of the wizard
- * asks the user to input values for the Category or Term to create. The next page then asks the user for the glossary that the
- * Category or Term will be stored in, finally there is a confirmation screen, where the user can confirm the values
- * that will be used to create the Node.
+ * This is a Term creation wizard. The first page of the wizard
+ * asks the user to input values for the Term create. The next page then asks the user for the glossary that the
+ * Term will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
+ *  where the user can confirm the values that will be used to create the Term.
  *
- *
- * This component drives the CreateNodePage component, which displays the node. There are callbacks to the wizard
+ * This component drives the CreateNodeInput component, which displays the node. There are callbacks to the wizard
  * when the user has finsished with entering creation content and chosen a glossary.
+ * This component then driven CreateNodeInput which displays the confirmation screen, issue the create and then does the results 
+ * of the create. 
  *
  * @param {*} props
  * @returns
  */
 export default function CreateTermWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [glossaryGuid, setGlossaryGuid] = useState();
   const [nodeCreated, setNodeCreated] = useState();
   const [nodeToCreate, setNodeToCreate] = useState();
-  // const [confidenceToCreate, setConfidenceToCreate] = useState();
-  // const [retentionToCreate, setRetentionToCreate] = useState();
-  // const [confidentialityToCreate, setConfidentialityToCreate] = useState();
-  // const [criticalityToCreate, setCriticalityToCreate] = useState();
+
+  let history = useHistory();
   console.log("CreateNodeWizard");
 
   const handleGotCreateDetailsOnClick = (e) => {
@@ -40,47 +39,37 @@ export default function CreateTermWizard(props) {
       setCurrentStepIndex(1);
     }
   };
-  const onRestart = () => {
-    setCurrentStepIndex(0);
-  };
-  const addConfidentiality = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 1) {
-      setCurrentStepIndex(2);
-    }
-  };
-  const addConfidence = (e) => {
+
+  const confirmCreateDetails = (e) => {
     e.preventDefault();
     if (currentStepIndex === 2) {
       setCurrentStepIndex(3);
     }
   };
-  const addCriticality = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 3) {
-      setCurrentStepIndex(4);
-    }
+  const nextStep = () => {
+    const newIndex = currentStepIndex + 1;
+    setCurrentStepIndex(newIndex);
   };
-  const addRetention = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 4) {
-      setCurrentStepIndex(5);
-    }
+  const previousStep = () => {
+    const newIndex = currentStepIndex - 1;
+    setCurrentStepIndex(newIndex);
   };
-  const confirmCreateDetails = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 5) {
-      setCurrentStepIndex(6);
-    }
+  const finished = () => {
+    history.goBack();
+  };
+  const previousStepAndRefreshNodeToCreate = () => {
+    const newIndex = currentStepIndex - 1;
+    setCurrentStepIndex(newIndex);
   };
 
   const isValidForConfirm = () => {
     let isValid = false;
     if (
-      glossaryGuid !== undefined &&
       nodeToCreate !== undefined &&
       nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== ""
+      nodeToCreate.name !== "" &&
+      nodeToCreate.glossary !== undefined &&
+      nodeToCreate.glossary.guid !== undefined
     ) {
       isValid = true;
     }
@@ -95,129 +84,88 @@ export default function CreateTermWizard(props) {
     ) {
       isValid = true;
     }
+
     return isValid;
   };
-
+  const onAttributeChange = (attributeKey, attributeValue) => {
+    let myCreateInput = {
+      ...nodeToCreate,
+      [attributeKey]: attributeValue,
+    };
+    setNodeToCreate(myCreateInput);
+  };
   const onGlossarySelect = (guid) => {
-    setGlossaryGuid(guid);
+    let glossary = {};
+    glossary.guid = guid;
+    let myNodeToCreate = {
+      ...nodeToCreate,
+      ["glossary"]: glossary,
+    };
+    setNodeToCreate(myNodeToCreate);
   };
-  const onCreate = () => {
-    setNodeCreated(true);
-  };
-  const onGotCreateDetails = (node) => {
-    console.log("onGotCreateDetails " + JSON.stringify(node));
-    if (node.name !== undefined && node.name !== "") {
-      setNodeToCreate(node);
+  // TODO allow choosing more than one category
+  const onParentCategorySelect = (guid) => {
+    if (guid !== undefined) {
+      let parentCategory = {};
+      parentCategory.guid = guid;
+      parentCategory.type = "Category";
+      const categories = [parentCategory];
+      // create a new object
+      let myCreateInput = {
+        ...nodeToCreate,
+        ["categories"]: categories,
+      };
+      setNodeToCreate(myCreateInput);
     }
   };
-  const onChangeConfidentiality = (confidentiality) => {
-    console.log("onChangeConfidentiality " + JSON.stringify(confidentiality));
-    if (confidentiality !== undefined) {
-      let governanceClassifications = nodeToCreate.governanceClassifications;
-      if (governanceClassifications === undefined) {
-        governanceClassifications = {};
-        governanceClassifications.class = "GovernanceClassifications";
-      }
-      governanceClassifications.confidentiality = confidentiality;
-      governanceClassifications.confidentiality.class = "Confidentiality";
 
-      let amendedNodeToCreate = nodeToCreate;
-      amendedNodeToCreate.governanceClassifications = governanceClassifications;
-      setNodeToCreate(amendedNodeToCreate);
-    }
-  };
-  const onChangeConfidence = (confidence) => {
-    console.log("onChangeConfidence " + JSON.stringify(confidence));
-    if (confidence !== undefined) {
-      let governanceClassifications = nodeToCreate.governanceClassifications;
-      if (governanceClassifications === undefined) {
-        governanceClassifications = {};
-        governanceClassifications.class = "GovernanceClassifications";
-      }
-      governanceClassifications.confidence = confidence;
-      governanceClassifications.confidentiality.class = "Confidence";
-
-      let amendedNodeToCreate = nodeToCreate;
-      amendedNodeToCreate.governanceClassifications = governanceClassifications;
-      setNodeToCreate(amendedNodeToCreate);
-    }
-  };
-  const onChangeCriticality = (criticality) => {
-    console.log("onChangeCriticality " + JSON.stringify(criticality));
-    if (criticality !== undefined) {
-      let governanceClassifications = nodeToCreate.governanceClassifications;
-      if (governanceClassifications === undefined) {
-        governanceClassifications = {};
-        governanceClassifications.class = "GovernanceClassifications";
-      }
-      governanceClassifications.criticality = criticality;
-      governanceClassifications.confidentiality.class = "Criticality";
-
-      let amendedNodeToCreate = nodeToCreate;
-      amendedNodeToCreate.governanceClassifications = governanceClassifications;
-      setNodeToCreate(amendedNodeToCreate);
-    }
-  };
-  const onChangeRetention = (retention) => {
-    console.log("onChangeRetention " + JSON.stringify(retention));
-    if (retention !== undefined) {
-      let governanceClassifications = nodeToCreate.governanceClassifications;
-      if (governanceClassifications === undefined) {
-        governanceClassifications = {};
-        governanceClassifications.class = "GovernanceClassifications";
-      }
-      governanceClassifications.retention = retention;
-      governanceClassifications.retention.class = "Retention";
-
-      let amendedNodeToCreate = nodeToCreate;
-      amendedNodeToCreate.governanceClassifications = governanceClassifications;
-      setNodeToCreate(amendedNodeToCreate);
-    }
-  };
   const getTitle = () => {
-    return "Create Term Wizard";
+    return "Create " + props.currentNodeType.typeName + " Wizard";
   };
-  const step1Title = () => {
-    return "Create";
+  const getStep1Title = () => {
+    return "Supply Term properties";
   };
   const getStep1Label = () => {
-    return "Create Term";
+    return "Create";
   };
   const getStep1Description = () => {
-    return "Step 1:  Create a Term";
+    return "Step 1: Create a Term";
   };
-  const step2Title = () => {
+  const getStep2Title = () => {
+    return "Choose a glossary to store the Term in.";
+  };
+  const getStep2Label = () => {
     return "Set Glossary";
   };
   const getStep2Description = () => {
-    return "Step 2: A glossary needs to be chosen, to store the Term";
+    return "Step 2: A glossary needs to be chosen, to store the Term.";
   };
-  const step3Title = () => {
-    return "Set Confidentiality";
+  const getStep3Title = () => {
+    return "Optionally choose a category parent.";
+  };
+  const getStep3Label = () => {
+    return "Set Parent";
   };
   const getStep3Description = () => {
-    return "Step 3: Optionally associate Confidentiality with this Term";
+    return "Step 3: A Term can have an associated parent category. ";
   };
-  const step4Title = () => {
-    return "Set Confidence";
+  const getStep4Title = () => {
+    let title = "Creating a new Term with these details.";
+    if (nodeCreated !== undefined) {
+      title = "Term Created";
+    }
+    return title;
+  };
+  const getStep4Label = () => {
+    return "Confirm";
   };
   const getStep4Description = () => {
-    return "Step 4: Optionally associate Confidence with this Term";
+    return "Step 4: confirm the Term details, then create.";
   };
-  const step5Title = () => {
-    return "Set Criticality";
-  };
-  const getStep5Description = () => {
-    return "Step 5: Optionally associate Criticality with this Term";
-  };
-  const step6Title = () => {
-    return "Set Retention";
-  };
-  const getStep6Description = () => {
-    return "Step 6: Optionally associate Retention with this Term";
-  };
-  const getStep7Description = () => {
-    return "Step 7: confirm the Term details, prior to create";
+
+  const onCreate = (node) => {
+    console.log("OnCreate");
+    setNodeCreated(node);
   };
 
   return (
@@ -230,180 +178,109 @@ export default function CreateTermWizard(props) {
         />
         <ProgressStep
           disabled={!validateCreateDetails()}
-          label="Set Glossary"
+          label={getStep2Label()}
           description={getStep2Description()}
         />
         <ProgressStep
-          disabled={!validateCreateDetails()}
-          label="Confidentiality"
+          disabled={!isValidForConfirm()}
+          label={getStep3Label()}
           description={getStep3Description()}
         />
         <ProgressStep
-          disabled={!validateCreateDetails()}
-          label="Confidence"
+          disabled={!isValidForConfirm()}
+          label={getStep4Label()}
           description={getStep4Description()}
         />
-        <ProgressStep
-          disabled={!validateCreateDetails()}
-          label="Criticality"
-          description={getStep5Description()}
-        />
-        <ProgressStep
-          disabled={!validateCreateDetails()}
-          label="Retention"
-          description={getStep6Description()}
-        />
-        <ProgressStep
-          disabled={!isValidForConfirm()}
-          label="Confirm"
-          description={getStep7Description()}
-        />
       </ProgressIndicator>
-      {currentStepIndex === 0 && (
-        <Button
-          kind="secondary"
-          onClick={handleGotCreateDetailsOnClick}
-          disabled={!validateCreateDetails()}
-        >
-          Next
-        </Button>
-      )}
-      {currentStepIndex === 0 && !nodeCreated && (
-        <h3 className="create-wizard-page-title">{step1Title()}</h3>
-      )}
-      {currentStepIndex === 0 && (
-        <div>
-          <CreateNodePage
-            currentNodeType={props.currentNodeType}
-            parentCategoryGuid={props.parentCategoryGuid}
-            onGotCreateDetails={onGotCreateDetails}
-          />
-        </div>
-      )}
-
-      {currentStepIndex === 1 && !nodeCreated && (
-        <div>
-          <Button kind="secondary" onClick={onRestart}>
-            Previous
-          </Button>
-          <Button
-            kind="secondary"
-            // onClick={confirmCreateDetails}
-            onClick={addConfidentiality}
-            disabled={!isValidForConfirm()}
-          >
-            Next
-          </Button>
-          <h3 className="create-wizard-page-title">{step2Title()}</h3>
-        </div>
-      )}
-      {currentStepIndex === 1 && (
-        <StartingNodeNavigation
-          match={props.match}
-          nodeTypeName="glossary"
-          onSelectCallback={onGlossarySelect}
-        />
-      )}
-
-      {currentStepIndex === 2 && (
-        <div>
-          <Button kind="secondary" onClick={onRestart}>
-            Previous
-          </Button>
-          <Button
-            kind="secondary"
-            // onClick={confirmCreateDetails}
-            onClick={addConfidence}
-            // disabled={!isValidForConfirm()}
-          >
-            Next
-          </Button>
-          <h3 className="create-wizard-page-title">{step3Title()}</h3>
-        </div>
-      )}
-      {currentStepIndex === 2 && (
-        <CreateGovernanceClassification
-          governanceClassificationName="confidentiality"
-          onGovernanceClassificationSet={onChangeConfidentiality}
-        />
-      )}
-
-      {currentStepIndex === 3 && (
-        <div>
-          <Button kind="secondary" onClick={onRestart}>
-            Previous
-          </Button>
-          <Button
-            kind="secondary"
-            // onClick={confirmCreateDetails}
-            onClick={addCriticality}
-            // disabled={!isValidForConfirm()}
-          >
-            Next
-          </Button>
-          <h3 className="create-wizard-page-title">{step4Title()}</h3>
-        </div>
-      )}
-      {currentStepIndex === 3 && (
-        <CreateGovernanceClassification
-          governanceClassificationName="confidence"
-          onGovernanceClassificationSet={onChangeConfidence}
-        />
-      )}
-
-      {currentStepIndex === 4 && (
-        <div>
-          <Button kind="secondary" onClick={onRestart}>
-            Previous
-          </Button>
-          <Button
-            kind="secondary"
-            // onClick={confirmCreateDetails}
-            onClick={addRetention}
-            // disabled={!isValidForConfirm()}
-          >
-            Next
-          </Button>
-          <h3 className="create-wizard-page-title">{step5Title()}</h3>
-        </div>
-      )}
-      {currentStepIndex === 4 && (
-        <CreateGovernanceClassification
-          governanceClassificationName="criticality"
-          onGovernanceClassificationSet={onChangeCriticality}
-        />
-      )}
-
-      {currentStepIndex === 5 && (
-        <div>
-          <Button kind="secondary" onClick={onRestart}>
-            Previous
-          </Button>
-          <Button kind="secondary" onClick={confirmCreateDetails}>
-            Next
-          </Button>
-          <h3 className="create-wizard-page-title">{step6Title()}</h3>
-        </div>
-      )}
-      {currentStepIndex === 5 && (
-        <CreateGovernanceClassification
-          governanceClassificationName="retention"
-          onGovernanceClassificationSet={onChangeRetention}
-        />
-      )}
-      {/* spine objects, attribute and object identifier not included here . They will be created with the has-a relationship */}
-
-      {currentStepIndex === 6 && (
-        <div>
-          <CreateNodePage
-            currentNodeType={props.currentNodeType}
-            glossaryGuid={glossaryGuid}
-            parentCategoryGuid={props.parentCategoryGuid}
-            onCreateCallback={onCreate}
-            nodeToCreate={nodeToCreate}
-          />
-        </div>
-      )}
+      <div className="wizard-navigation-container">
+        {currentStepIndex === 0 && (
+          <div>
+            <Button
+              kind="secondary"
+              onClick={handleGotCreateDetailsOnClick}
+              disabled={!validateCreateDetails()}
+            >
+              Next
+            </Button>
+            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
+            <CreateNodeInput
+              currentNodeType={props.currentNodeType}
+              onAttributeChange={onAttributeChange}
+              nodeToCreate={nodeToCreate}
+            />
+          </div>
+        )}
+        {currentStepIndex === 1 && (
+          <div>
+            <Button
+              kind="secondary"
+              onClick={previousStepAndRefreshNodeToCreate}
+            >
+              Previous
+            </Button>
+            <Button
+              kind="secondary"
+              onClick={nextStep}
+              disabled={!isValidForConfirm()}
+            >
+              Next
+            </Button>
+            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
+            <StartingNodeNavigation
+              match={props.match}
+              nodeTypeName="glossary"
+              onSelectCallback={onGlossarySelect}
+            />
+          </div>
+        )}
+        {currentStepIndex === 2 && (
+          <div>
+            <Button kind="secondary" onClick={previousStep}>
+              Previous
+            </Button>
+            <Button
+              kind="secondary"
+              onClick={nextStep}
+              disabled={!isValidForConfirm()}
+            >
+              Next
+            </Button>
+            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
+            <StartingNodeNavigation
+              match={props.match}
+              nodeTypeName="category"
+              onSelectCallback={onParentCategorySelect}
+            />
+          </div>
+        )}
+        {currentStepIndex === 3 &&
+          nodeCreated === undefined && (
+              <div>
+                <Button kind="secondary" onClick={previousStep}>
+                  Previous
+                </Button>
+              </div>
+            )}
+        {currentStepIndex === 3 &&
+          nodeCreated !==
+            undefined && (
+              <div>
+                <Button kind="secondary" onClick={finished}>
+                  Finished
+                </Button>
+              </div>
+            )}
+        {currentStepIndex === 3 && (
+          <div>
+            <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
+            <CreateNodeReadOnly
+              currentNodeType={props.currentNodeType}
+              nodeToCreate={nodeToCreate}
+              onCreate={onCreate}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

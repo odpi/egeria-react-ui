@@ -83,11 +83,15 @@ When the glossary children action is chosen, the categories and terms under that
  <img src="glossarychildren.png" alt="glossary children"  width="400px" height="200px" />
 By default top categories are displayed, these are categories that do not have a parent category. If you want to see the all the categories under the glossary then toggle the Top Categories <img src="topcats.png" alt="top categories"  width="100px" height="30px" /> to All Categories <img src="allcats.png" alt="all categories"  width="100px" height="30px" />
 
+## Breadcrumb
+While navigating, a breadcrumb is created showing how deep the current node is that is being authored. 
+
+
+
 ## Future improvements
-- a breadcrumb will be added to show visually where in a nested hierarchy the nodes being displayed live.
+- a breadcrumb to be optimized to minimize the url length.
 - Allow category hierarchies to be authored. i.e. child categories of categories
 - Allow Relationships to be authored
-- Use a D3 visualisation of glossary content similar to rex
 - add governance classification authoring
 - add spine object views
 - add collaboration authoring and viewing
