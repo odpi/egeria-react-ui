@@ -108,7 +108,7 @@ Environment variables used to secure communications between the browser and the 
 *EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_PASSPHRASE* This is the location of the file containing the key used to secure communications between the browser and the presentation server
 
 Valid values need to be supplied for all the above values or the egeria_react_ui will not start. Where the value is a file location, the current directory is 
-the one which has cra-client and cra-server as subfolders (this is true in production and development).  
+the one that has cra-client and cra-server as subfolders (this is true in production and development).  
 
 
 ### Running the presentation server in production mode 
