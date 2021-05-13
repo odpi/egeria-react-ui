@@ -37,19 +37,30 @@ const LocalNodeCard = (props) => {
       props.setSelected(undefined);
     }
   };
+  const getShortDescription = () => {
+    let shortDescription = props.body;
+    if (shortDescription !== undefined && shortDescription.length > 20) {
+      shortDescription = shortDescription.slice(0, 20);
+    }
+    return shortDescription;
+  };
   return (
     <article className="node-card bx--col-md-4 bx--col-lg-4 bx--col-xlg-3 bx--offset-xlg-1">
       <div className="node-card-section__heading">
         <h4>{props.heading}</h4>
         <input type="checkbox" checked={props.isSelected} onChange={onChange} />
       </div>
-      <div style={{display:'none'}}>{props.guid}</div> 
-      <Accordion>
-        <AccordionItem title="Description">{props.body}</AccordionItem>
-      </Accordion>
-      <div>
-         {props.icon}
-      </div>
+      <div style={{ display: "none" }}>{props.guid}</div>
+      <div>{props.icon}</div>
+      {props.body !== undefined && props.body !== "" && (
+        <div>
+          <Accordion>
+            <AccordionItem title={getShortDescription()}>
+              <div className="overWrap">{props.body}</div>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
     </article>
   );
 };

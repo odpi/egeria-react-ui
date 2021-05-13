@@ -31,7 +31,6 @@ const ca = fs.readFileSync(
 
 passphrase= security.pfx_passphrase;
 
-
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
  * The login is performed using passport' local authentication (http://www.passportjs.org/docs/authenticate/).
@@ -101,7 +100,7 @@ const joinedPath = path.join(
  */
 router.get("/login", loginLimiter, (req, res) => {
   // Disabling logging as CodeQL does not like user supplied values being logged.
-  //  console.log("/login called " + joinedPath);
+  console.log("/login called " + joinedPath);
   res.sendFile(joinedPath);
 });
 
@@ -125,11 +124,8 @@ router.post("/servers/*", (req, res) => {
         res.json(resBody);
       })
       .catch(function (error) {
-        console.log(error);
-        res.status(400).send(error);
-      })
-      .then(function () {
-        // always executed
+        console.error(error);
+        res.status(400).send("Error issuing create");
       });
   } else {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
@@ -160,11 +156,8 @@ router.put("/servers/*", (req, res) => {
         res.json(resBody);
       })
       .catch(function (error) {
-        console.log(error);
+        console.error(error);
         res.status(400).send(error);
-      })
-      .then(function () {
-        // always executed
       });
   } else {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
@@ -192,11 +185,8 @@ router.delete("/servers/*", (req, res) => {
         res.json(resBody);
       })
       .catch(function (error) {
-        console.log(error);
+        console.error(error);
         res.status(400).send(error);
-      })
-      .then(function () {
-        // always executed
       });
   } else {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
@@ -222,11 +212,8 @@ router.get("/servers/*", (req, res) => {
         res.json(resBody);
       })
       .catch(function (error) {
-        console.log(error);
-        res.status(400).send(error);
-      })
-      .then(function () {
-        // always executed
+        console.error(error);
+        res.status(400).send("Error issuing get");
       });
   } else {
     res.status(400).send("Error, invalid supplied URL: " + url);
@@ -248,9 +235,15 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
+<<<<<<< HEAD
       ca: ca,
       pfx: pfx,
       passphrase: passphrase
+=======
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase,
+>>>>>>> 00cdf81224eb08a6ef57be0bf74c4c185c02e127
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -269,7 +262,7 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     })
     .catch(function (error) {
       console.error({ error });
-      res.status(400).send(error);
+      res.status(400).send("Error issuing an admin get");
     });
 });
 
@@ -292,9 +285,15 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
+<<<<<<< HEAD
       ca: ca,
       pfx: pfx,
       passphrase: passphrase
+=======
+      ca: truststore,
+      pfx: keystore,
+      passphrase: passphrase,
+>>>>>>> 00cdf81224eb08a6ef57be0bf74c4c185c02e127
     }),
   };
   if (config) apiReq.data = config;
@@ -309,8 +308,8 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       res.json(resBody);
     })
     .catch(function (error) {
-      console.debug(error);
-      res.status(400).send(error);
+      console.error(error);
+      res.status(400).send("Error issuing admin post");
     });
 });
 
@@ -349,7 +348,7 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       res.json(resBody);
     })
     .catch(function (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).send(error);
     });
 });
@@ -373,6 +372,7 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
       ca: ca,
       pfx: pfx,
       passphrase: passphrase
+
     }),
   };
   axios(apiReq)
@@ -386,7 +386,7 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     })
     .catch(function (error) {
       console.error({ error });
-      res.status(400).send(error);
+      res.status(400).send("Error issuing platform service call");
     });
 });
 

@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import getPathTypesAndGuids from "../properties/PathAnalyser";
+import { IdentificationContext } from "../../../../contexts/IdentificationContext";
+import getNodeType from "../properties/NodeTypes.js";
 import {
   Accordion,
   AccordionItem,
   Button,
-  DatePicker,
-  DatePickerInput,
   DataTable,
   TableContainer,
   Table,
@@ -16,27 +17,114 @@ import {
   TableHeader,
   TableBody,
 } from "carbon-components-react";
-import { useParams } from "react-router-dom";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import { issueRestUpdate, issueRestGet } from "../RestCaller";
 import { useHistory } from "react-router-dom";
 
 export default function UpdateNode(props) {
+  const identificationContext = useContext(IdentificationContext);
+  const [nodeType, setNodeType] = useState();
+  const [guidToEdit, setGuidToEdit] = useState();
+  const [relationshipsFromServer, setRelationshipsFromServer] = useState();
+  const [relationshipsMap, setRelationshipsMap] = useState();
+  console.log("UpdateNode");
+
+  useEffect(() => {
+    const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
+    // we need to set up the nodeType and guid to edit
+
+    const lastElement = pathAnalysis[pathAnalysis.length - 1];
+    setGuidToEdit(lastElement.guid);
+    const gotNodeType = getNodeType(
+      identificationContext.getRestURL("glossary-author"),
+      lastElement.type
+    );
+    setNodeType(gotNodeType);
+  }, [props, identificationContext]);
+
+  useEffect(() => {
+    if (relationshipsFromServer) {
+      let newRelationshipsMap = {};
+      if (relationshipsMap !== undefined) {
+        newRelationshipsMap = relationshipsMap;
+      }
+      for (var i = 0; i < relationshipsFromServer.length; i++) {
+        const serverRelationship = relationshipsFromServer[i];
+        const name = serverRelationship.name;
+        let relationshipTypeArray = [];
+        if (name in newRelationshipsMap) {
+          // if we already have this property, pick up the existing relationships
+          relationshipTypeArray = newRelationshipsMap[name];
+        }
+        if (relationshipTypeArray === undefined) {
+          relationshipTypeArray = [];
+        }
+        // calculate a data representation of the relationship that can be displayed in a table row
+        let relationshipRow = {};
+        for (var prop in serverRelationship) {
+          if (prop === "end1") {
+            const end1 = serverRelationship[prop];
+            relationshipRow["end1name"] = end1.name;
+            relationshipRow["end1guid"] = end1.nodeGuid;
+            relationshipRow["end1qualifiedname"] = end1.nodeQualifiedName;
+            relationshipRow["end1description"] = end1.description;
+          } else if (prop === "end2") {
+            const end2 = serverRelationship[prop];
+            relationshipRow["end2name"] = end2.name;
+            relationshipRow["end2guid"] = end2.nodeGuid;
+            relationshipRow["end2qualifiedname"] = end2.nodeQualifiedName;
+            relationshipRow["end2description"] = end2.description;
+          } else if (prop === "systemAttributes") {
+            const systemAttributes = serverRelationship[prop];
+            relationshipRow["createdBy"] = systemAttributes.createdBy;
+            relationshipRow["version"] = systemAttributes.version;
+            relationshipRow["createTime"] = systemAttributes.createTime;
+          } else {
+            relationshipRow[prop] = serverRelationship[prop];
+          }
+        }
+        relationshipRow.key = serverRelationship.guid;
+        relationshipTypeArray.push(relationshipRow);
+        newRelationshipsMap[name] = relationshipTypeArray;
+      }
+      setRelationshipsMap(newRelationshipsMap);
+    }
+  }, [relationshipsFromServer]);
+
   const [updateBody, setUpdateBody] = useState({});
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
+  const [relationshipOffset, setRelationshipOffset] = useState(0);
   console.log("UpdateNode");
-  const { guidtoedit } = useParams();
-  const url = getUrl();
   let history = useHistory();
+  // big enough to get one of each relationship type, if they exist
+  const relationshipPageSize = 30;
 
   const initialGet = () => {
-    issueRestGet(url, onSuccessfulGet, onErrorGet);
+    issueRestGet(getUrl(), onSuccessfulGet, onErrorGet);
     return "Getting details";
   };
   function getUrl() {
-    return props.currentNodeType.url + "/" + guidtoedit;
+    return nodeType.url + "/" + guidToEdit;
   }
+  const isDisabled = () => {
+    let isDisabled = false;
+    if (currentNode && currentNode.readOnly) {
+      isDisabled = true;
+    }
+    return isDisabled;
+  };
+
+  const handleShowRelationships = () => {
+    let url =
+      getUrl() +
+      "/relationships?pagesize=" +
+      relationshipPageSize +
+      "&offset=" +
+      relationshipOffset;
+    issueRestGet(url, onSuccessfulGetRelationships, onErrorGetRelationships);
+    setRelationshipOffset(relationshipOffset + relationshipPageSize);
+  };
 
   const handleClickUpdate = (e) => {
     console.log("handleClickUpdate()");
@@ -47,7 +135,7 @@ export default function UpdateNode(props) {
     // in the meantime this will be self contained.
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("issueUpdate " + url);
-    issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
+    issueRestUpdate(getUrl(), body, onSuccessfulUpdate, onErrorUpdate);
   };
   const onSuccessfulGet = (json) => {
     console.log("onSuccessfulGet");
@@ -62,6 +150,20 @@ export default function UpdateNode(props) {
     console.log("Error on Get " + msg);
     setErrorMsg(msg);
     setCurrentNode(undefined);
+  };
+  const onSuccessfulGetRelationships = (json) => {
+    console.log("onSuccessfulGetRelationships");
+    if (json.result) {
+      console.log("get relationships " + JSON.stringify(json.result));
+      setRelationshipsFromServer(json.result);
+    } else {
+      onErrorGet("Error did not get relationships from the server");
+    }
+  };
+  const onErrorGetRelationships = (msg) => {
+    console.log("Error on Get Relationships" + msg);
+    setErrorMsg(msg);
+    // setCurrentNode(undefined);
   };
   const onSuccessfulUpdate = (json) => {
     console.log("onSuccessfulUpdate");
@@ -79,15 +181,15 @@ export default function UpdateNode(props) {
   };
 
   function updateLabelId(labelKey) {
-    return "text-input-update"+props.currentNodeType.name +"-"+ labelKey;
-  };
+    return "text-input-update" + nodeType.name + "-" + labelKey;
+  }
   const setAttribute = (item, value) => {
     console.log("setAttribute " + item.key + ",value=" + value);
     let myUpdateBody = updateBody;
     myUpdateBody[item.key] = value;
     setUpdateBody(myUpdateBody);
   };
-  const updatedTableHeaderData = [
+  const systemDataHeaders = [
     {
       header: "Attribute Name",
       key: "attrName",
@@ -95,6 +197,68 @@ export default function UpdateNode(props) {
     {
       header: "Value",
       key: "value",
+    },
+  ];
+  const relationshipHeaders = [
+    {
+      header: "Name",
+      key: "name",
+    },
+    {
+      header: "GUID",
+      key: "guid",
+    },
+    {
+      header: "Read Only",
+      key: "readOnly",
+    },
+    {
+      header: "Created by",
+      key: "createdBy",
+    },
+    {
+      header: "Create Time",
+      key: "createTime",
+    },
+    {
+      header: "Update Time",
+      key: "updateTime",
+    },
+    {
+      header: "Version",
+      key: "version",
+    },
+    {
+      header: "End 1 qualified name",
+      key: "end1qualifiedname",
+    },
+    {
+      header: "End 1 name",
+      key: "end1name",
+    },
+    {
+      header: "End 1 description",
+      key: "end1description",
+    },
+    {
+      header: "End 1 GUID",
+      key: "end1guid",
+    },
+    {
+      header: "End2 qualified name",
+      key: "end2qualifiedname",
+    },
+    {
+      header: "End 2 name",
+      key: "end2name",
+    },
+    {
+      header: "End 2 description",
+      key: "end2description",
+    },
+    {
+      header: "End 2 GUID",
+      key: "end2guid",
     },
   ];
 
@@ -114,6 +278,60 @@ export default function UpdateNode(props) {
     }
     return rowData;
   };
+  const getRelationshipRowData = (relationshipName) => {
+    let rows = [];
+    const relationshipKey = relationshipName.key;
+    if (relationshipsMap && relationshipsMap[relationshipKey]) {
+      rows = relationshipsMap[relationshipKey];
+    }
+
+    return rows;
+  };
+  const renderRelationships = () => {
+   
+    return Object.entries(relationshipsMap).map(([key], i) => {
+      return (
+        <Accordion>
+          <AccordionItem title={key}>
+            <div className="bx--form-item">
+              <DataTable
+                isSortable
+                rows={getRelationshipRowData({ key })}
+                headers={relationshipHeaders}
+                render={({ rows, headers, getHeaderProps }) => (
+                  <TableContainer title={key}>
+                    <Table size="normal">
+                      <TableHead>
+                        <TableRow>
+                          {headers.map((header) => (
+                            <TableHeader
+                              key={header.key}
+                              {...getHeaderProps({ header })}
+                            >
+                              {header.header}
+                            </TableHeader>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rows.map((row) => (
+                          <TableRow key={row.id}>
+                            {row.cells.map((cell) => (
+                              <TableCell key={cell.id}>{cell.value}</TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              />
+            </div>
+          </AccordionItem>
+        </Accordion>
+      );
+    });
+  };
 
   const onClickBack = () => {
     console.log("Back clicked");
@@ -124,9 +342,10 @@ export default function UpdateNode(props) {
   };
   return (
     <div>
-      {currentNode === undefined && initialGet()}
+      {/* the useEffect will run after the render and set the nodeType, allowing the initalGet to run and set currentNode */}
+      {currentNode === undefined && nodeType && initialGet()}
       {currentNode !== undefined &&
-        props.currentNodeType.attributes.map((item) => {
+        nodeType.attributes.map((item) => {
           return (
             <div className="bx--form-item" key={item.key}>
               <label htmlFor={updateLabelId(item.key)} className="bx--label">
@@ -137,6 +356,7 @@ export default function UpdateNode(props) {
                 type="text"
                 className="bx--text-input"
                 defaultValue={currentNode[item.key]}
+                disabled={isDisabled()}
                 key={currentNode[item.key]}
                 onChange={(e) => setAttribute(item, e.target.value)}
                 placeholder={item.label}
@@ -144,7 +364,7 @@ export default function UpdateNode(props) {
             </div>
           );
         })}
-      {currentNode !== undefined && (
+      {/* {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Advanced options">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
@@ -163,7 +383,7 @@ export default function UpdateNode(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-      )}
+      )} */}
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">
@@ -171,7 +391,7 @@ export default function UpdateNode(props) {
               <DataTable
                 isSortable
                 rows={getSystemDataRowData()}
-                headers={updatedTableHeaderData}
+                headers={systemDataHeaders}
                 render={({ rows, headers, getHeaderProps }) => (
                   <TableContainer title="System Attributes">
                     <Table size="normal">
@@ -204,10 +424,40 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
-       <div style={{ color: "red" }}>{errorMsg}</div>
+      {currentNode !== undefined && (
+        <Accordion>
+          <AccordionItem title="Relationships">
+            {relationshipsFromServer === undefined && (
+              <Button
+                className="bx--btn bx--btn--tertiary"
+                onClick={handleShowRelationships}
+                type="button"
+              >
+                Show Relationships
+              </Button>
+            )}
+            {relationshipsFromServer !== undefined && (
+              <div>
+                <Button
+                  className="bx--btn bx--btn--tertiary"
+                  onClick={handleShowRelationships}
+                  type="button"
+                >
+                  More Relationships
+                </Button>
+              </div>
+            )}
+            {relationshipsMap && <div> {renderRelationships()} </div>}
+          </AccordionItem>
+        </Accordion>
+      )}
+
+      <div style={{ color: "red" }}>{errorMsg}</div>
+
       <Button
         className="bx--btn bx--btn--primary"
         onClick={handleClickUpdate}
+        disabled={isDisabled()}
         type="button"
       >
         Update

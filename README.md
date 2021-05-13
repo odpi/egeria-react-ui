@@ -59,11 +59,28 @@ service has a downstream dependancy as well, for example the Glossary Author Vie
 
 ### The presentation server configuration 
 
-The presentation server is an Express web server that serves the web resources, handles authentication and passes through rest calls to the view service. It is intended to be a thin layer in front of the view services. The presentation server lives in the folder called 'cra-server', it requires environment variables to be set to tell it where to send rest requests to for each tenant. If there is a file called .env in the 'cra-server folder then the contents of the file will be parsed and used as the envieronment variables. There is a sample .env file [.env_sample](cra-server/.env_sample).
+The presentation server is an Express web server that serves the web resources, handles authentication and passes through rest calls to the view service. It is intended to be a thin layer in front of the view services. The presentation server lives in the folder called 'cra-server', it requires environment variables to be set to tell it where to send rest requests to for each tenant. 
+#### Using the .env file to hold the environment variables
+
+If there is a file called .env in the 'cra-server folder then the contents of the file will be parsed and used as the environment variables. There is a sample .env file [.env_sample](cra-server/.env_sample).
+
+#### Environment variables and the shell.
+
+In production, environment variables are typically handled by the shell. You need to care care to 'escape' quotation characters, for example the tenant environemnt variable could be 
+escaped like this:
+
+```bash
+EGERIA_PRESENTATIONSERVER_SERVER_aaa="{\"remoteServerName\":\"cocoView1\",\"remoteURL\":\"https://localhost:9443\"}"
+```
+You can check this is correctly set by issuing:
+```
+$ echo $EGERIA_PRESENTATIONSERVER_SERVER_aaa
+{"remoteServerName":"cocoView1","remoteURL":"https://localhost:9443"}
+```
 
 ### The presentation server environment variables
 
-There are two types of environment variables that the presentation server looks for, environment variables that define aspects of security an environment varaibles that define the tenants and their associated remote servers.     
+There are two types of environment variables that the presentation server looks for, environment variables that define aspects of security, and environment varaibles that define the tenants and their associated remote servers.     
 
 #### The tenant environment variables
 These environment variable take the form: 
@@ -90,8 +107,8 @@ Environment variables used to secure communications between the browser and the 
 *EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_CERT* This is the file location of the certificate to be used to secure communications between the browser and the presentation server
 *EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_PASSPHRASE* This is the location of the file containing the key used to secure communications between the browser and the presentation server
 
-Valid values need to be supplied for all the above values or the egeria_react_ui will not start. Where the value is a file location, thecurrent direcotry is-
-the one whihc has cra-client and cra-server as subfolders (this is true in production and development).  
+Valid values need to be supplied for all the above values or the egeria_react_ui will not start. Where the value is a file location, the current directory is 
+the one which has cra-client and cra-server as subfolders (this is true in production and development).  
 
 
 ### Running the presentation server in production mode 
@@ -141,7 +158,7 @@ The version in the package.json can be updated using he command 'npm version pre
 
 ## Release Notes
 
-This is the release 2.7 release candidate - currently under development.
+This is the release 2.10 release candidate - currently under development.
 
 ## Project structure
 This project is a [Create React App](https://reactjs.org/docs/create-a-new-react-app.html). 

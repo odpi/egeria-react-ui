@@ -1,29 +1,37 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
+import getPathTypesAndGuids from "./properties/PathAnalyser";
 import Add32 from "../../../images/carbon/Egeria_add_32";
 import getNodeType from "./properties/NodeTypes.js";
 import { Button, Form, FormGroup, TextInput, Loading } from "carbon-components-react";
 
 import { issueRestCreate } from "./RestCaller";
-import { useParams } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 
-export default function GlossaryQuickTerms(props) {
+function GlossaryQuickTerms(props) {
   const identificationContext = useContext(IdentificationContext);
   const glossaryNodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "glossary");
   const [terms, setTerms] = useState([]);
   const [termsWithStatus, setTermsWithStatus] = useState([]);
   const [errorMsg, setErrorMsg] = useState();
+  const [glossaryGuid, setGlossaryGuid] = useState();
   const [restCallInProgress, setRestCallInProgress] = useState(false);
   let history = useHistory();
-  const { glossaryguid } = useParams();
   const url = getUrl();
 
+  useEffect(() => {
+    const pathAnalysis = getPathTypesAndGuids(props.match.params.anypath);
+    // set the parent information
+    const parentElement = pathAnalysis[pathAnalysis.length - 1];
+    setGlossaryGuid(parentElement.guid);
+  });
+
+
   function getUrl() {
-    return glossaryNodeType.url + "/" + glossaryguid + "/terms";
+    return glossaryNodeType.url + "/" + glossaryGuid + "/terms";
   }
   const validateForm = () => {
     if (terms.length === 0) {
@@ -57,11 +65,11 @@ export default function GlossaryQuickTerms(props) {
     setRestCallInProgress(false);
     let workingTermsWithStatus = [];
     for (let i = 0; i < terms.length; i++) {
+      console.log("json.result[i] " + json.result[i]);
       let workingTermWithStatus = terms[i];
       if (terms[i].name.trim() === "") {
         workingTermWithStatus.status = "Error - blank name";
-      } else if (json.result[i].relatedHTTPCode === "200") {
-        workingTermWithStatus = json.result[i].result[0];
+      } else if (json.result[i].relatedHTTPCode === 200) {
         workingTermWithStatus.status = "Success";
       } else {
         workingTermWithStatus.status = "Error";
@@ -205,7 +213,7 @@ export default function GlossaryQuickTerms(props) {
                             defaultValue={item.status}
                             readOnly
                           />
-                          <div className="left-20" alias="white_check_mark" src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png">✅</div>
+                          <span role="img" aria-label="When present, this image indicates that the Term has been successfully created" className="left-20" alias="white_check_mark" src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png">✅</span>
                         </div>
                       )}
                       {item.status !== "Success" && (
@@ -229,3 +237,5 @@ export default function GlossaryQuickTerms(props) {
     </div>
   );
 }
+
+export default withRouter(GlossaryQuickTerms);
