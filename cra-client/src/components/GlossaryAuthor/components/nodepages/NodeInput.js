@@ -6,29 +6,28 @@ import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
 
 /**
- * Component to take user input for create node page.
+ * Component to take user input for node page as part of a wizard.
  *
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
- * @param props.onGotCreateInput if specified this function is called when the input is amended
- * @param nodeToCreate if specified this is the node to initialise the fields with in the form
- * @returns create input
+ * @param inputNode if specified this is the node to initialise the fields with in the form
+ * @param operation create or update
+ * @param onAttributeChange drive this method when an attribute changes. 
+ * @returns node input
  */
-export default function CreateNodeInput(props) {
+export default function NodeInput(props) {
   const [errorMsg, setErrorMsg] = useState();
   const [currentAttributes, setCurrentAttributes] = useState();
-  const [fromDateTimeMessage, setFromDateTimeMessage] = useState();
-  const [toDateTimeMessage, setToDateTimeMessage] = useState();
 
-  // update the currentAttributes with the supplied nodeToCreate from props.
+  // update the currentAttributes with the supplied inputNode from props.
   useEffect(() => {
     if (props.currentNodeType) {
       let attributesWithValues = [];
       let attributes = props.currentNodeType.attributes;
-      if (props.nodeToCreate) {
-        // now  scan through the props.nodeToCreate properties and add in any values there.
+      if (props.inputNode) {
+        // now  scan through the props.inputNode properties and add in any values there.
         for (var i = 0; i < attributes.length; i++) {
           const attributeKey = attributes[i].key;
-          const attributeValue = props.nodeToCreate[attributeKey];
+          const attributeValue = props.inputNode[attributeKey];
           let attributesWithValuesElement = attributes[i];
           if (attributeValue !== undefined) {
             attributesWithValuesElement.value = attributeValue;
@@ -65,7 +64,7 @@ export default function CreateNodeInput(props) {
    */
   const handleOnAnimationEnd = (e) => {
     document
-      .getElementById(createLabelIdForSubmitButton())
+      .getElementById(labelIdForSubmitButton())
       .classList.remove("shaker");
   };
 
@@ -124,18 +123,6 @@ export default function CreateNodeInput(props) {
         errMsg = "Please specify a Name. ";
         console.log(errorMsg);
       }
-      // if (fromDateTimeMessage !== undefined && fromDateTimeMessage !== "") {
-      //   if (errMsg === undefined) {
-      //     errMsg = "";
-      //   }
-      //   errMsg = errMsg + "Effective From Time : " + fromDateTimeMessage + ". ";
-      // }
-      // if (toDateTimeMessage !== undefined && toDateTimeMessage !== "") {
-      //   if (errMsg === undefined) {
-      //     errMsg = "";
-      //   }
-      //   errMsg = errMsg + "Effective To Date : " + toDateTimeMessage + ".";
-      // }
     }
 
     return errMsg;
@@ -153,18 +140,14 @@ export default function CreateNodeInput(props) {
     }
     return "";
   };
-  const createLabelIdForAttribute = (labelKey) => {
-    return "text-input-create" + props.currentNodeType.name + "-" + labelKey;
+  const labelIdForAttribute = (labelKey) => {
+    return "text-input-" + props.currentNodeType.name + "-" + labelKey;
   };
-  const createLabelIdForSubmitButton = (labelKey) => {
-    return props.currentNodeType.name + "CreateViewButton";
+  const labelIdForSubmitButton = (labelKey) => {
+    return props.currentNodeType.name + "ViewButton";
   };
   const setAttribute = (item, value) => {
     console.log("setAttribute " + item.key + ",value=" + value);
-    // can't just let myCreateInput = createInput; then push the new value in, as the hooks do not see it as a new object
-    // let myCreateInput = { ...createInput, [item.key]: value };
-    // let changedAttribute = {};
-    // changedAttribute[item.key] = value;
     props.onAttributeChange(item.key, value);
   };
   const attributeTableHeaderData = [
@@ -186,20 +169,24 @@ export default function CreateNodeInput(props) {
             currentAttributes &&
             currentAttributes
               .filter(function (obj) {
-                // if notCreate is only allow it not notCreate.
-                return !obj.notCreate;
+                // if notCreate is true and operation is create then do not allow
+                let allow = true;
+                if (props.operation === 'Create' && obj.notCreate) {
+                  allow = false;
+                }
+                return allow;
               })
               .map((item) => {
                 return (
                   <div className="bx--form-item" key={item.key}>
                     <label
-                      htmlFor={createLabelIdForAttribute(item.key)}
+                      htmlFor={labelIdForAttribute(item.key)}
                       className="bx--label"
                     >
                       {item.label} <Info16 />
                     </label>
                     <input
-                      id={createLabelIdForAttribute(item.key)}
+                      id={labelIdForAttribute(item.key)}
                       type={getInputType(item)}
                       value={item.value}
                       onChange={(e) => setAttribute(item, e.target.value)}

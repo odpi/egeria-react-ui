@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
+import format from "date-fns/format";
 import {
   Accordion,
   AccordionItem,
@@ -15,27 +16,29 @@ import {
   TableBody,
 } from "carbon-components-react";
 import { issueRestCreate } from "../RestCaller";
+import { issueRestUpdate } from "../RestCaller";
 
 /**
- * Component to show the create page for a node.
+ * Component to show the page for a node that ois about to be created or updated
  *
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
- * @param props.nodeToCreate if specified this contain attributes to prefill the create screen with
+ * @param props.inputNode if specified this contain attributes to prefill the screen with prior to issuing the rest call.
+ * @param operation Create or Update
  * @returns
  */
-export default function CreateNodeReadOnly(props) {
+export default function NodeReadOnly(props) {
   // const identificationContext = useContext(IdentificationContext);
 
   const [node, setNode] = useState({});
   const [errorMsg, setErrorMsg] = useState();
   const [restCallInProgress, setRestCallInProgress] = useState(false);
-  // this is the node to create
-  const [nodeToCreate, setNodeToCreate] = useState();
+  // this is the input node
+  const [inputNode, setInputNode] = useState();
   // After the rest call succeeds, the response from the create is in this state
-  const [createdNode, setCreatedNode] = useState();
+  const [resultantNode, setResultantNode] = useState();
 
   // useEffect(() => {
-  //   setNodeToCreate(props.nodeToCreate);
+  //   setInputNode(props.InputNode);
   // }, [props]);
 
   const attributeTableHeaderData = [
@@ -51,9 +54,9 @@ export default function CreateNodeReadOnly(props) {
 
   const getTableAttrRowData = () => {
     console.log("getTableAttrRowData");
-    let node = props.nodeToCreate;
-    if (createdNode !== undefined) {
-      node = createdNode;
+    let node = props.inputNode;
+    if (resultantNode !== undefined) {
+      node = resultantNode;
     }
     let rowData = [];
     if (props.currentNodeType) {
@@ -87,7 +90,12 @@ export default function CreateNodeReadOnly(props) {
 
           let value = node[prop];
           // TODO deal with the other types (and null? and arrays?) properly
-          value = JSON.stringify(value);
+
+          if (prop === "effectiveFromTime" || prop === "effectiveToTime") {
+            value = format(new Date(value), "PPPPpppp");
+          } else {
+            value = JSON.stringify(value);
+          }
           row.value = value;
           rowData.push(row);
         }
@@ -97,12 +105,17 @@ export default function CreateNodeReadOnly(props) {
   };
   const getSystemDataRowData = () => {
     let rowData = [];
-    if (createdNode !== undefined) {
-      const systemAttributes = createdNode.systemAttributes;
+    if (resultantNode !== undefined) {
+      const systemAttributes = resultantNode.systemAttributes;
       for (var prop in systemAttributes) {
         let row = {};
         row.id = prop;
         row.attrName = prop;
+        if (prop === "createTime" || prop === "updateTime") {
+          value = format(new Date(value), "PPPPpppp");
+        } else {
+          value = JSON.stringify(value);
+        }
 
         let value = systemAttributes[prop];
         // TODO deal with the other types (and null? and arrays?) properly
@@ -120,51 +133,56 @@ export default function CreateNodeReadOnly(props) {
    */
   const handleOnAnimationEnd = (e) => {
     document
-      .getElementById(createLabelIdForSubmitButton())
+      .getElementById(labelIdForSubmitButton())
       .classList.remove("shaker");
   };
-  const onClickToCreate = (e) => {
-    console.log("CreateNodePage onClickToCreate(()");
+  const onClickToIssueRest = (e) => {
+    console.log("onClickToIssueRest()");
     e.preventDefault();
     setRestCallInProgress(true);
     const nodeTypeName = props.currentNodeType.name;
 
     const body = {
-      ...props.nodeToCreate,
-      ["nodeType"]: nodeTypeName
+      ...props.inputNode,
+      ["nodeType"]: nodeTypeName,
     };
 
     // TODO consider moving this up to a node controller as per the CRUD pattern.
     // in the meantime this will be self contained.
     const url = props.currentNodeType.url;
-    console.log("issueCreate " + url);
-    issueRestCreate(url, body, onSuccessfulNodeCreate, onErrorNodeCreate);
+    if (props.operation === "Create") {
+      console.log("issueCreate " + url);
+      issueRestCreate(url, body, onSuccessfulRestCall, onErrorRestCall);
+    } else {
+      console.log("issueUpdate " + url);
+      issueRestUpdate(url, body, onSuccessfulRestCall, onErrorRestCall);
+    }
   };
-  const onSuccessfulNodeCreate = (json) => {
+  const onSuccessfulRestCall = (json) => {
     setRestCallInProgress(false);
 
-    console.log("onSuccessfulNodeCreate");
+    console.log("onSuccessfulRestCall");
     if (json.result.length === 1) {
       const node = json.result[0];
-      setCreatedNode(node);
-      props.onCreate(node);
+      setResultantNode(node);
+      props.onComplete(node);
     } else {
       onErrorGet("Error did not get a node from the server");
     }
   };
-  const onErrorNodeCreate = (msg) => {
+  const onErrorRestCall = (msg) => {
     setRestCallInProgress(false);
-    console.log("Error on Create " + msg);
+    console.log("Error on " + props.operation + " " + msg);
     setErrorMsg(msg);
   };
   const onErrorGet = (msg) => {
-    console.log("Error on Create " + msg);
-    setCreatedNode(undefined);
+    console.log("Error on " + props.operation + " " + msg);
+    setResultantNode(undefined);
     // setCreatedRelationship(undefined);
     setErrorMsg(msg);
   };
-  const createLabelIdForSubmitButton = (labelKey) => {
-    return props.currentNodeType.name + "CreateViewButton";
+  const labelIdForSubmitButton = (labelKey) => {
+    return props.currentNodeType.name + "ViewButton";
   };
 
   return (
@@ -250,16 +268,16 @@ export default function CreateNodeReadOnly(props) {
         </Accordion>
       )}
       <div style={{ color: "red" }}>{errorMsg}</div>
-      {createdNode === undefined && (
+      {resultantNode === undefined && (
         <div className="flex-row-container">
           <div className="bx--form-item">
             <button
               className="bx--btn bx--btn--primary"
-              onClick={onClickToCreate}
+              onClick={onClickToIssueRest}
               onAnimationEnd={handleOnAnimationEnd}
               type="button"
             >
-              Create
+              {props.operation}
             </button>
           </div>
         </div>

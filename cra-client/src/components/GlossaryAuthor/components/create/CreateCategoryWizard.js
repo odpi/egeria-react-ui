@@ -7,8 +7,8 @@ import {
   Button,
 } from "carbon-components-react";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
-import CreateNodeInput from "./CreateNodeInput";
-import CreateNodeReadOnly from "./CreateNodeReadOnly";
+import NodeInput from "../nodepages/NodeInput";
+import NodeReadOnly from "../nodepages/NodeReadOnly";
 import { useHistory } from "react-router-dom";
 
 /**
@@ -17,10 +17,10 @@ import { useHistory } from "react-router-dom";
  * Category will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
  *  where the user can confirm the values that will be used to create the Category.
  *
- * This component drives the CreateNodeInput component, which displays the node. There are callbacks to the wizard
+ * This component drives the labelIdForSubmitButton component, which displays the node. There are callbacks to the wizard
  * when the user has finsished with entering creation content and chosen a glossary.
- * This component then driven CreateNodeInput which displays the confirmation screen, issue the create and then does the results 
- * of the create. 
+ * This component then driven NodeInput which displays the confirmation screen, issue the create and then does the results
+ * of the create.
  *
  * @param {*} props
  * @returns
@@ -234,30 +234,28 @@ export default function CreateCategoryWizard(props) {
             </Button>
           </div>
         )}
-        {currentStepIndex === 3 &&
-          nodeCreated === undefined && (
-              <div>
-                <Button kind="secondary" onClick={previousStep}>
-                  Previous
-                </Button>
-              </div>
-            )}
-        {currentStepIndex === 3 &&
-          nodeCreated !==
-            undefined && (
-              <div>
-                <Button kind="secondary" onClick={finished}>
-                  Finished
-                </Button>
-              </div>
-            )}
+        {currentStepIndex === 3 && nodeCreated === undefined && (
+          <div>
+            <Button kind="secondary" onClick={previousStep}>
+              Previous
+            </Button>
+          </div>
+        )}
+        {currentStepIndex === 3 && nodeCreated !== undefined && (
+          <div>
+            <Button kind="secondary" onClick={finished}>
+              Finished
+            </Button>
+          </div>
+        )}
       </div>
       <div className="wizard-navigation-container">
         {currentStepIndex === 0 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
-            <CreateNodeInput
+            <NodeInput
               currentNodeType={props.currentNodeType}
+              operation="Create"
               onAttributeChange={onAttributeChange}
               nodeToCreate={nodeToCreate}
             />
@@ -286,10 +284,11 @@ export default function CreateCategoryWizard(props) {
         {currentStepIndex === 3 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
-            <CreateNodeReadOnly
+            <NodeReadOnly
               currentNodeType={props.currentNodeType}
               nodeToCreate={nodeToCreate}
-              onCreate={onCreate}
+              operation="Create"
+              onComplete={onCreate}
             />
           </div>
         )}
