@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { withRouter } from "react-router-dom";
 import getPathTypesAndGuids from "../properties/PathAnalyser";
-import CreateNodePage from "./CreateNodePage";
-import CreateNodeWizard from "./CreateNodeWizard";
+import CreateGlossaryWizard from "./CreateGlossaryWizard";
+import CreateCategoryWizard from "./CreateCategoryWizard";
+import CreateTermWizard from "./CreateTermWizard";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import getNodeType from "../properties/NodeTypes.js";
 
@@ -44,14 +45,18 @@ function CreateNode(props) {
   return (
     <div>
       {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key === "glossary" && (
-          <CreateNodePage
-            currentNodeType={nodeTypeToBeCreated}
-            glossaryGuid={glossaryGuid}
-          />
+         <CreateGlossaryWizard
+         currentNodeType={nodeTypeToBeCreated} />
         )}
 
-      {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key !== "glossary" && (
-          <CreateNodeWizard
+      {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key === "term" && (
+          <CreateTermWizard
+            currentNodeType={nodeTypeToBeCreated}
+            parentCategoryGuid={parentCategoryGuid}
+          />
+        )}
+        {nodeTypeToBeCreated !== undefined && nodeTypeToBeCreated.key === "category" && (
+          <CreateCategoryWizard
             currentNodeType={nodeTypeToBeCreated}
             parentCategoryGuid={parentCategoryGuid}
           />

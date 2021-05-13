@@ -136,7 +136,7 @@ export default function UpdateRelationshipInline(props) {
             </div>
           );
         })}
-      {currentRelationship !== undefined && (
+      {/* {currentRelationship !== undefined && (
         <Accordion>
           <AccordionItem title="Advanced options">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
@@ -155,7 +155,7 @@ export default function UpdateRelationshipInline(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-      )}
+      )} */}
       {currentRelationship !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">

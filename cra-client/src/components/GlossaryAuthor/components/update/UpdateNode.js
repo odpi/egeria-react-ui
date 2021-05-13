@@ -8,8 +8,6 @@ import {
   Accordion,
   AccordionItem,
   Button,
-  DatePicker,
-  DatePickerInput,
   DataTable,
   TableContainer,
   Table,
@@ -58,7 +56,7 @@ export default function UpdateNode(props) {
           // if we already have this property, pick up the existing relationships
           relationshipTypeArray = newRelationshipsMap[name];
         }
-        if (relationshipTypeArray == undefined) {
+        if (relationshipTypeArray === undefined) {
           relationshipTypeArray = [];
         }
         // calculate a data representation of the relationship that can be displayed in a table row
@@ -366,7 +364,7 @@ export default function UpdateNode(props) {
             </div>
           );
         })}
-      {currentNode !== undefined && (
+      {/* {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Advanced options">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
@@ -385,7 +383,7 @@ export default function UpdateNode(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-      )}
+      )} */}
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">

@@ -13,6 +13,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
@@ -39,6 +40,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
@@ -64,6 +66,27 @@ const getNodeType = (GlossaryAuthorURL, key) => {
           key: "usage",
           label: "Usage",
         },
+        {
+          key: "isSpineObject",
+          label: "Is Spine Object",
+          type: "flag",
+          // do not allow this to be set on create. It should be set when a has-a relationship is created.
+          notCreate: true
+        },
+        {
+          key: "isSpineAttribute",
+          label: "Is Spine Attribute",
+          type: "flag",
+          // do not allow this to be set on create. It should be set when a has-a relationship is created.
+          notCreate: true
+        },
+        {
+          key: "isObjectIdentifier",
+          label: "Is Identifier",
+          type: "flag",
+          // do not allow this to be set on create. It should be set if required when a has-a relationship is created.
+          notCreate: true
+        }
       ],
       summaryResponseAttributes: [
         {
@@ -88,6 +111,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
@@ -114,6 +138,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "name",
           label: "Name",
+          required: true
         },
         {
           key: "description",
