@@ -286,7 +286,7 @@ export default function CreateCategoryWizard(props) {
             <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
             <NodeReadOnly
               currentNodeType={props.currentNodeType}
-              nodeToCreate={nodeToCreate}
+              inputNode={nodeToCreate}
               operation="Create"
               onComplete={onCreate}
             />

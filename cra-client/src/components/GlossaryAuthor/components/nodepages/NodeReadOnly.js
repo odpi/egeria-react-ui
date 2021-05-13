@@ -90,11 +90,12 @@ export default function NodeReadOnly(props) {
 
           let value = node[prop];
           // TODO deal with the other types (and null? and arrays?) properly
-
-          if (prop === "effectiveFromTime" || prop === "effectiveToTime") {
-            value = format(new Date(value), "PPPPpppp");
-          } else {
-            value = JSON.stringify(value);
+          if (value !== undefined) {
+            if (prop === "effectiveFromTime" || prop === "effectiveToTime") {
+              value = format(value, "PPPPpppp");
+            } else {
+              value = JSON.stringify(value);
+            }
           }
           row.value = value;
           rowData.push(row);
@@ -111,13 +112,15 @@ export default function NodeReadOnly(props) {
         let row = {};
         row.id = prop;
         row.attrName = prop;
+        let value = systemAttributes[prop];
         if (prop === "createTime" || prop === "updateTime") {
-          value = format(new Date(value), "PPPPpppp");
-        } else {
-          value = JSON.stringify(value);
+          if (value != undefined) {
+            value = format(value, "PPPPpppp");
+          }
+        // } else {
+        //   value = JSON.stringify(value);
         }
 
-        let value = systemAttributes[prop];
         // TODO deal with the other types (and null? and arrays?) properly
         value = JSON.stringify(value);
         row.value = value;

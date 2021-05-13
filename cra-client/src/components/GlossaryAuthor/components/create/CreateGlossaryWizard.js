@@ -195,7 +195,7 @@ export default function CreateGlossaryWizard(props) {
             <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
             <NodeReadOnly
               currentNodeType={props.currentNodeType}
-              nodeToCreate={nodeToCreate}
+              inputNode={nodeToCreate}
               operation="Create"
               onComplete={onCreate}
             />

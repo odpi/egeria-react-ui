@@ -288,7 +288,7 @@ export default function CreateTermWizard(props) {
             <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
             <NodeReadOnly
               currentNodeType={props.currentNodeType}
-              nodeToCreate={nodeToCreate}
+              inputNode={nodeToCreate}
               operation="Create"
               onComplete={onCreate}
             />
