@@ -176,7 +176,6 @@ export default function CreateCategoryWizard(props) {
           description={getStep1Description()}
         />
         <ProgressStep
-          disabled={!validateCreateDetails()}
           label={getStep2Label()}
           description={getStep2Description()}
         />

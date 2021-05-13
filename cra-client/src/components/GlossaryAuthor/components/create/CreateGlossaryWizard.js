@@ -144,7 +144,6 @@ export default function CreateGlossaryWizard(props) {
           description={getStep1Description()}
         />
         <ProgressStep
-          disabled={!validateCreateDetails()}
           label={getStep2Label()}
           description={getStep2Description()}
         />

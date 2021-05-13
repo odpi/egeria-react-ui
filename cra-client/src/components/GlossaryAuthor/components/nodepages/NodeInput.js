@@ -119,7 +119,9 @@ export default function NodeInput(props) {
         }
         //"effectiveFromTime"
       });
-      if (!validName) {
+      if (validName) {
+        errMsg = "";
+      } else {
         errMsg = "Please specify a Name. ";
         console.log(errorMsg);
       }
