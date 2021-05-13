@@ -259,7 +259,7 @@ export default function CreateTermWizard(props) {
               currentNodeType={props.currentNodeType}
               onAttributeChange={onAttributeChange}
               operation="Create"
-              nodeToCreate={nodeToCreate}
+              inputNode={nodeToCreate}
             />
           </div>
         )}

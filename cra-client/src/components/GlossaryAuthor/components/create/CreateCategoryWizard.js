@@ -256,7 +256,7 @@ export default function CreateCategoryWizard(props) {
               currentNodeType={props.currentNodeType}
               operation="Create"
               onAttributeChange={onAttributeChange}
-              nodeToCreate={nodeToCreate}
+              inputNode={nodeToCreate}
             />
           </div>
         )}

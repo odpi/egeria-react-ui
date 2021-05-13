@@ -148,7 +148,7 @@ function NodeUpdateView(props) {
               <DatePickerInput
                 id="date-picker-range-start"
                 placeholder="mm/dd/yyyy"
-                labelText="Effective from date"
+                labelText="Effective from date (mm/dd/yyyy)"
                 type="text"
               />
               <TimePicker id="time-picker1">
@@ -164,7 +164,7 @@ function NodeUpdateView(props) {
               <DatePickerInput
                 id="date-picker-range-end"
                 placeholder="mm/dd/yyyy"
-                labelText="Effective to date"
+                labelText="Effective to date (mm/dd/yyyy)"
                 type="text"
               />
             </DatePicker>

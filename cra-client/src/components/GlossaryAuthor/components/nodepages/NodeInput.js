@@ -200,14 +200,14 @@ export default function NodeInput(props) {
           <Accordion>
             <AccordionItem title="Limit when active">
               <DateTimePicker
-                dateLabel="Effective from date"
-                timeLabel="Effective from time"
+                dateLabel="Effective from date (mm/dd/yyyy)"
+                timeLabel="Effective from time (hh:mm)"
                 onDateTimeChange={onFromDateTimeChange}
                 onDateTimeInvalid={onFromDateTimeInvalid}
               />
               <DateTimePicker
-                dateLabel="Effective to date"
-                timeLabel="Effective to time"
+                dateLabel="Effective to date (mm/dd/yyyy)"
+                timeLabel="Effective to time (hh:mm)"
                 onDateTimeChange={onToDateTimeChange}
                 onDateTimeInvalid={onToDateTimeInvalid}
               />

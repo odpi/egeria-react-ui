@@ -80,6 +80,10 @@ export default function NodeReadOnly(props) {
           // if we know about the attribute then use the label.
           if (prop === "nodeType") {
             row.attrName = "Node Type";
+          } else if (prop === "effectiveFromTime") {
+            row.attrName = "Effective from time";
+          } else if (prop === "effectiveToTime") {
+            row.attrName = "Effective until time ";
           } else {
             for (var i = 0; i < attributes.length; i++) {
               if (attributes[i].key === prop) {
@@ -117,8 +121,8 @@ export default function NodeReadOnly(props) {
           if (value != undefined) {
             value = format(value, "PPPPpppp");
           }
-        // } else {
-        //   value = JSON.stringify(value);
+          // } else {
+          //   value = JSON.stringify(value);
         }
 
         // TODO deal with the other types (and null? and arrays?) properly
