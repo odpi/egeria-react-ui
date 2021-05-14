@@ -103,7 +103,7 @@ Environment variables used to secure communications between the presentation ser
 *EGERIA_PRESENTATIONSERVER_EGERIA_PFX* This is the pfx option as defined in the [node documentation](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options) 
 *EGERIA_PRESENTATIONSERVER_EGERIA_PFX_PASSPHRASE* This is the passphrase option as defined in the [node documentation](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options) 
 
-Environment variables used to secure communications between the browser and the presention server
+Environment variables used to secure communications between the browser and the presentation server
 *EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_CERT* This is the file location of the certificate to be used to secure communications between the browser and the presentation server
 *EGERIA_PRESENTATIONSERVER_EGERIA_BROWSER_PASSPHRASE* This is the location of the file containing the key used to secure communications between the browser and the presentation server
 

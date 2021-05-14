@@ -235,15 +235,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-<<<<<<< HEAD
       ca: ca,
       pfx: pfx,
       passphrase: passphrase
-=======
-      ca: truststore,
-      pfx: keystore,
-      passphrase: passphrase,
->>>>>>> 00cdf81224eb08a6ef57be0bf74c4c185c02e127
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -285,15 +279,9 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-<<<<<<< HEAD
       ca: ca,
       pfx: pfx,
       passphrase: passphrase
-=======
-      ca: truststore,
-      pfx: keystore,
-      passphrase: passphrase,
->>>>>>> 00cdf81224eb08a6ef57be0bf74c4c185c02e127
     }),
   };
   if (config) apiReq.data = config;
