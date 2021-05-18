@@ -274,7 +274,7 @@ export default function NodeReadOnly(props) {
           </AccordionItem>
         </Accordion>
       )}
-      <div style={{ color: "red" }}>{errorMsg}</div>
+      {/* <div style={{ color: "red" }}>{errorMsg}</div> */}
       {resultantNode === undefined && (
         <div className="flex-row-container">
           <div className="bx--form-item">

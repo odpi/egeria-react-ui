@@ -9,6 +9,12 @@ import {
 import NodeInput from "../nodepages/NodeInput";
 import NodeReadOnly from "../nodepages/NodeReadOnly";
 import { useHistory } from "react-router-dom";
+import { parse } from "date-fns";
+import {
+  hasContent,
+  isTimeStringValid,
+  validateNodePropertiesUserInput
+} from "../../../common/Validators";
 
 /**
  * This is a glossary creation wizard. The first page of the wizard
@@ -27,7 +33,14 @@ import { useHistory } from "react-router-dom";
 export default function CreateGlossaryWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [nodeCreated, setNodeCreated] = useState();
+  // this will be used for the rest body
   const [nodeToCreate, setNodeToCreate] = useState();
+  // this will be used to populate the node in the 1st page of the wizard. It can contain invalid values.
+  // in the case of date time the values is an object contianing the users date and time text
+  const [userInput, setUserInput] = useState();
+
+  const [dateTimeFromMessage, setDateTimeFromMessage] = useState("");
+  const [dateTimeToMessage, setDateTimeToMessage] = useState("");
 
   let history = useHistory();
   console.log("CreateNodeWizard");
@@ -56,52 +69,74 @@ export default function CreateGlossaryWizard(props) {
   const finished = () => {
     history.goBack();
   };
-  const previousStepAndRefreshNodeToCreate = () => {
-    const newIndex = currentStepIndex - 1;
-    setCurrentStepIndex(newIndex);
-  };
 
-  const isValidForConfirm = () => {
-    let isValid = false;
-    if (
-      nodeToCreate !== undefined &&
-      nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== "" &&
-      nodeToCreate.glossary !== undefined &&
-      nodeToCreate.glossary.guid !== undefined
-    ) {
-      isValid = true;
-    }
-    return isValid;
-  };
-  const validateCreateDetails = () => {
-    let isValid = false;
-    if (
-      nodeToCreate !== undefined &&
-      nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== ""
-    ) {
-      isValid = true;
-    }
-
-    return isValid;
-  };
+  
   const onAttributeChange = (attributeKey, attributeValue) => {
-    let myCreateInput = {
-      ...nodeToCreate,
+    let myUserInput = {
+      ...userInput,
       [attributeKey]: attributeValue,
     };
-    setNodeToCreate(myCreateInput);
+    setUserInput(myUserInput);
+
+    // now work out what is valid inthe input and update the node we will use s the rest body if valid
+    // let isValid = false;
+    // if (
+    //   attributeKey === "effectiveFromTime" ||
+    //   attributeKey === "effectiveToTime"
+    // ) {
+    //   let dateTime = undefined;
+    //   // TODO change the attribute value from an object containing a date long and
+    //   // a time text into a long (number of milliseconds since epoch)
+    //   if (attributeValue !== undefined) {
+    //     const date = attributeValue.date;
+    //     const time = attributeValue.time;
+    //     // we need to check for validity before updating the nodeForInput
+
+    //     if (date === undefined) {
+    //       if (hasContent(time)) {
+    //        /// invalid not allowed a undefined date and a defined time -as this does not make sense
+    //       } else {
+    //         isValid = true;
+    //       }
+    //     } else {
+    //       if (time !== undefined && time !== "") {
+    //         // a date and time have been specified
+    //         // parse the time string using the reference date to fill in any other values.
+    //         if (isTimeStringValid(time)) {
+    //           dateTime = parse(time, "HH:mm", date);
+    //           isValid = true;
+    //         }
+    //       } else {
+    //         // date is defined but time is not; this is valid.
+    //         // we assume only a valid date can come back.
+    //         dateTime = date;
+    //         isValid = true;
+    //       }
+    //     }
+    //   }
+    //   if (isValid && dateTime !== undefined) {
+    //     // set the milliseconds as the attribute value.
+    //     attributeValue = dateTime.getTime();
+    //   }
+    // } else if (attributeKey === "name") {
+    //   if (hasContent(attributeValue)) {
+    //     isValid = true;
+    //   }
+    // } else {
+    //   // all other attributes have no validation
+    //   isValid = true;
+    // }
+    if (validateNodePropertiesUserInput(myUserInput)) {
+      let myNodeToCreate = {
+        ...nodeToCreate,
+        [attributeKey]: attributeValue,
+      };
+      setNodeToCreate(myNodeToCreate);
+    }
   };
-  const onGlossarySelect = (guid) => {
-    let glossary = {};
-    glossary.guid = guid;
-    let myNodeToCreate = {
-      ...nodeToCreate,
-      ["glossary"]: glossary,
-    };
-    setNodeToCreate(myNodeToCreate);
-  };
+  const validateUserInput = () => {
+    return validateNodePropertiesUserInput(userInput);
+  }
 
   const getTitle = () => {
     return "Create " + props.currentNodeType.typeName + " Wizard";
@@ -154,7 +189,7 @@ export default function CreateGlossaryWizard(props) {
             <Button
               kind="secondary"
               onClick={handleGotCreateDetailsOnClick}
-              disabled={!validateCreateDetails()}
+              disabled={!validateUserInput()}
             >
               Next
             </Button>
@@ -184,7 +219,7 @@ export default function CreateGlossaryWizard(props) {
               currentNodeType={props.currentNodeType}
               onAttributeChange={onAttributeChange}
               operation="Create"
-              inputNode={nodeToCreate}
+              inputNode={userInput}
             />
           </div>
         )}
