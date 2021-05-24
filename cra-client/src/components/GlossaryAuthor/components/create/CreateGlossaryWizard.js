@@ -50,11 +50,8 @@ export default function CreateGlossaryWizard(props) {
     }
   }, []);
 
-  // const [dateTimeFromMessage, setDateTimeFromMessage] = useState("");
-  // const [dateTimeToMessage, setDateTimeToMessage] = useState("");
-
   let history = useHistory();
-  console.log("CreateNodeWizard");
+  console.log("CreateGlossaryWizard");
 
   const handleGotCreateDetailsOnClick = (e) => {
     e.preventDefault();
