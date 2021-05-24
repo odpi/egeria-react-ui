@@ -1,15 +1,21 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ProgressIndicator,
   ProgressStep,
   Button,
 } from "carbon-components-react";
-import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 import NodeInput from "../nodepages/NodeInput";
 import NodeReadOnly from "../nodepages/NodeReadOnly";
 import { useHistory } from "react-router-dom";
+import {
+  validateNodePropertiesUserInput,
+  extendUserInput,
+} from "../../../common/Validators";
+import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
+
+import { parse } from "date-fns";
 
 /**
  * This is a Term creation wizard. The first page of the wizard
@@ -28,10 +34,26 @@ import { useHistory } from "react-router-dom";
 export default function CreateTermWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [nodeCreated, setNodeCreated] = useState();
+  // this will be used for the rest body
   const [nodeToCreate, setNodeToCreate] = useState();
+  // this will be used to populate the node in the 1st page of the wizard. It can contain invalid values.
+  // in the case of date time the values is an object containing the users date and time text
+  const [userInput, setUserInput] = useState();
+
+  useEffect(() => {
+    if (userInput === undefined) {
+      // force validation of name field on initial load of page.
+      const extendedUserInput = extendUserInput(userInput, "name", undefined);
+
+      let newUserInput = {
+        ...extendedUserInput,
+      };
+      setUserInput(newUserInput);
+    }
+  }, []);
 
   let history = useHistory();
-  console.log("CreateNodeWizard");
+  console.log("CreateTermWizard");
 
   const handleGotCreateDetailsOnClick = (e) => {
     e.preventDefault();
@@ -40,12 +62,6 @@ export default function CreateTermWizard(props) {
     }
   };
 
-  const confirmCreateDetails = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 2) {
-      setCurrentStepIndex(3);
-    }
-  };
   const nextStep = () => {
     const newIndex = currentStepIndex + 1;
     setCurrentStepIndex(newIndex);
@@ -57,17 +73,11 @@ export default function CreateTermWizard(props) {
   const finished = () => {
     history.goBack();
   };
-  const previousStepAndRefreshNodeToCreate = () => {
-    const newIndex = currentStepIndex - 1;
-    setCurrentStepIndex(newIndex);
-  };
 
-  const isValidForConfirm = () => {
+  const hasGlossary = () => {
     let isValid = false;
     if (
       nodeToCreate !== undefined &&
-      nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== "" &&
       nodeToCreate.glossary !== undefined &&
       nodeToCreate.glossary.guid !== undefined
     ) {
@@ -75,24 +85,45 @@ export default function CreateTermWizard(props) {
     }
     return isValid;
   };
-  const validateCreateDetails = () => {
-    let isValid = false;
-    if (
-      nodeToCreate !== undefined &&
-      nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== ""
-    ) {
-      isValid = true;
-    }
-
-    return isValid;
-  };
   const onAttributeChange = (attributeKey, attributeValue) => {
-    let myCreateInput = {
-      ...nodeToCreate,
-      [attributeKey]: attributeValue,
+    const extendedUserInput = extendUserInput(
+      userInput,
+      attributeKey,
+      attributeValue
+    );
+
+    let newUserInput = {
+      ...extendedUserInput,
     };
-    setNodeToCreate(myCreateInput);
+
+    setUserInput(newUserInput);
+    if (validateNodePropertiesUserInput(extendedUserInput)) {
+      if (
+        attributeKey === "effectiveFromTime" ||
+        attributeKey === "effectiveToTime"
+      ) {
+        // the value is an object with date and time properties
+        // we need to create a single date
+        if (attributeValue !== undefined) {
+          let time = attributeValue.time;
+          let date = attributeValue.date;
+          if (time === undefined) {
+            attributeValue = date;
+          } else {
+            attributeValue = parse(time, "HH:mm", date);
+          }
+          attributeValue = attributeValue.getTime();
+        }
+      }
+      let myNodeToCreate = {
+        ...nodeToCreate,
+        [attributeKey]: attributeValue,
+      };
+      setNodeToCreate(myNodeToCreate);
+    }
+  };
+  const validateUserInput = () => {
+    return validateNodePropertiesUserInput(userInput);
   };
   const onGlossarySelect = (guid) => {
     let glossary = {};
@@ -177,28 +208,27 @@ export default function CreateTermWizard(props) {
           description={getStep1Description()}
         />
         <ProgressStep
-          disabled={!validateCreateDetails()}
+          disabled={!validateUserInput()}
           label={getStep2Label()}
           description={getStep2Description()}
         />
         <ProgressStep
-          disabled={!isValidForConfirm()}
+          disabled={!hasGlossary}
           label={getStep3Label()}
           description={getStep3Description()}
         />
         <ProgressStep
-          disabled={!isValidForConfirm()}
           label={getStep4Label()}
           description={getStep4Description()}
         />
       </ProgressIndicator>
       <div className="wizard-navigation-container">
-        {currentStepIndex === 0 && (
+      {currentStepIndex === 0 && (
           <div>
             <Button
               kind="secondary"
               onClick={handleGotCreateDetailsOnClick}
-              disabled={!validateCreateDetails()}
+              disabled={!validateUserInput()}
             >
               Next
             </Button>
@@ -208,14 +238,14 @@ export default function CreateTermWizard(props) {
           <div>
             <Button
               kind="secondary"
-              onClick={previousStepAndRefreshNodeToCreate}
+              onClick={previousStep}
             >
               Previous
             </Button>
             <Button
               kind="secondary"
               onClick={nextStep}
-              disabled={!isValidForConfirm()}
+              disabled={!hasGlossary()}
             >
               Next
             </Button>
@@ -229,7 +259,7 @@ export default function CreateTermWizard(props) {
             <Button
               kind="secondary"
               onClick={nextStep}
-              disabled={!isValidForConfirm()}
+           
             >
               Next
             </Button>
@@ -259,7 +289,7 @@ export default function CreateTermWizard(props) {
               currentNodeType={props.currentNodeType}
               onAttributeChange={onAttributeChange}
               operation="Create"
-              inputNode={nodeToCreate}
+              inputNode={userInput}
             />
           </div>
         )}
