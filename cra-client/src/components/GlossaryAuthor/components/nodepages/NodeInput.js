@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionItem } from "carbon-components-react";
+import { Accordion, AccordionItem, TextInput } from "carbon-components-react";
 import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
 import {
@@ -38,7 +38,9 @@ export default function NodeInput(props) {
           const attributeValue = props.inputNode[attributeKey];
           let attributesWithValuesElement = attributes[i];
           if (attributeValue !== undefined) {
-            attributesWithValuesElement.value = attributeValue;
+            attributesWithValuesElement.value = attributeValue.value;
+            attributesWithValuesElement.invalid = attributeValue.invalid;
+            attributesWithValuesElement.invalidText = attributeValue.invalidText;
           }
           attributesWithValuesElement.id = attributeKey;
           attributesWithValues.push(attributesWithValuesElement);
@@ -64,14 +66,14 @@ export default function NodeInput(props) {
     }
   }, [props]);
   // validate the current attributes when they change
-  useEffect(() => {
-    const errMsg = validateForm();
-    if (errMsg === undefined) {
-      setErrorMsg("");
-    } else {
-      setErrorMsg(errMsg);
-    }
-  }, [currentAttributes]);
+  // useEffect(() => {
+  //   const errMsg = validateForm();
+  //   if (errMsg === undefined) {
+  //     setErrorMsg("");
+  //   } else {
+  //     setErrorMsg(errMsg);
+  //   }
+  // }, [currentAttributes]);
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -90,38 +92,6 @@ export default function NodeInput(props) {
     props.onAttributeChange("effectiveToTime", dateTime);
   };
 
-  const validateForm = () => {
-    //TODO consider marking name as manditory in the nodetype definition
-    let errMsg = undefined;
-    if (currentAttributes !== undefined) {
-      // check that if we have user input then there is a value for name
-      // if we were given initial values then this needs to be checked also.
-      let validName = false;
-      let effectiveFromValue;
-      let effectiveToValue;
-      currentAttributes.map((item) => {
-        const value = item.value;
-        if (item.id === "name" && value !== undefined && value.length > 0) {
-          validName = true;
-        } else if (item.id === "effectiveFromTime") {
-          effectiveFromValue = value;
-        } else if (item.id === "effectiveToTime") {
-          effectiveToValue = value;
-        }
-      });
-      if (validName) {
-        errMsg = "";
-        if (!isEffectivityRangeValid(effectiveFromValue, effectiveToValue)) {
-          errMsg = "Effectivity range incorrect, effectivity to date needs to be later than effectivity from date";
-        }
-      } else {
-        errMsg = "Please specify a Name. ";
-        console.log(errorMsg);
-      }
-    }
-
-    return errMsg;
-  };
   const getInputType = (item) => {
     let type = "text";
     if (item.type && item.type === "flag") {
@@ -180,13 +150,15 @@ export default function NodeInput(props) {
                     >
                       {item.label} <Info16 />
                     </label>
-                    <input
+                    <TextInput
                       id={labelIdForAttribute(item.key)}
                       type={getInputType(item)}
                       value={item.value}
+                      invalid={item.invalid}
+                      invalidText={item.invalidText}
                       onChange={(e) => setAttribute(item, e.target.value)}
                       placeholder={item.label}
-                    ></input>
+                    ></TextInput>
                   </div>
                 );
               })}

@@ -1,7 +1,11 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
-import { DatePicker, DatePickerInput } from "carbon-components-react";
+import {
+  DatePicker,
+  DatePickerInput,
+  TextInput,
+} from "carbon-components-react";
 import { isTimeStringValid } from "./Validators";
 import format from "date-fns/format";
 /**
@@ -15,9 +19,7 @@ import format from "date-fns/format";
  * @returns node input
  */
 export default function DateTimePicker(props) {
-  const [timeInError, setTimeInError] = useState(false);
-  const [dateInError, setDateInError] = useState(false);
-  // const [dateTime, setDateTime] = useState();
+
   const [date, setDate] = useState();
   const [time, setTime] = useState();
 
@@ -29,26 +31,9 @@ export default function DateTimePicker(props) {
       dateTime.date = date;
       dateTime.time = time;
     }
-    const timeDefined = (time !== undefined && time !== ""); 
-    
-    if (date === undefined && timeDefined) {
-      setDateInError(true);
-    } else {
-      setDateInError(false);
-    }
 
     props.onDateTimeChange(dateTime);
   }, [date, time]);
-  // useEffect(() => {
-  //   let message = "";
-  //   if (timeInError === true) {
-  //     message = "Invalid Time";
-  //   }
-  //   if (date === undefined && time !== undefined) {
-  //     message = "Invalid do not specify a time without a date";
-  //   }
-  //   props.onDateTimeInvalid(message);
-  // }, [timeInError, date, time ]);
 
   const onDateChange = (e) => {
     console.log("onDateChange " + e[0]);
@@ -58,37 +43,63 @@ export default function DateTimePicker(props) {
     const chosenTime = e.currentTarget.value;
     // set the time even if it is invalid .
     setTime(chosenTime);
-    if (chosenTime === undefined || chosenTime === "") {
-      setTimeInError(false);
-    } else {
-      if (isTimeStringValid(chosenTime)) {
-        setTimeInError(false);
-        console.log("onTimeChange " + chosenTime + " good");
-      } else {
-        setTimeInError(true);
-      }
-    }
-
     console.log("onTimeChange");
   };
 
   const getTimeValue = () => {
     let timeValue = undefined;
-    if (props.value != undefined) {
-      timeValue = props.value.time;
+    if (props.value != undefined && props.value.time != undefined) {
+      timeValue = props.value.time.value;
     }
     return timeValue;
   };
+  const getTimeInvalid = () => {
+    let invalid = false;
+    if (props.value != undefined && props.value.time != undefined) {
+      invalid = props.value.time.invalid;
+    }
+    return invalid;
+  };
+  const getTimeInvalidText = () => {
+    let invalidText = false;
+    if (props.value != undefined && props.value.time != undefined) {
+      invalidText = props.value.time.invalidText;
+    }
+    return invalidText;
+  };
   const getDateValue = () => {
     let dateValue = undefined;
-    if (props.value != undefined) {
-      // the value needs to be the date string using the date-fns format
-      if (props.value.date !== undefined) {
-        dateValue = format(props.value.date, "MM/dd/Y");
-      }
+
+    // the value needs to be the date string using the date-fns format
+    if (
+      props.value != undefined &&
+      props.value.date != undefined &&
+      props.value.date.value != undefined
+    ) {
+      dateValue = format(props.value.date.value, "MM/dd/Y");
     }
     return dateValue;
   };
+
+  const getDateInvalid = () => {
+    let invalid = false;
+    if (
+      props.value != undefined &&
+      props.value.date != undefined &&
+      props.value.date.invalid != undefined
+    ) {
+      invalid = props.value.date.invalid;
+    }
+    return invalid;
+  };
+  const getDateInvalidText = () => {
+    let invalidText = false;
+    if (props.value != undefined && props.value.date != undefined) {
+      invalidText = props.value.date.invalidText;
+    }
+    return invalidText;
+  };
+
   const getDateFormat = () => {
     // TODO localise
     return "m/d/Y";
@@ -110,38 +121,33 @@ export default function DateTimePicker(props) {
             placeholder={getDateFormatPlaceHolder()}
             labelText={props.dateLabel}
             value={getDateValue()}
+            invalid={getDateInvalid()}
+            invalidText={getDateInvalidText()}
             type="text"
           />
         </DatePicker>
-          {dateInError ? (
-            <span style={{ color: "red" }}>
-              'Date is required if there is a time'
-            </span>
-          ) : (
-            ""
-          )}
       </div>
       <div>
-        <div className="bx--date-picker-container">
+        <div className="bx--date-picker-container time-picker__width">
           <label className="bx--label" htmlFor={props.timeLabel}>
             {props.timeLabel}
           </label>
-          <input
-            className="bx--date-picker__input flatpickr-input"
-            type="text"
+          <TextInput
             id={props.timeLabel}
             value={getTimeValue()}
+            invalid={getTimeInvalid()}
+            invalidText={getTimeInvalidText()}
             label={props.timeLabel}
             //   pattern="(0[0123]|[1-9]):[0-5][0-9](\\s)?"
             placeholder="hh:mm (UTC)"
             maxLength="5"
             onChange={onTimeChange}
           />
-          {timeInError ? (
+          {/* {timeInError ? (
             <span style={{ color: "red" }}>Incorrect, should be 'hh:mm'</span>
           ) : (
             ""
-          )}
+          )} */}
         </div>
       </div>
     </div>

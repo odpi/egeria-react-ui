@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ProgressIndicator,
   ProgressStep,
@@ -9,12 +9,11 @@ import {
 import NodeInput from "../nodepages/NodeInput";
 import NodeReadOnly from "../nodepages/NodeReadOnly";
 import { useHistory } from "react-router-dom";
-import { parse } from "date-fns";
 import {
-  hasContent,
-  isTimeStringValid,
-  validateNodePropertiesUserInput
+  validateNodePropertiesUserInput,
+  extendUserInput,
 } from "../../../common/Validators";
+import { parse } from "date-fns";
 
 /**
  * This is a glossary creation wizard. The first page of the wizard
@@ -36,11 +35,23 @@ export default function CreateGlossaryWizard(props) {
   // this will be used for the rest body
   const [nodeToCreate, setNodeToCreate] = useState();
   // this will be used to populate the node in the 1st page of the wizard. It can contain invalid values.
-  // in the case of date time the values is an object contianing the users date and time text
+  // in the case of date time the values is an object containing the users date and time text
   const [userInput, setUserInput] = useState();
 
-  const [dateTimeFromMessage, setDateTimeFromMessage] = useState("");
-  const [dateTimeToMessage, setDateTimeToMessage] = useState("");
+  useEffect(() => {
+    if (userInput === undefined) {
+      // force validation of name field on initial load of page.
+      const extendedUserInput = extendUserInput(userInput, "name", undefined);
+
+      let newUserInput = {
+        ...extendedUserInput,
+      };
+      setUserInput(newUserInput);
+    }
+  }, []);
+
+  // const [dateTimeFromMessage, setDateTimeFromMessage] = useState("");
+  // const [dateTimeToMessage, setDateTimeToMessage] = useState("");
 
   let history = useHistory();
   console.log("CreateNodeWizard");
@@ -52,12 +63,6 @@ export default function CreateGlossaryWizard(props) {
     }
   };
 
-  const confirmCreateDetails = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 2) {
-      setCurrentStepIndex(3);
-    }
-  };
   const nextStep = () => {
     const newIndex = currentStepIndex + 1;
     setCurrentStepIndex(newIndex);
@@ -70,63 +75,36 @@ export default function CreateGlossaryWizard(props) {
     history.goBack();
   };
 
-  
   const onAttributeChange = (attributeKey, attributeValue) => {
-    let myUserInput = {
-      ...userInput,
-      [attributeKey]: attributeValue,
+    const extendedUserInput = extendUserInput(
+      userInput,
+      attributeKey,
+      attributeValue
+    );
+
+    let newUserInput = {
+      ...extendedUserInput,
     };
-    setUserInput(myUserInput);
 
-    // now work out what is valid inthe input and update the node we will use s the rest body if valid
-    // let isValid = false;
-    // if (
-    //   attributeKey === "effectiveFromTime" ||
-    //   attributeKey === "effectiveToTime"
-    // ) {
-    //   let dateTime = undefined;
-    //   // TODO change the attribute value from an object containing a date long and
-    //   // a time text into a long (number of milliseconds since epoch)
-    //   if (attributeValue !== undefined) {
-    //     const date = attributeValue.date;
-    //     const time = attributeValue.time;
-    //     // we need to check for validity before updating the nodeForInput
-
-    //     if (date === undefined) {
-    //       if (hasContent(time)) {
-    //        /// invalid not allowed a undefined date and a defined time -as this does not make sense
-    //       } else {
-    //         isValid = true;
-    //       }
-    //     } else {
-    //       if (time !== undefined && time !== "") {
-    //         // a date and time have been specified
-    //         // parse the time string using the reference date to fill in any other values.
-    //         if (isTimeStringValid(time)) {
-    //           dateTime = parse(time, "HH:mm", date);
-    //           isValid = true;
-    //         }
-    //       } else {
-    //         // date is defined but time is not; this is valid.
-    //         // we assume only a valid date can come back.
-    //         dateTime = date;
-    //         isValid = true;
-    //       }
-    //     }
-    //   }
-    //   if (isValid && dateTime !== undefined) {
-    //     // set the milliseconds as the attribute value.
-    //     attributeValue = dateTime.getTime();
-    //   }
-    // } else if (attributeKey === "name") {
-    //   if (hasContent(attributeValue)) {
-    //     isValid = true;
-    //   }
-    // } else {
-    //   // all other attributes have no validation
-    //   isValid = true;
-    // }
-    if (validateNodePropertiesUserInput(myUserInput)) {
+    setUserInput(newUserInput);
+    if (validateNodePropertiesUserInput(extendedUserInput)) {
+      if (
+        attributeKey === "effectiveFromTime" ||
+        attributeKey === "effectiveToTime"
+      ) {
+        // the value is an object with date and time properties
+        // we need to create a single date
+        if (attributeValue !== undefined) {
+          let time = attributeValue.time;
+          let date = attributeValue.date;
+          if (time === undefined) {
+            attributeValue = date;
+          } else {
+            attributeValue = parse(time, "HH:mm", date);
+          }
+          attributeValue = attributeValue.getTime();
+        }
+      }
       let myNodeToCreate = {
         ...nodeToCreate,
         [attributeKey]: attributeValue,
@@ -136,7 +114,7 @@ export default function CreateGlossaryWizard(props) {
   };
   const validateUserInput = () => {
     return validateNodePropertiesUserInput(userInput);
-  }
+  };
 
   const getTitle = () => {
     return "Create " + props.currentNodeType.typeName + " Wizard";
