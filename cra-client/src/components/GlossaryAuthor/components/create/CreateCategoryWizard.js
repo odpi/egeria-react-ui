@@ -86,18 +86,7 @@ export default function CreateCategoryWizard(props) {
     }
     return isValid;
   };
-  // const validateCreateDetails = () => {
-  //   let isValid = false;
-  //   if (
-  //     nodeToCreate !== undefined &&
-  //     nodeToCreate.name !== undefined &&
-  //     nodeToCreate.name !== ""
-  //   ) {
-  //     isValid = true;
-  //   }
 
-  //   return isValid;
-  // };
   const onAttributeChange = (attributeKey, attributeValue) => {
     const extendedUserInput = extendUserInput(
       userInput,
