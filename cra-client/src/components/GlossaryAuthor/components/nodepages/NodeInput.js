@@ -4,10 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Accordion, AccordionItem, TextInput } from "carbon-components-react";
 import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
-import {
-  hasContent,
-  isEffectivityRangeValid
-} from "../../../common/Validators";
+
 
 /**
  * Component to take user input for node page as part of a wizard.

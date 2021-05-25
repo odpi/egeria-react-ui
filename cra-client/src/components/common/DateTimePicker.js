@@ -6,10 +6,9 @@ import {
   DatePickerInput,
   TextInput,
 } from "carbon-components-react";
-import { isTimeStringValid } from "./Validators";
 import format from "date-fns/format";
 /**
- * Component to take user input for node page as part of a wizard.
+ * Controlled Component (with no state) to take user input for node page as part of a wizard.
  *
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
  * @param inputNode if specified this is the node to initialise the fields with in the form
@@ -19,31 +18,26 @@ import format from "date-fns/format";
  * @returns node input
  */
 export default function DateTimePicker(props) {
-
-  const [date, setDate] = useState();
-  const [time, setTime] = useState();
-
-  useEffect(() => {
-    let dateTime = undefined;
-    // if date is not defined then time should not be either. No effectivity.
-    if (date !== undefined || time !== undefined) {
-      dateTime = {};
-      dateTime.date = date;
-      dateTime.time = time;
-    }
-
-    props.onDateTimeChange(dateTime);
-  }, [date, time]);
-
   const onDateChange = (e) => {
     console.log("onDateChange " + e[0]);
-    setDate(e[0]);
+    let dateTime = {};
+    dateTime.date = e[0];
+    dateTime.time = getTimeValue();
+    props.onDateTimeChange(dateTime);
   };
   const onTimeChange = (e) => {
-    const chosenTime = e.currentTarget.value;
-    // set the time even if it is invalid .
-    setTime(chosenTime);
     console.log("onTimeChange");
+    let dateTime = {};
+    let date;
+    if (
+      props.value != undefined &&
+      props.value.date != undefined 
+    ) {
+      date = props.value.date.value;
+    }
+    dateTime.date = date;
+    dateTime.time = e.currentTarget.value;
+    props.onDateTimeChange(dateTime);
   };
 
   const getTimeValue = () => {
@@ -108,6 +102,13 @@ export default function DateTimePicker(props) {
     // TODO localise
     return "mm/dd/yyyy";
   };
+  /**
+   * It is meaningless to have a time without a date, so dont let the user input a time until there is a date.
+   * @returns boolean time is disabled.
+   */
+  const isTimeDisabled = () => {
+    return !getDateValue();
+  };
 
   return (
     <div className="flexcontainer">
@@ -133,6 +134,7 @@ export default function DateTimePicker(props) {
             {props.timeLabel}
           </label>
           <TextInput
+            disabled={isTimeDisabled()}
             id={props.timeLabel}
             value={getTimeValue()}
             invalid={getTimeInvalid()}
@@ -143,11 +145,6 @@ export default function DateTimePicker(props) {
             maxLength="5"
             onChange={onTimeChange}
           />
-          {/* {timeInError ? (
-            <span style={{ color: "red" }}>Incorrect, should be 'hh:mm'</span>
-          ) : (
-            ""
-          )} */}
         </div>
       </div>
     </div>
