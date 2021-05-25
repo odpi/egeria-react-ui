@@ -36,15 +36,33 @@ export const isEffectivityRangeValid = (from, to) => {
   if (from === undefined && to === undefined) {
     //valid
   } else {
-
     if (from !== undefined && to !== undefined) {
-      if (from.time.invalid || to.time.invalid) {
+      if ((from.time && from.time.invalid) || (to.time && to.time.invalid)) {
         isValid = false;
       } else {
-        const fromTime = from.time.value;
-        const fromDate = from.date.value;
-        const toTime = to.time.value;
-        const toDate = to.date.value;
+        let fromDate;
+        if (from.date === undefined || from.date.value === undefined) {
+          // to.date is defined to have got here.
+          // we interpret this as now
+          fromDate = new Date();
+        } else {
+          fromDate = from.date.value;
+        }
+        let toDate;
+        if (to.date === undefined || from.date.value === undefined) {
+          toDate = undefined;
+        } else {
+          toDate = to.date.value;
+        }
+        // copy over the time values only if we have them.
+        let fromTime;
+        if (from.time) {
+          fromTime = from.time.value;
+        }
+        let toTime;
+        if (to.time) {
+          toTime = to.time.value;
+        }
 
         let fromDateTime;
         let toDateTime;
@@ -58,11 +76,15 @@ export const isEffectivityRangeValid = (from, to) => {
         } else {
           toDateTime = toDate;
         }
-        const fromMillis = fromDateTime.getTime();
-        const toMillis = toDateTime.getTime();
-
-        if (isValid && fromMillis >= toMillis) {
+        if (toDate === undefined) {
           isValid = false;
+        } else {
+          const fromMillis = fromDateTime.getTime();
+          const toMillis = toDateTime.getTime();
+
+          if (isValid && fromMillis >= toMillis) {
+            isValid = false;
+          }
         }
       }
     }
@@ -73,27 +95,39 @@ export const isEffectivityRangeValid = (from, to) => {
  * Check the date range is valid
  * @param {*} from from datetime
  * @param {*} to to datetime
- * @returns boolean indicating whetehr it is valid or not.
+ * @returns boolean indicating whether it is valid or not.
  */
 export const isEffectivityDateRangeValid = (from, to) => {
   let isValid = true;
   if (from === undefined || to === undefined) {
     //valid
   } else {
-    const fromDate = from.date.value;
-    const toDate = to.date.value;
-    const fromMillis = fromDate.getTime();
-    const toMillis = toDate.getTime();
-    // can have the same day - the time check ids then needed to work out which is earlier or later
-    if (isValid && fromMillis > toMillis) {
-      isValid = false;
+    // from.date or to.date could be undefined.
+    if (to.date === undefined || to.date.value === undefined) {
+      // valid - no end date
+    } else {
+      const toDate = to.date.value;
+      let fromDate;
+      if (from.date === undefined || from.date.value === undefined) {
+        // to.date is defined to have got here.
+        // we interpret this as now
+        fromDate = new Date();
+      } else {
+        fromDate = from.date.value;
+      }
+      const fromMillis = fromDate.getTime();
+      const toMillis = toDate.getTime();
+      // can have the same day - the time check ids then needed to work out which is earlier or later
+      if (isValid && fromMillis > toMillis) {
+        isValid = false;
+      }
     }
   }
   return isValid;
 };
 /**
  * Text whether an object contains a field called invalid that is true
- * @param {*} obj 
+ * @param {*} obj
  * @returns true if valid (i.e. does not have invalid = true)
  */
 const isObjectValueValid = (obj) => {
@@ -102,11 +136,11 @@ const isObjectValueValid = (obj) => {
     isValid = false;
   }
   return isValid;
-};   
+};
 /**
- * check for invalid being set to true for all the properties. For datetimes the invalid property is on the time and date properties. 
- * @param {*} userInput 
- * @returns true if valid i.e. (i.e. does not have a property with invalid = true) 
+ * check for invalid being set to true for all the properties. For datetimes the invalid property is on the time and date properties.
+ * @param {*} userInput
+ * @returns true if valid i.e. (i.e. does not have a property with invalid = true)
  */
 export const validateNodePropertiesUserInput = (userInput) => {
   let isValid = true;
@@ -114,16 +148,20 @@ export const validateNodePropertiesUserInput = (userInput) => {
     isValid = false;
   } else {
     for (let property in userInput) {
-      const propertyValue =  userInput[property];
+      const propertyValue = userInput[property];
       if (property === "effectiveFromTime" || property === "effectiveToTime") {
-       
-        if ( propertyValue !== undefined && !isObjectValueValid(propertyValue.date)) {
+        if (
+          propertyValue !== undefined &&
+          !isObjectValueValid(propertyValue.date)
+        ) {
           isValid = false;
-        } 
-        if ( propertyValue !== undefined && !isObjectValueValid(propertyValue.time)) {
+        }
+        if (
+          propertyValue !== undefined &&
+          !isObjectValueValid(propertyValue.time)
+        ) {
           isValid = false;
-        } 
-        
+        }
       } else if (!isObjectValueValid(propertyValue)) {
         isValid = false;
       }
@@ -216,25 +254,56 @@ export const extendUserInput = (userInput, attributeKey, attributeValue) => {
     ...extendedUserInput,
     ["effectiveToTime"]: attributeToObject,
   };
-  // only set the range errors if the times are valid.
+
   if (fromValue !== undefined && toValue !== undefined) {
     if (isEffectivityDateRangeValid(fromValue, toValue)) {
-      // date range is valid
+      // date range is valid. We can have undefined values for dates
+      if (fromValue.date === undefined) {
+        // default to now
+        fromValue.date = {};
+        fromValue.date.value = new Date();
+      }
+      if (toValue.date === undefined) {
+        // create an object so we can set the invalid flag as false on it.
+        toValue.date = {};
+      }
+
       fromValue.date.invalid = false;
       toValue.date.invalid = false;
       if (isEffectivityRangeValid(fromValue, toValue)) {
-        // time is valid
+        // time is valid but might be undefined
+        if (fromValue.time === undefined) {
+          fromValue.time = {};
+        }
+        if (toValue.time === undefined) {
+          toValue.time = {};
+        }
         fromValue.time.invalid = false;
         toValue.time.invalid = false;
       } else {
         // check time format
-        if (fromValue.time.invalid || toValue.time.invalid) {
+        if (
+          (fromValue && fromValue.time && fromValue.time.invalid) ||
+          (toValue && toValue.tine && toValue.time.invalid)
+        ) {
           // already labelled invalid
         } else {
           // same date but the time range is not valid.
+          if (!fromValue) {
+            fromValue = {};
+            fromValue.time = {};
+          } else if (! fromValue.time) {
+            fromValue.time = {};
+          }
           fromValue.time.invalid = true;
           fromValue.time.invalidText =
             "Invalid, needs to be earlier than 'the Effective to time'";
+          if (!toValue) {
+            toValue = {};
+            toValue.time = {};
+          } else if (!toValue.time){
+            toValue.time = {};
+          }
           toValue.time.invalid = true;
           toValue.time.invalidText =
             "Invalid needs to be later than the 'Effective from time'";
@@ -281,14 +350,7 @@ export const extendDateTimeAttributeObject = (attributeObject) => {
       timeObject !== undefined ||
       (timeObject !== undefined && timeObject.value !== undefined)
     ) {
-      if (
-        dateObject === undefined ||
-        (dateObject !== undefined && dateObject.value === undefined)
-      ) {
-        // time without a date is invalid
-        dateObject.invalidText = "Cannot have a time without a date";
-        dateObject.invalid = true;
-      }
+      // do not need to check that there is no date and a time - as the ui does not allow a time to be entered until a date is entered.
       if (timeObject !== undefined && !isTimeStringValid(timeObject.value)) {
         // the time specified is not in the right format
         timeObject.invalidText = "Invalid time: please use hh:ss";
