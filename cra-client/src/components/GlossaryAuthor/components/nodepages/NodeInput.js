@@ -5,7 +5,6 @@ import { Accordion, AccordionItem, TextInput } from "carbon-components-react";
 import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
 
-
 /**
  * Component to take user input for node page as part of a wizard.
  *
@@ -37,7 +36,8 @@ export default function NodeInput(props) {
           if (attributeValue !== undefined) {
             attributesWithValuesElement.value = attributeValue.value;
             attributesWithValuesElement.invalid = attributeValue.invalid;
-            attributesWithValuesElement.invalidText = attributeValue.invalidText;
+            attributesWithValuesElement.invalidText =
+              attributeValue.invalidText;
           }
           attributesWithValuesElement.id = attributeKey;
           attributesWithValues.push(attributesWithValuesElement);
@@ -147,15 +147,17 @@ export default function NodeInput(props) {
                     >
                       {item.label} <Info16 />
                     </label>
-                    <TextInput
-                      id={labelIdForAttribute(item.key)}
-                      type={getInputType(item)}
-                      value={item.value}
-                      invalid={item.invalid}
-                      invalidText={item.invalidText}
-                      onChange={(e) => setAttribute(item, e.target.value)}
-                      placeholder={item.label}
-                    ></TextInput>
+                    <div className="fullwidth">
+                      <TextInput
+                        id={labelIdForAttribute(item.key)}
+                        type={getInputType(item)}
+                        value={item.value}
+                        invalid={item.invalid}
+                        invalidText={item.invalidText}
+                        onChange={(e) => setAttribute(item, e.target.value)}
+                        placeholder={item.label}
+                      ></TextInput>
+                    </div>
                   </div>
                 );
               })}
@@ -165,14 +167,14 @@ export default function NodeInput(props) {
                 dateLabel="Effective from date (mm/dd/yyyy)"
                 timeLabel="Effective from time (hh:mm)"
                 onDateTimeChange={onFromDateTimeChange}
-                value={effectiveFrom}   
+                value={effectiveFrom}
                 onDateTimeMessage={props.onDateTimeFromMessage}
               />
               <DateTimePicker
                 dateLabel="Effective to date (mm/dd/yyyy)"
                 timeLabel="Effective to time (hh:mm)"
                 onDateTimeChange={onToDateTimeChange}
-                value={effectiveTo} 
+                value={effectiveTo}
                 onDateTimeMessage={props.onDateTimeToMessage}
               />
             </AccordionItem>
