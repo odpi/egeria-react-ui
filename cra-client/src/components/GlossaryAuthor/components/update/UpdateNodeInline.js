@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
+import { parse, format } from "date-fns";
 import {
   Accordion,
   AccordionItem,
   Button,
-  DatePicker,
-  DatePickerInput,
+  // DatePicker,
+  // DatePickerInput,
   DataTable,
   TableContainer,
   Table,
@@ -16,18 +17,74 @@ import {
   TableHeader,
   TableBody,
 } from "carbon-components-react";
-import Info16 from "@carbon/icons-react/lib/information/16";
+// import Info16 from "@carbon/icons-react/lib/information/16";
+import {
+  validateNodePropertiesUserInput,
+  extendUserInput,
+} from "../../../common/Validators";
 import { issueRestUpdate } from "../RestCaller";
+import NodeInput from "../nodepages/NodeInput";
 
 export default function UpdateNodeInline(props) {
-  const [updateBody, setUpdateBody] = useState({});
+  // const [nodeToUpdate, setNodeToUpdate] = useState({});
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
+  const [userInput, setUserInput] = useState();
 
   useEffect(() => {
     setCurrentNode(props.node);
+    updateUserInputFromNode(props.node);
+     
   }, [props]);
+  /**
+   * There is new node content (from an update response or we are initialising with content). The node is the serialised for of a glossary author artifact, used on rest calls. 
+   * The userInput state variable stores data in a format that the user interface needs, including a value and invalid flag
+   * for each attrribute value.   
+   * This function maps the node content to the userInput. 
+   * @param {*} node 
+   */
+  const updateUserInputFromNode = (node) => {
+    const currentNodeType = props.currentNodeType;
+    let newUserInput = {};
+    if (currentNodeType && currentNodeType.attributes && currentNodeType.attributes.length >0) {
 
+      for (let i = 0 ; i<  currentNodeType.attributes.length ; i++) {
+        const attributeName = currentNodeType.attributes[i].key;
+        newUserInput[attributeName] = {};
+        newUserInput[attributeName].value= node[attributeName];
+        newUserInput[attributeName].invalid= false;
+      }
+    }
+ 
+    // change the dates from longs to an object with a date and time
+    if (node.effectiveFromTime) {
+      let dateTimeObject = {};
+      dateTimeObject.date = {};
+      dateTimeObject.date.value = new Date(node.effectiveFromTime);
+      dateTimeObject.date.invalid = false;
+      dateTimeObject.time = {};
+      dateTimeObject.time.value = format(
+        node.effectiveFromTime,
+        "HH:mm"
+      );
+      dateTimeObject.time.invalid = false;
+      newUserInput.effectiveFromTime = dateTimeObject;
+    }
+    if (node.effectiveToTime) {
+      let dateTimeObject = {};
+      dateTimeObject.date = {};
+      dateTimeObject.date.value = new Date(node.effectiveToTime);
+      dateTimeObject.date.invalid = false;
+      dateTimeObject.time = {};
+      dateTimeObject.time.value = format(
+        node.effectiveToTime,
+        "HH:mm"
+      );
+      dateTimeObject.time.invalid = false;
+      newUserInput.effectiveToTime = dateTimeObject;
+    }
+    setUserInput(newUserInput);
+  }; 
   console.log("UpdateNodeInline");
 
   const url = getUrl();
@@ -41,7 +98,7 @@ export default function UpdateNodeInline(props) {
   const handleClickUpdate = (e) => {
     console.log("handleClickUpdate()");
     e.preventDefault();
-    let body = updateBody;
+    let body = currentNode;
 
     // TODO consider moving this up to a node controller as per the CRUD pattern.
     // in the meantime this will be self contained.
@@ -49,12 +106,16 @@ export default function UpdateNodeInline(props) {
     // console.log("issueUpdate " + url);
     issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
   };
+  const handleCreateRelationship = () => {
+    alert("TODO create relationship!");
+  };
   const onSuccessfulUpdate = (json) => {
     console.log("onSuccessfulUpdate");
     if (json.result.length === 1) {
       const node = json.result[0];
       node.gen = currentNode.gen;
       setCurrentNode(node);
+      updateUserInputFromNode(node);
     } else {
       setErrorMsg("Error did not get a node from the server");
       setCurrentNode(undefined);
@@ -64,16 +125,45 @@ export default function UpdateNodeInline(props) {
     console.log("Error on Update " + msg);
     setErrorMsg(msg);
     setCurrentNode(undefined);
+    updateUserInputFromNode(undefined);
   };
 
-  function updateLabelId(labelKey) {
-    return "text-input-update" + props.currentNodeType.name + "-" + labelKey;
-  }
-  const setAttribute = (item, value) => {
-    console.log("setAttribute " + item.key + ",value=" + value);
-    let myUpdateBody = updateBody;
-    myUpdateBody[item.key] = value;
-    setUpdateBody(myUpdateBody);
+  const onAttributeChange = (attributeKey, attributeValue) => {
+    const extendedUserInput = extendUserInput(
+      userInput,
+      attributeKey,
+      attributeValue
+    );
+
+    let newUserInput = {
+      ...extendedUserInput,
+    };
+
+    setUserInput(newUserInput);
+    if (validateNodePropertiesUserInput(extendedUserInput)) {
+      if (
+        attributeKey === "effectiveFromTime" ||
+        attributeKey === "effectiveToTime"
+      ) {
+        // the value is an object with date and time properties
+        // we need to create a single date
+        if (attributeValue !== undefined) {
+          let time = attributeValue.time;
+          let date = attributeValue.date;
+          if (time === undefined) {
+            attributeValue = date;
+          } else {
+            attributeValue = parse(time, "HH:mm", date);
+          }
+          attributeValue = attributeValue.getTime();
+        }
+      }
+      let myCurrentNode = {
+        ...currentNode,
+        [attributeKey]: attributeValue,
+      };
+      setCurrentNode(myCurrentNode);
+    }
   };
   const updatedTableHeaderData = [
     {
@@ -102,6 +192,7 @@ export default function UpdateNodeInline(props) {
     }
     return rowData;
   };
+
   return (
     <div>
       {currentNode !== undefined && (
@@ -114,46 +205,14 @@ export default function UpdateNodeInline(props) {
       )}
       {currentNode !== undefined &&
         props.currentNodeType !== undefined &&
-        props.currentNodeType.attributes !== undefined &&
-        props.currentNodeType.attributes.map((item) => {
-          return (
-            <div className="bx--form-item" key={item.key}>
-              <label htmlFor={updateLabelId(item.key)} className="bx--label">
-                {item.label} <Info16 />
-              </label>
-              <input
-                id={updateLabelId(item.key)}
-                type="text"
-                disabled={currentNode.readOnly}
-                className="bx--text-input"
-                defaultValue={currentNode[item.key]}
-                key={currentNode[item.key]}
-                onChange={(e) => setAttribute(item, e.target.value)}
-                placeholder={item.label}
-              ></input>
-            </div>
-          );
-        })}
-      {/* {currentNode !== undefined && (
-        <Accordion>
-          <AccordionItem title="Advanced options">
-            <DatePicker dateFormat="m/d/Y" datePickerType="range">
-              <DatePickerInput
-                // id="date-picker-range-start"
-                placeholder="mm/dd/yyyy"
-                labelText="Effective from date"
-                type="text"
-              />
-              <DatePickerInput
-                // id="date-picker-range-end"
-                placeholder="mm/dd/yyyy"
-                labelText="Effective to date"
-                type="text"
-              />
-            </DatePicker>
-          </AccordionItem>
-        </Accordion>
-      )} */}
+        props.currentNodeType.attributes !== undefined && (
+          <NodeInput
+            currentNodeType={props.currentNodeType}
+            onAttributeChange={onAttributeChange}
+            operation="Update"
+            inputNode={userInput}
+          />
+        )}
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">
@@ -202,6 +261,15 @@ export default function UpdateNodeInline(props) {
           type="button"
         >
           Update
+        </Button>
+      )}
+      {currentNode && (
+        <Button
+          className="bx--btn bx--btn--primary"
+          onClick={handleCreateRelationship}
+          type="button"
+        >
+          Create Relationship
         </Button>
       )}
     </div>
