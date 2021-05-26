@@ -172,7 +172,7 @@ export default function CreateTermWizard(props) {
     return "Step 2: A glossary needs to be chosen, to store the Term.";
   };
   const getStep3Title = () => {
-    return "Optionally choose a category parent.";
+    return "Optionally choose a Term categorisation.";
   };
   const getStep3Label = () => {
     return "Set Parent";
@@ -263,7 +263,6 @@ export default function CreateTermWizard(props) {
             >
               Next
             </Button>
-            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
           </div>
         )}
         {currentStepIndex === 3 && nodeCreated === undefined && (
