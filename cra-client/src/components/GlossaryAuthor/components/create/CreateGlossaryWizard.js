@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ProgressIndicator,
   ProgressStep,
@@ -9,6 +9,11 @@ import {
 import NodeInput from "../nodepages/NodeInput";
 import NodeReadOnly from "../nodepages/NodeReadOnly";
 import { useHistory } from "react-router-dom";
+import {
+  validateNodePropertiesUserInput,
+  extendUserInput,
+} from "../../../common/Validators";
+import { parse } from "date-fns";
 
 /**
  * This is a glossary creation wizard. The first page of the wizard
@@ -27,10 +32,26 @@ import { useHistory } from "react-router-dom";
 export default function CreateGlossaryWizard(props) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [nodeCreated, setNodeCreated] = useState();
+  // this will be used for the rest body
   const [nodeToCreate, setNodeToCreate] = useState();
+  // this will be used to populate the node in the 1st page of the wizard. It can contain invalid values.
+  // in the case of date time the values is an object containing the users date and time text
+  const [userInput, setUserInput] = useState();
+
+  useEffect(() => {
+    if (userInput === undefined) {
+      // force validation of name field on initial load of page.
+      const extendedUserInput = extendUserInput(userInput, "name", undefined);
+
+      let newUserInput = {
+        ...extendedUserInput,
+      };
+      setUserInput(newUserInput);
+    }
+  }, []);
 
   let history = useHistory();
-  console.log("CreateNodeWizard");
+  console.log("CreateGlossaryWizard");
 
   const handleGotCreateDetailsOnClick = (e) => {
     e.preventDefault();
@@ -39,12 +60,6 @@ export default function CreateGlossaryWizard(props) {
     }
   };
 
-  const confirmCreateDetails = (e) => {
-    e.preventDefault();
-    if (currentStepIndex === 2) {
-      setCurrentStepIndex(3);
-    }
-  };
   const nextStep = () => {
     const newIndex = currentStepIndex + 1;
     setCurrentStepIndex(newIndex);
@@ -56,51 +71,46 @@ export default function CreateGlossaryWizard(props) {
   const finished = () => {
     history.goBack();
   };
-  const previousStepAndRefreshNodeToCreate = () => {
-    const newIndex = currentStepIndex - 1;
-    setCurrentStepIndex(newIndex);
-  };
 
-  const isValidForConfirm = () => {
-    let isValid = false;
-    if (
-      nodeToCreate !== undefined &&
-      nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== "" &&
-      nodeToCreate.glossary !== undefined &&
-      nodeToCreate.glossary.guid !== undefined
-    ) {
-      isValid = true;
-    }
-    return isValid;
-  };
-  const validateCreateDetails = () => {
-    let isValid = false;
-    if (
-      nodeToCreate !== undefined &&
-      nodeToCreate.name !== undefined &&
-      nodeToCreate.name !== ""
-    ) {
-      isValid = true;
-    }
-
-    return isValid;
-  };
   const onAttributeChange = (attributeKey, attributeValue) => {
-    let myCreateInput = {
-      ...nodeToCreate,
-      [attributeKey]: attributeValue,
+    const extendedUserInput = extendUserInput(
+      userInput,
+      attributeKey,
+      attributeValue
+    );
+
+    let newUserInput = {
+      ...extendedUserInput,
     };
-    setNodeToCreate(myCreateInput);
+
+    setUserInput(newUserInput);
+    if (validateNodePropertiesUserInput(extendedUserInput)) {
+      if (
+        attributeKey === "effectiveFromTime" ||
+        attributeKey === "effectiveToTime"
+      ) {
+        // the value is an object with date and time properties
+        // we need to create a single date
+        if (attributeValue !== undefined) {
+          let time = attributeValue.time;
+          let date = attributeValue.date;
+          if (time === undefined) {
+            attributeValue = date;
+          } else {
+            attributeValue = parse(time, "HH:mm", date);
+          }
+          attributeValue = attributeValue.getTime();
+        }
+      }
+      let myNodeToCreate = {
+        ...nodeToCreate,
+        [attributeKey]: attributeValue,
+      };
+      setNodeToCreate(myNodeToCreate);
+    }
   };
-  const onGlossarySelect = (guid) => {
-    let glossary = {};
-    glossary.guid = guid;
-    let myNodeToCreate = {
-      ...nodeToCreate,
-      ["glossary"]: glossary,
-    };
-    setNodeToCreate(myNodeToCreate);
+  const validateUserInput = () => {
+    return validateNodePropertiesUserInput(userInput);
   };
 
   const getTitle = () => {
@@ -154,7 +164,7 @@ export default function CreateGlossaryWizard(props) {
             <Button
               kind="secondary"
               onClick={handleGotCreateDetailsOnClick}
-              disabled={!validateCreateDetails()}
+              disabled={!validateUserInput()}
             >
               Next
             </Button>
@@ -184,7 +194,7 @@ export default function CreateGlossaryWizard(props) {
               currentNodeType={props.currentNodeType}
               onAttributeChange={onAttributeChange}
               operation="Create"
-              inputNode={nodeToCreate}
+              inputNode={userInput}
             />
           </div>
         )}

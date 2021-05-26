@@ -18,6 +18,7 @@ import {
 import { issueRestCreate } from "../RestCaller";
 import { issueRestUpdate } from "../RestCaller";
 
+
 /**
  * Component to show the page for a node that ois about to be created or updated
  *
@@ -96,7 +97,7 @@ export default function NodeReadOnly(props) {
           // TODO deal with the other types (and null? and arrays?) properly
           if (value !== undefined) {
             if (prop === "effectiveFromTime" || prop === "effectiveToTime") {
-              value = format(value, "PPPPpppp");
+              value = format(new Date(value), "PPPPpppp");
             } else {
               value = JSON.stringify(value);
             }
@@ -274,7 +275,6 @@ export default function NodeReadOnly(props) {
           </AccordionItem>
         </Accordion>
       )}
-      <div style={{ color: "red" }}>{errorMsg}</div>
       {resultantNode === undefined && (
         <div className="flex-row-container">
           <div className="bx--form-item">

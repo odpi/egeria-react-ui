@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionItem } from "carbon-components-react";
+import { Accordion, AccordionItem, TextInput } from "carbon-components-react";
 import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
+
 
 /**
  * Component to take user input for node page as part of a wizard.
@@ -11,12 +12,16 @@ import Info16 from "@carbon/icons-react/lib/information/16";
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
  * @param inputNode if specified this is the node to initialise the fields with in the form
  * @param operation create or update
- * @param onAttributeChange drive this method when an attribute changes. 
+ * @param onAttributeChange drive this method when an attribute changes.
+ * @param onFromDateTimeChange from datetime has changed
+ * @param onToDateTimeChange to datetime has changed
  * @returns node input
  */
 export default function NodeInput(props) {
   const [errorMsg, setErrorMsg] = useState();
   const [currentAttributes, setCurrentAttributes] = useState();
+  const [effectiveFrom, setEffectiveFrom] = useState();
+  const [effectiveTo, setEffectiveTo] = useState();
 
   // update the currentAttributes with the supplied inputNode from props.
   useEffect(() => {
@@ -25,20 +30,29 @@ export default function NodeInput(props) {
       let attributes = props.currentNodeType.attributes;
       if (props.inputNode) {
         // now  scan through the props.inputNode properties and add in any values there.
-        for (var i = 0; i < attributes.length; i++) {
+        for (let i = 0; i < attributes.length; i++) {
           const attributeKey = attributes[i].key;
           const attributeValue = props.inputNode[attributeKey];
           let attributesWithValuesElement = attributes[i];
           if (attributeValue !== undefined) {
-            attributesWithValuesElement.value = attributeValue;
+            attributesWithValuesElement.value = attributeValue.value;
+            attributesWithValuesElement.invalid = attributeValue.invalid;
+            attributesWithValuesElement.invalidText = attributeValue.invalidText;
           }
           attributesWithValuesElement.id = attributeKey;
           attributesWithValues.push(attributesWithValuesElement);
         }
         setCurrentAttributes(attributesWithValues);
+        // pickup the effectivity
+        if (props.inputNode.effectiveFromTime) {
+          setEffectiveFrom(props.inputNode.effectiveFromTime);
+        }
+        if (props.inputNode.effectiveToTime) {
+          setEffectiveTo(props.inputNode.effectiveToTime);
+        }
       } else {
         let attributesWithIds = [];
-        for (var i = 0; i < attributes.length; i++) {
+        for (let i = 0; i < attributes.length; i++) {
           let attribute = attributes[i];
           const attributeKey = attribute.key;
           attribute.id = attributeKey;
@@ -49,14 +63,14 @@ export default function NodeInput(props) {
     }
   }, [props]);
   // validate the current attributes when they change
-  useEffect(() => {
-    const errMsg = validateForm();
-    if (errMsg === undefined) {
-      setErrorMsg("");
-    } else {
-      setErrorMsg(errMsg);
-    }
-  }, [currentAttributes]);
+  // useEffect(() => {
+  //   const errMsg = validateForm();
+  //   if (errMsg === undefined) {
+  //     setErrorMsg("");
+  //   } else {
+  //     setErrorMsg(errMsg);
+  //   }
+  // }, [currentAttributes]);
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -69,66 +83,12 @@ export default function NodeInput(props) {
   };
 
   const onFromDateTimeChange = (dateTime) => {
-    let value = undefined;
-    if (dateTime !== undefined) {
-      value = dateTime.getTime();
-    }
-    props.onAttributeChange("effectiveFromTime", value);
+    props.onAttributeChange("effectiveFromTime", dateTime);
   };
   const onToDateTimeChange = (dateTime) => {
-    let value = undefined;
-    if (dateTime !== undefined) {
-      value = dateTime.getTime();
-    }
-    props.onAttributeChange("effectiveToTime", value);
-  };
-  const onFromDateTimeInvalid = (msg) => {
-    // alert(msg);
-  };
-  const onToDateTimeInvalid = (msg) => {
-    // alert(msg);
+    props.onAttributeChange("effectiveToTime", dateTime);
   };
 
-  const validateForm = () => {
-    //TODO consider marking name as manditory in the nodetype definition
-    let errMsg = undefined;
-    if (currentAttributes !== undefined) {
-      // check that if we have user input then there is a value for name
-      // if we were given initial values then this needs to be checked also.
-      let validName = false;
-      let validFromTime = false;
-      let validToTime = false;
-      currentAttributes.map((item) => {
-        const value = item.value;
-        if (item.id === "name" && value !== undefined && value.length > 0) {
-          validName = true;
-        }
-        if (
-          item.id === "effectiveFromTime" &&
-          value !== undefined &&
-          value.length > 0
-        ) {
-          validFromTime = true;
-        }
-        if (
-          item.id === "effectiveToTime" &&
-          value !== undefined &&
-          value.length > 0
-        ) {
-          validToTime = true;
-        }
-        //"effectiveFromTime"
-      });
-      if (validName) {
-        errMsg = "";
-      } else {
-        errMsg = "Please specify a Name. ";
-        console.log(errorMsg);
-      }
-    }
-
-    return errMsg;
-  };
   const getInputType = (item) => {
     let type = "text";
     if (item.type && item.type === "flag") {
@@ -173,7 +133,7 @@ export default function NodeInput(props) {
               .filter(function (obj) {
                 // if notCreate is true and operation is create then do not allow
                 let allow = true;
-                if (props.operation === 'Create' && obj.notCreate) {
+                if (props.operation === "Create" && obj.notCreate) {
                   allow = false;
                 }
                 return allow;
@@ -187,13 +147,15 @@ export default function NodeInput(props) {
                     >
                       {item.label} <Info16 />
                     </label>
-                    <input
+                    <TextInput
                       id={labelIdForAttribute(item.key)}
                       type={getInputType(item)}
                       value={item.value}
+                      invalid={item.invalid}
+                      invalidText={item.invalidText}
                       onChange={(e) => setAttribute(item, e.target.value)}
                       placeholder={item.label}
-                    ></input>
+                    ></TextInput>
                   </div>
                 );
               })}
@@ -203,13 +165,15 @@ export default function NodeInput(props) {
                 dateLabel="Effective from date (mm/dd/yyyy)"
                 timeLabel="Effective from time (hh:mm)"
                 onDateTimeChange={onFromDateTimeChange}
-                onDateTimeInvalid={onFromDateTimeInvalid}
+                value={effectiveFrom}   
+                onDateTimeMessage={props.onDateTimeFromMessage}
               />
               <DateTimePicker
                 dateLabel="Effective to date (mm/dd/yyyy)"
                 timeLabel="Effective to time (hh:mm)"
                 onDateTimeChange={onToDateTimeChange}
-                onDateTimeInvalid={onToDateTimeInvalid}
+                value={effectiveTo} 
+                onDateTimeMessage={props.onDateTimeToMessage}
               />
             </AccordionItem>
           </Accordion>
