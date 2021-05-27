@@ -142,6 +142,10 @@ export default function StartingNodeNavigation({
       readOnly = true;
     }
     setSelectedNodeReadOnly(readOnly);
+    if (onSelectCallback) {
+       onSelectCallback(node);
+    }
+    
   };
 
   const onErrorGetSelectedNode = (msg) => {
@@ -281,9 +285,6 @@ export default function StartingNodeNavigation({
     setSelectedNodeGuid(nodeGuid);
     if (nodeGuid) {
       getSelectedNodeFromServer(nodeGuid);
-    }
-    if (onSelectCallback) {
-      onSelectCallback(nodeGuid);
     }
   };
 

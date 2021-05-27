@@ -6,24 +6,23 @@ import {
   ProgressStep,
   Button,
 } from "carbon-components-react";
-import NodeInput from "../nodepages/NodeInput";
-import NodeReadOnly from "../nodepages/NodeReadOnly";
+import NodeInput from "../authoringforms/NodeInput";
+import NodeReadOnly from "../authoringforms/NodeReadOnly";
 import { useHistory } from "react-router-dom";
 import {
-  validateNodePropertiesUserInput,
+  validatePropertiesUserInput,
   extendUserInput,
 } from "../../../common/Validators";
 import { parse } from "date-fns";
 
 /**
  * This is a glossary creation wizard. The first page of the wizard
- * asks the user to input values for the glossary create. The next page then asks the user for the glossary that the
- * glossary will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
+ * asks the user to input values for the glossary create. Finally there is a confirmation screen,
  *  where the user can confirm the values that will be used to create the glossary.
  *
  * This component drives the NodeInput component, which displays the node. There are callbacks to the wizard
- * when the user has finsished with entering creation content and chosen a glossary.
- * This component then driven NodeInput which displays the confirmation screen, issue the create and then does the results
+ * when the user has finsished with entering creation content.
+ * This component then drives NodeReadOnly which displays the confirmation screen, issues the create and then shows the results
  * of the create.
  *
  * @param {*} props
@@ -84,7 +83,7 @@ export default function CreateGlossaryWizard(props) {
     };
 
     setUserInput(newUserInput);
-    if (validateNodePropertiesUserInput(extendedUserInput)) {
+    if (validatePropertiesUserInput(extendedUserInput)) {
       if (
         attributeKey === "effectiveFromTime" ||
         attributeKey === "effectiveToTime"
@@ -110,7 +109,7 @@ export default function CreateGlossaryWizard(props) {
     }
   };
   const validateUserInput = () => {
-    return validateNodePropertiesUserInput(userInput);
+    return validatePropertiesUserInput(userInput);
   };
 
   const getTitle = () => {

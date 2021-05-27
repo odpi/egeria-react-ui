@@ -138,11 +138,12 @@ const isObjectValueValid = (obj) => {
   return isValid;
 };
 /**
- * check for invalid being set to true for all the properties. For datetimes the invalid property is on the time and date properties.
+ * Driven for nodes and relationships
+ * Check for invalid being set to true for all the properties. For datetimes the invalid property is on the time and date properties.
  * @param {*} userInput
  * @returns true if valid i.e. (i.e. does not have a property with invalid = true)
  */
-export const validateNodePropertiesUserInput = (userInput) => {
+export const validatePropertiesUserInput = (userInput) => {
   let isValid = true;
   if (userInput === undefined) {
     isValid = false;
@@ -170,6 +171,7 @@ export const validateNodePropertiesUserInput = (userInput) => {
 
   return isValid;
 };
+
 /**
  * UserInput object has properties that are the attribute name. The value of an attribute is an object
  * that has a value (which is the users input and an invalidText property which if set contains

@@ -64,14 +64,14 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     },
     synonym: {
       key: "synonym",
-      plural: "synonym",
+      plural: "synonyms",
       typeName: "Synonym",
       isRelatedTerm: true,
       hasExpression: true
     },    
     antonym: {
       key: "antonym",
-      plural: "antonym",
+      plural: "antonyms",
       typeName: "Antonym",
       isRelatedTerm: true
     },  

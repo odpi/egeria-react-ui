@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
+import ReactDOM from 'react-dom';
 import { parse, format } from "date-fns";
 import {
   Accordion,
   AccordionItem,
   Button,
-  // DatePicker,
-  // DatePickerInput,
   DataTable,
+  Modal,
   TableContainer,
   Table,
   TableHead,
@@ -16,14 +16,16 @@ import {
   TableCell,
   TableHeader,
   TableBody,
+
 } from "carbon-components-react";
 // import Info16 from "@carbon/icons-react/lib/information/16";
 import {
-  validateNodePropertiesUserInput,
+  validatePropertiesUserInput,
   extendUserInput,
 } from "../../../common/Validators";
 import { issueRestUpdate } from "../RestCaller";
-import NodeInput from "../nodepages/NodeInput";
+import NodeInput from "../authoringforms/NodeInput";
+import CreateRelationshipWizard from "../create/CreateRelationshipWizard";
 
 export default function UpdateNodeInline(props) {
   // const [nodeToUpdate, setNodeToUpdate] = useState({});
@@ -106,9 +108,6 @@ export default function UpdateNodeInline(props) {
     // console.log("issueUpdate " + url);
     issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
   };
-  const handleCreateRelationship = () => {
-    alert("TODO create relationship!");
-  };
   const onSuccessfulUpdate = (json) => {
     console.log("onSuccessfulUpdate");
     if (json.result.length === 1) {
@@ -127,6 +126,9 @@ export default function UpdateNodeInline(props) {
     setCurrentNode(undefined);
     updateUserInputFromNode(undefined);
   };
+  const createRelationship = () => {
+    //TODO issue the rest call
+  };
 
   const onAttributeChange = (attributeKey, attributeValue) => {
     const extendedUserInput = extendUserInput(
@@ -140,7 +142,7 @@ export default function UpdateNodeInline(props) {
     };
 
     setUserInput(newUserInput);
-    if (validateNodePropertiesUserInput(extendedUserInput)) {
+    if (validatePropertiesUserInput(extendedUserInput)) {
       if (
         attributeKey === "effectiveFromTime" ||
         attributeKey === "effectiveToTime"
@@ -176,6 +178,10 @@ export default function UpdateNodeInline(props) {
     },
   ];
 
+  const onRelationshipCreated = () => {
+    alert("relationship created");
+  }
+
   const getSystemDataRowData = () => {
     let rowData = [];
     const systemAttributes = currentNode.systemAttributes;
@@ -191,6 +197,23 @@ export default function UpdateNodeInline(props) {
       rowData.push(row);
     }
     return rowData;
+  };
+  const ModalStateManager = ({
+    renderLauncher: LauncherContent,
+    children: ModalContent,
+  }) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        {!ModalContent || typeof document === 'undefined'
+          ? null
+          : ReactDOM.createPortal(
+              <ModalContent open={open} setOpen={setOpen} />,
+              document.body
+            )}
+        {LauncherContent && <LauncherContent open={open} setOpen={setOpen} />}
+      </>
+    );
   };
 
   return (
@@ -263,15 +286,31 @@ export default function UpdateNodeInline(props) {
           Update
         </Button>
       )}
-      {currentNode && (
-        <Button
-          className="bx--btn bx--btn--primary"
-          onClick={handleCreateRelationship}
-          type="button"
-        >
-          Create Relationship
-        </Button>
+      {currentNode && currentNode.nodeType === 'Term' && (
+                 <ModalStateManager
+                 renderLauncher={({ setOpen }) => (
+                   <Button onClick={() => setOpen(true)}>Create Relationship</Button>
+                 )}>
+                 {({ open, setOpen }) => (
+                   <Modal
+                     modalHeading="Create Relationship"
+                     primaryButtonText="Create"
+                     secondaryButtonText="Cancel"
+                     open={open}
+                     onRequestClose={() => setOpen(false)}
+                     onRequestSubmit={() => createRelationship()}>
+                     <CreateRelationshipWizard 
+                      currentNodeType={props.currentNodeType}
+                      currentNode = {currentNode}
+                      onCreated = {onRelationshipCreated}
+                      />  
+                    
+                   </Modal>
+                 )}
+               </ModalStateManager>
+       
       )}
+
     </div>
   );
 }

@@ -20,7 +20,7 @@ import { issueRestUpdate } from "../RestCaller";
 
 
 /**
- * Component to show the page for a node that ois about to be created or updated
+ * Component to show the input page for a node that is about to be created or updated
  *
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
  * @param props.inputNode if specified this contain attributes to prefill the screen with prior to issuing the rest call.
@@ -28,19 +28,10 @@ import { issueRestUpdate } from "../RestCaller";
  * @returns
  */
 export default function NodeReadOnly(props) {
-  // const identificationContext = useContext(IdentificationContext);
 
-  const [node, setNode] = useState({});
-  const [errorMsg, setErrorMsg] = useState();
   const [restCallInProgress, setRestCallInProgress] = useState(false);
-  // this is the input node
-  const [inputNode, setInputNode] = useState();
   // After the rest call succeeds, the response from the create is in this state
   const [resultantNode, setResultantNode] = useState();
-
-  // useEffect(() => {
-  //   setInputNode(props.InputNode);
-  // }, [props]);
 
   const attributeTableHeaderData = [
     {
@@ -181,13 +172,13 @@ export default function NodeReadOnly(props) {
   const onErrorRestCall = (msg) => {
     setRestCallInProgress(false);
     console.log("Error on " + props.operation + " " + msg);
-    setErrorMsg(msg);
+    // setErrorMsg(msg);
   };
   const onErrorGet = (msg) => {
     console.log("Error on " + props.operation + " " + msg);
     setResultantNode(undefined);
     // setCreatedRelationship(undefined);
-    setErrorMsg(msg);
+    // setErrorMsg(msg);
   };
   const labelIdForSubmitButton = (labelKey) => {
     return props.currentNodeType.name + "ViewButton";
