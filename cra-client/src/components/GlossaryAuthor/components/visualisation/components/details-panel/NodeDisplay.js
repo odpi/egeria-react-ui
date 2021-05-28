@@ -8,8 +8,6 @@ import getNodeType from "../../../properties/NodeTypes";
 
 export default function NodeDisplay(props) {
   const identificationContext = useContext(IdentificationContext);
-  // const [node, setNode] = useState();
-  // setNode(props.node);
   const node = props.node;
   const getCurrentNodeType = () => {
     const nodeType = getNodeType(

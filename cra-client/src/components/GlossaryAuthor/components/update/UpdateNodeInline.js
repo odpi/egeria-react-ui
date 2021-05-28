@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect } from "react";
-import ReactDOM from 'react-dom';
+import React, { useState, useEffect, useContext } from "react";
+import ReactDOM from "react-dom";
 import { parse, format } from "date-fns";
 import {
   Accordion,
@@ -16,9 +16,10 @@ import {
   TableCell,
   TableHeader,
   TableBody,
-
 } from "carbon-components-react";
 // import Info16 from "@carbon/icons-react/lib/information/16";
+
+import { InstancesContext } from "../visualisation/contexts/InstancesContext";
 import {
   validatePropertiesUserInput,
   extendUserInput,
@@ -28,7 +29,7 @@ import NodeInput from "../authoringforms/NodeInput";
 import CreateRelationshipWizard from "../create/CreateRelationshipWizard";
 
 export default function UpdateNodeInline(props) {
-  // const [nodeToUpdate, setNodeToUpdate] = useState({});
+  const instancesContext        = useContext(InstancesContext);
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [userInput, setUserInput] = useState();
@@ -37,28 +38,30 @@ export default function UpdateNodeInline(props) {
   useEffect(() => {
     setCurrentNode(props.node);
     updateUserInputFromNode(props.node);
-     
   }, [props]);
   /**
-   * There is new node content (from an update response or we are initialising with content). The node is the serialised for of a glossary author artifact, used on rest calls. 
+   * There is new node content (from an update response or we are initialising with content). The node is the serialised for of a glossary author artifact, used on rest calls.
    * The userInput state variable stores data in a format that the user interface needs, including a value and invalid flag
-   * for each attrribute value.   
-   * This function maps the node content to the userInput. 
-   * @param {*} node 
+   * for each attrribute value.
+   * This function maps the node content to the userInput.
+   * @param {*} node
    */
   const updateUserInputFromNode = (node) => {
     const currentNodeType = props.currentNodeType;
     let newUserInput = {};
-    if (currentNodeType && currentNodeType.attributes && currentNodeType.attributes.length >0) {
-
-      for (let i = 0 ; i<  currentNodeType.attributes.length ; i++) {
+    if (
+      currentNodeType &&
+      currentNodeType.attributes &&
+      currentNodeType.attributes.length > 0
+    ) {
+      for (let i = 0; i < currentNodeType.attributes.length; i++) {
         const attributeName = currentNodeType.attributes[i].key;
         newUserInput[attributeName] = {};
-        newUserInput[attributeName].value= node[attributeName];
-        newUserInput[attributeName].invalid= false;
+        newUserInput[attributeName].value = node[attributeName];
+        newUserInput[attributeName].invalid = false;
       }
     }
- 
+
     // change the dates from longs to an object with a date and time
     if (node.effectiveFromTime) {
       let dateTimeObject = {};
@@ -66,10 +69,7 @@ export default function UpdateNodeInline(props) {
       dateTimeObject.date.value = new Date(node.effectiveFromTime);
       dateTimeObject.date.invalid = false;
       dateTimeObject.time = {};
-      dateTimeObject.time.value = format(
-        node.effectiveFromTime,
-        "HH:mm"
-      );
+      dateTimeObject.time.value = format(node.effectiveFromTime, "HH:mm");
       dateTimeObject.time.invalid = false;
       newUserInput.effectiveFromTime = dateTimeObject;
     }
@@ -79,15 +79,12 @@ export default function UpdateNodeInline(props) {
       dateTimeObject.date.value = new Date(node.effectiveToTime);
       dateTimeObject.date.invalid = false;
       dateTimeObject.time = {};
-      dateTimeObject.time.value = format(
-        node.effectiveToTime,
-        "HH:mm"
-      );
+      dateTimeObject.time.value = format(node.effectiveToTime, "HH:mm");
       dateTimeObject.time.invalid = false;
       newUserInput.effectiveToTime = dateTimeObject;
     }
     setUserInput(newUserInput);
-  }; 
+  };
   console.log("UpdateNodeInline");
 
   const url = getUrl();
@@ -127,9 +124,7 @@ export default function UpdateNodeInline(props) {
     setCurrentNode(undefined);
     updateUserInputFromNode(undefined);
   };
-  const createRelationship = () => {
-    
-  };
+  const createRelationship = () => {};
 
   const onAttributeChange = (attributeKey, attributeValue) => {
     const extendedUserInput = extendUserInput(
@@ -179,12 +174,12 @@ export default function UpdateNodeInline(props) {
     },
   ];
 
-  const onRelationshipCreated = () => {
-    alert("relationship created");
-  }
+  const onRelationshipCreated = (payLoad) => {
+    instancesContext.addRelationshipInstance( payLoad.node, payLoad.relationship);
+  };
   const onReadyToCreate = () => {
     setPrimaryButtonDisabled(false);
-  }
+  };
 
   const getSystemDataRowData = () => {
     let rowData = [];
@@ -209,7 +204,7 @@ export default function UpdateNodeInline(props) {
     const [open, setOpen] = useState(false);
     return (
       <>
-        {!ModalContent || typeof document === 'undefined'
+        {!ModalContent || typeof document === "undefined"
           ? null
           : ReactDOM.createPortal(
               <ModalContent open={open} setOpen={setOpen} />,
@@ -290,31 +285,30 @@ export default function UpdateNodeInline(props) {
           Update
         </Button>
       )}
-      {currentNode && currentNode.nodeType === 'Term' && (
-                 <ModalStateManager
-                 renderLauncher={({ setOpen }) => (
-                   <Button onClick={() => setOpen(true)}>Create Relationship</Button>
-                 )}>
-                 {({ open, setOpen }) => (
-                   <Modal
-                     modalHeading="Create Relationship"
-                     open={open}
-                     passiveModal={true}
-                     onRequestClose={() => setOpen(false)}>
-                     <CreateRelationshipWizard 
-                      currentNodeType={props.currentNodeType}
-                      currentNode = {currentNode}
-                      onCreated = {onRelationshipCreated}
-                      onReadyToCreate = {onReadyToCreate}
-
-                      />  
-                    
-                   </Modal>
-                 )}
-               </ModalStateManager>
-       
+      {currentNode && currentNode.nodeType === "Term" && (
+        <ModalStateManager
+          renderLauncher={({ setOpen }) => (
+            <Button onClick={() => setOpen(true)}>Create Relationship</Button>
+          )}
+        >
+          {({ open, setOpen }) => (
+            <Modal
+              modalHeading="Create Relationship"
+              open={open}
+              passiveModal={true}
+              onRequestClose={() => setOpen(false)}
+            >
+              <CreateRelationshipWizard
+                currentNodeType={props.currentNodeType}
+                currentNode={currentNode}
+                onCreated={onRelationshipCreated}
+                onReadyToCreate={onReadyToCreate}
+                onModalContentRequestedClose={() => setOpen(false)}
+              />
+            </Modal>
+          )}
+        </ModalStateManager>
       )}
-
     </div>
   );
 }

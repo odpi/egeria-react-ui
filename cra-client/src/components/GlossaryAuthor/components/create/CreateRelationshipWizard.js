@@ -39,6 +39,7 @@ import { parse } from "date-fns";
  */
 export default function CreateRelationshipWizard(props) {
   const identificationContext = useContext(IdentificationContext);
+
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [relationshipCreated, setRelationshipCreated] = useState();
   // this will be used for the rest body
@@ -98,7 +99,7 @@ export default function CreateRelationshipWizard(props) {
     setCurrentStepIndex(newIndex);
   };
   const finished = () => {
-    // todo
+    props.onModalContentRequestedClose();
   };
 
   const hasTarget = () => {
@@ -217,10 +218,13 @@ export default function CreateRelationshipWizard(props) {
     return "Step 5: Confirm the Relationship details, then create.";
   };
 
-  const onCreate = (node) => {
+  const onCreate = (relationship) => {
     console.log("OnCreate");
-    setRelationshipCreated(node);
-    props.onCreated(node);
+    setRelationshipCreated(relationship);
+    let payLoad = {};
+    payLoad.node= targetNode;
+    payLoad.relationship = relationship;
+    props.onCreated(payLoad);
   };
 
   const relationshipTypeChosen = () => {
