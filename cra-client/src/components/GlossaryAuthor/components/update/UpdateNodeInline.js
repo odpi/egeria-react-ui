@@ -32,6 +32,7 @@ export default function UpdateNodeInline(props) {
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [userInput, setUserInput] = useState();
+  const [primaryButtonDisabled, setPrimaryButtonDisabled] = useState(true);
 
   useEffect(() => {
     setCurrentNode(props.node);
@@ -127,7 +128,7 @@ export default function UpdateNodeInline(props) {
     updateUserInputFromNode(undefined);
   };
   const createRelationship = () => {
-    //TODO issue the rest call
+    
   };
 
   const onAttributeChange = (attributeKey, attributeValue) => {
@@ -180,6 +181,9 @@ export default function UpdateNodeInline(props) {
 
   const onRelationshipCreated = () => {
     alert("relationship created");
+  }
+  const onReadyToCreate = () => {
+    setPrimaryButtonDisabled(false);
   }
 
   const getSystemDataRowData = () => {
@@ -294,15 +298,15 @@ export default function UpdateNodeInline(props) {
                  {({ open, setOpen }) => (
                    <Modal
                      modalHeading="Create Relationship"
-                     primaryButtonText="Create"
-                     secondaryButtonText="Cancel"
                      open={open}
-                     onRequestClose={() => setOpen(false)}
-                     onRequestSubmit={() => createRelationship()}>
+                     passiveModal={true}
+                     onRequestClose={() => setOpen(false)}>
                      <CreateRelationshipWizard 
                       currentNodeType={props.currentNodeType}
                       currentNode = {currentNode}
                       onCreated = {onRelationshipCreated}
+                      onReadyToCreate = {onReadyToCreate}
+
                       />  
                     
                    </Modal>

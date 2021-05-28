@@ -220,6 +220,7 @@ export default function CreateRelationshipWizard(props) {
   const onCreate = (node) => {
     console.log("OnCreate");
     setRelationshipCreated(node);
+    props.onCreated(node);
   };
 
   const relationshipTypeChosen = () => {
