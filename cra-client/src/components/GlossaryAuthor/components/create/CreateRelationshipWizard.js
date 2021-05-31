@@ -21,11 +21,12 @@ import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 import getRelationshipType from "../properties/RelationshipTypes";
 
 import { parse } from "date-fns";
+import { node } from "prop-types";
 
 /**
  * This is a Relationship creation wizard is driven from a Term. The first page of the wizard
  * asks the user to choose the type of the relationship to create. The next page then asks the user for the related term
- * that the relationship will connect to.  This is followed by page to define the ends of the relationship, i.e. which end is which. This
+ * that the relationship will connect to.  This is followed by page to define the end1 of the relationship, i.e. which end is which. This
  * is followed by a page in which relationship proeerties can bespecified. Finally there is a confirmation screen,
  *  where the user can confirm the values that will be used to create the Relationship.
  *
@@ -49,33 +50,36 @@ export default function CreateRelationshipWizard(props) {
   const [userInput, setUserInput] = useState();
   // target node (other end) for the relationship
   const [targetNode, setTargetNode] = useState();
+  const [end1Guid, setEnd1Guid] = useState();
+  const [end2Guid, setEnd2Guid] = useState();
+  // const [thisEnd, setThisEnd] = useState();
+  // const [otherEnd, setOtherEnd] = useState();
+  const [endNumber, setEndNumber] = useState(1);
 
   const [relationshipType, setRelationshipType] = useState();
   const [relationshipTypeDescription, setRelationshipTypeDescription] =
     useState();
 
-  // useEffect(() => {
-  //   if (userInput === undefined) {
-  //     // force validation of name field on initial load of page.
-  //     const extendedUserInput = extendUserInput(userInput, "name", undefined);
-
-  //     let newUserInput = {
-  //       ...extendedUserInput,
-  //     };
-  //     setUserInput(newUserInput);
-  //   }
-  // }, []);
   useEffect(() => {
-    if (relationshipType === "synonym") {
-      setRelationshipTypeDescription(
-        "Link between glossary terms that have the same meaning"
-      );
-    } else if (relationshipType === "antonym") {
-      setRelationshipTypeDescription(
-        "Link between glossary terms that have the opposite meaning"
-      );
-    } else if (relationshipType !== undefined) {
-      setRelationshipTypeDescription("TODO");
+    if (props.currentNode !== undefined && targetNode !== undefined) {
+      if (endNumber === 1) {
+        setEnd1Guid(props.currentNode.systemAttributes.guid);
+        setEnd2Guid(targetNode.systemAttributes.guid);
+      } else {
+        setEnd1Guid(targetNode.systemAttributes.guid);
+        setEnd2Guid(props.currentNode.systemAttributes.guid);
+      }
+    }
+  }, [endNumber]);
+  useEffect(() => {
+    if (relationshipType !== undefined) {
+      let description = relationshipType.description;
+      if (description === undefined) {
+        description = "TODO";
+      }
+
+      setRelationshipTypeDescription(description);
+
     } else {
       setRelationshipTypeDescription("");
     }
@@ -87,6 +91,13 @@ export default function CreateRelationshipWizard(props) {
     e.preventDefault();
     if (currentStepIndex === 0) {
       setCurrentStepIndex(1);
+    }
+  };
+  const handleToggleEnds = () => {
+    if (endNumber === 1) {
+      setEndNumber(2);
+    } else {
+      setEndNumber(1);
     }
   };
 
@@ -105,14 +116,20 @@ export default function CreateRelationshipWizard(props) {
   const hasTarget = () => {
     return targetNode !== undefined;
   };
+
   const endsChosen = () => {
-    return true;
+    let chosen = false;
+    if (end1Guid !== undefined && end2Guid !== undefined) {
+      chosen = true;
+    }
+    return chosen;
   };
   const onAttributeChange = (attributeKey, attributeValue) => {
     const extendedUserInput = extendUserInput(
       userInput,
       attributeKey,
-      attributeValue
+      attributeValue,
+      true
     );
 
     let newUserInput = {
@@ -120,7 +137,7 @@ export default function CreateRelationshipWizard(props) {
     };
 
     setUserInput(newUserInput);
-    if (validatePropertiesUserInput(extendedUserInput)) {
+    if (validatePropertiesUserInput(extendedUserInput, true)) {
       if (
         attributeKey === "effectiveFromTime" ||
         attributeKey === "effectiveToTime"
@@ -160,7 +177,6 @@ export default function CreateRelationshipWizard(props) {
         selection
       );
       setRelationshipType(myRelationshipType);
-
     }
   };
 
@@ -211,6 +227,13 @@ export default function CreateRelationshipWizard(props) {
     }
     return title;
   };
+  const otherEndNumber = () => {
+    let otherEnd = 2;
+    if (endNumber === 2) {
+      otherEnd = 1;
+    }
+    return otherEnd;
+  };
   const getStep5Label = () => {
     return "Confirm";
   };
@@ -222,7 +245,7 @@ export default function CreateRelationshipWizard(props) {
     console.log("OnCreate");
     setRelationshipCreated(relationship);
     let payLoad = {};
-    payLoad.node= targetNode;
+    payLoad.node = targetNode;
     payLoad.relationship = relationship;
     props.onCreated(payLoad);
   };
@@ -234,27 +257,29 @@ export default function CreateRelationshipWizard(props) {
   const completeRelationshipToCreate = () => {
     let myRelationshipToCreate;
     if (targetNode !== undefined) {
-      myRelationshipToCreate =  {
-              ...relationshipToCreate
+      myRelationshipToCreate = {
+        ...relationshipToCreate,
       };
-      myRelationshipToCreate.class = "Synonym";
-      myRelationshipToCreate.relationshipType = "Synonym";
-      myRelationshipToCreate.name = "Synonym";
+      myRelationshipToCreate.class = relationshipType.typeName;
+      myRelationshipToCreate.relationshipType = relationshipType.typeName;
+      myRelationshipToCreate.name = relationshipType.typeName;
       let end1 = {};
       end1.class = "RelationshipEnd";
       end1.nodeType = "Term";
-      end1.name = "synonyms";
-      end1.nodeGuid = props.currentNode.systemAttributes.guid;
+      // end1.name = "synonyms";
+      // end1.nodeGuid = props.currentNode.systemAttributes.guid;
+      end1.nodeGuid = end1Guid;
       let end2 = {};
       end2.class = "RelationshipEnd";
       end2.nodeType = "Term";
-      end2.name = "synonyms";
-      end2.nodeGuid = targetNode.systemAttributes.guid;
+      // end2.name = "synonyms";
+      // end2.nodeGuid = targetNode.systemAttributes.guid;
+      end2.nodeGuid = end2Guid;
       myRelationshipToCreate.end1 = end1;
       myRelationshipToCreate.end2 = end2;
     }
     return myRelationshipToCreate;
-  }
+  };
 
   return (
     <div>
@@ -370,26 +395,23 @@ export default function CreateRelationshipWizard(props) {
                 <SelectItemGroup label="Related Terms">
                   <SelectItem text="Synonym" value="synonym" />
                   <SelectItem text="Antonym" value="antonym" />
-                  <SelectItem text="Preferred term" value="preferred-term" />
-                  <SelectItem
-                    text="Replacement Term"
-                    value="replacement-term"
-                  />
+                  <SelectItem text="Preferred term" value="preferredterm" />
+                  <SelectItem text="Replacement Term" value="replacementterm" />
                   <SelectItem text="Translation" value="translation" />
                   <SelectItem
                     text="Is a (classifying relationship)"
                     value="isa"
                   />
-                  <SelectItem text="ValidValue" value="valid-value" />
-                  <SelectItem text="Related Term" value="related-term" />
+                  <SelectItem text="ValidValue" value="validvalue" />
+                  <SelectItem text="Related Term" value="relatedterm" />
                 </SelectItemGroup>
                 <SelectItemGroup label="Contexts">
-                  <SelectItem text="Used In Context" value="used-in-context" />
+                  <SelectItem text="Used In Context" value="usedincontext" />
                 </SelectItemGroup>
                 <SelectItemGroup label="Spine Objects">
                   <SelectItem
                     text="Has a (contains relationship)"
-                    value="has-a"
+                    value="hasa"
                   />
                   <SelectItem
                     text="Is a type of (super type relationship)"
@@ -397,7 +419,7 @@ export default function CreateRelationshipWizard(props) {
                   />
                   <SelectItem
                     text="Typed by (attributes typed by relationship)"
-                    value="typed-by"
+                    value="typedby"
                   />
                 </SelectItemGroup>
               </Select>
@@ -417,7 +439,7 @@ export default function CreateRelationshipWizard(props) {
         {currentStepIndex === 2 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
-            {relationshipType === "synonym" && (
+            {/* {relationshipType === "synonym" && (
               <div>Each Term has the same meaning.</div>
             )}
             {relationshipType === "antonym" && (
@@ -425,15 +447,42 @@ export default function CreateRelationshipWizard(props) {
             )}
             {relationshipType !== "synonym" &&
               relationshipType !== "antonym" && (
-                <div>TODO relationship ends</div>
-              )}
+                <div>TODO relationship end1</div>
+              )}*/}
+
+            <div>
+              The 2 ends of the relationship are Terms, which are
+              <div>
+                {" "}
+                End 1 is {relationshipType.end1.attributeName}:{" "}
+                {relationshipType.end1.attributeDescription}{" "}
+              </div>
+              <div>
+                {" "}
+                End 2 is {relationshipType.end2.attributeName}:{" "}
+                {relationshipType.end2.attributeDescription}{" "}
+              </div>
+              <Button onClick={handleToggleEnds}>Toggle end allocation</Button>
+              <div>
+                <div>End {endNumber}</div>
+                <div>{props.currentNode.name}</div>
+                <div>{props.currentNode.qualifiedName} </div>
+                <div>{props.currentNode.description} </div>
+              </div>
+              <div>
+                <div>End {otherEndNumber()}</div>
+                <div>{targetNode.name}</div>
+                <div>{targetNode.qualifiedName} </div>
+                <div>{targetNode.description} </div>
+              </div>
+            </div>
           </div>
         )}
         {currentStepIndex === 3 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
             <RelationshipInput
-              currentRelationshipType={props.currentRelationshipType}
+              currentRelationshipType={relationshipType}
               onAttributeChange={onAttributeChange}
               operation="Create"
               inputRelationship={userInput}

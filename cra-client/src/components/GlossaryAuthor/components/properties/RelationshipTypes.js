@@ -20,15 +20,13 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
       label: "Status",
       // TODO implement enum values
     },
-    "expression",
     {
       key: "expression",
       label: "Expression",
-    }
+    },
   ];
 
-
-  const summaryResponseAttributes= [
+  const summaryResponseAttributes = [
     {
       key: "guid",
       label: "Guid",
@@ -44,79 +42,359 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     categoryanchor: {
       key: "category-anchor",
       plural: "category-anchors",
-      typeName: "CategoryAnchor"
+      typeName: "CategoryAnchor",
     },
     categoryhierarchylink: {
       key: "category-hierarchy-link",
       plural: "category-hierarchy-links",
-      typeName: "CategoryHierarchyLink"
+      typeName: "CategoryHierarchyLink",
     },
     projectscopes: {
-      key: "project-scope",
+      key: "projectscope",
       plural: "project-scopes",
-      typeName: "ProjectScope"
-    },  
+      typeName: "ProjectScope",
+    },
     hasa: {
-      key: "has-a",
+      key: "hasa",
       plural: "has-as",
       typeName: "HasA",
-      isRelatedTerm: true
+      isRelatedTerm: true,
+      description:
+        "Defines the relationship between a spine object and a spine attribute.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "objects",
+        attributeDescription: "Objects where this attribute may occur.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "attributes",
+        attributeDescription: "Typical attributes for this object.",
+        attributeCardinality: "ANY_NUMBER",
+      },
     },
     synonym: {
       key: "synonym",
       plural: "synonyms",
       typeName: "Synonym",
       isRelatedTerm: true,
-      hasExpression: true
-    },    
+      hasExpression: true,
+      description: "Link between glossary terms that have the same meaning.",
+      end1: {
+        attributeName: "synonyms",
+        attributeDescription: "Glossary terms with the same meaning.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        attributeName: "synonyms",
+        attributeDescription: "Glossary terms with the same meaning.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     antonym: {
       key: "antonym",
       plural: "antonyms",
       typeName: "Antonym",
-      isRelatedTerm: true
-    },  
+      isRelatedTerm: true,
+      description:
+        "Link between glossary terms that have the opposite meaning.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "antonyms",
+        attributeDescription: "Glossary terms with the opposite meaning.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "antonyms",
+        attributeDescription: "Glossary terms with the opposite meaning.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     relatedterm: {
-      key: "related-term",
+      key: "relatedterm",
       plural: "related-terms",
       typeName: "RelatedTerm",
-      isRelatedTerm:  true
-    },     
+      isRelatedTerm: true,
+      description: "Link between similar glossary terms.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "seeAlso",
+        attributeDescription: "Related glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "seeAlso",
+        attributeDescription: "Related glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     preferredterm: {
-      key: "preferred-term",
+      key: "preferredterm",
       plural: "preferred-terms",
-      typeName: "PreferredTerms",
-      isRelatedTerm:  true
-    }, 
-    validValue: {
-      key: "valid-value",
+      typeName: "PreferredTerm",
+      isRelatedTerm: true,
+      description:
+        "Link to an alternative term that the organization prefer is used.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "alternateTerms",
+        attributeDescription: "Alternative glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "preferredTerms",
+        attributeDescription: "Related glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
+    validvalue: {
+      key: "validvalue",
       plural: "valid-values",
       typeName: "ValidValue",
-      isRelatedTerm:  true
-    }, 
-    replacementerm: {
-      key: "replacement-term",
+      isRelatedTerm: true,
+      description:
+        "Link between glossary terms where one defines one of the data values for the another.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "validValueFor",
+        attributeDescription:
+          "Glossary terms for data items that can be set to this value.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "validValues",
+        attributeDescription:
+          "Glossary terms for data values that can be used with data items represented by this glossary term.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
+    replacementterm: {
+      key: "replacementterm",
       plural: "replacement-terms",
       typeName: "ReplacementTerm",
-      isRelatedTerm:  true
-    }, 
+      isRelatedTerm: true,
+      description:
+        "Link to a glossary term that is replacing an obsolete glossary term.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "replacedTerms",
+        attributeDescription: "Replaced glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "replacementTerms",
+        attributeDescription: "Replacement glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
+
+    isATypeOf: {
+      key: "isatypeof",
+      plural: "is-a-type-of",
+      isRelatedTerm: true,
+      typeName: "TermISATypeOFRelationship",
+      description:
+        "Defines an inheritance relationship between two spine objects.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "supertypes",
+        attributeDescription: "Supertypes for this object.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "subtypes",
+        attributeDescription: "Subtypes for this object.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
+
     typedby: {
-      key: "typed-by",
+      key: "typedby",
       plural: "typed-bys",
-      typeName: "TypedBy",
-      isRelatedTerm:  true
-    },  
+      typeName: "TermTYPEDBYRelationship",
+      isRelatedTerm: true,
+      description:
+        "Defines the relationship between a spine attribute and its type.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "attributesTypedBy",
+        attributeDescription: "Attributes of this type.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "types",
+        attributeDescription: "Types for this attribute.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     isa: {
       key: "is-a",
       plural: "is-as",
       typeName: "IsA",
-      isRelatedTerm:  true
-    },  
+      isRelatedTerm: true,
+      description:
+        "Link between a more general glossary term and a more specific definition.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "classifies",
+        attributeDescription: "More specific glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "isA",
+        attributeDescription: "More general glossary terms.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     isatypeof: {
-      key: "is-a-type-of",
+      key: "isatypeof",
       plural: "is-a-type-ofs",
       typeName: "IsATypeOf",
-      isRelatedTerm:  true
-    },  
+      isRelatedTerm: true,
+      description:
+        "Defines an inheritance relationship between two spine objects.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "supertypes",
+        attributeDescription: "Supertypes for this object.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "subtypes",
+        attributeDescription: "Subtypes for this object.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     categorization: {
       key: "term-categorization",
       plural: "term-categorizations",
@@ -126,22 +404,75 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
           key: "status",
           label: "Status",
           // TODO implement enum values
-        }
-      ]
-    },  
-    
+        },
+      ],
+    },
+
     usedincontext: {
-      key: "used-in-context",
+      key: "usedincontext",
       plural: "used-in-contexts",
       typeName: "UsedInContext",
-      isRelatedTerm: true
-    },     
+      isRelatedTerm: true,
+      description:
+        "Link between glossary terms where on describes the context where the other one is valid to use.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "contextRelevantTerms",
+        attributeDescription: "Glossary terms used in this specific context.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "usedInContexts",
+        attributeDescription:
+          "Glossary terms describing the contexts where this term is used.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     translation: {
       key: "translation",
       plural: "translations",
       typeName: "Translation",
-      isRelatedTerm: true
-    },     
+      isRelatedTerm: true,
+      description:
+        "Link between glossary terms that provide different natural language translation of the same concept.",
+      end1: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "translations",
+        attributeDescription: "Translations of glossary term.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+      end2: {
+        headerVersion: 1,
+        entityType: {
+          headerVersion: 1,
+          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+          name: "GlossaryTerm",
+          status: "ACTIVE_TYPEDEF",
+        },
+        attributeName: "translations",
+        attributeDescription: "Translations of glossary term.",
+        attributeCardinality: "ANY_NUMBER",
+      },
+    },
     notSet: {
       key: "undefined",
       plural: "undefined",
@@ -158,9 +489,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
   relationshipType["summaryResponseAttributes"] = summaryResponseAttributes;
   if (relationshipType) {
     relationshipType.url =
-      GlossaryAuthorURL +
-      "/relationships/" +
-      relationshipType.plural;
+      GlossaryAuthorURL + "/relationships/" + relationshipType.plural;
   } else {
     console.log("No relationship type for key " + key);
     relationshipType = relationshipType["notSet"];

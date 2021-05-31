@@ -143,7 +143,7 @@ const isObjectValueValid = (obj) => {
  * @param {*} userInput
  * @returns true if valid i.e. (i.e. does not have a property with invalid = true)
  */
-export const validatePropertiesUserInput = (userInput) => {
+export const validatePropertiesUserInput = (userInput, isRelationship) => {
   let isValid = true;
   if (userInput === undefined) {
     isValid = false;
@@ -163,7 +163,7 @@ export const validatePropertiesUserInput = (userInput) => {
         ) {
           isValid = false;
         }
-      } else if (!isObjectValueValid(propertyValue)) {
+      } else if ((isRelationship !== true) && !isObjectValueValid(propertyValue)) {
         isValid = false;
       }
     }
@@ -186,7 +186,7 @@ export const validatePropertiesUserInput = (userInput) => {
  * @param {*} attributeValue value of the property (could be invalid)
  * @returns amended UserInput including the supplied attribute content
  */
-export const extendUserInput = (userInput, attributeKey, attributeValue) => {
+export const extendUserInput = (userInput, attributeKey, attributeValue, isRelationship) => {
   // let isDateTimeValid = false;
   let attributeObject = {};
   if (
@@ -234,7 +234,7 @@ export const extendUserInput = (userInput, attributeKey, attributeValue) => {
   // check name and embellish with error messsage if invalid
   if (
     nameValue === undefined ||
-    (nameValue !== undefined && !hasContent(nameValue.value))
+    (nameValue !== undefined && !hasContent(nameValue.value) && isRelationship !==true)
   ) {
     let attributeObject = {};
     attributeObject.value = undefined;
