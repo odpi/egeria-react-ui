@@ -140,22 +140,22 @@ export default function RelationshipReadOnly(props) {
     console.log("onClickToIssueRest()");
     e.preventDefault();
     setRestCallInProgress(true);
-    const relationshipTypeName = props.currentRelationshipType.name;
+    // const relationshipTypeName = props.currentRelationshipType.name;
 
     const body = {
-      ...props.inputRelationship,
-      ["relationshipType"]: relationshipTypeName,
+      ...props.inputRelationship
     };
+
 
     // TODO consider moving this up to a relationship controller as per the CRUD pattern.
     // in the meantime this will be self contained.
     const url = props.currentRelationshipType.url;
     if (props.operation === "Create") {
       console.log("issueCreate " + url);
-      issueRestCreate(url, body, onSuccessfulRestCall, onErrorRestCall);
+      issueRestCreate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
     } else {
       console.log("issueUpdate " + url);
-      issueRestUpdate(url, body, onSuccessfulRestCall, onErrorRestCall);
+      issueRestUpdate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
     }
   };
   const onSuccessfulRestCall = (json) => {

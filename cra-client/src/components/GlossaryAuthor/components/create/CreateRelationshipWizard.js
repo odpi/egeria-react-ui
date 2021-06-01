@@ -4,6 +4,8 @@ import React, { useState, useEffect, useContext } from "react";
 
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import {
+  Accordion,
+  AccordionItem,
   ProgressIndicator,
   ProgressStep,
   Button,
@@ -50,11 +52,13 @@ export default function CreateRelationshipWizard(props) {
   const [userInput, setUserInput] = useState();
   // target node (other end) for the relationship
   const [targetNode, setTargetNode] = useState();
-  const [end1Guid, setEnd1Guid] = useState();
-  const [end2Guid, setEnd2Guid] = useState();
+  // const [end1Guid, setEnd1Guid] = useState();
+  // const [end2Guid, setEnd2Guid] = useState();
   // const [thisEnd, setThisEnd] = useState();
   // const [otherEnd, setOtherEnd] = useState();
   const [endNumber, setEndNumber] = useState(1);
+  const [end1Node, setEnd1Node] = useState();
+  const [end2Node, setEnd2Node] = useState();
 
   const [relationshipType, setRelationshipType] = useState();
   const [relationshipTypeDescription, setRelationshipTypeDescription] =
@@ -63,14 +67,14 @@ export default function CreateRelationshipWizard(props) {
   useEffect(() => {
     if (props.currentNode !== undefined && targetNode !== undefined) {
       if (endNumber === 1) {
-        setEnd1Guid(props.currentNode.systemAttributes.guid);
-        setEnd2Guid(targetNode.systemAttributes.guid);
+        setEnd1Node(props.currentNode);
+        setEnd2Node(targetNode);
       } else {
-        setEnd1Guid(targetNode.systemAttributes.guid);
-        setEnd2Guid(props.currentNode.systemAttributes.guid);
+        setEnd1Node(targetNode);
+        setEnd2Node(props.currentNode);
       }
     }
-  }, [endNumber]);
+  }, [endNumber, props.currentNode, targetNode]);
   useEffect(() => {
     if (relationshipType !== undefined) {
       let description = relationshipType.description;
@@ -79,7 +83,6 @@ export default function CreateRelationshipWizard(props) {
       }
 
       setRelationshipTypeDescription(description);
-
     } else {
       setRelationshipTypeDescription("");
     }
@@ -119,7 +122,7 @@ export default function CreateRelationshipWizard(props) {
 
   const endsChosen = () => {
     let chosen = false;
-    if (end1Guid !== undefined && end2Guid !== undefined) {
+    if (end1Node !== undefined && end2Node !== undefined) {
       chosen = true;
     }
     return chosen;
@@ -193,7 +196,7 @@ export default function CreateRelationshipWizard(props) {
     return "Step 1: choose relationship type";
   };
   const getStep2Title = () => {
-    return "Choose related Term.";
+    return "Choose Term to relate to " + props.currentNode.name +" for " + relationshipType.typeName ;
   };
   const getStep2Label = () => {
     return "Choose target";
@@ -266,15 +269,11 @@ export default function CreateRelationshipWizard(props) {
       let end1 = {};
       end1.class = "RelationshipEnd";
       end1.nodeType = "Term";
-      // end1.name = "synonyms";
-      // end1.nodeGuid = props.currentNode.systemAttributes.guid;
-      end1.nodeGuid = end1Guid;
+      end1.nodeGuid = end1Node.systemAttributes.guid;
       let end2 = {};
       end2.class = "RelationshipEnd";
       end2.nodeType = "Term";
-      // end2.name = "synonyms";
-      // end2.nodeGuid = targetNode.systemAttributes.guid;
-      end2.nodeGuid = end2Guid;
+      end2.nodeGuid = end2Node.systemAttributes.guid;
       myRelationshipToCreate.end1 = end1;
       myRelationshipToCreate.end2 = end2;
     }
@@ -439,19 +438,22 @@ export default function CreateRelationshipWizard(props) {
         {currentStepIndex === 2 && (
           <div>
             <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
-            {/* {relationshipType === "synonym" && (
-              <div>Each Term has the same meaning.</div>
-            )}
-            {relationshipType === "antonym" && (
-              <div>Each Term has the opposite meaning.</div>
-            )}
-            {relationshipType !== "synonym" &&
-              relationshipType !== "antonym" && (
-                <div>TODO relationship end1</div>
-              )}*/}
+
+            <div className="ends-sentence">
+              {" "}
+              {end1Node.name}{" "}
+              {relationshipType.end1.attributeVerbWithAttributeAsSubject}{" "}
+              {end2Node.name}{" "}
+            </div>
+            <div className="ends-sentence">
+              {" "}
+              {end2Node.name}{" "}
+              {relationshipType.end2.attributeVerbWithAttributeAsSubject}{" "}
+              {end1Node.name}{" "}
+            </div>
 
             <div>
-              The 2 ends of the relationship are Terms, which are
+              {/* The 2 ends of the relationship are Terms, which are
               <div>
                 {" "}
                 End 1 is {relationshipType.end1.attributeName}:{" "}
@@ -461,9 +463,9 @@ export default function CreateRelationshipWizard(props) {
                 {" "}
                 End 2 is {relationshipType.end2.attributeName}:{" "}
                 {relationshipType.end2.attributeDescription}{" "}
-              </div>
-              <Button onClick={handleToggleEnds}>Toggle end allocation</Button>
-              <div>
+              </div> */}
+              <Button onClick={handleToggleEnds}>Switch ends</Button>
+              {/* <div>
                 <div>End {endNumber}</div>
                 <div>{props.currentNode.name}</div>
                 <div>{props.currentNode.qualifiedName} </div>
@@ -474,7 +476,57 @@ export default function CreateRelationshipWizard(props) {
                 <div>{targetNode.name}</div>
                 <div>{targetNode.qualifiedName} </div>
                 <div>{targetNode.description} </div>
-              </div>
+              </div> */}
+              <Accordion>
+                <AccordionItem title="Term details">
+                  <div>End 1</div>
+                  <table className="relationshipend-table">
+                    <tr className="relationshipend-table">
+                      <th className="relationshipend-table">Property</th>
+                      <th className="relationshipend-table">Value</th>
+                    </tr>
+                    <tr className="relationshipend-table">
+                      <td className="relationshipend-table">Name</td>
+                      <td className="relationshipend-table">{end1Node.name}</td>
+                    </tr>
+                    <tr className="relationshipend-table">
+                      <td className="relationshipend-table">Qualified Name</td>
+                      <td className="relationshipend-table">
+                        {end1Node.qualifiedName}
+                      </td>
+                    </tr>
+                    <tr className="relationshipend-table">
+                      <td className="relationshipend-table">Description</td>
+                      <td className="relationshipend-table" d>
+                        {end1Node.description}
+                      </td>
+                    </tr>
+                  </table>
+                  <div>End 2</div>
+                  <table className="relationshipend-table">
+                    <tr className="relationshipend-table">
+                      <th className="relationshipend-table">Property</th>
+                      <th className="relationshipend-table">Value</th>
+                    </tr>
+                    <tr className="relationshipend-table">
+                      <td className="relationshipend-table">Name</td>
+                      <td className="relationshipend-table">{end2Node.name}</td>
+                    </tr>
+                    <tr className="relationshipend-table">
+                      <td className="relationshipend-table">Qualified Name</td>
+                      <td className="relationshipend-table">
+                        {end2Node.qualifiedName}
+                      </td>
+                    </tr>
+                    <tr className="relationshipend-table">
+                      <td className="relationshipend-table">Description</td>
+                      <td className="relationshipend-table">
+                        {end2Node.description}
+                      </td>
+                    </tr>
+                  </table>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         )}

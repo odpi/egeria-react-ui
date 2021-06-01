@@ -71,6 +71,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "objects",
         attributeDescription: "Objects where this attribute may occur.",
+        attributeVerbWithAttributeAsSubject: "has a",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -83,6 +84,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "attributes",
         attributeDescription: "Typical attributes for this object.",
+        attributeVerbWithAttributeAsSubject: "is part of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -96,11 +98,13 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
       end1: {
         attributeName: "synonyms",
         attributeDescription: "Glossary terms with the same meaning.",
+        attributeVerbWithAttributeAsSubject: "has the same meaning as ",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
         attributeName: "synonyms",
         attributeDescription: "Glossary terms with the same meaning.",
+        attributeVerbWithAttributeAsSubject: "has the same meaning as ",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -121,6 +125,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "antonyms",
         attributeDescription: "Glossary terms with the opposite meaning.",
+        attributeVerbWithAttributeAsSubject: "has the opposite meaning from",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -133,6 +138,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "antonyms",
         attributeDescription: "Glossary terms with the opposite meaning.",
+        attributeVerbWithAttributeAsSubject: "has the opposite meaning from",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -152,6 +158,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "seeAlso",
         attributeDescription: "Related glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is related to",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -164,6 +171,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "seeAlso",
         attributeDescription: "Related glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is related to",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -184,6 +192,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "alternateTerms",
         attributeDescription: "Alternative glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is an alternative term to",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -196,6 +205,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "preferredTerms",
         attributeDescription: "Related glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is preferred to",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -217,6 +227,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         attributeName: "validValueFor",
         attributeDescription:
           "Glossary terms for data items that can be set to this value.",
+        attributeVerbWithAttributeAsSubject: "is a Valid Value for Term",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -230,6 +241,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         attributeName: "validValues",
         attributeDescription:
           "Glossary terms for data values that can be used with data items represented by this glossary term.",
+        attributeVerbWithAttributeAsSubject: "has a  Valid Value of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -250,6 +262,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "replacedTerms",
         attributeDescription: "Replaced glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is replaced by",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -262,15 +275,16 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "replacementTerms",
         attributeDescription: "Replacement glossary terms.",
+        attributeVerbWithAttributeAsSubject: "replaces",
         attributeCardinality: "ANY_NUMBER",
       },
     },
 
-    isATypeOf: {
+    isatypeof: {
       key: "isatypeof",
-      plural: "is-a-type-of",
+      plural: "is-a-type-ofs",
       isRelatedTerm: true,
-      typeName: "TermISATypeOFRelationship",
+      typeName: "IsATypeOf",
       description:
         "Defines an inheritance relationship between two spine objects.",
       end1: {
@@ -283,6 +297,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "supertypes",
         attributeDescription: "Supertypes for this object.",
+        attributeVerbWithAttributeAsSubject: "is the super type of",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -295,6 +310,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "subtypes",
         attributeDescription: "Subtypes for this object.",
+        attributeVerbWithAttributeAsSubject: "is the sub type of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -302,7 +318,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     typedby: {
       key: "typedby",
       plural: "typed-bys",
-      typeName: "TermTYPEDBYRelationship",
+      typeName: "TypedBy",
       isRelatedTerm: true,
       description:
         "Defines the relationship between a spine attribute and its type.",
@@ -316,6 +332,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "attributesTypedBy",
         attributeDescription: "Attributes of this type.",
+        attributeVerbWithAttributeAsSubject: "has the type",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -328,6 +345,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "types",
         attributeDescription: "Types for this attribute.",
+        attributeVerbWithAttributeAsSubject: "is the type of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -348,6 +366,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "classifies",
         attributeDescription: "More specific glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is a more specific term of",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -360,6 +379,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "isA",
         attributeDescription: "More general glossary terms.",
+        attributeVerbWithAttributeAsSubject: "is a more general term of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -380,6 +400,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "supertypes",
         attributeDescription: "Supertypes for this object.",
+        attributeVerbWithAttributeAsSubject: "is a supertype of",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -392,6 +413,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "subtypes",
         attributeDescription: "Subtypes for this object.",
+        attributeVerbWithAttributeAsSubject: "is a subtype of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -425,6 +447,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "contextRelevantTerms",
         attributeDescription: "Glossary terms used in this specific context.",
+        attributeVerbWithAttributeAsSubject: "have context",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -438,6 +461,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         attributeName: "usedInContexts",
         attributeDescription:
           "Glossary terms describing the contexts where this term is used.",
+        attributeVerbWithAttributeAsSubject: "is the context of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -458,6 +482,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "translations",
         attributeDescription: "Translations of glossary term.",
+        attributeVerbWithAttributeAsSubject: "is a translation of",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
@@ -470,6 +495,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         },
         attributeName: "translations",
         attributeDescription: "Translations of glossary term.",
+        attributeVerbWithAttributeAsSubject: "is a translation of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
