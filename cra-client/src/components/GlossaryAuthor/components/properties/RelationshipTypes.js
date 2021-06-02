@@ -57,6 +57,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     hasa: {
       key: "hasa",
       plural: "has-as",
+      label: "Has a",
       typeName: "HasA",
       isRelatedTerm: true,
       description:
@@ -91,6 +92,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     synonym: {
       key: "synonym",
       plural: "synonyms",
+      label: "Synonym",
       typeName: "Synonym",
       isRelatedTerm: true,
       hasExpression: true,
@@ -98,13 +100,13 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
       end1: {
         attributeName: "synonyms",
         attributeDescription: "Glossary terms with the same meaning.",
-        attributeVerbWithAttributeAsSubject: "has the same meaning as ",
+        attributeVerbWithAttributeAsSubject: "has the same meaning as",
         attributeCardinality: "ANY_NUMBER",
       },
       end2: {
         attributeName: "synonyms",
         attributeDescription: "Glossary terms with the same meaning.",
-        attributeVerbWithAttributeAsSubject: "has the same meaning as ",
+        attributeVerbWithAttributeAsSubject: "has the same meaning as",
         attributeCardinality: "ANY_NUMBER",
       },
     },
@@ -112,6 +114,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
       key: "antonym",
       plural: "antonyms",
       typeName: "Antonym",
+      label: "Antonym",
       isRelatedTerm: true,
       description:
         "Link between glossary terms that have the opposite meaning.",
@@ -145,6 +148,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     relatedterm: {
       key: "relatedterm",
       plural: "related-terms",
+      label: "Related Term",
       typeName: "RelatedTerm",
       isRelatedTerm: true,
       description: "Link between similar glossary terms.",
@@ -178,6 +182,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     preferredterm: {
       key: "preferredterm",
       plural: "preferred-terms",
+      label: "Preferred Term",
       typeName: "PreferredTerm",
       isRelatedTerm: true,
       description:
@@ -212,6 +217,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     validvalue: {
       key: "validvalue",
       plural: "valid-values",
+      label: "Valid Value",
       typeName: "ValidValue",
       isRelatedTerm: true,
       description:
@@ -241,13 +247,14 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         attributeName: "validValues",
         attributeDescription:
           "Glossary terms for data values that can be used with data items represented by this glossary term.",
-        attributeVerbWithAttributeAsSubject: "has a  Valid Value of",
+        attributeVerbWithAttributeAsSubject: "has a Valid Value of",
         attributeCardinality: "ANY_NUMBER",
       },
     },
     replacementterm: {
       key: "replacementterm",
       plural: "replacement-terms",
+      label: "Replacement Term",
       typeName: "ReplacementTerm",
       isRelatedTerm: true,
       description:
@@ -283,6 +290,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     isatypeof: {
       key: "isatypeof",
       plural: "is-a-type-ofs",
+      label: "is a type of",
       isRelatedTerm: true,
       typeName: "IsATypeOf",
       description:
@@ -318,6 +326,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     typedby: {
       key: "typedby",
       plural: "typed-bys",
+      label: "Typed by",
       typeName: "TypedBy",
       isRelatedTerm: true,
       description:
@@ -352,6 +361,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     isa: {
       key: "is-a",
       plural: "is-as",
+      label: "Is a",
       typeName: "IsA",
       isRelatedTerm: true,
       description:
@@ -386,6 +396,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     isatypeof: {
       key: "isatypeof",
       plural: "is-a-type-ofs",
+      label: "Is a type of",
       typeName: "IsATypeOf",
       isRelatedTerm: true,
       description:
@@ -420,6 +431,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     categorization: {
       key: "term-categorization",
       plural: "term-categorizations",
+      label: "Term categorization",
       typeName: "Categorization",
       attributes: [
         {
@@ -433,6 +445,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     usedincontext: {
       key: "usedincontext",
       plural: "used-in-contexts",
+      label: "Used In Context",
       typeName: "UsedInContext",
       isRelatedTerm: true,
       description:
@@ -468,6 +481,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     translation: {
       key: "translation",
       plural: "translations",
+      label: "Translation",
       typeName: "Translation",
       isRelatedTerm: true,
       description:
@@ -502,6 +516,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     notSet: {
       key: "undefined",
       plural: "undefined",
+      label: "Relationship",
       typeName: "undefined",
     },
   };

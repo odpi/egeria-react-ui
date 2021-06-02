@@ -196,7 +196,13 @@ export default function CreateRelationshipWizard(props) {
     return "Step 1: choose relationship type";
   };
   const getStep2Title = () => {
-    return "Choose Term to relate to " + props.currentNode.name +" for " + relationshipType.typeName ;
+    return (
+      "Choose Term to relate to " +
+      props.currentNode.name +
+      " for '" +
+      relationshipType.label +
+      "'"
+    );
   };
   const getStep2Label = () => {
     return "Choose target";
@@ -440,43 +446,19 @@ export default function CreateRelationshipWizard(props) {
             <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
 
             <div className="ends-sentence">
-              {" "}
-              {end1Node.name}{" "}
-              {relationshipType.end1.attributeVerbWithAttributeAsSubject}{" "}
-              {end2Node.name}{" "}
+              <div className="bold_text">{end1Node.name}</div>
+
+              {relationshipType.end1.attributeVerbWithAttributeAsSubject}
+              <div className="bold_text">{end2Node.name}</div>
             </div>
             <div className="ends-sentence">
-              {" "}
-              {end2Node.name}{" "}
-              {relationshipType.end2.attributeVerbWithAttributeAsSubject}{" "}
-              {end1Node.name}{" "}
+              <div className="bold_text">{end2Node.name}</div>
+              {relationshipType.end2.attributeVerbWithAttributeAsSubject}
+              <div className="bold_text">{end1Node.name}</div>
             </div>
 
             <div>
-              {/* The 2 ends of the relationship are Terms, which are
-              <div>
-                {" "}
-                End 1 is {relationshipType.end1.attributeName}:{" "}
-                {relationshipType.end1.attributeDescription}{" "}
-              </div>
-              <div>
-                {" "}
-                End 2 is {relationshipType.end2.attributeName}:{" "}
-                {relationshipType.end2.attributeDescription}{" "}
-              </div> */}
               <Button onClick={handleToggleEnds}>Switch ends</Button>
-              {/* <div>
-                <div>End {endNumber}</div>
-                <div>{props.currentNode.name}</div>
-                <div>{props.currentNode.qualifiedName} </div>
-                <div>{props.currentNode.description} </div>
-              </div>
-              <div>
-                <div>End {otherEndNumber()}</div>
-                <div>{targetNode.name}</div>
-                <div>{targetNode.qualifiedName} </div>
-                <div>{targetNode.description} </div>
-              </div> */}
               <Accordion>
                 <AccordionItem title="Term details">
                   <div>End 1</div>

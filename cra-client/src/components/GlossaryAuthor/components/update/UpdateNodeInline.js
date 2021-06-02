@@ -124,7 +124,6 @@ export default function UpdateNodeInline(props) {
     setCurrentNode(undefined);
     updateUserInputFromNode(undefined);
   };
-  const createRelationship = () => {};
 
   const onAttributeChange = (attributeKey, attributeValue) => {
     const extendedUserInput = extendUserInput(
@@ -174,12 +173,12 @@ export default function UpdateNodeInline(props) {
     },
   ];
 
-  const onRelationshipCreated = (payLoad) => {
-    instancesContext.addRelationshipInstance( payLoad.node, payLoad.relationship);
-  };
-  const onReadyToCreate = () => {
-    setPrimaryButtonDisabled(false);
-  };
+  // const onRelationshipCreated = (payLoad) => {
+  //   instancesContext.addRelationshipInstance( payLoad.node, payLoad.relationship);
+  // };
+  // const onReadyToCreate = () => {
+  //   setPrimaryButtonDisabled(false);
+  // };
 
   const getSystemDataRowData = () => {
     let rowData = [];
@@ -197,23 +196,23 @@ export default function UpdateNodeInline(props) {
     }
     return rowData;
   };
-  const ModalStateManager = ({
-    renderLauncher: LauncherContent,
-    children: ModalContent,
-  }) => {
-    const [open, setOpen] = useState(false);
-    return (
-      <>
-        {!ModalContent || typeof document === "undefined"
-          ? null
-          : ReactDOM.createPortal(
-              <ModalContent open={open} setOpen={setOpen} />,
-              document.body
-            )}
-        {LauncherContent && <LauncherContent open={open} setOpen={setOpen} />}
-      </>
-    );
-  };
+  // const ModalStateManager = ({
+  //   renderLauncher: LauncherContent,
+  //   children: ModalContent,
+  // }) => {
+  //   const [open, setOpen] = useState(false);
+  //   return (
+  //     <>
+  //       {!ModalContent || typeof document === "undefined"
+  //         ? null
+  //         : ReactDOM.createPortal(
+  //             <ModalContent open={open} setOpen={setOpen} />,
+  //             document.body
+  //           )}
+  //       {LauncherContent && <LauncherContent open={open} setOpen={setOpen} />}
+  //     </>
+  //   );
+  // };
 
   return (
     <div>
@@ -285,7 +284,7 @@ export default function UpdateNodeInline(props) {
           Update
         </Button>
       )}
-      {currentNode && currentNode.nodeType === "Term" && (
+      {/* {currentNode && currentNode.nodeType === "Term" && (
         <ModalStateManager
           renderLauncher={({ setOpen }) => (
             <Button onClick={() => setOpen(true)}>Create Relationship</Button>
@@ -308,7 +307,7 @@ export default function UpdateNodeInline(props) {
             </Modal>
           )}
         </ModalStateManager>
-      )}
+      )} */}
     </div>
   );
 }

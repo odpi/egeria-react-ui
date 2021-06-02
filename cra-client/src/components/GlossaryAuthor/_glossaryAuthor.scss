@@ -152,6 +152,12 @@
 .ends-sentence {
   font-size: 16px;
   margin:2px;
+  display: flex;
+}
+.bold_text {
+  font-weight: bold;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 @keyframes shake {
