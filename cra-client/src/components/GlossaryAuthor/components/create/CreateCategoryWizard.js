@@ -6,26 +6,27 @@ import {
   ProgressStep,
   Button,
 } from "carbon-components-react";
-import NodeInput from "../nodepages/NodeInput";
-import NodeReadOnly from "../nodepages/NodeReadOnly";
+import NodeInput from "../authoringforms/NodeInput";
+import NodeReadOnly from "../authoringforms/NodeReadOnly";
 import { useHistory } from "react-router-dom";
 import {
-  validateNodePropertiesUserInput,
+  validatePropertiesUserInput,
   extendUserInput,
 } from "../../../common/Validators";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 
 import { parse } from "date-fns";
+import CreateNode from "./CreateNode";
 
 /**
  * This is a category creation wizard. The first page of the wizard
  * asks the user to input values for the Category create. The next page then asks the user for the glossary that the
- * Category will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
+ * Category will be stored in. This is followed by an optional parent category, finally there is a confirmation screen,
  *  where the user can confirm the values that will be used to create the Category.
  *
- * This component drives the labelIdForSubmitButton component, which displays the node. There are callbacks to the wizard
- * when the user has finsished with entering creation content and chosen a glossary.
- * This component then driven NodeInput which displays the confirmation screen, issue the create and then does the results
+ * This component drives the NodeInput component, which displays the node. There are callbacks to the wizard
+ * when the user has finished with entering creation content and chosen a glossary.
+ * This component then drives NodeReadOnly, which displays the confirmation screen, issues the create and then shows the results
  * of the create.
  *
  * @param {*} props
@@ -72,7 +73,16 @@ export default function CreateCategoryWizard(props) {
     setCurrentStepIndex(newIndex);
   };
   const finished = () => {
-    history.goBack();
+    if (props.onModalContentRequestedClose) {
+      // if in a modal then callback to close the modal
+      props.onModalContentRequestedClose();
+      let payLoad = {};
+      payLoad.node = nodeCreated;
+      props.onCreated(payLoad);
+    } else {
+      // in not in a modal got back to the last page 
+      history.goBack();
+    }
   };
 
   const hasGlossary = () => {
@@ -99,7 +109,7 @@ export default function CreateCategoryWizard(props) {
     };
 
     setUserInput(newUserInput);
-    if (validateNodePropertiesUserInput(extendedUserInput)) {
+    if (validatePropertiesUserInput(extendedUserInput)) {
       if (
         attributeKey === "effectiveFromTime" ||
         attributeKey === "effectiveToTime"
@@ -125,11 +135,11 @@ export default function CreateCategoryWizard(props) {
     }
   };
   const validateUserInput = () => {
-    return validateNodePropertiesUserInput(userInput);
+    return validatePropertiesUserInput(userInput);
   };
-  const onGlossarySelect = (guid) => {
+  const onGlossarySelect = (node) => {
     let glossary = {};
-    glossary.guid = guid;
+    glossary.guid = node.systemAttributes.guid;
     let myNodeToCreate = {
       ...nodeToCreate,
       ["glossary"]: glossary,
@@ -137,8 +147,9 @@ export default function CreateCategoryWizard(props) {
     setNodeToCreate(myNodeToCreate);
   };
 
-  const onParentCategorySelect = (guid) => {
-    if (guid !== undefined) {
+  const onParentCategorySelect = (node) => {
+    if (node !== undefined) {
+      const guid = node.systemAttributes.guid;
       let parentCategory = {};
       parentCategory.guid = guid;
       parentCategory.type = "Category";

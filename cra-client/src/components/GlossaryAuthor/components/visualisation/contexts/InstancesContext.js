@@ -465,8 +465,8 @@ const InstancesContextProvider = (props) => {
        * If this is a traversal from an Explore, the traversal results should have been formatted by the VS
        * into the form needed by Glove.
        * This means that it should have:
-       *   a map of nodeGUID       --> { nodeGUID, label, gen }
-       *   a map of relationshipGUID --> { relationshipGUID, end1GUID, end2GUID, idx, label, gen }
+       *   a map of nodeGUID       --> { nodeGUID, name, nodeType }
+       *   a map of relationshipGUID --> { relationshipGUID, end1GUID, end2GUID, relationshiptype }
        *
        * Alternatively this could be a traversal object resulting from a search and subsequent user
        * selection of search results.
@@ -886,6 +886,34 @@ const InstancesContextProvider = (props) => {
     // issue call
     issueRestGet(url, onSuccessfulExplore, onErrorExplore);
   };
+  /**
+   * Pass the supplied node and relationship into a traversal 
+   * @param {*} node node to add to the traversal
+   * @param {*} relationship relationship to add to the traversal
+   */
+  const addRelationshipInstance = (node, relationship) => {
+    let traversal = {};
+    traversal.nodes = {};
+    traversal.relationships = {};
+    const nodeGUID = node.systemAttributes.guid;  
+    traversal.nodes[nodeGUID] = node;
+    const relationshipGUID = relationship.systemAttributes.guid;
+    traversal.relationships[relationshipGUID] = relationship;
+    console.log("adding relationship and node " + JSON.stringify(traversal));
+    traversal.operation = "traversal";
+    processRetrievedTraversal(traversal);
+  };
+  const addNodeInstance = (node) => {
+    let traversal = {};
+    traversal.nodes = {};
+    traversal.relationships = {};
+    const nodeGUID = node.systemAttributes.guid;  
+    traversal.nodes[nodeGUID] = node;
+  
+    console.log("adding node " + JSON.stringify(traversal));
+    traversal.operation = "traversal";
+    processRetrievedTraversal(traversal);
+  };
 
   /*
    * Remove a generation from the graph
@@ -1119,6 +1147,8 @@ const InstancesContextProvider = (props) => {
         getLatestActiveGenId,
         removeGen,
         getLatestGen,
+        addRelationshipInstance,
+        addNodeInstance
       }}
     >
       {props.children}

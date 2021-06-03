@@ -25,6 +25,8 @@ import QuestionMarkImage               from "./question-mark-32.png";
 import HelpMarkdown                    from './HELP.md';
 
 import "./glove.scss";
+import CreateRelationship from "../create/CreateRelationship";
+import CreateNodeButtonWidget from "../create/CreateNodeButtonWidget";
 
 export default function GlossaryAuthorVisualisation(props) {
 
@@ -135,10 +137,13 @@ export default function GlossaryAuthorVisualisation(props) {
                                    onCancel            = { cancelHelpModal }
                                    onSubmit            = { submitHelpModal } />
                 </div>
-
+                 {/* Get the node we have been given       */}
                 <div className="glove-top-middle">
                   <InstanceRetrieval nodeType={props.nodeType} guid={props.guid} />
                 </div>
+                <CreateRelationship />
+                <CreateNodeButtonWidget />
+
 
               </div>
 

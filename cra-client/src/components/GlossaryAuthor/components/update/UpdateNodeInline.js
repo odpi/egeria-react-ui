@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import ReactDOM from "react-dom";
 import { parse, format } from "date-fns";
 import {
   Accordion,
   AccordionItem,
   Button,
-  // DatePicker,
-  // DatePickerInput,
   DataTable,
+  Modal,
   TableContainer,
   Table,
   TableHead,
@@ -18,44 +18,50 @@ import {
   TableBody,
 } from "carbon-components-react";
 // import Info16 from "@carbon/icons-react/lib/information/16";
+
+import { InstancesContext } from "../visualisation/contexts/InstancesContext";
 import {
-  validateNodePropertiesUserInput,
+  validatePropertiesUserInput,
   extendUserInput,
 } from "../../../common/Validators";
 import { issueRestUpdate } from "../RestCaller";
-import NodeInput from "../nodepages/NodeInput";
+import NodeInput from "../authoringforms/NodeInput";
+import CreateRelationshipWizard from "../create/CreateRelationshipWizard";
 
 export default function UpdateNodeInline(props) {
-  // const [nodeToUpdate, setNodeToUpdate] = useState({});
+  const instancesContext = useContext(InstancesContext);
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [userInput, setUserInput] = useState();
+  const [primaryButtonDisabled, setPrimaryButtonDisabled] = useState(true);
 
   useEffect(() => {
     setCurrentNode(props.node);
     updateUserInputFromNode(props.node);
-     
   }, [props]);
   /**
-   * There is new node content (from an update response or we are initialising with content). The node is the serialised for of a glossary author artifact, used on rest calls. 
+   * There is new node content (from an update response or we are initialising with content). The node is the serialised for of a glossary author artifact, used on rest calls.
    * The userInput state variable stores data in a format that the user interface needs, including a value and invalid flag
-   * for each attrribute value.   
-   * This function maps the node content to the userInput. 
-   * @param {*} node 
+   * for each attrribute value.
+   * This function maps the node content to the userInput.
+   * @param {*} node
    */
   const updateUserInputFromNode = (node) => {
     const currentNodeType = props.currentNodeType;
     let newUserInput = {};
-    if (currentNodeType && currentNodeType.attributes && currentNodeType.attributes.length >0) {
-
-      for (let i = 0 ; i<  currentNodeType.attributes.length ; i++) {
+    if (
+      currentNodeType &&
+      currentNodeType.attributes &&
+      currentNodeType.attributes.length > 0
+    ) {
+      for (let i = 0; i < currentNodeType.attributes.length; i++) {
         const attributeName = currentNodeType.attributes[i].key;
         newUserInput[attributeName] = {};
-        newUserInput[attributeName].value= node[attributeName];
-        newUserInput[attributeName].invalid= false;
+        newUserInput[attributeName].value = node[attributeName];
+        newUserInput[attributeName].invalid = false;
       }
     }
- 
+
     // change the dates from longs to an object with a date and time
     if (node.effectiveFromTime) {
       let dateTimeObject = {};
@@ -63,10 +69,7 @@ export default function UpdateNodeInline(props) {
       dateTimeObject.date.value = new Date(node.effectiveFromTime);
       dateTimeObject.date.invalid = false;
       dateTimeObject.time = {};
-      dateTimeObject.time.value = format(
-        node.effectiveFromTime,
-        "HH:mm"
-      );
+      dateTimeObject.time.value = format(node.effectiveFromTime, "HH:mm");
       dateTimeObject.time.invalid = false;
       newUserInput.effectiveFromTime = dateTimeObject;
     }
@@ -76,15 +79,12 @@ export default function UpdateNodeInline(props) {
       dateTimeObject.date.value = new Date(node.effectiveToTime);
       dateTimeObject.date.invalid = false;
       dateTimeObject.time = {};
-      dateTimeObject.time.value = format(
-        node.effectiveToTime,
-        "HH:mm"
-      );
+      dateTimeObject.time.value = format(node.effectiveToTime, "HH:mm");
       dateTimeObject.time.invalid = false;
       newUserInput.effectiveToTime = dateTimeObject;
     }
     setUserInput(newUserInput);
-  }; 
+  };
   console.log("UpdateNodeInline");
 
   const url = getUrl();
@@ -105,9 +105,6 @@ export default function UpdateNodeInline(props) {
     // Disabling logging as CodeQL does not like user supplied values being logged.
     // console.log("issueUpdate " + url);
     issueRestUpdate(url, body, onSuccessfulUpdate, onErrorUpdate);
-  };
-  const handleCreateRelationship = () => {
-    alert("TODO create relationship!");
   };
   const onSuccessfulUpdate = (json) => {
     console.log("onSuccessfulUpdate");
@@ -140,7 +137,7 @@ export default function UpdateNodeInline(props) {
     };
 
     setUserInput(newUserInput);
-    if (validateNodePropertiesUserInput(extendedUserInput)) {
+    if (validatePropertiesUserInput(extendedUserInput)) {
       if (
         attributeKey === "effectiveFromTime" ||
         attributeKey === "effectiveToTime"
@@ -176,6 +173,13 @@ export default function UpdateNodeInline(props) {
     },
   ];
 
+  // const onRelationshipCreated = (payLoad) => {
+  //   instancesContext.addRelationshipInstance( payLoad.node, payLoad.relationship);
+  // };
+  // const onReadyToCreate = () => {
+  //   setPrimaryButtonDisabled(false);
+  // };
+
   const getSystemDataRowData = () => {
     let rowData = [];
     const systemAttributes = currentNode.systemAttributes;
@@ -192,15 +196,44 @@ export default function UpdateNodeInline(props) {
     }
     return rowData;
   };
+  // const ModalStateManager = ({
+  //   renderLauncher: LauncherContent,
+  //   children: ModalContent,
+  // }) => {
+  //   const [open, setOpen] = useState(false);
+  //   return (
+  //     <>
+  //       {!ModalContent || typeof document === "undefined"
+  //         ? null
+  //         : ReactDOM.createPortal(
+  //             <ModalContent open={open} setOpen={setOpen} />,
+  //             document.body
+  //           )}
+  //       {LauncherContent && <LauncherContent open={open} setOpen={setOpen} />}
+  //     </>
+  //   );
+  // };
 
   return (
     <div>
       {currentNode !== undefined && (
-        <div className="bx--form-item">
-          <label className="bx--label">
-            Version {currentNode.systemAttributes.version} of the selected{" "}
-            {currentNode.nodeType} is from generation {currentNode.gen}
-          </label>
+        <div>
+          <div className="bottom-margin">
+            <div className="bx--form-item">
+              <div className="lhs-header">{currentNode.nodeType} selected</div>
+              <div>
+                The version of the {currentNode.nodeType} on the server is{" "}
+                {currentNode.systemAttributes.version}.{" "}
+              </div>
+              <div>
+                The generation on the canvas of the {currentNode.nodeType} is{" "}
+                {currentNode.gen}{" "}
+              </div>
+            </div>
+          </div>
+          <div className="bx--form-item">
+            <div className="lhs-header">Properties</div>
+          </div>
         </div>
       )}
       {currentNode !== undefined &&
@@ -263,15 +296,30 @@ export default function UpdateNodeInline(props) {
           Update
         </Button>
       )}
-      {currentNode && (
-        <Button
-          className="bx--btn bx--btn--primary"
-          onClick={handleCreateRelationship}
-          type="button"
+      {/* {currentNode && currentNode.nodeType === "Term" && (
+        <ModalStateManager
+          renderLauncher={({ setOpen }) => (
+            <Button onClick={() => setOpen(true)}>Create Relationship</Button>
+          )}
         >
-          Create Relationship
-        </Button>
-      )}
+          {({ open, setOpen }) => (
+            <Modal
+              modalHeading="Create Relationship"
+              open={open}
+              passiveModal={true}
+              onRequestClose={() => setOpen(false)}
+            >
+              <CreateRelationshipWizard
+                currentNodeType={props.currentNodeType}
+                currentNode={currentNode}
+                onCreated={onRelationshipCreated}
+                onReadyToCreate={onReadyToCreate}
+                onModalContentRequestedClose={() => setOpen(false)}
+              />
+            </Modal>
+          )}
+        </ModalStateManager>
+      )} */}
     </div>
   );
 }

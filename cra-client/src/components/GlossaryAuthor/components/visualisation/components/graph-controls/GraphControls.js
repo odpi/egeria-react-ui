@@ -296,7 +296,7 @@ export default function GraphControls(props) {
   
   return (
     
-    <div className={props.className}>
+    <div className='bottom-margin'>
         <p className="descriptive-text">
           Traversal count : {instancesContext.getLatestActiveGenId()}
         </p>

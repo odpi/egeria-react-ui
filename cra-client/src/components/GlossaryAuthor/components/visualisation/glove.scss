@@ -89,11 +89,18 @@
 .descriptive-text {
   font-size        : 12px;
 }
+.bottom-margin {
+  margin-bottom    : 20px;
+}
 
 .graph-control-button {  
   height           : 40px;
   width            : 100px;
   background-color : rgb(180,180,180);  
+}
+.lhs-header {
+  margin-bottom: 20px;
+  font-size: 30px;
 }
 
 .fullwidth {
