@@ -1,32 +1,22 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState,  useContext } from "react";
+import React, { useState, useContext } from "react";
 import ReactDOM from "react-dom";
+import { Button, Modal } from "carbon-components-react";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import getNodeType from "../properties/NodeTypes.js";
-import {
-  Button,
-  Modal 
-} from "carbon-components-react";
-// import Info16 from "@carbon/icons-react/lib/information/16";
-
-
 import CreateRelationshipWizard from "./CreateRelationshipWizard";
+import getNodeType from "../properties/NodeTypes.js";
 
 export default function CreateRelationship() {
   const identificationContext = useContext(IdentificationContext);
-  const instancesContext      = useContext(InstancesContext);
-  const  [createButtonDisabled, setCreateButtonDisabled] = useState(true);
-
-  const onReadyToCreate = () => {
-     setCreateButtonDisabled(false);
-  };
+  const instancesContext = useContext(InstancesContext);
+  const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
 
   const getCurrentNode = () => {
     let currentNode;
     const focusNode = instancesContext.getFocusNode();
-    if (focusNode && focusNode.nodeType === 'Term') {
+    if (focusNode && focusNode.nodeType === "Term") {
       currentNode = focusNode;
       setCreateButtonDisabled(false);
     } else {
@@ -37,14 +27,20 @@ export default function CreateRelationship() {
   const getCurrentNodeType = () => {
     let currentNodeType;
     const focusNode = instancesContext.getFocusNode();
-    if (focusNode && focusNode.nodeType === 'Term') {
-      currentNodeType = getNodeType(identificationContext.getRestURL("glossary-author"), focusNode.nodeType);
-    }  
+    if (focusNode && focusNode.nodeType === "Term") {
+      currentNodeType = getNodeType(
+        identificationContext.getRestURL("glossary-author"),
+        focusNode.nodeType
+      );
+    }
     return currentNodeType;
   };
-  
+
   const onRelationshipCreated = (payLoad) => {
-    instancesContext.addRelationshipInstance( payLoad.node, payLoad.relationship);
+    instancesContext.addRelationshipInstance(
+      payLoad.node,
+      payLoad.relationship
+    );
   };
 
   const ModalStateManager = ({
@@ -67,29 +63,29 @@ export default function CreateRelationship() {
 
   return (
     <div>
-      {/* {getCurrentNode() !== undefined && ( */}
-        <ModalStateManager
-          renderLauncher={({ setOpen }) => (
-            <Button disabled={createButtonDisabled} onClick={() => setOpen(true)}>Create Relationship</Button>
-          )}
-        >
-          {({ open, setOpen }) => (
-            <Modal
-              modalHeading="Create Relationship"
-              open={open}
-              passiveModal={true}
-              onRequestClose={() => setOpen(false)}
-            >
-              <CreateRelationshipWizard
-                currentNodeType={getCurrentNodeType()}
-                currentNode={getCurrentNode()}
-                onCreated={onRelationshipCreated}
-                onModalContentRequestedClose={() => setOpen(false)}
-              />
-            </Modal>
-          )}
-        </ModalStateManager>
-       {/* )}  */}
-       </div>
+      <ModalStateManager
+        renderLauncher={({ setOpen }) => (
+          <Button disabled={createButtonDisabled} onClick={() => setOpen(true)}>
+            Create Relationship
+          </Button>
+        )}
+      >
+        {({ open, setOpen }) => (
+          <Modal
+            modalHeading="Create Relationship"
+            open={open}
+            passiveModal={true}
+            onRequestClose={() => setOpen(false)}
+          >
+            <CreateRelationshipWizard
+              currentNodeType={getCurrentNodeType()}
+              currentNode={getCurrentNode()}
+              onCreated={onRelationshipCreated}
+              onModalContentRequestedClose={() => setOpen(false)}
+            />
+          </Modal>
+        )}
+      </ModalStateManager>
+    </div>
   );
 }

@@ -71,7 +71,16 @@ export default function CreateTermWizard(props) {
     setCurrentStepIndex(newIndex);
   };
   const finished = () => {
-    history.goBack();
+    if (props.onModalContentRequestedClose) {
+      // if in a modal then callback to close the modal
+      props.onModalContentRequestedClose();
+      let payLoad = {};
+      payLoad.node = nodeCreated;
+      props.onCreated(payLoad);
+    } else {
+      // in not in a modal got back to the last page 
+      history.goBack();
+    }
   };
 
   const hasGlossary = () => {
@@ -225,7 +234,7 @@ export default function CreateTermWizard(props) {
         />
       </ProgressIndicator>
       <div className="wizard-navigation-container">
-      {currentStepIndex === 0 && (
+        {currentStepIndex === 0 && (
           <div>
             <Button
               kind="secondary"
@@ -238,10 +247,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <Button
-              kind="secondary"
-              onClick={previousStep}
-            >
+            <Button kind="secondary" onClick={previousStep}>
               Previous
             </Button>
             <Button
@@ -258,11 +264,7 @@ export default function CreateTermWizard(props) {
             <Button kind="secondary" onClick={previousStep}>
               Previous
             </Button>
-            <Button
-              kind="secondary"
-              onClick={nextStep}
-           
-            >
+            <Button kind="secondary" onClick={nextStep}>
               Next
             </Button>
           </div>

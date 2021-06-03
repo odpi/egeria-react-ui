@@ -52,10 +52,6 @@ export default function CreateRelationshipWizard(props) {
   const [userInput, setUserInput] = useState();
   // target node (other end) for the relationship
   const [targetNode, setTargetNode] = useState();
-  // const [end1Guid, setEnd1Guid] = useState();
-  // const [end2Guid, setEnd2Guid] = useState();
-  // const [thisEnd, setThisEnd] = useState();
-  // const [otherEnd, setOtherEnd] = useState();
   const [endNumber, setEndNumber] = useState(1);
   const [end1Node, setEnd1Node] = useState();
   const [end2Node, setEnd2Node] = useState();
@@ -389,7 +385,7 @@ export default function CreateRelationshipWizard(props) {
                 defaultValue="placeholder-item"
                 helperText={relationshipTypeDescription}
                 onChange={relationshipTypeSelected}
-                id="select-1"
+                id="select-relationship-type"
                 invalidText="A valid value is required"
                 labelText="Select"
               >

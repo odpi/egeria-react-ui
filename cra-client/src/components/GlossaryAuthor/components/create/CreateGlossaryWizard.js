@@ -68,7 +68,16 @@ export default function CreateGlossaryWizard(props) {
     setCurrentStepIndex(newIndex);
   };
   const finished = () => {
-    history.goBack();
+    if (props.onModalContentRequestedClose) {
+      // if in a modal then callback to close the modal
+      props.onModalContentRequestedClose();
+      let payLoad = {};
+      payLoad.node = nodeCreated;
+      props.onCreated(payLoad);
+    } else {
+      // in not in a modal got back to the last page 
+      history.goBack();
+    }
   };
 
   const onAttributeChange = (attributeKey, attributeValue) => {
@@ -142,6 +151,9 @@ export default function CreateGlossaryWizard(props) {
   const onCreate = (node) => {
     console.log("OnCreate");
     setNodeCreated(node);
+    let payLoad = {};
+    payLoad.node = node;
+    // props.onCreated(payLoad);
   };
 
   return (

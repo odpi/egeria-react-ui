@@ -29,7 +29,7 @@ import NodeInput from "../authoringforms/NodeInput";
 import CreateRelationshipWizard from "../create/CreateRelationshipWizard";
 
 export default function UpdateNodeInline(props) {
-  const instancesContext        = useContext(InstancesContext);
+  const instancesContext = useContext(InstancesContext);
   const [currentNode, setCurrentNode] = useState();
   const [errorMsg, setErrorMsg] = useState();
   const [userInput, setUserInput] = useState();
@@ -217,11 +217,23 @@ export default function UpdateNodeInline(props) {
   return (
     <div>
       {currentNode !== undefined && (
-        <div className="bx--form-item">
-          <label className="bx--label">
-            Version {currentNode.systemAttributes.version} of the selected{" "}
-            {currentNode.nodeType} is from generation {currentNode.gen}
-          </label>
+        <div>
+          <div className="bottom-margin">
+            <div className="bx--form-item">
+              <div className="lhs-header">{currentNode.nodeType} selected</div>
+              <div>
+                The version of the {currentNode.nodeType} on the server is{" "}
+                {currentNode.systemAttributes.version}.{" "}
+              </div>
+              <div>
+                The generation on the canvas of the {currentNode.nodeType} is{" "}
+                {currentNode.gen}{" "}
+              </div>
+            </div>
+          </div>
+          <div className="bx--form-item">
+            <div className="lhs-header">Properties</div>
+          </div>
         </div>
       )}
       {currentNode !== undefined &&

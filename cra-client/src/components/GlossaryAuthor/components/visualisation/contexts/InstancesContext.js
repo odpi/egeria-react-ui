@@ -903,6 +903,17 @@ const InstancesContextProvider = (props) => {
     traversal.operation = "traversal";
     processRetrievedTraversal(traversal);
   };
+  const addNodeInstance = (node) => {
+    let traversal = {};
+    traversal.nodes = {};
+    traversal.relationships = {};
+    const nodeGUID = node.systemAttributes.guid;  
+    traversal.nodes[nodeGUID] = node;
+  
+    console.log("adding node " + JSON.stringify(traversal));
+    traversal.operation = "traversal";
+    processRetrievedTraversal(traversal);
+  };
 
   /*
    * Remove a generation from the graph
@@ -1136,7 +1147,8 @@ const InstancesContextProvider = (props) => {
         getLatestActiveGenId,
         removeGen,
         getLatestGen,
-        addRelationshipInstance
+        addRelationshipInstance,
+        addNodeInstance
       }}
     >
       {props.children}

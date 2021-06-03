@@ -16,6 +16,7 @@ import {
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
 
 import { parse } from "date-fns";
+import CreateNode from "./CreateNode";
 
 /**
  * This is a category creation wizard. The first page of the wizard
@@ -72,7 +73,16 @@ export default function CreateCategoryWizard(props) {
     setCurrentStepIndex(newIndex);
   };
   const finished = () => {
-    history.goBack();
+    if (props.onModalContentRequestedClose) {
+      // if in a modal then callback to close the modal
+      props.onModalContentRequestedClose();
+      let payLoad = {};
+      payLoad.node = nodeCreated;
+      props.onCreated(payLoad);
+    } else {
+      // in not in a modal got back to the last page 
+      history.goBack();
+    }
   };
 
   const hasGlossary = () => {
