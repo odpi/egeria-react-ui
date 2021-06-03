@@ -287,42 +287,6 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
       },
     },
 
-    isatypeof: {
-      key: "isatypeof",
-      plural: "is-a-type-ofs",
-      label: "is a type of",
-      isRelatedTerm: true,
-      typeName: "IsATypeOf",
-      description:
-        "Defines an inheritance relationship between two spine objects.",
-      end1: {
-        headerVersion: 1,
-        entityType: {
-          headerVersion: 1,
-          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
-          name: "GlossaryTerm",
-          status: "ACTIVE_TYPEDEF",
-        },
-        attributeName: "supertypes",
-        attributeDescription: "Supertypes for this object.",
-        attributeVerbWithAttributeAsSubject: "is the super type of",
-        attributeCardinality: "ANY_NUMBER",
-      },
-      end2: {
-        headerVersion: 1,
-        entityType: {
-          headerVersion: 1,
-          guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
-          name: "GlossaryTerm",
-          status: "ACTIVE_TYPEDEF",
-        },
-        attributeName: "subtypes",
-        attributeDescription: "Subtypes for this object.",
-        attributeVerbWithAttributeAsSubject: "is the sub type of",
-        attributeCardinality: "ANY_NUMBER",
-      },
-    },
-
     typedby: {
       key: "typedby",
       plural: "typed-bys",
