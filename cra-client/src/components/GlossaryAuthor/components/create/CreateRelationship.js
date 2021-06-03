@@ -17,17 +17,21 @@ import CreateRelationshipWizard from "./CreateRelationshipWizard";
 export default function CreateRelationship() {
   const identificationContext = useContext(IdentificationContext);
   const instancesContext      = useContext(InstancesContext);
+  const  [createButtonDisabled, setCreateButtonDisabled] = useState(true);
 
-  // const onReadyToCreate = () => {
-  //   setPrimaryButtonDisabled(false);
-  // };
+  const onReadyToCreate = () => {
+     setCreateButtonDisabled(false);
+  };
 
   const getCurrentNode = () => {
     let currentNode;
     const focusNode = instancesContext.getFocusNode();
     if (focusNode && focusNode.nodeType === 'Term') {
       currentNode = focusNode;
-    }  
+      setCreateButtonDisabled(false);
+    } else {
+      setCreateButtonDisabled(true);
+    }
     return currentNode;
   };
   const getCurrentNodeType = () => {
@@ -66,7 +70,7 @@ export default function CreateRelationship() {
       {/* {getCurrentNode() !== undefined && ( */}
         <ModalStateManager
           renderLauncher={({ setOpen }) => (
-            <Button onClick={() => setOpen(true)}>Create Relationship</Button>
+            <Button disabled={createButtonDisabled} onClick={() => setOpen(true)}>Create Relationship</Button>
           )}
         >
           {({ open, setOpen }) => (
