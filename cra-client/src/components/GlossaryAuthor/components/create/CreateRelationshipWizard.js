@@ -24,6 +24,7 @@ import getRelationshipType from "../properties/RelationshipTypes";
 
 import { parse } from "date-fns";
 import { node } from "prop-types";
+import { AgricultureAnalytics16 } from "@carbon/icons-react";
 
 /**
  * This is a Relationship creation wizard is driven from a Term. The first page of the wizard
@@ -166,7 +167,11 @@ export default function CreateRelationshipWizard(props) {
     // return validatePropertiesUserInput(userInput);
   };
   const onTermSelect = (node) => {
-    setTargetNode(node);
+    if (node.systemAttributes.guid === props.currentNode.systemAttributes.guid) {
+      alert("Cannot create a relationship to ourself.");
+    } else {
+      setTargetNode(node);
+    }
   };
   const relationshipTypeSelected = (e) => {
     const selection = e.target.value;
