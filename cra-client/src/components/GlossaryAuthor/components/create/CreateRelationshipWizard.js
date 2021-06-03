@@ -399,10 +399,11 @@ export default function CreateRelationshipWizard(props) {
                   <SelectItem text="Preferred term" value="preferredterm" />
                   <SelectItem text="Replacement Term" value="replacementterm" />
                   <SelectItem text="Translation" value="translation" />
-                  <SelectItem
+                  {/* removing isa as the server side types are being reviewed */}
+                  {/* <SelectItem
                     text="Is a (classifying relationship)"
                     value="isa"
-                  />
+                  /> */}
                   <SelectItem text="ValidValue" value="validvalue" />
                   <SelectItem text="Related Term" value="relatedterm" />
                 </SelectItemGroup>
