@@ -65,8 +65,10 @@ export default function RelationshipReadOnly(props) {
           prop !== "confidence" &&
           prop !== "confidentiality" &&
           prop !== "criticality" &&
-          prop !== "retention"
+          prop !== "retention"  
+         
         ) {
+          console.log("Relationship readonly prop " + prop);
           let row = {};
           row.id = prop;
           row.attrName = prop;
@@ -149,11 +151,12 @@ export default function RelationshipReadOnly(props) {
 
     // TODO consider moving this up to a relationship controller as per the CRUD pattern.
     // in the meantime this will be self contained.
-    const url = props.currentRelationshipType.url;
+    let url = props.currentRelationshipType.url;
     if (props.operation === "Create") {
       console.log("issueCreate " + url);
       issueRestCreate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
     } else   if (props.operation === "Update") {
+      url = url +"/" + body.systemAttributes.guid;
       console.log("issueUpdate " + url);
       issueRestUpdate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
     }

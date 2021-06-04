@@ -3,6 +3,7 @@
 import React, { useState, useContext } from "react";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import getNodeType from "../properties/NodeTypes.js";
+import getRelationshipType from "../properties/RelationshipTypes.js";
 import ReactDOM from "react-dom";
 import { InstancesContext } from "../visualisation/contexts/InstancesContext";
 import UpdateWizard from "./UpdateWizard";
@@ -27,7 +28,8 @@ export default function UpdateButtonWidget() {
       instancesContext.updateNodeInstance(payLoad.node, nodeType);
     }
     if (payLoad.relationship !== undefined) {
-      instancesContext.updateRelationshipInstance(payLoad.node);
+      const relationshipTypeName = payLoad.relationship.relationshipType.toLowerCase();
+      instancesContext.updateRelationshipInstance(payLoad.relationship, payLoad.relationship.relationshipTypeName);
     }
   };
 

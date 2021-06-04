@@ -128,7 +128,8 @@ export default function UpdateRelationshipPropertiesWizard(props) {
     const extendedUserInput = extendUserInput(
       userInput,
       attributeKey,
-      attributeValue
+      attributeValue,
+      true   // isRelationship
     );
 
     let newUserInput = {

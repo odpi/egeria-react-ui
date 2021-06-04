@@ -163,7 +163,10 @@ export const validatePropertiesUserInput = (userInput, isRelationship) => {
         ) {
           isValid = false;
         }
-      } else if ((isRelationship !== true) && !isObjectValueValid(propertyValue)) {
+      } else if (
+        isRelationship !== true &&
+        !isObjectValueValid(propertyValue)
+      ) {
         isValid = false;
       }
     }
@@ -186,7 +189,12 @@ export const validatePropertiesUserInput = (userInput, isRelationship) => {
  * @param {*} attributeValue value of the property (could be invalid)
  * @returns amended UserInput including the supplied attribute content
  */
-export const extendUserInput = (userInput, attributeKey, attributeValue, isRelationship) => {
+export const extendUserInput = (
+  userInput,
+  attributeKey,
+  attributeValue,
+  isRelationship
+) => {
   // let isDateTimeValid = false;
   let attributeObject = {};
   if (
@@ -233,8 +241,9 @@ export const extendUserInput = (userInput, attributeKey, attributeValue, isRelat
 
   // check name and embellish with error messsage if invalid
   if (
-    nameValue === undefined ||
-    (nameValue !== undefined && !hasContent(nameValue.value) && isRelationship !==true)
+    isRelationship !== true &&
+    (nameValue === undefined ||
+      (nameValue !== undefined && !hasContent(nameValue.value)))
   ) {
     let attributeObject = {};
     attributeObject.value = undefined;
@@ -294,7 +303,7 @@ export const extendUserInput = (userInput, attributeKey, attributeValue, isRelat
           if (!fromValue) {
             fromValue = {};
             fromValue.time = {};
-          } else if (! fromValue.time) {
+          } else if (!fromValue.time) {
             fromValue.time = {};
           }
           fromValue.time.invalid = true;
@@ -303,7 +312,7 @@ export const extendUserInput = (userInput, attributeKey, attributeValue, isRelat
           if (!toValue) {
             toValue = {};
             toValue.time = {};
-          } else if (!toValue.time){
+          } else if (!toValue.time) {
             toValue.time = {};
           }
           toValue.time.invalid = true;

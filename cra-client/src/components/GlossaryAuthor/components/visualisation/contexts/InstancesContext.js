@@ -946,16 +946,16 @@ const InstancesContextProvider = (props) => {
     processRetrievedTraversal(traversal);
   };
   /**
-   * Update node does NOT create a new traversal, becase it does not add any new content to the canvas.
-   * Instead it fins which gen the node existing inand updates its properties.
-   * @param {*} node
+   * Update relationship does NOT create a new traversal, becase it does not add any new content to the canvas.
+   * Instead it finss which gen the relationship exists in and updates it's properties.
+   * @param {*} relationship
    */
   const updateNodeInstance = (newNode, nodeType) => {
     const nodeGUID = newNode.systemAttributes.guid;
 
     for (let i = 0; i < gens.length; i++) {
       const genContent = gens[i];
-      const existingNode = genContent.nodes[nodeGUID];
+      const existingNode = genContent.relationships[nodeGUID];
       if (existingNode !== undefined) {
         // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change 
         // shallow copy the array
@@ -976,6 +976,41 @@ const InstancesContextProvider = (props) => {
         setGens(newGens);
         // update the node so the details panel refreshes.
         loadNode(nodeGUID, nodeType);
+        break;
+      }
+    }
+  };
+  /**
+   * Update relationship does NOT create a new traversal, becase it does not add any new content to the canvas.
+   * Instead it finds which gen the relationship exists in and updates it's properties.
+   * @param {*} relationship
+   */
+   const updateRelationshipInstance = (newRelationship, relationshipType) => {
+    const relationshipGUID = newRelationship.systemAttributes.guid;
+
+    for (let i = 0; i < gens.length; i++) {
+      const genContent = gens[i];
+      const existingRelationship = genContent.relationships[relationshipGUID];
+      if (existingRelationship !== undefined) {
+        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change 
+        // shallow copy the array
+        let newGens = gens.slice(0);
+        // clone the content
+        let newGenContent = {
+          ...genContent,
+        };
+        // clone the relationships
+        let newRelationships = {
+          ...newGenContent.relationship,
+        };
+        // update 
+        newRelationships[relationshipGUID] = newRelationship;
+        newGenContent.relationships = newRelationships;
+        newGens[i] = newGenContent;
+        // set into state.
+        setGens(newGens);
+        // update the relationship so the details panel refreshes.
+        loadRelationship(relationshipGUID, relationshipType);
         break;
       }
     }
@@ -1226,6 +1261,7 @@ const InstancesContextProvider = (props) => {
         addRelationshipInstance,
         addNodeInstance,
         updateNodeInstance,
+        updateRelationshipInstance,
       }}
     >
       {props.children}

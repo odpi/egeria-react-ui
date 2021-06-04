@@ -129,7 +129,7 @@ export default function CreateRelationshipWizard(props) {
       userInput,
       attributeKey,
       attributeValue,
-      true
+      true   // isRelationship
     );
 
     let newUserInput = {
