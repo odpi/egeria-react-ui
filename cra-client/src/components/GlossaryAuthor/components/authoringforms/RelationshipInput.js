@@ -10,14 +10,13 @@ import Info16 from "@carbon/icons-react/lib/information/16";
  *
  * @param props.currentRelationshipType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
  * @param inputRelationship if specified this is the node to initialise the fields with in the form
- * @param operation Create or Update. If not specified then just display the a readonly node with no button  
+ * @param operation Create or Update. If not specified then just display the a readonly node with no button
  * @param onAttributeChange drive this method when an attribute changes.
  * @param onFromDateTimeChange from datetime has changed
  * @param onToDateTimeChange to datetime has changed
  * @returns node input
  */
 export default function RelationshipInput(props) {
-
   const [currentAttributes, setCurrentAttributes] = useState();
   const [effectiveFrom, setEffectiveFrom] = useState();
   const [effectiveTo, setEffectiveTo] = useState();
@@ -52,17 +51,19 @@ export default function RelationshipInput(props) {
         }
       } else {
         let attributesWithIds = [];
-        for (let i = 0; i < attributes.length; i++) {
-          let attribute = attributes[i];
-          const attributeKey = attribute.key;
-          attribute.id = attributeKey;
-          attributesWithIds.push(attribute);
+        if (attributes !== undefined) {
+          for (let i = 0; i < attributes.length; i++) {
+            let attribute = attributes[i];
+            const attributeKey = attribute.key;
+            attribute.id = attributeKey;
+            attributesWithIds.push(attribute);
+          }
         }
         setCurrentAttributes(attributesWithIds);
       }
     }
   }, [props]);
-  
+
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
    * @param {*} e end anomation event

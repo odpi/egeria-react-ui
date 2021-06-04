@@ -7,6 +7,7 @@ import RelationshipDisplayDetails from "../../../update/RelationshipDisplayDetai
 import getRelationshipType from "../../../properties/RelationshipTypes";
 
 export default function RelationshipDisplay(props) {
+  console.log("RelationshipDisplay");
   const identificationContext = useContext(IdentificationContext);
   const relationship = props.relationship;
   const getCurrentRelationshipType = () => {
@@ -20,7 +21,7 @@ export default function RelationshipDisplay(props) {
   return (
     <div>
    <RelationshipDisplayDetails
-        currentNodeType={getCurrentRelationshipType()}
+        currentRelationshipType={getCurrentRelationshipType()}
         relationship={relationship}
       />
     </div>
