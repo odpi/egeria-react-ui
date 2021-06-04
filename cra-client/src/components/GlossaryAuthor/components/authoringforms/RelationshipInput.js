@@ -10,7 +10,7 @@ import Info16 from "@carbon/icons-react/lib/information/16";
  *
  * @param props.currentRelationshipType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
  * @param inputRelationship if specified this is the node to initialise the fields with in the form
- * @param operation create or update
+ * @param operation Create or Update. If not specified then just display the a readonly node with no button  
  * @param onAttributeChange drive this method when an attribute changes.
  * @param onFromDateTimeChange from datetime has changed
  * @param onToDateTimeChange to datetime has changed

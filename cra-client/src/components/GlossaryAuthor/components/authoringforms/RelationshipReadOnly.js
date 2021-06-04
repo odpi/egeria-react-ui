@@ -153,7 +153,7 @@ export default function RelationshipReadOnly(props) {
     if (props.operation === "Create") {
       console.log("issueCreate " + url);
       issueRestCreate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
-    } else {
+    } else   if (props.operation === "Update") {
       console.log("issueUpdate " + url);
       issueRestUpdate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
     }
@@ -187,6 +187,20 @@ export default function RelationshipReadOnly(props) {
 
   return (
     <div>
+       {resultantRelationship === undefined && props.operation !== undefined && (
+        <div className="flex-row-container">
+          <div className="bx--form-item">
+            <button
+              className="bx--btn bx--btn--primary"
+              onClick={onClickToIssueRest}
+              onAnimationEnd={handleOnAnimationEnd}
+              type="button"
+            >
+              {props.operation}
+            </button>
+          </div>
+        </div>
+      )}
       {restCallInProgress && (
         <Loading
           description="Waiting for network call to the server to complete"
@@ -267,20 +281,7 @@ export default function RelationshipReadOnly(props) {
           </AccordionItem>
         </Accordion>
       )}
-      {resultantRelationship === undefined && (
-        <div className="flex-row-container">
-          <div className="bx--form-item">
-            <button
-              className="bx--btn bx--btn--primary"
-              onClick={onClickToIssueRest}
-              onAnimationEnd={handleOnAnimationEnd}
-              type="button"
-            >
-              {props.operation}
-            </button>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 }

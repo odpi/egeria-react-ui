@@ -18,17 +18,14 @@ import {
 import { issueRestCreate } from "../RestCaller";
 import { issueRestUpdate } from "../RestCaller";
 
-
 /**
  * Component to show the input page for a node that is about to be created or updated
  *
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
- * @param props.inputNode if specified this contain attributes to prefill the screen with prior to issuing the rest call.
- * @param operation Create or Update
+ * @param operation Create or Update. If not specified then just display the a readonly node with no button 
  * @returns
  */
 export default function NodeReadOnly(props) {
-
   const [restCallInProgress, setRestCallInProgress] = useState(false);
   // After the rest call succeeds, the response from the create is in this state
   const [resultantNode, setResultantNode] = useState();
@@ -51,7 +48,7 @@ export default function NodeReadOnly(props) {
       node = resultantNode;
     }
     let rowData = [];
-    if (props.currentNodeType) {
+    if (props.currentNodeType !== undefined) {
       const attributes = props.currentNodeType.attributes;
       console.log();
       for (var prop in node) {
@@ -148,11 +145,12 @@ export default function NodeReadOnly(props) {
 
     // TODO consider moving this up to a node controller as per the CRUD pattern.
     // in the meantime this will be self contained.
-    const url = props.currentNodeType.url;
+    let url = props.currentNodeType.url;
     if (props.operation === "Create") {
       console.log("issueCreate " + url);
       issueRestCreate(url, body, onSuccessfulRestCall, onErrorRestCall);
-    } else {
+    } else if (props.operation === "Update") {
+      url = url + "/" + body.systemAttributes.guid;
       console.log("issueUpdate " + url);
       issueRestUpdate(url, body, onSuccessfulRestCall, onErrorRestCall);
     }
@@ -186,6 +184,20 @@ export default function NodeReadOnly(props) {
 
   return (
     <div>
+      {resultantNode === undefined && props.operation !== undefined && (
+        <div className="flex-row-container">
+          <div className="bx--form-item">
+            <button
+              className="bx--btn bx--btn--primary"
+              onClick={onClickToIssueRest}
+              onAnimationEnd={handleOnAnimationEnd}
+              type="button"
+            >
+              {props.operation}
+            </button>
+          </div>
+        </div>
+      )}
       {restCallInProgress && (
         <Loading
           description="Waiting for network call to the server to complete"
@@ -193,39 +205,39 @@ export default function NodeReadOnly(props) {
         />
       )}
       {restCallInProgress === false && (
-        <DataTable
-          isSortable
-          rows={getTableAttrRowData()}
-          headers={attributeTableHeaderData}
-          render={({ rows, headers, getHeaderProps }) => (
-            <TableContainer>
-              <Table size="normal">
-                <TableHead>
-                  <TableRow>
-                    {headers.map((header) => (
-                      <TableHeader
-                        key={header.key}
-                        {...getHeaderProps({ header })}
-                      >
-                        {header.header}
-                      </TableHeader>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.cells.map((cell) => (
-                        <TableCell key={cell.id}>{cell.value}</TableCell>
+          <DataTable
+            isSortable
+            rows={getTableAttrRowData()}
+            headers={attributeTableHeaderData}
+            render={({ rows, headers, getHeaderProps }) => (
+              <TableContainer>
+                <Table size="normal">
+                  <TableHead>
+                    <TableRow>
+                      {headers.map((header) => (
+                        <TableHeader
+                          key={header.key}
+                          {...getHeaderProps({ header })}
+                        >
+                          {header.header}
+                        </TableHeader>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        />
-      )}
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <TableRow key={row.id}>
+                        {row.cells.map((cell) => (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          />
+        )}
       {getSystemDataRowData() !== [] && (
         <Accordion>
           <AccordionItem title="System Attributes">
@@ -265,20 +277,6 @@ export default function NodeReadOnly(props) {
             </div>
           </AccordionItem>
         </Accordion>
-      )}
-      {resultantNode === undefined && (
-        <div className="flex-row-container">
-          <div className="bx--form-item">
-            <button
-              className="bx--btn bx--btn--primary"
-              onClick={onClickToIssueRest}
-              onAnimationEnd={handleOnAnimationEnd}
-              type="button"
-            >
-              {props.operation}
-            </button>
-          </div>
-        </div>
       )}
     </div>
   );

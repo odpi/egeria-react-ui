@@ -27,6 +27,7 @@ import HelpMarkdown                    from './HELP.md';
 import "./glove.scss";
 import CreateRelationship from "../create/CreateRelationship";
 import CreateNodeButtonWidget from "../create/CreateNodeButtonWidget";
+import UpdateButtonWidget from "../update/UpdateButtonWidget";
 
 export default function GlossaryAuthorVisualisation(props) {
 
@@ -143,6 +144,7 @@ export default function GlossaryAuthorVisualisation(props) {
                 </div>
                 <CreateRelationship />
                 <CreateNodeButtonWidget />
+                <UpdateButtonWidget />
 
 
               </div>
