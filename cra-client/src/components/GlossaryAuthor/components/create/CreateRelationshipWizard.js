@@ -129,7 +129,7 @@ export default function CreateRelationshipWizard(props) {
       userInput,
       attributeKey,
       attributeValue,
-      true
+      true   // isRelationship
     );
 
     let newUserInput = {
@@ -384,7 +384,7 @@ export default function CreateRelationshipWizard(props) {
       <div className="wizard-navigation-container">
         {currentStepIndex === 0 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
+            <h3 className="wizard-page-title">{getStep1Title()}</h3>
             <div>
               <Select
                 defaultValue="placeholder-item"
@@ -435,7 +435,7 @@ export default function CreateRelationshipWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
+            <h3 className="wizard-page-title">{getStep2Title()}</h3>
             <StartingNodeNavigation
               match={props.match}
               nodeTypeName="term"
@@ -445,7 +445,7 @@ export default function CreateRelationshipWizard(props) {
         )}
         {currentStepIndex === 2 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
+            <h3 className="wizard-page-title">{getStep3Title()}</h3>
 
             <div className="ends-sentence">
               <div className="bold_text">{end1Node.name}</div>
@@ -516,7 +516,7 @@ export default function CreateRelationshipWizard(props) {
         )}
         {currentStepIndex === 3 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
+            <h3 className="wizard-page-title">{getStep4Title()}</h3>
             <RelationshipInput
               currentRelationshipType={relationshipType}
               onAttributeChange={onAttributeChange}
@@ -527,7 +527,7 @@ export default function CreateRelationshipWizard(props) {
         )}
         {currentStepIndex === 4 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep5Title()}</h3>
+            <h3 className="wizard-page-title">{getStep5Title()}</h3>
             <RelationshipReadOnly
               currentRelationshipType={relationshipType}
               inputRelationship={completeRelationshipToCreate()}

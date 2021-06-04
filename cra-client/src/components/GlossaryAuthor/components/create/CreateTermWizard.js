@@ -287,7 +287,7 @@ export default function CreateTermWizard(props) {
       <div className="wizard-navigation-container">
         {currentStepIndex === 0 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
+            <h3 className="wizard-page-title">{getStep1Title()}</h3>
             <NodeInput
               currentNodeType={props.currentNodeType}
               onAttributeChange={onAttributeChange}
@@ -298,7 +298,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
+            <h3 className="wizard-page-title">{getStep2Title()}</h3>
             <StartingNodeNavigation
               match={props.match}
               nodeTypeName="glossary"
@@ -308,7 +308,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 2 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
+            <h3 className="wizard-page-title">{getStep3Title()}</h3>
             <StartingNodeNavigation
               match={props.match}
               nodeTypeName="category"
@@ -318,7 +318,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 3 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
+            <h3 className="wizard-page-title">{getStep4Title()}</h3>
             <NodeReadOnly
               currentNodeType={props.currentNodeType}
               inputNode={nodeToCreate}
