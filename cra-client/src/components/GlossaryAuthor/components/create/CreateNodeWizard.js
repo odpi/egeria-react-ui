@@ -77,19 +77,19 @@ export default function CreateNodeWizard(props) {
             <SelectItem text="Choose a Node type" value="placeholder-item" />
             <SelectItemGroup label="Terms">
               <SelectItem text="Term" value="term" />
-              <SelectItem text="Activity" value="activity" />
+              <SelectItem text="Activity" value="activity" disabled/>
             </SelectItemGroup>
             <SelectItemGroup label="Categories">
               <SelectItem text="Category" value="category" />
-              <SelectItem text="Subject Area" value="subjectareadefintiion" />
+              <SelectItem text="Subject Area" value="subjectareadefintiion" disabled/>
             </SelectItemGroup>
             <SelectItemGroup label="Glossaries">
               <SelectItem text="Glossary" value="glossary" />
-              <SelectItem text="Taxonomy" value="taxonomy" />
-              <SelectItem text="Canonical Glossary" value="canonicalglossary" />
+              <SelectItem text="Taxonomy" value="taxonomy" disabled/>
+              <SelectItem text="Canonical Glossary" value="canonicalglossary" disabled/>
               <SelectItem
                 text="Canonical Glossary and Taxonomy"
-                value="canonicaltaxonomy"
+                value="canonicaltaxonomy" disabled
               />
             </SelectItemGroup>
           </Select>
