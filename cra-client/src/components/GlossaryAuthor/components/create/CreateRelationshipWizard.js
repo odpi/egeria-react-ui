@@ -404,11 +404,10 @@ export default function CreateRelationshipWizard(props) {
                   <SelectItem text="Preferred term" value="preferredterm" />
                   <SelectItem text="Replacement Term" value="replacementterm" />
                   <SelectItem text="Translation" value="translation" />
-                  {/* removing isa as the server side types are being reviewed */}
-                  {/* <SelectItem
+                  <SelectItem
                     text="Is a (classifying relationship)"
                     value="isa"
-                  /> */}
+                  />
                   <SelectItem text="ValidValue" value="validvalue" />
                   <SelectItem text="Related Term" value="relatedterm" />
                 </SelectItemGroup>
@@ -420,10 +419,15 @@ export default function CreateRelationshipWizard(props) {
                     text="Has a (contains relationship)"
                     value="hasa"
                   />
+                    {/* bug ends are the wrong way round  */}
                   <SelectItem
                     text="Is a type of (super type relationship)"
                     value="isatypeof"
                   />
+                  {/* <SelectItem
+                    text="Object Inheritance (super type relationship)"
+                    value="objectinheritance"
+                  /> */}
                   <SelectItem
                     text="Typed by (attributes typed by relationship)"
                     value="typedby"
