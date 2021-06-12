@@ -357,6 +357,41 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
         attributeCardinality: "ANY_NUMBER",
       },
     },
+    // objectinheritance: {
+    //   key: "objectinheritance",
+    //   plural: "object-inheritances",
+    //   label: "Object Inheritance",
+    //   typeName: "ObjectInheritance",
+    //   isRelatedTerm: true,
+    //   description:
+    //     "Defines an inheritance relationship between two spine objects.",
+    //   end1: {
+    //     headerVersion: 1,
+    //     entityType: {
+    //       headerVersion: 1,
+    //       guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+    //       name: "GlossaryTerm",
+    //       status: "ACTIVE_TYPEDEF",
+    //     },
+    //     attributeName: "inherits",
+    //     attributeDescription: "Inherits (Subtypes) for this object.",
+    //     attributeVerbWithAttributeAsSubject: "is a subtype of",
+    //     attributeCardinality: "ANY_NUMBER",
+    //   },
+    //   end2: {
+    //     headerVersion: 1,
+    //     entityType: {
+    //       headerVersion: 1,
+    //       guid: "0db3e6ec-f5ef-4d75-ae38-b7ee6fd6ec0a",
+    //       name: "GlossaryTerm",
+    //       status: "ACTIVE_TYPEDEF",
+    //     },
+    //     attributeName: "inheritsfrom",
+    //     attributeDescription: "Inherits from (Supertypes) for this object.",
+    //     attributeVerbWithAttributeAsSubject: "is a supertype of",
+    //     attributeCardinality: "ANY_NUMBER",
+    //   },
+    // },
     isatypeof: {
       key: "isatypeof",
       plural: "is-a-type-ofs",

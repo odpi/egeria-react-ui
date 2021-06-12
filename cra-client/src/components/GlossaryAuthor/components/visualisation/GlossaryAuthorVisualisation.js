@@ -28,6 +28,7 @@ import "./glove.scss";
 import CreateRelationship from "../create/CreateRelationship";
 import CreateNodeButtonWidget from "../create/CreateNodeButtonWidget";
 import UpdateButtonWidget from "../update/UpdateButtonWidget";
+import SearchNodeButtonWidget from "../navigations/SearchNodeButtonWidget";
 
 export default function GlossaryAuthorVisualisation(props) {
 
@@ -145,6 +146,7 @@ export default function GlossaryAuthorVisualisation(props) {
                 <CreateRelationship />
                 <CreateNodeButtonWidget />
                 <UpdateButtonWidget />
+                <SearchNodeButtonWidget />
 
 
               </div>
