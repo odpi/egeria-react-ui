@@ -107,12 +107,26 @@ export default function UpdateRelationshipInline(props) {
   return (
     <div>
       {currentRelationship !== undefined && (
-        <div className="bx--form-item">
-          <label className="bx--label">
-            Version {currentRelationship.systemAttributes.version} of the
-            selected {currentRelationship.relationshipType} is from generation{" "}
-            {currentRelationship.gen}
-          </label>
+        <div>
+        <div className="bottom-margin">
+          <div className="bx--form-item">
+            <div className="selected-artifact-header">
+              {currentRelationship.relationshipType} selected
+            </div>
+            <div>
+              The version of the {currentRelationship.relationshipType} on the
+              server is {currentRelationship.systemAttributes.version}.{" "}
+            </div>
+            <div>
+              The generation on the canvas of the{" "}
+              {currentRelationship.relationshipType} is{" "}
+              {currentRelationship.gen}{" "}
+            </div>
+          </div>
+          </div>
+          <div className="bx--form-item">
+            <div className="lhs-header">Properties</div>
+          </div>
         </div>
       )}
       {currentRelationship !== undefined &&

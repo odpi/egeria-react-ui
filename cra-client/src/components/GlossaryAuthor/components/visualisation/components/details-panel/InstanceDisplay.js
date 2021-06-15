@@ -32,8 +32,6 @@ export default function InstanceDisplay() {
      */
     const focusCategory = instancesContext.getFocusCategory();
 
-    const focusGen = instancesContext.getFocusGen();
-
     if (focusCategory === "Node") {
       return <NodeDisplay node={instancesContext.getFocusNode()} />
     }

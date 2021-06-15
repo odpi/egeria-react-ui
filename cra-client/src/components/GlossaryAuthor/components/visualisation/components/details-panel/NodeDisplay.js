@@ -3,13 +3,11 @@
 
 import React, { useContext} from "react";
 import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
-import UpdateNodeInline from "../../../update/UpdateNodeInline";
+import NodeDisplayDetails from "../../../update/NodeDisplayDetails";
 import getNodeType from "../../../properties/NodeTypes";
 
 export default function NodeDisplay(props) {
   const identificationContext = useContext(IdentificationContext);
-  // const [node, setNode] = useState();
-  // setNode(props.node);
   const node = props.node;
   const getCurrentNodeType = () => {
     const nodeType = getNodeType(
@@ -21,7 +19,7 @@ export default function NodeDisplay(props) {
 
   return (
     <div>
-      <UpdateNodeInline
+      <NodeDisplayDetails
         currentNodeType={getCurrentNodeType()}
         node={node}
       />

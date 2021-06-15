@@ -30,8 +30,8 @@ export default function DateTimePicker(props) {
     let dateTime = {};
     let date;
     if (
-      props.value != undefined &&
-      props.value.date != undefined 
+      props.value !== undefined &&
+      props.value.date !== undefined 
     ) {
       date = props.value.date.value;
     }
@@ -42,21 +42,21 @@ export default function DateTimePicker(props) {
 
   const getTimeValue = () => {
     let timeValue = undefined;
-    if (props.value != undefined && props.value.time != undefined) {
+    if (props.value !== undefined && props.value.time !== undefined) {
       timeValue = props.value.time.value;
     }
     return timeValue;
   };
   const getTimeInvalid = () => {
     let invalid = false;
-    if (props.value != undefined && props.value.time != undefined) {
+    if (props.value !== undefined && props.value.time !== undefined) {
       invalid = props.value.time.invalid;
     }
     return invalid;
   };
   const getTimeInvalidText = () => {
     let invalidText = false;
-    if (props.value != undefined && props.value.time != undefined) {
+    if (props.value !== undefined && props.value.time !== undefined) {
       invalidText = props.value.time.invalidText;
     }
     return invalidText;

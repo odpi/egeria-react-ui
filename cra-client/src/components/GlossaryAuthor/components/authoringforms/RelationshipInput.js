@@ -5,72 +5,66 @@ import { Accordion, AccordionItem, TextInput } from "carbon-components-react";
 import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
 
-
 /**
- * Component to take user input for node page as part of a wizard.
+ * Component to take user input for relationship form as part of a wizard.
  *
- * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
- * @param inputNode if specified this is the node to initialise the fields with in the form
- * @param operation create or update
+ * @param props.currentRelationshipType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
+ * @param inputRelationship if specified this is the node to initialise the fields with in the form
+ * @param operation Create or Update. If not specified then just display the a readonly node with no button
  * @param onAttributeChange drive this method when an attribute changes.
  * @param onFromDateTimeChange from datetime has changed
  * @param onToDateTimeChange to datetime has changed
  * @returns node input
  */
-export default function NodeInput(props) {
-  const [errorMsg, setErrorMsg] = useState();
+export default function RelationshipInput(props) {
   const [currentAttributes, setCurrentAttributes] = useState();
   const [effectiveFrom, setEffectiveFrom] = useState();
   const [effectiveTo, setEffectiveTo] = useState();
 
-  // update the currentAttributes with the supplied inputNode from props.
+  // update the currentAttributes with the supplied props.inputRelationship from props.
   useEffect(() => {
-    if (props.currentNodeType) {
+    if (props.currentRelationshipType) {
       let attributesWithValues = [];
-      let attributes = props.currentNodeType.attributes;
-      if (props.inputNode) {
-        // now  scan through the props.inputNode properties and add in any values there.
+      let attributes = props.currentRelationshipType.attributes;
+      if (props.inputRelationship) {
+        // now  scan through the props.inputRelationship properties and add in any values there.
         for (let i = 0; i < attributes.length; i++) {
           const attributeKey = attributes[i].key;
-          const attributeValue = props.inputNode[attributeKey];
-          let attributesWithValuesElement = attributes[i];
-          if (attributeValue !== undefined) {
-            attributesWithValuesElement.value = attributeValue.value;
-            attributesWithValuesElement.invalid = attributeValue.invalid;
-            attributesWithValuesElement.invalidText = attributeValue.invalidText;
+          if (attributeKey !== "description") {   // dont let the user update the description
+            const attributeValue = props.inputRelationship[attributeKey];
+            let attributesWithValuesElement = attributes[i];
+            if (attributeValue !== undefined) {
+              attributesWithValuesElement.value = attributeValue.value;
+              attributesWithValuesElement.invalid = attributeValue.invalid;
+              attributesWithValuesElement.invalidText =
+                attributeValue.invalidText;
+            }
+            attributesWithValuesElement.id = attributeKey;
+            attributesWithValues.push(attributesWithValuesElement);
           }
-          attributesWithValuesElement.id = attributeKey;
-          attributesWithValues.push(attributesWithValuesElement);
         }
         setCurrentAttributes(attributesWithValues);
         // pickup the effectivity
-        if (props.inputNode.effectiveFromTime) {
-          setEffectiveFrom(props.inputNode.effectiveFromTime);
+        if (props.inputRelationship.effectiveFromTime) {
+          setEffectiveFrom(props.inputRelationship.effectiveFromTime);
         }
-        if (props.inputNode.effectiveToTime) {
-          setEffectiveTo(props.inputNode.effectiveToTime);
+        if (props.inputRelationship.effectiveToTime) {
+          setEffectiveTo(props.inputRelationship.effectiveToTime);
         }
       } else {
         let attributesWithIds = [];
-        for (let i = 0; i < attributes.length; i++) {
-          let attribute = attributes[i];
-          const attributeKey = attribute.key;
-          attribute.id = attributeKey;
-          attributesWithIds.push(attribute);
+        if (attributes !== undefined) {
+          for (let i = 0; i < attributes.length; i++) {
+            let attribute = attributes[i];
+            const attributeKey = attribute.key;
+            attribute.id = attributeKey;
+            attributesWithIds.push(attribute);
+          }
         }
         setCurrentAttributes(attributesWithIds);
       }
     }
   }, [props]);
-  // validate the current attributes when they change
-  // useEffect(() => {
-  //   const errMsg = validateForm();
-  //   if (errMsg === undefined) {
-  //     setErrorMsg("");
-  //   } else {
-  //     setErrorMsg(errMsg);
-  //   }
-  // }, [currentAttributes]);
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -103,10 +97,10 @@ export default function NodeInput(props) {
     return "";
   };
   const labelIdForAttribute = (labelKey) => {
-    return "text-input-" + props.currentNodeType.name + "-" + labelKey;
+    return "text-input-" + props.currentRelationshipType.name + "-" + labelKey;
   };
   const labelIdForSubmitButton = (labelKey) => {
-    return props.currentNodeType.name + "ViewButton";
+    return props.currentRelationshipType.name + "ViewButton";
   };
   const setAttribute = (item, value) => {
     console.log("setAttribute " + item.key + ",value=" + value);
@@ -127,7 +121,7 @@ export default function NodeInput(props) {
     <div>
       <div>
         <form>
-          {props.currentNodeType &&
+          {props.currentRelationshipType &&
             currentAttributes &&
             currentAttributes
               .filter(function (obj) {
@@ -147,15 +141,17 @@ export default function NodeInput(props) {
                     >
                       {item.label} <Info16 />
                     </label>
-                    <TextInput
-                      id={labelIdForAttribute(item.key)}
-                      type={getInputType(item)}
-                      value={item.value}
-                      invalid={item.invalid}
-                      invalidText={item.invalidText}
-                      onChange={(e) => setAttribute(item, e.target.value)}
-                      placeholder={item.label}
-                    ></TextInput>
+                    <div className="fullwidth">
+                      <TextInput
+                        id={labelIdForAttribute(item.key)}
+                        type={getInputType(item)}
+                        value={item.value}
+                        invalid={item.invalid}
+                        invalidText={item.invalidText}
+                        onChange={(e) => setAttribute(item, e.target.value)}
+                        placeholder={item.label}
+                      ></TextInput>
+                    </div>
                   </div>
                 );
               })}
@@ -165,19 +161,19 @@ export default function NodeInput(props) {
                 dateLabel="Effective from date (mm/dd/yyyy)"
                 timeLabel="Effective from time (hh:mm)"
                 onDateTimeChange={onFromDateTimeChange}
-                value={effectiveFrom}   
+                value={effectiveFrom}
                 onDateTimeMessage={props.onDateTimeFromMessage}
               />
               <DateTimePicker
                 dateLabel="Effective to date (mm/dd/yyyy)"
                 timeLabel="Effective to time (hh:mm)"
                 onDateTimeChange={onToDateTimeChange}
-                value={effectiveTo} 
+                value={effectiveTo}
                 onDateTimeMessage={props.onDateTimeToMessage}
               />
             </AccordionItem>
           </Accordion>
-          <div style={{ color: "red" }}>{errorMsg}</div>
+          {/* <div style={{ color: "red" }}>{errorMsg}</div> */}
         </form>
       </div>
     </div>

@@ -131,7 +131,7 @@
   justify-content: flex-end;
 }
 
-.create-wizard-page-title {
+.wizard-page-title {
   background-color: #f0fff1;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -143,6 +143,21 @@
 .wizard-navigation-container {
   margin-top: 20px;
   display:flex;
+}
+
+.relationshipend-table {
+  border-style: solid;
+  border-width: 1px;
+}
+.ends-sentence {
+  font-size: 16px;
+  margin:2px;
+  display: flex;
+}
+.bold_text {
+  font-weight: bold;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 @keyframes shake {
