@@ -155,16 +155,12 @@ export default function StartingNodeNavigation({
   const processUserCriteriaAndIssueSearch = () => {
     // sort out the actual search criteria.
     let actualDebounceCriteria = debouncedFilterCriteria;
-    if (actualDebounceCriteria) {
-      if (!exactMatch) {
-        actualDebounceCriteria = actualDebounceCriteria + ".*";
-      }
-    } else {
+    if (!actualDebounceCriteria) {
       // by default get everything
-      actualDebounceCriteria = ".*";
+      actualDebounceCriteria = "";
     }
     // Fire off our API call
-    issueNodeSearch(actualDebounceCriteria);
+    issueNodeSearch(actualDebounceCriteria, exactMatch);
   };
 
   // issue search for first page of nodes
@@ -174,6 +170,8 @@ export default function StartingNodeNavigation({
       nodeType.url +
         "?searchCriteria=" +
         criteria +
+        "&exactValue=" +
+        exactMatch +
         "&pageSize=" +
         (pageSize + 1) +
         "&startingFrom=" +
