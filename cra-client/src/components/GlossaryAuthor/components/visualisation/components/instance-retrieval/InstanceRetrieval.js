@@ -12,7 +12,6 @@ const InstanceRetrieval = (props) => {
     () => {
       loadNodeByGUID();
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

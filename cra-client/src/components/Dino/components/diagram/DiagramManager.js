@@ -237,7 +237,6 @@ export default function DiagramManager(props) {
     () => {
       parseAllGens();
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [resourcesContext.gens]
   )
   

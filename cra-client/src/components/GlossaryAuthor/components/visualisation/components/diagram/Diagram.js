@@ -589,12 +589,6 @@ export default function Diagram(props) {
         }
       }
     },
-    /*
-     * Disable the linter's full dependency check - this is because if you specify createSim for example,
-     * then to avoid further linter checks you need to make createSim a useCallback - which prevents the
-     * animation from working.
-     */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [loc_force, createMarker]
   );
 
@@ -611,12 +605,6 @@ export default function Diagram(props) {
         }
       }
     },
-    /*
-     * Disable the linter's full dependency check - this is because if you specify startSim for example,
-     * then to avoid further linter checks you need to make startSim a useCallback - which prevents the
-     * animation from working.
-     */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.nodes, props.links, updateData]
   );
 
