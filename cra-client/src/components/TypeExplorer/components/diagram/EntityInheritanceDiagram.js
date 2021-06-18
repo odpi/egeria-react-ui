@@ -422,7 +422,7 @@ export default function EntityInheritanceDiagram(props) {
    */
   const update = useCallback(
 
-    (tree, subtree) => {
+    (tree, subtree, event) => {
 
       /*
        * Since an update is being performed, unset scrolled so that on transition completion
@@ -432,8 +432,8 @@ export default function EntityInheritanceDiagram(props) {
 
       const thisTree = tree;
 
-      const duration = d3.event && d3.event.altKey ? 2500 : 250;
-
+      const duration = event && event.altKey ? 2500 : 250;
+     
       /*
        * Compute the new tree layout.
        */
@@ -496,9 +496,9 @@ export default function EntityInheritanceDiagram(props) {
                .attr("stroke-width",1)
                .attr("stroke", "#000")
                .attr("fill", "#FFF")
-               .on("click", d => {
+               .on("click", (e, d) => {
                  d.children = d.children ? null : d._children;
-                 update(tree,d);
+                 update(tree, d, e);
                });
 
       nodeEnter.append("line")

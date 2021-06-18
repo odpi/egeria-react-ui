@@ -274,8 +274,8 @@ export default function Diagram(props) {
       .attr("y2", node_radius * 2.0)
       .attr("stroke", egeria_primary_color_string)
       .attr("stroke-width", "2px")
-      .on("click", (d) => {
-        if (d3.event.shiftKey) {
+      .on("click", (e, d) => {
+        if (e.shiftKey) {
           unpin(d);
         } else {
           nodeClicked(d.id);
@@ -289,8 +289,8 @@ export default function Diagram(props) {
       .attr("y", -16)
       .attr("width", 32)
       .attr("height", 32)
-      .on("click", (d) => {
-        if (d3.event.shiftKey) {
+      .on("click", (e, d) => {
+        if (e.shiftKey) {
           unpin(d);
         } else {
           nodeClicked(d.id);
@@ -308,8 +308,8 @@ export default function Diagram(props) {
       .attr("stroke-width", "0")
       .attr("dx", 20)
       .attr("dy", ".35em")
-      .on("click", (d) => {
-        if (d3.event.shiftKey) {
+      .on("click", (e, d) => {
+        if (e.shiftKey) {
           unpin(d);
         } else {
           nodeClicked(d.id);
@@ -327,35 +327,35 @@ export default function Diagram(props) {
     nodes.merge(enter_set);
   };
 
-  const dragstarted = (d) => {
-    if (!d3.event.active) {
+  const dragstarted = (e, d) => {
+    if (!e.active) {
       if (loc_force) {
         loc_force.alphaTarget(0.3).restart();
       }
     }
-    d.xinit = d3.event.x;
-    d.yinit = d3.event.y;
+    d.xinit = e.x;
+    d.yinit = e.y;
   };
 
-  const dragged = (d) => {
+  const dragged = (e, d) => {
     if (d.xinit && d.yinit) {
       if (
-        Math.abs(d3.event.x - d.xinit) > 5 ||
-        Math.abs(d3.event.y - d.yinit) > 5
+        Math.abs(e.x - d.xinit) > 5 ||
+        Math.abs(e.y - d.yinit) > 5
       ) {
         d.xinit = undefined;
         d.yinit = undefined;
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+        d.fx = e.x;
+        d.fy = e.y;
       }
     } else {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
+      d.fx = e.x;
+      d.fy = e.y;
     }
   };
 
-  const dragended = (d) => {
-    if (!d3.event.active) {
+  const dragended = (e, d) => {
+    if (!e.active) {
       if (loc_force) {
         loc_force.alphaTarget(0.0005);
       }
