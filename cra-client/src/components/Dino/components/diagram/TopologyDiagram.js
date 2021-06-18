@@ -126,33 +126,33 @@ export default function TopologyDiagram(props) {
 
 
 
-    const dragstarted = (d) => {
+    const dragstarted = (event, d) => {
       /*
        * Do not set fx, fy yet - wait till the node is actually dragged
        */
-      if (!d3.event.active)
+      if (!event.active)
       loc_force.alphaTarget(0.3).restart();
-      d.xinit = d3.event.x;
-      d.yinit = d3.event.y;
+      d.xinit = event.x;
+      d.yinit = event.y;
     }
 
-    const dragged = (d) => {
+    const dragged = (event, d) => {
       if ( d.xinit && d.yinit) {
-        if ( (Math.abs(d3.event.x - d.xinit) > 5) || (Math.abs(d3.event.y - d.yinit) > 5)) {
+        if ( (Math.abs(event.x - d.xinit) > 5) || (Math.abs(event.y - d.yinit) > 5)) {
           d.xinit = undefined;
           d.yinit = undefined;
-          d.fx = d3.event.x;
-          d.fy = d3.event.y;
+          d.fx = event.x;
+          d.fy = event.y;
         }
       }
       else {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+        d.fx = event.x;
+        d.fy = event.y;
       }
     }
 
-    const dragended = (d) => {
-      if (!d3.event.active)
+    const dragended = (event, d) => {
+      if (!event.active)
       loc_force.alphaTarget(0.0005);
       if (!pinningRef.current) {
         d.fx = null;
@@ -172,7 +172,6 @@ export default function TopologyDiagram(props) {
     const createContextMenu = useCallback(
       (d, menuItems) => {
         menuFactory(d, menuItems);
-        d3.event.preventDefault();
       },
       []
     );
@@ -287,7 +286,7 @@ export default function TopologyDiagram(props) {
     );
 
     const nodeRightClicked = useCallback(
-      (d) => {
+      (e, d) => {
 
         let createMenu = false;
         let menuItems;
@@ -332,7 +331,7 @@ export default function TopologyDiagram(props) {
         }
         if (createMenu) {
           createContextMenu(d, menuItems)
-          d3.event.preventDefault();
+          e.preventDefault();
         }
       },
       [createContextMenu, nonFocusMenuItems, platformMenuItems, resourcesContext.focus.guid, serverMenuItems]
@@ -477,7 +476,7 @@ export default function TopologyDiagram(props) {
         .attr('y2',            node_radius*2.0)
         .attr('stroke',       egeria_primary_color_string)
         .attr('stroke-width', '2px')
-        .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
+        .on("click", (e, d) => { if (e.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
         ;
 
       enter_set.append('circle')
@@ -485,7 +484,7 @@ export default function TopologyDiagram(props) {
         .attr('stroke',       egeria_primary_color_string)
         .attr('stroke-width', '2px')
         .attr('fill',         'white')
-        .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
+        .on("click", (e, d) => { if (e.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
         ;
 
       enter_set.append("svg:image")
@@ -494,7 +493,7 @@ export default function TopologyDiagram(props) {
         .attr("y", -16)
         .attr("width",32)
         .attr("height",32)
-        .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
+        .on("click", (e, d) => { if (e.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
         .on("contextmenu", d => {
           nodeRightClicked(d);})
          ;
@@ -507,7 +506,7 @@ export default function TopologyDiagram(props) {
         .attr("stroke-width", "0")
         .attr("dx",           20)
         .attr("dy",           ".35em")
-        .on("click", d => { if (d3.event.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
+        .on("click", (e, d) => { if (e.shiftKey) {unpin(d);} else {nodeClicked(d.id); }})
         ;
 
       /* Check all labels are up to date.
