@@ -108,14 +108,6 @@ export default function EntityInheritanceDiagram(props) {
       }
       return tree;
     },
-    // Why disable the exhaustive-deps rule here? Because the es-linter insists on a dependency
-    // on all of typesContext, but that will include things like the deprecatedAttributeOption,
-    // which may be toggled and SHOULD NOT cause this function to be recreated. The result is that
-    // toggling the deprecatedAttributeOption causes the whole tree to be recreated, which is not
-    // needed as the toggled option should only affect the display of attributes in the details
-    // panel. In reality, this function only depends on the getEntityType function, not the whole
-    // of the context.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [typesContext.getEntityType]
   );
 
@@ -141,14 +133,6 @@ export default function EntityInheritanceDiagram(props) {
       }
       return null;
     },
-    // Why disable the exhaustive-deps rule here? Because the es-linter insists on a dependency
-    // on all of typesContext, but that will include things like the deprecatedAttributeOption,
-    // which may be toggled and SHOULD NOT cause this function to be recreated. The result is that
-    // toggling the deprecatedAttributeOption causes the whole tree to be recreated, which is not
-    // needed as the toggled option should only affect the display of attributes in the details
-    // panel. In reality, this function only depends on the getEntityType function, not the whole
-    // of the context.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [addSubTree, typesContext.getEntityType]
   );
 
@@ -254,14 +238,6 @@ export default function EntityInheritanceDiagram(props) {
         }
       })
     },
-    // Why disable the exhaustive-deps rule here? Because the es-linter insists on a dependency
-    // on all of typesContext, but that will include things like the deprecatedAttributeOption,
-    // which may be toggled and SHOULD NOT cause this function to be recreated. The result is that
-    // toggling the deprecatedAttributeOption causes the whole tree to be recreated, which is not
-    // needed as the toggled option should only affect the display of attributes in the details
-    // panel. In reality, this function only depends on the getEntityTypes function, not the whole
-    // of the context.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [createInheritanceTree, renderInheritanceTree, typesContext.getEntityTypes]
   );
 
@@ -406,14 +382,6 @@ export default function EntityInheritanceDiagram(props) {
         scrollSelectedIntoView("OpenMetadataRoot");
       }
     },
-     // Why disable the exhaustive-deps rule here? Because the es-linter insists on a dependency
-    // on all of typesContext, but that will include things like the deprecatedAttributeOption,
-    // which may be toggled and SHOULD NOT cause this function to be recreated. The result is that
-    // toggling the deprecatedAttributeOption causes the whole tree to be recreated, which is not
-    // needed as the toggled option should only affect the display of attributes in the details
-    // panel. In reality, this function only depends on the getEntityType function, not the whole
-    // of the context.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [focusContext.focus, scrollSelectedIntoView, typesContext.getEntityType]
   );
 
@@ -454,7 +422,7 @@ export default function EntityInheritanceDiagram(props) {
    */
   const update = useCallback(
 
-    (tree, subtree) => {
+    (tree, subtree, event) => {
 
       /*
        * Since an update is being performed, unset scrolled so that on transition completion
@@ -464,8 +432,8 @@ export default function EntityInheritanceDiagram(props) {
 
       const thisTree = tree;
 
-      const duration = d3.event && d3.event.altKey ? 2500 : 250;
-
+      const duration = event && event.altKey ? 2500 : 250;
+     
       /*
        * Compute the new tree layout.
        */
@@ -528,9 +496,9 @@ export default function EntityInheritanceDiagram(props) {
                .attr("stroke-width",1)
                .attr("stroke", "#000")
                .attr("fill", "#FFF")
-               .on("click", d => {
+               .on("click", (e, d) => {
                  d.children = d.children ? null : d._children;
-                 update(tree,d);
+                 update(tree, d, e);
                });
 
       nodeEnter.append("line")
@@ -651,14 +619,6 @@ export default function EntityInheritanceDiagram(props) {
       });
 
     },
-    // Why disable the exhaustive-deps rule here? Because the es-linter insists on a dependency
-    // on all of typesContext, but that will include things like the deprecatedAttributeOption,
-    // which may be toggled and SHOULD NOT cause this function to be recreated. The result is that
-    // toggling the deprecatedAttributeOption causes the whole tree to be recreated, which is not
-    // needed as the toggled option should only affect the display of attributes in the details
-    // panel. In reality, this function only depends on the isTypeDeprecated function, not the whole
-    // of the context.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [inhHighlight, curvedPath, margin.bottom, margin.left, margin.top, transitionComplete, typeSelected,
      typesContext.isTypeDeprecated]
   );
@@ -704,16 +664,6 @@ export default function EntityInheritanceDiagram(props) {
       }
     },
 
-    // Why disable the exhaustive-deps rule here? Because the es-linter insists on a dependency
-    // on all of typesContext, but that will include things like the deprecatedAttributeOption,
-    // which may be toggled and SHOULD NOT cause this function to be re-driven. Without supression
-    // of the linter for the following dependencies array, it will complain that typesContext is not
-    // present. With typesContext present the function is over-driven which disturbs the UI, because
-    // toggling the deprecatedAttributeOption causes the whole tree to be recreated, which is not
-    // needed as the toggled option should only affect the display of attributes in the details
-    // panel. In reality, this function only depends on the isTypeDeprecated function, not the whole
-    // of the context.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [typesContext.tex]
   )
 

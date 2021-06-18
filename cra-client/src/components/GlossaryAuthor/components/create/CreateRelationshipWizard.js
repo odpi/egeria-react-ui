@@ -419,15 +419,11 @@ export default function CreateRelationshipWizard(props) {
                     text="Has a (contains relationship)"
                     value="hasa"
                   />
-                    {/* bug ends are the wrong way round  */}
+                    {/* there is a deprecated is a type of with the ends defined the wrong way round  */}
                   <SelectItem
                     text="Is a type of (super type relationship)"
                     value="isatypeof"
                   />
-                  {/* <SelectItem
-                    text="Object Inheritance (super type relationship)"
-                    value="objectinheritance"
-                  /> */}
                   <SelectItem
                     text="Typed by (attributes typed by relationship)"
                     value="typedby"
