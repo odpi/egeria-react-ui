@@ -35,7 +35,8 @@ export default function StartingNodeNavigation({
 
   // State and setter for search term
   const [filterCriteria, setFilterCriteria] = useState("");
-  const [exactMatch, setExactMatch] = useState(false);
+  const [exactValue, setExactValue] = useState(false);
+  const [caseSensitive, setCaseSensitive] = useState(false);
   // Now we call our hook, passing in the current filterCriteria value.
   // The hook will only return the latest value (what we passed in) ...
   // ... if it's been more than 500ms since it was last called.
@@ -61,8 +62,8 @@ export default function StartingNodeNavigation({
     // Our useEffect function will only execute if this value changes ...
     // ... and thanks to our hook it will only change if the original ...
     // value (FilterCriteria) hasn't changed for more than 500ms.
-    // If the exactMatch changes then we need to re-issue the search.
-    [debouncedFilterCriteria, exactMatch, pageSize, pageNumber]
+    // If the exactValue changes then we need to re-issue the search.
+    [debouncedFilterCriteria, exactValue, caseSensitive, pageSize, pageNumber]
   );
   const paginationProps = () => ({
     disabled: false,
@@ -160,7 +161,7 @@ export default function StartingNodeNavigation({
       actualDebounceCriteria = "";
     }
     // Fire off our API call
-    issueNodeSearch(actualDebounceCriteria, exactMatch);
+    issueNodeSearch(actualDebounceCriteria);
   };
 
   // issue search for first page of nodes
@@ -171,7 +172,9 @@ export default function StartingNodeNavigation({
         "?searchCriteria=" +
         criteria +
         "&exactValue=" +
-        exactMatch +
+        exactValue +
+        "&ignoreCase=" +
+        !caseSensitive +
         "&pageSize=" +
         (pageSize + 1) +
         "&startingFrom=" +
@@ -233,10 +236,15 @@ export default function StartingNodeNavigation({
     setNodes([]);
   };
 
-  const onClickExactMatch = () => {
-    console.log("onClickExactMatch");
-    const checkBox = document.getElementById("node_nav_exact_Match");
-    setExactMatch(checkBox.checked);
+  const onClickExactValue = () => {
+    console.log("onClickExactValue");
+    const checkBox = document.getElementById("node_nav_exact_Value");
+    setExactValue(checkBox.checked);
+  };
+  const onClickCaseSensitive = () => {
+    console.log("onClickCaseSensitive");
+    const checkBox = document.getElementById("node_nav_ignore_case");
+    setCaseSensitive(checkBox.checked);
   };
 
   function getNodeChildrenUrl() {
@@ -302,13 +310,23 @@ export default function StartingNodeNavigation({
             />
           </article>
           <article className="node-card__controls bx--col-sm-4 bx--col-md-1 bx--col-lg-2 bx--col-xlg-2 bx--col-max-2">
+      
             <div className="node-card__exact_control">
-              <label htmlFor="exactMatch">Exact Match </label>
+              <label htmlFor="node_nav_exact_Value">Exact Match </label>
               <input
                 type="checkbox"
-                id="node_nav_exact_Match"
-                onClick={onClickExactMatch}
+                value ={exactValue}
+                id="node_nav_exact_Value"
+                onClick={onClickExactValue}
               />
+              <label htmlFor="node_nav_ignore_case">Case Sensitive</label>
+              <input
+                type="checkbox"
+                value={caseSensitive}
+                id="node_nav_ignore_case"
+                onClick={onClickCaseSensitive}
+              />
+           
             </div>
           </article>
           <article className="node-card__controls bx--col-sm-4 bx--col-md-1 bx--col-lg-3 bx--col-xlg-3 bx--col-max-2">
