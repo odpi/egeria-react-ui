@@ -3,32 +3,32 @@
 import React, { useState, useEffect, useContext } from "react";
 
 import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import UpdateNodePropertiesWizard from "./UpdateNodePropertiesWizard";
-import UpdateRelationshipPropertiesWizard from "./UpdateRelationshipPropertiesWizard";
+import DeleteNodeWizard from "./DeleteNodeWizard";
+import DeleteRelationshipWizard from "./DeletePropertiesWizard";
 
 /**
- * This is the updateWizard, depending on whether the current focus is a node or a relationship,
- * this component displays the appropriate wizard.
+ * This is the deleteWizard, depending on whether the current focus is a node or a relationship,
+ * this component dispalys the appropriate wizard.
  * @param {*} props
  * @returns
  */
-export default function UpdateWizard(props) {
+export default function DeleteWizard(props) {
   const instancesContext = useContext(InstancesContext);
 
-  console.log("UpdateWizard");
+  console.log("DeleteWizard");
 
   return (
     <div>
       {instancesContext.getFocusNode() && (
-        <UpdateNodePropertiesWizard
-          onUpdated={props.onUpdated}
+        <DeleteNodeWizard
+          onDeleted={props.onDeleted}
           onModalContentRequestedClose={props.onModalContentRequestedClose}
           currentNode={instancesContext.getFocusNode()}
         />
       )}
       {instancesContext.getFocusRelationship() && (
-        <UpdateRelationshipPropertiesWizard
-          onUpdated={props.onUpdated}
+        <DeleteRelationshipWizard
+          onDeleted={props.onDeleted}
           onModalContentRequestedClose={props.onModalContentRequestedClose}
           currentRelationship={instancesContext.getFocusRelationship()}
         />
