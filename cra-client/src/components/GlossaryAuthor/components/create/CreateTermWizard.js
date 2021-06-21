@@ -6,11 +6,11 @@ import {
   ProgressStep,
   Button,
 } from "carbon-components-react";
-import NodeInput from "../nodepages/NodeInput";
-import NodeReadOnly from "../nodepages/NodeReadOnly";
+import NodeInput from "../authoringforms/NodeInput";
+import NodeReadOnly from "../authoringforms/NodeReadOnly";
 import { useHistory } from "react-router-dom";
 import {
-  validateNodePropertiesUserInput,
+  validatePropertiesUserInput,
   extendUserInput,
 } from "../../../common/Validators";
 import StartingNodeNavigation from "../navigations/StartingNodeNavigation";
@@ -20,12 +20,12 @@ import { parse } from "date-fns";
 /**
  * This is a Term creation wizard. The first page of the wizard
  * asks the user to input values for the Term create. The next page then asks the user for the glossary that the
- * Term will be stored in. This is followed by an optional parant categoty , finally there is a confirmation screen,
+ * Term will be stored in. This is followed by an optional parent category, finally there is a confirmation screen,
  *  where the user can confirm the values that will be used to create the Term.
  *
  * This component drives the NodeInput component, which displays the node. There are callbacks to the wizard
- * when the user has finsished with entering creation content and chosen a glossary.
- * This component then driven NodeInput which displays the confirmation screen, issue the create and then does the results
+ * when the user has finished with entering creation content and chosen a glossary.
+ * This component then drives NodeReadOnly, which displays the confirmation screen, issues the create and then shows the results
  * of the create.
  *
  * @param {*} props
@@ -71,7 +71,16 @@ export default function CreateTermWizard(props) {
     setCurrentStepIndex(newIndex);
   };
   const finished = () => {
-    history.goBack();
+    if (props.onModalContentRequestedClose) {
+      // if in a modal then callback to close the modal
+      props.onModalContentRequestedClose();
+      let payLoad = {};
+      payLoad.node = nodeCreated;
+      props.onCreated(payLoad);
+    } else {
+      // in not in a modal got back to the last page 
+      history.goBack();
+    }
   };
 
   const hasGlossary = () => {
@@ -97,7 +106,7 @@ export default function CreateTermWizard(props) {
     };
 
     setUserInput(newUserInput);
-    if (validateNodePropertiesUserInput(extendedUserInput)) {
+    if (validatePropertiesUserInput(extendedUserInput)) {
       if (
         attributeKey === "effectiveFromTime" ||
         attributeKey === "effectiveToTime"
@@ -123,9 +132,10 @@ export default function CreateTermWizard(props) {
     }
   };
   const validateUserInput = () => {
-    return validateNodePropertiesUserInput(userInput);
+    return validatePropertiesUserInput(userInput);
   };
-  const onGlossarySelect = (guid) => {
+  const onGlossarySelect = (node) => {
+    const guid = node.systemAttributes.guid;
     let glossary = {};
     glossary.guid = guid;
     let myNodeToCreate = {
@@ -135,8 +145,9 @@ export default function CreateTermWizard(props) {
     setNodeToCreate(myNodeToCreate);
   };
   // TODO allow choosing more than one category
-  const onParentCategorySelect = (guid) => {
-    if (guid !== undefined) {
+  const onParentCategorySelect = (node) => {
+    if (node !== undefined) {
+      const guid = node.systemAttributes.guid;
       let parentCategory = {};
       parentCategory.guid = guid;
       parentCategory.type = "Category";
@@ -223,7 +234,7 @@ export default function CreateTermWizard(props) {
         />
       </ProgressIndicator>
       <div className="wizard-navigation-container">
-      {currentStepIndex === 0 && (
+        {currentStepIndex === 0 && (
           <div>
             <Button
               kind="secondary"
@@ -236,10 +247,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <Button
-              kind="secondary"
-              onClick={previousStep}
-            >
+            <Button kind="secondary" onClick={previousStep}>
               Previous
             </Button>
             <Button
@@ -256,11 +264,7 @@ export default function CreateTermWizard(props) {
             <Button kind="secondary" onClick={previousStep}>
               Previous
             </Button>
-            <Button
-              kind="secondary"
-              onClick={nextStep}
-           
-            >
+            <Button kind="secondary" onClick={nextStep}>
               Next
             </Button>
           </div>
@@ -283,7 +287,7 @@ export default function CreateTermWizard(props) {
       <div className="wizard-navigation-container">
         {currentStepIndex === 0 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep1Title()}</h3>
+            <h3 className="wizard-page-title">{getStep1Title()}</h3>
             <NodeInput
               currentNodeType={props.currentNodeType}
               onAttributeChange={onAttributeChange}
@@ -294,7 +298,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 1 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep2Title()}</h3>
+            <h3 className="wizard-page-title">{getStep2Title()}</h3>
             <StartingNodeNavigation
               match={props.match}
               nodeTypeName="glossary"
@@ -304,7 +308,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 2 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep3Title()}</h3>
+            <h3 className="wizard-page-title">{getStep3Title()}</h3>
             <StartingNodeNavigation
               match={props.match}
               nodeTypeName="category"
@@ -314,7 +318,7 @@ export default function CreateTermWizard(props) {
         )}
         {currentStepIndex === 3 && (
           <div>
-            <h3 className="create-wizard-page-title">{getStep4Title()}</h3>
+            <h3 className="wizard-page-title">{getStep4Title()}</h3>
             <NodeReadOnly
               currentNodeType={props.currentNodeType}
               inputNode={nodeToCreate}

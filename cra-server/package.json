@@ -1,6 +1,6 @@
 {
   "name": "egeria-react-ui-server",
-  "version": "2.10.0-rc.0",
+  "version": "2.11.0-rc.0",
   "private": true,
   "description": "Egeria React User Interface server component, also known as the presentation server.",
   "main": "index.js",
@@ -21,10 +21,10 @@
   "dependencies": {
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.6",
-    "express-session": "^1.17.1",
+    "express-session": "^1.17.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0"
   },

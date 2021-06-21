@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { issueRestGet } from "../../RestCaller";
 import getNodeType from "../../properties/NodeTypes";
 import getRelationshipType from "../../properties/RelationshipTypes";
-import { useHistory } from 'react-router'
+import { useHistory } from "react-router";
 
 import { IdentificationContext } from "../../../../../contexts/IdentificationContext";
 
@@ -277,7 +277,7 @@ const InstancesContextProvider = (props) => {
        */
       genId = guidToGenId[nodeGUID];
       node.gen = genId;
-      addNewGuidToNodeType(nodeGUID, node.nodeType,"known retrieved node");
+      addNewGuidToNodeType(nodeGUID, node.nodeType, "known retrieved node");
     } else {
       /*
        * Node is not already known
@@ -300,7 +300,7 @@ const InstancesContextProvider = (props) => {
       traversal.nodes[nodeGUID] = nodeDigest;
       traversal.operation = "getNode";
       traversal.nodeGUID = nodeGUID;
-      addNewGuidToNodeType(nodeGUID, node.nodeType,"unknown retrieved node");
+      addNewGuidToNodeType(nodeGUID, node.nodeType, "unknown retrieved node");
       /*
        * Add the traversal to the sequence of gens in the graph.
        */
@@ -324,18 +324,20 @@ const InstancesContextProvider = (props) => {
       setGuidToNodeType(newGuidToNodeType);
     }
   }
-    // Add a new entry into the guid to nodetype map.
-    function addNewGuidToRelationshipType(guid, relationshipType, msg) {
-      let newGuidToRelationshipType = guidToRelationshipType;
-      if (newGuidToRelationshipType[guid] === undefined) {
-        console.log("Adding guid" + guid + ",type " + relationshipType + ", msg=" + msg);
-        console.log(
-          "Adding guid" + guid + ",type json " + JSON.stringify(relationshipType)
-        );
-        newGuidToRelationshipType[guid] = relationshipType;
-        setGuidToRelationshipType(newGuidToRelationshipType);
-      }
+  // Add a new entry into the guid to nodetype map.
+  function addNewGuidToRelationshipType(guid, relationshipType, msg) {
+    let newGuidToRelationshipType = guidToRelationshipType;
+    if (newGuidToRelationshipType[guid] === undefined) {
+      console.log(
+        "Adding guid" + guid + ",type " + relationshipType + ", msg=" + msg
+      );
+      console.log(
+        "Adding guid" + guid + ",type json " + JSON.stringify(relationshipType)
+      );
+      newGuidToRelationshipType[guid] = relationshipType;
+      setGuidToRelationshipType(newGuidToRelationshipType);
     }
+  }
 
   /*
    * prrocessRetrievedRelationship accepts an exprelationship, checks whether it is already known and if not,
@@ -437,9 +439,13 @@ const InstancesContextProvider = (props) => {
         }
         addNewGuidToNodeType(end1GUID, end1.nodeType, "end1");
         addNewGuidToNodeType(end2GUID, end2.nodeType, "end2");
-        addNewGuidToRelationshipType(relationshipGUID,relationshipType, "processed retrieved relationship")
-        traversal.relationshipGUID=relationshipGUID;
-        traversal.operation="getRelationship";
+        addNewGuidToRelationshipType(
+          relationshipGUID,
+          relationshipType,
+          "processed retrieved relationship"
+        );
+        traversal.relationshipGUID = relationshipGUID;
+        traversal.operation = "getRelationship";
 
         /*
          * Add the traversal to the sequence of gens in the graph.
@@ -465,8 +471,8 @@ const InstancesContextProvider = (props) => {
        * If this is a traversal from an Explore, the traversal results should have been formatted by the VS
        * into the form needed by Glove.
        * This means that it should have:
-       *   a map of nodeGUID       --> { nodeGUID, label, gen }
-       *   a map of relationshipGUID --> { relationshipGUID, end1GUID, end2GUID, idx, label, gen }
+       *   a map of nodeGUID       --> { nodeGUID, name, nodeType }
+       *   a map of relationshipGUID --> { relationshipGUID, end1GUID, end2GUID, relationshiptype }
        *
        * Alternatively this could be a traversal object resulting from a search and subsequent user
        * selection of search results.
@@ -494,7 +500,11 @@ const InstancesContextProvider = (props) => {
         nodeDigest.gen = 0;
         nodeDigest.name = node.name;
         nodeDigests[nodeGUID] = nodeDigest;
-        addNewGuidToNodeType(nodeGUID, node.nodeType,"processRetrievedTraversal node");
+        addNewGuidToNodeType(
+          nodeGUID,
+          node.nodeType,
+          "processRetrievedTraversal node"
+        );
       }
 
       for (const relationshipGUID in results.relationships) {
@@ -508,9 +518,20 @@ const InstancesContextProvider = (props) => {
         relationshipDigest.end1Node = relationship.end1.nodetype;
         relationshipDigest.end2Node = relationship.end2.nodetype;
         relationshipDigests[relationshipGUID] = relationshipDigest;
-        addNewGuidToNodeType(relationship.end1.nodeGuid, relationship.end1.nodetype,"processRetrievedTraversal end1");
-        addNewGuidToNodeType(relationship.end2.nodeGuid, relationship.end2.nodetype,"processRetrievedTraversal end2");
-        addNewGuidToRelationshipType(relationshipGUID, relationship.relationshipType);
+        addNewGuidToNodeType(
+          relationship.end1.nodeGuid,
+          relationship.end1.nodetype,
+          "processRetrievedTraversal end1"
+        );
+        addNewGuidToNodeType(
+          relationship.end2.nodeGuid,
+          relationship.end2.nodetype,
+          "processRetrievedTraversal end2"
+        );
+        addNewGuidToRelationshipType(
+          relationshipGUID,
+          relationship.relationshipType
+        );
       }
       traversal.nodes = nodeDigests;
       traversal.relationships = relationshipDigests;
@@ -635,10 +656,10 @@ const InstancesContextProvider = (props) => {
     console.log("loadNode");
     let nodeTypeKey;
     if (nodeType) {
-       nodeTypeKey = nodeType.key;
+      nodeTypeKey = nodeType.key;
     } else {
-       nodeTypeKey = guidToNodeType[nodeGUID];
-    } 
+      nodeTypeKey = guidToNodeType[nodeGUID];
+    }
     if (nodeTypeKey === undefined) {
       alert("No nodetype!!! ");
     } else {
@@ -679,7 +700,6 @@ const InstancesContextProvider = (props) => {
     reportFailedOperation("Get Node", message);
   };
 
-  
   const loadRelationship = (relationshipGUID, relationshipTypeKey) => {
     console.log("loadRelationship");
     if (relationshipTypeKey === undefined) {
@@ -697,7 +717,11 @@ const InstancesContextProvider = (props) => {
       const url = relationshipType.url + "/" + relationshipGUID;
 
       if (!guidToRelationshipType[relationshipGUID]) {
-        addNewGuidToRelationshipType(relationshipGUID, relationshipType, "loadRelationship");
+        addNewGuidToRelationshipType(
+          relationshipGUID,
+          relationshipType,
+          "loadRelationship"
+        );
       }
 
       issueRestGet(url, onSuccessfulLoadRelationship, onErrorLoadRelationship);
@@ -787,7 +811,13 @@ const InstancesContextProvider = (props) => {
         }
       }
     },
-    [clearFocusInstance, focus.instanceGUID, gens, guidToGenId, loadRelationship]
+    [
+      clearFocusInstance,
+      focus.instanceGUID,
+      gens,
+      guidToGenId,
+      loadRelationship,
+    ]
   );
 
   /*
@@ -868,7 +898,8 @@ const InstancesContextProvider = (props) => {
     if (relationshipFilter && relationshipFilter.length > 0) {
       let relationshipFilterStr = "";
       for (var i = 0; i < relationshipFilter.length; i++) {
-        relationshipFilterStr = relationshipFilterStr + relationshipFilter[i] + ",";
+        relationshipFilterStr =
+          relationshipFilterStr + relationshipFilter[i] + ",";
       }
       // remove the last character
       relationshipFilterStr = relationshipFilterStr.slice(0, -1);
@@ -885,6 +916,104 @@ const InstancesContextProvider = (props) => {
     url = encodeURI(url);
     // issue call
     issueRestGet(url, onSuccessfulExplore, onErrorExplore);
+  };
+  /**
+   * Pass the supplied node and relationship into a traversal
+   * @param {*} node node to add to the traversal
+   * @param {*} relationship relationship to add to the traversal
+   */
+  const addRelationshipInstance = (node, relationship) => {
+    let traversal = {};
+    traversal.nodes = {};
+    traversal.relationships = {};
+    const nodeGUID = node.systemAttributes.guid;
+    traversal.nodes[nodeGUID] = node;
+    const relationshipGUID = relationship.systemAttributes.guid;
+    traversal.relationships[relationshipGUID] = relationship;
+    console.log("adding relationship and node " + JSON.stringify(traversal));
+    traversal.operation = "traversal";
+    processRetrievedTraversal(traversal);
+  };
+  const addNodeInstance = (node) => {
+    let traversal = {};
+    traversal.nodes = {};
+    traversal.relationships = {};
+    const nodeGUID = node.systemAttributes.guid;
+    traversal.nodes[nodeGUID] = node;
+
+    console.log("adding node " + JSON.stringify(traversal));
+    traversal.operation = "traversal";
+    processRetrievedTraversal(traversal);
+  };
+  /**
+   * Update relationship does NOT create a new traversal, becase it does not add any new content to the canvas.
+   * Instead it finss which gen the relationship exists in and updates it's properties.
+   * @param {*} relationship
+   */
+  const updateNodeInstance = (newNode, nodeType) => {
+    const nodeGUID = newNode.systemAttributes.guid;
+
+    for (let i = 0; i < gens.length; i++) {
+      const genContent = gens[i];
+      const existingNode = genContent.relationships[nodeGUID];
+      if (existingNode !== undefined) {
+        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change 
+        // shallow copy the array
+        let newGens = gens.slice(0);
+        // clone the content
+        let newGenContent = {
+          ...genContent,
+        };
+        // clone the nodes
+        let newNodes = {
+          ...newGenContent.node,
+        };
+        // update 
+        newNodes[nodeGUID] = newNode;
+        newGenContent.nodes = newNodes;
+        newGens[i] = newGenContent;
+        // set into state.
+        setGens(newGens);
+        // update the node so the details panel refreshes.
+        loadNode(nodeGUID, nodeType);
+        break;
+      }
+    }
+  };
+  /**
+   * Update relationship does NOT create a new traversal, becase it does not add any new content to the canvas.
+   * Instead it finds which gen the relationship exists in and updates it's properties.
+   * @param {*} relationship
+   */
+   const updateRelationshipInstance = (newRelationship, relationshipType) => {
+    const relationshipGUID = newRelationship.systemAttributes.guid;
+
+    for (let i = 0; i < gens.length; i++) {
+      const genContent = gens[i];
+      const existingRelationship = genContent.relationships[relationshipGUID];
+      if (existingRelationship !== undefined) {
+        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change 
+        // shallow copy the array
+        let newGens = gens.slice(0);
+        // clone the content
+        let newGenContent = {
+          ...genContent,
+        };
+        // clone the relationships
+        let newRelationships = {
+          ...newGenContent.relationship,
+        };
+        // update 
+        newRelationships[relationshipGUID] = newRelationship;
+        newGenContent.relationships = newRelationships;
+        newGens[i] = newGenContent;
+        // set into state.
+        setGens(newGens);
+        // update the relationship so the details panel refreshes.
+        loadRelationship(relationshipGUID, relationshipType);
+        break;
+      }
+    }
   };
 
   /*
@@ -943,14 +1072,13 @@ const InstancesContextProvider = (props) => {
       for (let nodeGUID in newGUIDMap) {
         loadNode(nodeGUID);
       }
-    
     }
   }, [clearFocusInstance, focus.instanceGUID, gens, guidToGenId]);
 
   /*
-   * refresh the page 
+   * refresh the page
    */
-  const clear  = () => {
+  const clear = () => {
     history.go(0);
   };
 
@@ -1000,14 +1128,18 @@ const InstancesContextProvider = (props) => {
           /*
            * Format querySummary as "Node retrieval \n GUID: <guid>"
            */
-          querySummary = querySummary.concat(" Node retrieval using GUID " + genContent.nodeGUID);
+          querySummary = querySummary.concat(
+            " Node retrieval using GUID " + genContent.nodeGUID
+          );
           break;
 
         case "getRelationship":
           /*
            * Format querySummary as "Relationship retrieval \n GUID: <guid>"
            */
-          querySummary = querySummary.concat(" Relationship retrieval using GUID");
+          querySummary = querySummary.concat(
+            " Relationship retrieval using GUID"
+          );
 
           break;
 
@@ -1026,9 +1158,15 @@ const InstancesContextProvider = (props) => {
             const rootDigest = rootGen.nodes[nodeGUID];
             const rootLabel = rootDigest.name;
             querySummary = querySummary.concat(
-              " Traversal from " + rootDigest.nodeType + " with name '" + rootLabel +"' and GUID of '" + nodeGUID + "'"
+              " Traversal from " +
+                rootDigest.nodeType +
+                " with name '" +
+                rootLabel +
+                "' and GUID of '" +
+                nodeGUID +
+                "'"
             );
-          
+
             /*
              * Node Type Filters - show type names rather than type GUIDs
              */
@@ -1037,11 +1175,11 @@ const InstancesContextProvider = (props) => {
           }
 
           /*
-           * Relationship Type Filters - show type names 
+           * Relationship Type Filters - show type names
            */
 
-            querySummary = querySummary.concat(" Relationship Type Filters: ");
-            querySummary = querySummary.concat(genContent.relationshipFilter);
+          querySummary = querySummary.concat(" Relationship Type Filters: ");
+          querySummary = querySummary.concat(genContent.relationshipFilter);
 
           break;
 
@@ -1050,7 +1188,8 @@ const InstancesContextProvider = (props) => {
            *  Found a gen result with no operation type.
            *  Add error message to gen so this is noticed in history....
            */
-          querySummary = "Operation " + genContent.operation + " not recognised!";
+          querySummary =
+            "Operation " + genContent.operation + " not recognised!";
           break;
       }
 
@@ -1119,6 +1258,10 @@ const InstancesContextProvider = (props) => {
         getLatestActiveGenId,
         removeGen,
         getLatestGen,
+        addRelationshipInstance,
+        addNodeInstance,
+        updateNodeInstance,
+        updateRelationshipInstance,
       }}
     >
       {props.children}

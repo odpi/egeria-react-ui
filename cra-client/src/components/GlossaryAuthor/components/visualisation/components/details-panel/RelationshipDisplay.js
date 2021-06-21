@@ -3,10 +3,11 @@
 
 import React, { useContext} from "react";
 import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
-import UpdateRelationshipInline from "../../../update/UpdateRelationshipInline";
+import RelationshipDisplayDetails from "../../../update/RelationshipDisplayDetails";
 import getRelationshipType from "../../../properties/RelationshipTypes";
 
 export default function RelationshipDisplay(props) {
+  console.log("RelationshipDisplay");
   const identificationContext = useContext(IdentificationContext);
   const relationship = props.relationship;
   const getCurrentRelationshipType = () => {
@@ -19,7 +20,7 @@ export default function RelationshipDisplay(props) {
 
   return (
     <div>
-      <UpdateRelationshipInline
+   <RelationshipDisplayDetails
         currentRelationshipType={getCurrentRelationshipType()}
         relationship={relationship}
       />

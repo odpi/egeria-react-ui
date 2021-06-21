@@ -579,7 +579,12 @@ export default function EntityNeighborhoodDiagram(props) {
 
     (nhbd) => {
 
-      const duration = d3.event && d3.event.altKey ? 2500 : 250;
+      // in the change to D3 v6 event was removed as a global variable and is passed into onClick and the like as the first parameter.
+      // I have commented out htis line as I do not know where we get the altKey event from. 
+      // const duration = event && event.altKey ? 2500 : 250;
+
+      // hard coding as 250 
+      const duration = 250;
 
       /*
        * Although we know the offset width and height, the diagram is approximately circular

@@ -4,9 +4,8 @@
 
 
 .glove-container {
-  position         : absolute;
+  position         : relative;
   top              : 0px;
-  left             : 260px;
   height           : 100%;
   display          : flex;
   flex-flow        : column;
@@ -16,7 +15,7 @@
 }
 
 .glove-top {
-  display          : flex;
+  display          : flex; 
   flex-flow        : row;
   width            : 100%; 
   overflow         : none;
@@ -90,11 +89,22 @@
 .descriptive-text {
   font-size        : 12px;
 }
+.bottom-margin {
+  margin-bottom    : 20px;
+}
 
 .graph-control-button {  
   height           : 40px;
   width            : 100px;
   background-color : rgb(180,180,180);  
+}
+.lhs-header {
+  margin-bottom: 20px;
+  font-size: 30px;
+}
+
+.fullwidth {
+  width            : 100%;
 }
 
 .title {

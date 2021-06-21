@@ -97,7 +97,7 @@ export default function StartingNodeNavigation({
 
     console.log("passed page number " + passedPageNumber);
     console.log("passed page size " + passedPageSize);
-    console.log("resuilts length " + results.length);
+    console.log("results length " + results.length);
     // define as a constant so that the + is an arithmetic + not a string concatination +.
     const calculatedTotal =
       (passedPageNumber - 1) * passedPageSize + results.length;
@@ -142,6 +142,10 @@ export default function StartingNodeNavigation({
       readOnly = true;
     }
     setSelectedNodeReadOnly(readOnly);
+    if (onSelectCallback) {
+       onSelectCallback(node);
+    }
+    
   };
 
   const onErrorGetSelectedNode = (msg) => {
@@ -151,16 +155,12 @@ export default function StartingNodeNavigation({
   const processUserCriteriaAndIssueSearch = () => {
     // sort out the actual search criteria.
     let actualDebounceCriteria = debouncedFilterCriteria;
-    if (actualDebounceCriteria) {
-      if (!exactMatch) {
-        actualDebounceCriteria = actualDebounceCriteria + ".*";
-      }
-    } else {
+    if (!actualDebounceCriteria) {
       // by default get everything
-      actualDebounceCriteria = ".*";
+      actualDebounceCriteria = "";
     }
     // Fire off our API call
-    issueNodeSearch(actualDebounceCriteria);
+    issueNodeSearch(actualDebounceCriteria, exactMatch);
   };
 
   // issue search for first page of nodes
@@ -170,6 +170,8 @@ export default function StartingNodeNavigation({
       nodeType.url +
         "?searchCriteria=" +
         criteria +
+        "&exactValue=" +
+        exactMatch +
         "&pageSize=" +
         (pageSize + 1) +
         "&startingFrom=" +
@@ -281,9 +283,6 @@ export default function StartingNodeNavigation({
     setSelectedNodeGuid(nodeGuid);
     if (nodeGuid) {
       getSelectedNodeFromServer(nodeGuid);
-    }
-    if (onSelectCallback) {
-      onSelectCallback(nodeGuid);
     }
   };
 
