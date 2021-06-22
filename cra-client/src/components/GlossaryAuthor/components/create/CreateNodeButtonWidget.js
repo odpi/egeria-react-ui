@@ -37,7 +37,9 @@ export default function CreateNodeButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <Button onClick={() => setOpen(true)}>Create Node</Button>
+          <div className="authoring-button" type="button" onClick={() => setOpen(true)} >
+            Create Node
+          </div>
         )}
       >
         {({ open, setOpen }) => (

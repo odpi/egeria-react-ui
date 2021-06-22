@@ -55,9 +55,9 @@ export default function UpdateButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <Button disabled={isDisabled()} onClick={() => setOpen(true)}>
-            Update
-          </Button>
+          <div className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
+            Update Artifact
+          </div>
         )}
       >
         {({ open, setOpen }) => (

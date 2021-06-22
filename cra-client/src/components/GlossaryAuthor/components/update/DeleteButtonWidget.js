@@ -12,6 +12,11 @@ export default function UpdateButtonWidget() {
   console.log("DeleteButtonWidget");
   const identificationContext = useContext(IdentificationContext);
   const instancesContext = useContext(InstancesContext);
+  const isDisabled = () => {
+    return instancesContext.focus.instance === null;
+  };
+
+
   const onDeleted = (payLoad) => {
     if (payLoad.node !== undefined) {
       const nodeTypeName = payLoad.node.nodeType.toLowerCase();
@@ -47,9 +52,9 @@ export default function UpdateButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <Button disabled={isDisabled()} onClick={() => setOpen(true)}>
-            Delete
-          </Button>
+          <div className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
+            Delete Artifact
+          </div>
         )}
       >
         {({ open, setOpen }) => (

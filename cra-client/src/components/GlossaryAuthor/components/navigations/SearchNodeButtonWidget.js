@@ -37,7 +37,9 @@ export default function SearchNodeButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <Button onClick={() => setOpen(true)}>Show a Node</Button>
+          <div className="authoring-button" type="button" onClick={() => setOpen(true)} >
+            Add to canvas
+            </div>
         )}
       >
         {({ open, setOpen }) => (

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 
 import { InstancesContext } from "../visualisation/contexts/InstancesContext";
 import DeleteNodeWizard from "./DeleteNodeWizard";
-import DeleteRelationshipWizard from "./DeletePropertiesWizard";
+import DeleteRelationshipWizard from "./DeleteRelationshipWizard";
 
 /**
  * This is the deleteWizard, depending on whether the current focus is a node or a relationship,
