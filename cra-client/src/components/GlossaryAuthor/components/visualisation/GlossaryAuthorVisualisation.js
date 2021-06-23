@@ -24,10 +24,10 @@ import QuestionMarkImage from "./question-mark-32.png";
 import HelpMarkdown from "./HELP.md";
 
 import "./glove.scss";
-import CreateRelationshipButtonWidget from "../create/CreateRelationshipButtonWidget";
-import CreateNodeButtonWidget from "../create/CreateNodeButtonWidget";
-import UpdateButtonWidget from "../update/UpdateButtonWidget";
-import DeleteButtonWidget from "../update/DeleteButtonWidget";
+import CreateRelationshipButtonWidget from "./components/graph-controls/CreateRelationshipButtonWidget";
+import CreateNodeButtonWidget from "./components/graph-controls/CreateNodeButtonWidget";
+import UpdateButtonWidget from "./components/graph-controls/UpdateButtonWidget";
+import DeleteButtonWidget from "./components/graph-controls/DeleteButtonWidget";
 
 export default function GlossaryAuthorVisualisation(props) {
   const containerDiv = useRef();

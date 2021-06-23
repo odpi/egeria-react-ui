@@ -30,7 +30,7 @@ import { parse, format } from "date-fns";
  * @param {*} props
  * @returns
  */
-export default function DeleteNodePropertiesWizard(props) {
+export default function DeleteNodeWizard(props) {
   const identificationContext = useContext(IdentificationContext);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [nodeDeleted, setNodeDeleted] = useState();
@@ -124,43 +124,7 @@ export default function DeleteNodePropertiesWizard(props) {
     }
   };
 
-  const onAttributeChange = (attributeKey, attributeValue) => {
-    const extendedUserInput = extendUserInput(
-      userInput,
-      attributeKey,
-      attributeValue
-    );
-
-    let newUserInput = {
-      ...extendedUserInput,
-    };
-
-    setUserInput(newUserInput);
-    if (validatePropertiesUserInput(extendedUserInput)) {
-      if (
-        attributeKey === "effectiveFromTime" ||
-        attributeKey === "effectiveToTime"
-      ) {
-        // the value is an object with date and time properties
-        // we need to delete a single date
-        if (attributeValue !== undefined) {
-          let time = attributeValue.time;
-          let date = attributeValue.date;
-          if (time === undefined) {
-            attributeValue = date;
-          } else {
-            attributeValue = parse(time, "HH:mm", date);
-          }
-          attributeValue = attributeValue.getTime();
-        }
-      }
-      let myNodeToDelete = {
-        ...nodeToDelete,
-        [attributeKey]: attributeValue,
-      };
-      setNodeToDelete(myNodeToDelete);
-    }
-  };
+  
   const getCurrentNodeType = ()=> {
     const key = props.currentNode.nodeType.toLowerCase();
     return getNodeType(identificationContext.getRestURL("glossary-author"), key);
@@ -183,7 +147,7 @@ export default function DeleteNodePropertiesWizard(props) {
   };
 
   const getStep2Title = () => {
-    let title = "Updating a " + props.currentNode.nodeType + " with these details.";
+    let title = "Pressing Delete will delete the " +props.currentNode.nodeType + " and lose the current diagram.";
     if (nodeDeleted !== undefined) {
       title = props.currentNode.nodeType  + " Deleted";
     }
@@ -201,43 +165,15 @@ export default function DeleteNodePropertiesWizard(props) {
     setNodeDeleted(node);
     let payLoad = {};
     payLoad.node = node;
-    // props.onDeleted(payLoad);
+    props.onDeleted(payLoad);
   };
 
   return (
     <div>
       <h1>{getTitle()}</h1>
-      <ProgressIndicator currentIndex={currentStepIndex}>
-        <ProgressStep
-          label={getStep1Label()}
-          description={getStep1Description()}
-        />
-        <ProgressStep
-          label={getStep2Label()}
-          description={getStep2Description()}
-        />
-      </ProgressIndicator>
       <div className="wizard-navigation-container">
-        {currentStepIndex === 0 && (
-          <div>
-            <Button
-              kind="secondary"
-              onClick={handleGotDeleteDetailsOnClick}
-              disabled={!validateUserInput()}
-            >
-              Next
-            </Button>
-          </div>
-        )}
 
-        {currentStepIndex === 1 && nodeDeleted === undefined && (
-          <div>
-            <Button kind="secondary" onClick={previousStep}>
-              Previous
-            </Button>
-          </div>
-        )}
-        {currentStepIndex === 1 && nodeDeleted !== undefined && (
+        {nodeDeleted !== undefined && (
           <div>
             <Button kind="secondary" onClick={finished}>
               Finished

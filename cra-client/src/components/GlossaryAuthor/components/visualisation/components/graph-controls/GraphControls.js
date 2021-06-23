@@ -15,7 +15,7 @@ import TraversalResultHandler                    from "./TraversalResultHandler"
 
 import HistoryResultHandler                      from "./HistoryResultHandler";
 
-import SearchNodeButtonWidget                    from "../../../navigations/SearchNodeButtonWidget";
+import SearchNodeButtonWidget                    from "./SearchNodeButtonWidget";
 
 import "../../glove.scss";
 
@@ -24,7 +24,7 @@ import { issueRestGet } from "../../../RestCaller";
 
 export default function GraphControls(props) {
 
-  const identificationContext = useContext(IdentificationContext);
+  const identificationContext   = useContext(IdentificationContext);
   const instancesContext        = useContext(InstancesContext);
 
   const interactionContext      = useContext(InteractionContext);

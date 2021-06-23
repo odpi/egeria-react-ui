@@ -203,7 +203,6 @@ const InstancesContextProvider = (props) => {
       const newList = gens.concat(traversal);
       setGens(newList);
       setLatestActiveGenId(newList.length);
-
       /*
        * Look for new instances in the traversal, and add them to the new gen.
        * If it was an Node that was processed, this function will only have been called if the Node
@@ -258,6 +257,21 @@ const InstancesContextProvider = (props) => {
     let focusGenId = guidToGenId[focus.instanceGUID];
     return focusGenId;
   }, [guidToGenId, focus]);
+  /*
+   * Get the node uid for the anchor node. i.e. the orginal node on the canvas.
+   */
+
+  const getAnchorNodeGUID = () => {
+    let anchorNodeGUID;
+    console.log("getAnchorNodeGUID ");
+    if (gens && gens.length > 0) {
+      const firstGen = gens[0];
+      if (firstGen.nodes) {
+        anchorNodeGUID = firstGen.nodeGUID;
+      }
+    }
+    return anchorNodeGUID;
+  };
 
   /*
    * Functions to process retrieved instances
@@ -312,6 +326,45 @@ const InstancesContextProvider = (props) => {
      */
     setFocusNode(node);
   };
+
+  const processDeletedNode = (node) => {
+    const nodeGUID = node.systemAttributes.guid;
+
+    // let genId;
+    // if (guidToGenId[nodeGUID] !== undefined) {
+    //   /*
+    //    * Node is already known
+    //    *
+    //    * Construct a traversal for the Node and add it to the gens.
+    //    * The genId is in the digest and will be one beyond the current latest gen
+    //    */
+    //   genId = getLatestActiveGenId() + 1;
+    //   node.gen = genId;
+
+    //   let traversal = {};
+    //   traversal.nodes = {};
+    //   traversal.relationships = {};
+
+    //   let nodeDigest = {};
+    //   nodeDigest.nodeGUID = nodeGUID;
+    //   nodeDigest.nodeType = node.nodeType;
+    //   nodeDigest.gen = node.gen;
+    //   nodeDigest.name = node.name;
+    //   traversal.nodes[nodeGUID] = nodeDigest;
+    //   traversal.operation = "deleteNode";
+    //   traversal.nodeGUID = nodeGUID;
+    //   removeDeletedGuidToNodeType(
+    //     nodeGUID,
+    //     node.nodeType,
+    //     "unknown retrieved node"
+    //   );
+    //   /*
+    //    * Add the traversal to the sequence of gens in the graph.
+    //    */
+    //   addGen(traversal);
+    // }
+  };
+
   // Add a new entry into the guid to nodetype map.
   function addNewGuidToNodeType(guid, nodeType, msg) {
     let newGuidToNodeType = guidToNodeType;
@@ -324,6 +377,20 @@ const InstancesContextProvider = (props) => {
       setGuidToNodeType(newGuidToNodeType);
     }
   }
+
+  // function removeDeletedGuidToNodeType(guid, nodeType, msg) {
+  //   let newGuidToNodeType = guidToNodeType;
+  //   if (newGuidToNodeType[guid] === undefined) {
+  //     console.log(
+  //       "Deleting guid" + guid + ",type " + nodeType + ", msg=" + msg
+  //     );
+  //     console.log(
+  //       "Deleting guid" + guid + ",type json " + JSON.stringify(nodeType)
+  //     );
+  //     delete newGuidToNodeType[guid];
+  //     setGuidToNodeType(newGuidToNodeType);
+  //   }
+  // }
   // Add a new entry into the guid to nodetype map.
   function addNewGuidToRelationshipType(guid, relationshipType, msg) {
     let newGuidToRelationshipType = guidToRelationshipType;
@@ -946,18 +1013,18 @@ const InstancesContextProvider = (props) => {
     processRetrievedTraversal(traversal);
   };
   /**
-   * Update relationship does NOT create a new traversal, becase it does not add any new content to the canvas.
-   * Instead it finss which gen the relationship exists in and updates it's properties.
-   * @param {*} relationship
+   * Update node does NOT create a new traversal, becase it does not add any new content to the canvas.
+   * Instead it finds which gen the node exists in and updates it's properties.
+   * @param  newNode
    */
-  const updateNodeInstance = (newNode, nodeType) => {
+  const updateNodeInstance = (newNode) => {
     const nodeGUID = newNode.systemAttributes.guid;
 
     for (let i = 0; i < gens.length; i++) {
       const genContent = gens[i];
-      const existingNode = genContent.relationships[nodeGUID];
+      const existingNode = genContent.nodes[nodeGUID];
       if (existingNode !== undefined) {
-        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change 
+        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change
         // shallow copy the array
         let newGens = gens.slice(0);
         // clone the content
@@ -968,7 +1035,7 @@ const InstancesContextProvider = (props) => {
         let newNodes = {
           ...newGenContent.node,
         };
-        // update 
+        // update
         newNodes[nodeGUID] = newNode;
         newGenContent.nodes = newNodes;
         newGens[i] = newGenContent;
@@ -985,14 +1052,14 @@ const InstancesContextProvider = (props) => {
    * Instead it finds which gen the relationship exists in and updates it's properties.
    * @param {*} relationship
    */
-   const updateRelationshipInstance = (newRelationship, relationshipType) => {
+  const updateRelationshipInstance = (newRelationship, relationshipType) => {
     const relationshipGUID = newRelationship.systemAttributes.guid;
 
     for (let i = 0; i < gens.length; i++) {
       const genContent = gens[i];
       const existingRelationship = genContent.relationships[relationshipGUID];
       if (existingRelationship !== undefined) {
-        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change 
+        // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change
         // shallow copy the array
         let newGens = gens.slice(0);
         // clone the content
@@ -1003,7 +1070,7 @@ const InstancesContextProvider = (props) => {
         let newRelationships = {
           ...newGenContent.relationship,
         };
-        // update 
+        // update
         newRelationships[relationshipGUID] = newRelationship;
         newGenContent.relationships = newRelationships;
         newGens[i] = newGenContent;
@@ -1014,6 +1081,92 @@ const InstancesContextProvider = (props) => {
         break;
       }
     }
+  };
+  /**
+   * Delete clears the canvas. There is commented out code that might be helpful if an approach keeping the existing content is attempted
+   * @param {*} node
+   */
+  const deleteNodeInstance = (deletedNode, nodeType) => {
+    clear();
+    // const nodeGUID = deletedNode.systemAttributes.guid;
+
+    // for (let i = 0; i < gens.length; i++) {
+    //   const genContent = gens[i];
+    //   const existingNode = genContent.nodes[nodeGUID];
+    //   if (existingNode !== undefined) {
+    //     // found it now update it. We need to make sure that the render sees this as new or it will be blind to the change
+    //     // shallow copy the array
+    //     let newGens = gens.slice(0);
+    //     // clone the content
+    //     let newGenContent = {
+    //       ...genContent,
+    //     };
+    //     // clone the nodes
+    //     let newNodes = {
+    //       ...newGenContent.node,
+    //     };
+    //     // delete the property
+    //     delete newNodes[nodeGUID];
+    //     newGenContent.nodes = newNodes;
+    //     newGens[i] = newGenContent;
+    //     // set into state.
+    //     setGens(newGens);
+    //     let newGUIDMap = Object.assign({}, guidToGenId);
+    //     delete newGUIDMap[nodeGUID];
+
+    //     /*
+    //      * Now replace the map...
+    //      */
+    //     setGuidToGenId(newGUIDMap);
+    //     processDeletedNode(deletedNode);
+
+    //     break;
+    //   }
+    // }
+  };
+  /**
+   * Delete clears the canvas. There is commented out code that might be helpful if an approach keeping the existing content is attempted
+   * @param {*} relationship
+   */
+  const deleteRelationshipInstance = (deletedRelationship) => {
+    clear();
+    // const relationshipGUID = deletedRelationship.systemAttributes.guid;
+
+    // for (let i = 0; i < gens.length; i++) {
+    //   const genContent = gens[i];
+    //   const existingRelationship = genContent.relationships[relationshipGUID];
+    //   if (existingRelationship !== undefined) {
+    //     // found it now delete it. We need to make sure that the render sees this as new or it will be blind to the change
+    //     // shallow copy the array
+    //     let newGens = gens.slice(0);
+    //     // clone the content
+    //     let newGenContent = {
+    //       ...genContent,
+    //     };
+    //     // clone the relationships
+    //     let newRelationships = {
+    //       ...newGenContent.relationship,
+    //     };
+    //     // delete
+    //     delete newRelationships[relationshipGUID];
+    //     newGenContent.relationships = newRelationships;
+    //     newGens[i] = newGenContent;
+    //     // set into state.
+    //     setGens(newGens);
+
+    //     let newGUIDMap = Object.assign({}, guidToGenId);
+    //     delete newGUIDMap[relationshipGUID];
+
+    //     /*
+    //      * Now replace the map...
+    //      */
+    //     setGuidToGenId(newGUIDMap);
+
+    //     // update the focus instance so the details panel refreshes.
+    //     clearFocusInstance();
+    //     break;
+    //   }
+    // }
   };
 
   /*
@@ -1262,6 +1415,9 @@ const InstancesContextProvider = (props) => {
         addNodeInstance,
         updateNodeInstance,
         updateRelationshipInstance,
+        deleteNodeInstance,
+        deleteRelationshipInstance,
+        getAnchorNodeGUID,
       }}
     >
       {props.children}

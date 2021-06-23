@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
-import { IdentificationContext } from "../../../../contexts/IdentificationContext";
-import getNodeType from "../properties/NodeTypes.js";
-import getRelationshipType from "../properties/RelationshipTypes.js";
+import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
+import getNodeType from "../../../properties/NodeTypes.js";
+import getRelationshipType from "../../../properties/RelationshipTypes.js";
 import ReactDOM from "react-dom";
-import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import UpdateWizard from "./UpdateWizard";
+import { InstancesContext } from "../../contexts/InstancesContext";
+import UpdateWizard from "../../../update/UpdateWizard";
 import { Button, Modal } from "carbon-components-react";
 
 export default function UpdateButtonWidget() {
@@ -55,9 +55,9 @@ export default function UpdateButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <div className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
+          <button className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
             Update Artifact
-          </div>
+          </button>
         )}
       >
         {({ open, setOpen }) => (

@@ -1,21 +1,35 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
-import { IdentificationContext } from "../../../../contexts/IdentificationContext";
-import getNodeType from "../properties/NodeTypes.js";
+
+import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
+
+import { InstancesContext } from "../../contexts/InstancesContext";
+
+import getNodeType from "../../../properties/NodeTypes.js";
+
 import ReactDOM from "react-dom";
-import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import DeleteWizard from "./DeleteWizard";
-import { Button, Modal } from "carbon-components-react";
 
-export default function UpdateButtonWidget() {
+import DeleteWizard from "../../../delete/DeleteWizard";
+
+import { Modal, ProgressStep } from "carbon-components-react";
+import { propTypes } from "react-markdown";
+
+export default function DeleteButtonWidget() {
   console.log("DeleteButtonWidget");
-  const identificationContext = useContext(IdentificationContext);
-  const instancesContext = useContext(InstancesContext);
-  const isDisabled = () => {
-    return instancesContext.focus.instance === null;
-  };
 
+  const identificationContext = useContext(IdentificationContext);
+
+  const instancesContext = useContext(InstancesContext);
+
+  const isDisabled = () => {
+    let isDisabled = true; 
+    const anchorGUID = instancesContext.getAnchorNodeGUID()
+    if  (instancesContext.focus.instance !== null && instancesContext.focus.instance.systemAttributes.guid !== anchorGUID) {
+      isDisabled = false;
+    }
+    return isDisabled;
+  };
 
   const onDeleted = (payLoad) => {
     if (payLoad.node !== undefined) {
@@ -27,7 +41,10 @@ export default function UpdateButtonWidget() {
       instancesContext.deleteNodeInstance(payLoad.node, nodeType);
     }
     if (payLoad.relationship !== undefined) {
-      instancesContext.deleteRelationshipInstance(payLoad.relationship, payLoad.relationship.relationshipTypeName);
+      instancesContext.deleteRelationshipInstance(
+        payLoad.relationship,
+        payLoad.relationship.relationshipTypeName
+      );
     }
   };
   const ModalStateManager = ({
@@ -52,9 +69,14 @@ export default function UpdateButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <div className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
+          <button
+            className="authoring-button"
+            type="button"
+            disabled={isDisabled()}
+            onClick={() => setOpen(true)}
+          >
             Delete Artifact
-          </div>
+          </button>
         )}
       >
         {({ open, setOpen }) => (

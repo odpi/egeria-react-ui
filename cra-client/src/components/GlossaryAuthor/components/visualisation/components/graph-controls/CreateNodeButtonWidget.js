@@ -2,8 +2,8 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
 import ReactDOM from "react-dom";
-import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import CreateNodeWizard from "./CreateNodeWizard";
+import { InstancesContext } from "../../contexts/InstancesContext";
+import CreateNodeWizard from "../../../create/CreateNodeWizard";
 import { Button, Modal } from "carbon-components-react";
 // import Info16 from "@carbon/icons-react/lib/information/16";
 
@@ -37,9 +37,9 @@ export default function CreateNodeButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <div className="authoring-button" type="button" onClick={() => setOpen(true)} >
+          <button className="authoring-button" type="button" onClick={() => setOpen(true)} >
             Create Node
-          </div>
+          </button>
         )}
       >
         {({ open, setOpen }) => (

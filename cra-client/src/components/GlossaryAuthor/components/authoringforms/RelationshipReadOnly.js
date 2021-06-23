@@ -17,7 +17,7 @@ import {
 } from "carbon-components-react";
 import { issueRestCreate } from "../RestCaller";
 import { issueRestUpdate } from "../RestCaller";
-
+import { issueRestDelete } from "../RestCaller";
 
 /**
  * Component to show the page for a relationship that is about to be created or updated
@@ -159,8 +159,19 @@ export default function RelationshipReadOnly(props) {
       url = url +"/" + body.systemAttributes.guid;
       console.log("issueUpdate " + url);
       issueRestUpdate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
+    } else   if (props.operation === "Delete") {
+      url = url +"/" + body.systemAttributes.guid;
+      console.log("issueDelete " + url);
+      issueRestDelete(url, onSuccessfulDeleteCall, onErrorRestCall);  
     }
   };
+  const onSuccessfulDeleteCall = (json) => {
+    setRestCallInProgress(false);
+    console.log("onSuccessfulDeleteCall for relationship");
+    // as we do not get the relationship back in the response - return the supplied relationship. 
+    props.onComplete(props.inputRelationship);
+  };
+
   const onSuccessfulRestCall = (json) => {
     setRestCallInProgress(false);
 

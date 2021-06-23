@@ -2,11 +2,11 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
 import ReactDOM from "react-dom";
-import { Button, Modal } from "carbon-components-react";
-import { IdentificationContext } from "../../../../contexts/IdentificationContext";
-import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import CreateRelationshipWizard from "./CreateRelationshipWizard";
-import getNodeType from "../properties/NodeTypes.js";
+import { Modal } from "carbon-components-react";
+import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
+import { InstancesContext } from "../../contexts/InstancesContext";
+import CreateRelationshipWizard from "../../../create/CreateRelationshipWizard";
+import getNodeType from "../../../properties/NodeTypes.js";
 
 export default function CreateRelationshipButtonWidget() {
   const identificationContext = useContext(IdentificationContext);
@@ -68,9 +68,9 @@ export default function CreateRelationshipButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <div className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
+          <button className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
             Create Relationship
-          </div>
+          </button>
         )}
       >
         {({ open, setOpen }) => (
