@@ -1017,7 +1017,7 @@ const InstancesContextProvider = (props) => {
    * Instead it finds which gen the node exists in and updates it's properties.
    * @param  newNode
    */
-  const updateNodeInstance = (newNode) => {
+  const updateNodeInstance = (newNode, nodeType) => {
     const nodeGUID = newNode.systemAttributes.guid;
 
     for (let i = 0; i < gens.length; i++) {
