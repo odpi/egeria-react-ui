@@ -132,22 +132,22 @@ export default function SearchNodeWizard(props) {
         )}
       </div>
       <div className="wizard-navigation-container">
-        {currentStepIndex === 0 && (
+        {currentStepIndex === 0 && props.nodeType !== undefined && (
           <div>
             <h3 className="wizard-page-title">{getStep1Title()}</h3>
             <StartingNodeNavigation
               match={props.match}
-              nodeTypeName="category"
+              nodeTypeName={props.nodeType.key}
               onSelectCallback={onChosen}
             />
           </div>
         )}
 
-        {currentStepIndex === 1 && (
+        {currentStepIndex === 1 && props.nodeType !== undefined && (
           <div>
             <h3 className="wizard-page-title">{getStep2Title()}</h3>
             <NodeReadOnly
-              currentNodeType={props.currentNodeType}
+              currentNodeType={props.nodeType}
               inputNode={nodeChosen}
             />
           </div>
