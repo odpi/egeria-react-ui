@@ -93,7 +93,7 @@ const GlossaryAuthorTermsNavigation = (props) => {
   }
   const getSelectedNodeFromServer = (guid) => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-    const restURL = encodeURI(props.getTermsRestURL + "/" + guid);
+    const restURL = encodeURI(nodeType.url + "/" + guid);
     issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
   };
   const onSuccessfulGetSelectedNode = (json) => {
