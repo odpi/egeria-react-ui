@@ -49,8 +49,8 @@ export default function SearchWizard(props) {
         identificationContext.getRestURL("glossary-author"),
         selection
       );
+      setNodeType(myNodeType);
     }
-    setNodeType(myNodeType);
   };
   const onClickChosen = () => {
     setShowActualWizard(true);
@@ -105,7 +105,7 @@ export default function SearchWizard(props) {
         <div>
           {nodeType !== undefined &&
             (nodeType.key === "glossary" ||
-              (nodeType !== undefined && nodeType.key === "term") ||
+              nodeType.key === "term" ||
               nodeType.key === "category") && (
               <SearchNodeWizard
                 nodeType={nodeType}
