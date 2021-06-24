@@ -2,13 +2,13 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
 import ReactDOM from "react-dom";
-import { Button, Modal } from "carbon-components-react";
-import { IdentificationContext } from "../../../../contexts/IdentificationContext";
-import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import CreateRelationshipWizard from "./CreateRelationshipWizard";
-import getNodeType from "../properties/NodeTypes.js";
+import { Modal } from "carbon-components-react";
+import { IdentificationContext } from "../../../../../../contexts/IdentificationContext";
+import { InstancesContext } from "../../contexts/InstancesContext";
+import CreateRelationshipWizard from "../../../create/CreateRelationshipWizard";
+import getNodeType from "../../../properties/NodeTypes.js";
 
-export default function CreateRelationship() {
+export default function CreateRelationshipButtonWidget() {
   const identificationContext = useContext(IdentificationContext);
   const instancesContext = useContext(InstancesContext);
   const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
@@ -34,6 +34,9 @@ export default function CreateRelationship() {
       );
     }
     return currentNodeType;
+  };
+  const isDisabled = () => {
+    return instancesContext.focus.instance === null;
   };
 
   const onRelationshipCreated = (payLoad) => {
@@ -65,9 +68,9 @@ export default function CreateRelationship() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <Button disabled={createButtonDisabled} onClick={() => setOpen(true)}>
+          <button className="authoring-button" type="button" disabled={isDisabled()} onClick={() => setOpen(true)} >
             Create Relationship
-          </Button>
+          </button>
         )}
       >
         {({ open, setOpen }) => (

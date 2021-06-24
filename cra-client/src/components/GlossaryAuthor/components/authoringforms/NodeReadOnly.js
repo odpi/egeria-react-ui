@@ -17,6 +17,7 @@ import {
 } from "carbon-components-react";
 import { issueRestCreate } from "../RestCaller";
 import { issueRestUpdate } from "../RestCaller";
+import { issueRestDelete } from "../RestCaller";
 
 /**
  * Component to show the input page for a node that is about to be created or updated
@@ -153,6 +154,10 @@ export default function NodeReadOnly(props) {
       url = url + "/" + body.systemAttributes.guid;
       console.log("issueUpdate " + url);
       issueRestUpdate(url, body, onSuccessfulRestCall, onErrorRestCall);
+    } else if (props.operation === "Delete") {
+      url = url + "/" + body.systemAttributes.guid;
+      console.log("issueDelete " + url);
+      issueRestDelete(url, onSuccessfulDeleteCall, onErrorRestCall);
     }
   };
   const onSuccessfulRestCall = (json) => {
@@ -166,6 +171,12 @@ export default function NodeReadOnly(props) {
     } else {
       onErrorGet("Error did not get a node from the server");
     }
+  };
+  const onSuccessfulDeleteCall = (json) => {
+    setRestCallInProgress(false);
+    console.log("onSuccessfulDeleteCall for node");
+    // as we do not get the node back in the response - return the supplied node. 
+    props.onComplete(props.inputNode);
   };
   const onErrorRestCall = (msg) => {
     setRestCallInProgress(false);

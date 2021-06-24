@@ -5,7 +5,7 @@ import React, { useContext, useState, useRef }   from "react";
 
 import PropTypes                                 from "prop-types";
 
-import { IdentificationContext }                    from "../../../../../../contexts/IdentificationContext";
+import { IdentificationContext }                 from "../../../../../../contexts/IdentificationContext";
 
 import { InstancesContext }                      from "../../contexts/InstancesContext";
 
@@ -15,13 +15,16 @@ import TraversalResultHandler                    from "./TraversalResultHandler"
 
 import HistoryResultHandler                      from "./HistoryResultHandler";
 
+import SearchNodeButtonWidget                    from "./SearchNodeButtonWidget";
+
 import "../../glove.scss";
+
 import { issueRestGet } from "../../../RestCaller";
 
 
 export default function GraphControls(props) {
 
-  const identificationContext = useContext(IdentificationContext);
+  const identificationContext   = useContext(IdentificationContext);
   const instancesContext        = useContext(InstancesContext);
 
   const interactionContext      = useContext(InteractionContext);
@@ -297,25 +300,26 @@ export default function GraphControls(props) {
   return (
     
     <div className='bottom-margin'>
-        <p className="descriptive-text">
+        {/* <p className="descriptive-text">
           Traversal count : {instancesContext.getLatestActiveGenId()}
-        </p>
-        <button className="graph-control-button"
+        </p> */}
+      <div className="authoring-button" type="button" 
           onClick = { () => preTraversal() }  >
-          Explore
-        </button>
-        <button className="graph-control-button"
+          Explore Canvas
+        </div>
+        <div className="authoring-button" type="button" 
           onClick = { () => instancesContext.removeGen() }  >
-          Undo
-        </button>
-        <button className="graph-control-button"
+          Undo Explore
+        </div>
+        <div className="authoring-button" type="button" 
           onClick = { () => instancesContext.clear() }  >
-          Clear
-        </button>
-        <button className="graph-control-button" 
+          Clear Canvas
+        </div>
+        <div className="authoring-button" type="button" 
           onClick = { () => getHistory() }  >
-          History
-        </button>
+          Exploration History
+        </div>
+        <SearchNodeButtonWidget />
 
         <TraversalResultHandler status                = { status }
                                 //spec                  = { traversalSpecification }

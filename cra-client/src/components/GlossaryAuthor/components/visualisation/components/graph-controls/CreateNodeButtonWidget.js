@@ -2,16 +2,16 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useContext } from "react";
 import ReactDOM from "react-dom";
-import { InstancesContext } from "../visualisation/contexts/InstancesContext";
-import SearchWizard from "./SearchWizard";
+import { InstancesContext } from "../../contexts/InstancesContext";
+import CreateNodeWizard from "../../../create/CreateNodeWizard";
 import { Button, Modal } from "carbon-components-react";
 // import Info16 from "@carbon/icons-react/lib/information/16";
 
-export default function SearchNodeButtonWidget() {
-  console.log("searchNodeButtonWidget");
+export default function CreateNodeButtonWidget() {
+  console.log("CreateNodeButtonWidget");
   const instancesContext = useContext(InstancesContext);
 
-  const onNodeChosen = (payLoad) => {
+  const onNodeCreated = (payLoad) => {
     instancesContext.addNodeInstance(payLoad.node);
   };
 
@@ -37,18 +37,20 @@ export default function SearchNodeButtonWidget() {
     <div>
       <ModalStateManager
         renderLauncher={({ setOpen }) => (
-          <Button onClick={() => setOpen(true)}>Show a Node</Button>
+          <button className="authoring-button" type="button" onClick={() => setOpen(true)} >
+            Create Node
+          </button>
         )}
       >
         {({ open, setOpen }) => (
           <Modal
-            modalHeading="Add Node to canvas"
+            modalHeading="Create Node"
             open={open}
             passiveModal={true}
             onRequestClose={() => setOpen(false)}
           >
-            <SearchWizard
-              onChosen={onNodeChosen}
+            <CreateNodeWizard
+              onCreated={onNodeCreated}
               onModalContentRequestedClose={() => setOpen(false)}
             />
           </Modal>
