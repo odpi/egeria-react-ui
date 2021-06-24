@@ -407,10 +407,10 @@ const InstancesContextProvider = (props) => {
   }
 
   /*
-   * prrocessRetrievedRelationship accepts an exprelationship, checks whether it is already known and if not,
+   * processRetrievedRelationship accepts an exprelationship, checks whether it is already known and if not,
    * creates a traversal to add the relationship to a new gen
    */
-  const prrocessRetrievedRelationship = useCallback(
+  const processRetrievedRelationship = useCallback(
     (relationship) => {
       const relationshipGUID = relationship.guid;
       const relationshipType = relationship.relationshipType;
@@ -806,7 +806,7 @@ const InstancesContextProvider = (props) => {
       console.log("Relationship Loaded " + relationship.name);
     }
     if (relationship) {
-      prrocessRetrievedRelationship(relationship);
+      processRetrievedRelationship(relationship);
       return;
     } else {
       onErrorLoadRelationship("Error did not get a node from the server");
