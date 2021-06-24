@@ -65,8 +65,7 @@ export default function RelationshipReadOnly(props) {
           prop !== "confidence" &&
           prop !== "confidentiality" &&
           prop !== "criticality" &&
-          prop !== "retention"  
-         
+          prop !== "retention"
         ) {
           console.log("Relationship readonly prop " + prop);
           let row = {};
@@ -80,9 +79,11 @@ export default function RelationshipReadOnly(props) {
           } else if (prop === "effectiveToTime") {
             row.attrName = "Effective until time ";
           } else {
-            for (var i = 0; i < attributes.length; i++) {
-              if (attributes[i].key === prop) {
-                row.attrName = attributes[i].label;
+            if (attributes !== undefined) {
+              for (var i = 0; i < attributes.length; i++) {
+                if (attributes[i].key === prop) {
+                  row.attrName = attributes[i].label;
+                }
               }
             }
           }
@@ -145,30 +146,39 @@ export default function RelationshipReadOnly(props) {
     // const relationshipTypeName = props.currentRelationshipType.name;
 
     const body = {
-      ...props.inputRelationship
+      ...props.inputRelationship,
     };
-
 
     // TODO consider moving this up to a relationship controller as per the CRUD pattern.
     // in the meantime this will be self contained.
     let url = props.currentRelationshipType.url;
     if (props.operation === "Create") {
       console.log("issueCreate " + url);
-      issueRestCreate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
-    } else   if (props.operation === "Update") {
-      url = url +"/" + body.systemAttributes.guid;
+      issueRestCreate(
+        url,
+        props.inputRelationship,
+        onSuccessfulRestCall,
+        onErrorRestCall
+      );
+    } else if (props.operation === "Update") {
+      url = url + "/" + body.systemAttributes.guid;
       console.log("issueUpdate " + url);
-      issueRestUpdate(url, props.inputRelationship, onSuccessfulRestCall, onErrorRestCall);
-    } else   if (props.operation === "Delete") {
-      url = url +"/" + body.systemAttributes.guid;
+      issueRestUpdate(
+        url,
+        props.inputRelationship,
+        onSuccessfulRestCall,
+        onErrorRestCall
+      );
+    } else if (props.operation === "Delete") {
+      url = url + "/" + body.systemAttributes.guid;
       console.log("issueDelete " + url);
-      issueRestDelete(url, onSuccessfulDeleteCall, onErrorRestCall);  
+      issueRestDelete(url, onSuccessfulDeleteCall, onErrorRestCall);
     }
   };
   const onSuccessfulDeleteCall = (json) => {
     setRestCallInProgress(false);
     console.log("onSuccessfulDeleteCall for relationship");
-    // as we do not get the relationship back in the response - return the supplied relationship. 
+    // as we do not get the relationship back in the response - return the supplied relationship.
     props.onComplete(props.inputRelationship);
   };
 
@@ -201,7 +211,7 @@ export default function RelationshipReadOnly(props) {
 
   return (
     <div>
-       {resultantRelationship === undefined && props.operation !== undefined && (
+      {resultantRelationship === undefined && props.operation !== undefined && (
         <div className="flex-row-container">
           <div className="bx--form-item">
             <button
@@ -295,7 +305,6 @@ export default function RelationshipReadOnly(props) {
           </AccordionItem>
         </Accordion>
       )}
-     
     </div>
   );
 }

@@ -157,7 +157,7 @@ export default function Diagram(props) {
       .attr("y",                 function(d) { return DiagramUtils.path_func(d, link_distance).midpoint.y; } )      
       .attr('text-anchor',       'middle')
       .text( function(d) { return d.label; } )
-      .on("click",                d => { linkClicked(d.id); })  // The link's id is the relationshipGUID
+      .on("click",                (e, d) => { linkClicked(d.id); })  // The link's id is the relationshipGUID
       .clone(true)
       .lower()
       .attr("stroke-linejoin",    "round")
@@ -172,7 +172,7 @@ export default function Diagram(props) {
        .attr('stroke',            egeria_primary_color_string)
        .attr('stroke-width',      '2px')
        .attr("marker-end",        function(d) { return (d.source===d.target)?"none":"url(#end)";})  // No arrow if link reflexive
-       .on("click",               d => { linkClicked(d.id); })  // The link's id is the relationshipGUID
+       .on("click",               (e, d) => { linkClicked(d.id); })  // The link's id is the relationshipGUID
        .lower()
        ;
 

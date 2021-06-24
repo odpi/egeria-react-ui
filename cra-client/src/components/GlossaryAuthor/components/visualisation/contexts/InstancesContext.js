@@ -864,7 +864,7 @@ const InstancesContextProvider = (props) => {
        * If the Relationship is the current focus - deselect it.
        */
 
-      if (relationshipGUID === focus.instanceGUID) {
+      if (relationshipGUID === undefined) {
         clearFocusInstance();
       } else {
         /*
