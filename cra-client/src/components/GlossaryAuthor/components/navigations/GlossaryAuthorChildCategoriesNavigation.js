@@ -175,9 +175,11 @@ const GlossaryAuthorChildCategoriesNavigation = (props) => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
 
 
-    // this rest URL might be for category children of a category or category childen of a glossary
+    // this rest URL might be for category children of a category or category children of a glossary
 
-    const restURL = encodeURI(props.getCategoriesRestURL + "/" + guid);
+    // props.getCategoriesRestURL is the categories rest URL of the form .../categories/parentGuid/categories
+    // we do not need this form of the url - only /categories/selectedGuid
+    const restURL = encodeURI(nodeType.url + "/" + guid);
     issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
   };
   const onSuccessfulGetSelectedNode = (json) => {
