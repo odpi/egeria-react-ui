@@ -28,19 +28,22 @@ export default function RelationshipInput(props) {
       let attributes = props.currentRelationshipType.attributes;
       if (props.inputRelationship) {
         // now  scan through the props.inputRelationship properties and add in any values there.
-        for (let i = 0; i < attributes.length; i++) {
-          const attributeKey = attributes[i].key;
-          if (attributeKey !== "description") {   // dont let the user update the description
-            const attributeValue = props.inputRelationship[attributeKey];
-            let attributesWithValuesElement = attributes[i];
-            if (attributeValue !== undefined) {
-              attributesWithValuesElement.value = attributeValue.value;
-              attributesWithValuesElement.invalid = attributeValue.invalid;
-              attributesWithValuesElement.invalidText =
-                attributeValue.invalidText;
+        if (attributes !== undefined) {
+          for (let i = 0; i < attributes.length; i++) {
+            const attributeKey = attributes[i].key;
+            if (attributeKey !== "description") {
+              // dont let the user update the description
+              const attributeValue = props.inputRelationship[attributeKey];
+              let attributesWithValuesElement = attributes[i];
+              if (attributeValue !== undefined) {
+                attributesWithValuesElement.value = attributeValue.value;
+                attributesWithValuesElement.invalid = attributeValue.invalid;
+                attributesWithValuesElement.invalidText =
+                  attributeValue.invalidText;
+              }
+              attributesWithValuesElement.id = attributeKey;
+              attributesWithValues.push(attributesWithValuesElement);
             }
-            attributesWithValuesElement.id = attributeKey;
-            attributesWithValues.push(attributesWithValuesElement);
           }
         }
         setCurrentAttributes(attributesWithValues);

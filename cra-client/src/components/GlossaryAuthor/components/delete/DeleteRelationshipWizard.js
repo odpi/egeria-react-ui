@@ -21,14 +21,9 @@ import { useHistory } from "react-router-dom";
  */
 export default function DeleteRelationshipWizard(props) {
   const identificationContext = useContext(IdentificationContext);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [relationshipDeleted, setRelationshipDeleted] = useState();
   // this will be used for the rest body
   const [relationshipToDelete, setRelationshipToDelete] = useState();
-
-  useEffect(() => {
-    deleteUserInputFromRelationship(props.currentRelationship);
-  }, [props.currentRelationship]);
   
   useEffect(() => {
     setRelationshipToDelete(props.currentRelationship);

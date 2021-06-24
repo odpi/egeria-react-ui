@@ -20,8 +20,6 @@ import getNodeType from "../properties/NodeTypes.js";
  * is followed by a page in which relationship proeerties can bespecified. Finally there is a confirmation screen,
  *  where the user can confirm the values that will be used to chosen the Relationship.
  *
- * This component drives the RelationshipInput component, which displays an input screen for the relationship properties. There are callbacks to the wizard
- * when the user has finished with entering creation properties.
  * This component then drives RelationshipReadOnly which displays the confirmation screen, issue the chosen and then shows the results
  * of the chosen.
  *

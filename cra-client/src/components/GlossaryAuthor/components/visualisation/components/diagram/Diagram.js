@@ -163,7 +163,7 @@ export default function Diagram(props) {
       .text(function (d) {
         return d.label;
       })
-      .on("click", (d) => {
+      .on("click", (e, d) => {
         linkClicked(d.id);
       }) // The link's id is the relationshipGUID
       .clone(true)
@@ -185,7 +185,7 @@ export default function Diagram(props) {
       .attr("marker-end", function (d) {
         return d.source === d.target ? "none" : "url(#end)";
       }) // No arrow if link reflexive
-      .on("click", (d) => {
+      .on("click", (e, d) => {
         linkClicked(d.id);
       }) // The link's id is the relationshipGUID
       .lower();
