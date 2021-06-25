@@ -23,7 +23,7 @@ import { issueRestDelete } from "../RestCaller";
  * Component to show the input page for a node that is about to be created or updated
  *
  * @param props.currentNodeType This is the current NodeType. The NodeType is a structure detailing the attribute names and name of a Node.
- * @param operation Create or Update. If not specified then just display the a readonly node with no button 
+ * @param operation Create or Update. If not specified then just display the a readonly node with no button
  * @returns
  */
 export default function NodeReadOnly(props) {
@@ -75,9 +75,11 @@ export default function NodeReadOnly(props) {
           } else if (prop === "effectiveToTime") {
             row.attrName = "Effective until time ";
           } else {
-            for (var i = 0; i < attributes.length; i++) {
-              if (attributes[i].key === prop) {
-                row.attrName = attributes[i].label;
+            if (attributes !== undefined) {
+              for (var i = 0; i < attributes.length; i++) {
+                if (attributes[i].key === prop) {
+                  row.attrName = attributes[i].label;
+                }
               }
             }
           }
@@ -175,7 +177,7 @@ export default function NodeReadOnly(props) {
   const onSuccessfulDeleteCall = (json) => {
     setRestCallInProgress(false);
     console.log("onSuccessfulDeleteCall for node");
-    // as we do not get the node back in the response - return the supplied node. 
+    // as we do not get the node back in the response - return the supplied node.
     props.onComplete(props.inputNode);
   };
   const onErrorRestCall = (msg) => {
@@ -216,39 +218,39 @@ export default function NodeReadOnly(props) {
         />
       )}
       {restCallInProgress === false && (
-          <DataTable
-            isSortable
-            rows={getTableAttrRowData()}
-            headers={attributeTableHeaderData}
-            render={({ rows, headers, getHeaderProps }) => (
-              <TableContainer>
-                <Table size="normal">
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader
-                          key={header.key}
-                          {...getHeaderProps({ header })}
-                        >
-                          {header.header}
-                        </TableHeader>
+        <DataTable
+          isSortable
+          rows={getTableAttrRowData()}
+          headers={attributeTableHeaderData}
+          render={({ rows, headers, getHeaderProps }) => (
+            <TableContainer>
+              <Table size="normal">
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader
+                        key={header.key}
+                        {...getHeaderProps({ header })}
+                      >
+                        {header.header}
+                      </TableHeader>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.cells.map((cell) => (
-                          <TableCell key={cell.id}>{cell.value}</TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          />
-        )}
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        />
+      )}
       {getSystemDataRowData() !== [] && (
         <Accordion>
           <AccordionItem title="System Attributes">
