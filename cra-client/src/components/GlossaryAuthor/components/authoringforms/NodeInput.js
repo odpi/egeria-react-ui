@@ -29,18 +29,20 @@ export default function NodeInput(props) {
       let attributes = props.currentNodeType.attributes;
       if (props.inputNode) {
         // now  scan through the props.inputNode properties and add in any values there.
-        for (let i = 0; i < attributes.length; i++) {
-          const attributeKey = attributes[i].key;
-          const attributeValue = props.inputNode[attributeKey];
-          let attributesWithValuesElement = attributes[i];
-          if (attributeValue !== undefined) {
-            attributesWithValuesElement.value = attributeValue.value;
-            attributesWithValuesElement.invalid = attributeValue.invalid;
-            attributesWithValuesElement.invalidText =
-              attributeValue.invalidText;
+        if (attributes !== undefined) {
+          for (let i = 0; i < attributes.length; i++) {
+            const attributeKey = attributes[i].key;
+            const attributeValue = props.inputNode[attributeKey];
+            let attributesWithValuesElement = attributes[i];
+            if (attributeValue !== undefined) {
+              attributesWithValuesElement.value = attributeValue.value;
+              attributesWithValuesElement.invalid = attributeValue.invalid;
+              attributesWithValuesElement.invalidText =
+                attributeValue.invalidText;
+            }
+            attributesWithValuesElement.id = attributeKey;
+            attributesWithValues.push(attributesWithValuesElement);
           }
-          attributesWithValuesElement.id = attributeKey;
-          attributesWithValues.push(attributesWithValuesElement);
         }
         setCurrentAttributes(attributesWithValues);
         // pickup the effectivity
@@ -52,11 +54,13 @@ export default function NodeInput(props) {
         }
       } else {
         let attributesWithIds = [];
-        for (let i = 0; i < attributes.length; i++) {
-          let attribute = attributes[i];
-          const attributeKey = attribute.key;
-          attribute.id = attributeKey;
-          attributesWithIds.push(attribute);
+        if (attributes !== undefined) {
+          for (let i = 0; i < attributes.length; i++) {
+            let attribute = attributes[i];
+            const attributeKey = attribute.key;
+            attribute.id = attributeKey;
+            attributesWithIds.push(attribute);
+          }
         }
         setCurrentAttributes(attributesWithIds);
       }
