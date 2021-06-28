@@ -47,7 +47,7 @@ const LocalNodeCard = (props) => {
   return (
     <article className="node-card bx--col-md-4 bx--col-lg-4 bx--col-xlg-3 bx--offset-xlg-1">
       <div className="node-card-section__heading">
-        <h4>{props.heading}</h4>
+        <h4 className="node-card-header">{props.heading}</h4>
         <input type="checkbox" checked={props.isSelected} onChange={onChange} />
       </div>
       <div style={{ display: "none" }}>{props.guid}</div>
