@@ -84,7 +84,3 @@ Glove is a visualisation that can be displayed when there is a selected node, it
 - add spine object views
 - add collaboration authoring and viewing
 - start with a context from the community profile.   
-
-----
-License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
-Copyright Contributors to the ODPi Egeria project.

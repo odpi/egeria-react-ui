@@ -6,8 +6,3 @@ These are user interface capabilities allowing particular personas to work with 
 - [GlossaryAuthor](./GlossaryAuthor/GlossaryAuthorGuide.md): allowing a Glossary Author persona to create, update and delete Glossary content.   
 
 The expectation is that more solutions will be developed by the community. 
-
-----
-License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
-Copyright Contributors to the ODPi Egeria project.
-

@@ -278,7 +278,3 @@ document.
 Rex uses a styled set of colors, so it can be re-themed. The important colors are defined as CSS variables in the
 shared-styles.js file. They are called --egeria-primary-color and --egeria-secondary-color.
 By setting the egeria-primary-color you can achieve different themes.
-
-----
-License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
-Copyright Contributors to the ODPi Egeria project.
