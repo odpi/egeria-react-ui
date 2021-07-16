@@ -107,6 +107,3 @@ For glossary author use user 'faithbroker' and password 'admin'.
 ## 5. SSL configuration
 
 By default the Egeria React UI uses a truststore.p12 and keystore.p12 files for ssl. The p12 files are copies of files 'https://github.com/odpi/egeria/blob/master/keystore.p12' and 'https://github.com/odpi/egeria/blob/master/truststore.p12', which are the definitive sources of these files. The keystore and truststore files allow Egeria to run simply in a demo/development; this is not appropriate for production, which should be appropriately secured.     
-
-
---8<-- "snippets/abbr.md"
