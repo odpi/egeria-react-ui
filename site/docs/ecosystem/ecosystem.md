@@ -9,8 +9,3 @@ Egeria ecosystems, consist of platforms, on which servers run; these servers run
 - Server Author: allowing a user to configure a server. This is work in progress.
 - Dino: allowing a user to see and work with Egeria platforms and servers operationally.    
 
-
-----
-License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
-Copyright Contributors to the ODPi Egeria project.
-

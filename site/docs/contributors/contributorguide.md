@@ -58,5 +58,3 @@ This is the client code including the javascript. the cra - stands for Create Re
  * This is still work in progress. For example if the session times out you will need to go to the UI URL again manually.
  * Contact us via Slack on odpi.slack.com to get additional guidance.
 
-
---8<-- "snippets/abbr.md"
