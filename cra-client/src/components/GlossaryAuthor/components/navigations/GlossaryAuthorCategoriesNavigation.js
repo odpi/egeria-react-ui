@@ -37,7 +37,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
   console.log("GlossaryAuthorCategoriesNavigation " + props);
 
   const nodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "category");
-  // issue a new rest call to get children if the user has shanged the state of the ui.
+  // issue a new rest call to get children if the user has changed the state of the ui.
   useEffect(() => {
     getChildren();
   }, [selectedNodeGuid, onlyTop, pageSize, pageNumber]);
@@ -48,12 +48,11 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
   const getChildren = () => {
     // encode the URI. Be aware the more recent RFC3986 for URLs makes use of square brackets which are reserved (for IPv6)
-
-
-    // this rest URL might be for category children of a category or category childen of a glossary
-
-    const restURL = encodeURI(props.getCategoriesRestURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
-    issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
+    // this rest URL is for category children of a glossary
+   if (props.getCategoriesRestURL !== undefined ) {
+      const restURL = encodeURI(props.getCategoriesRestURL + "?onlyTop=" + onlyTop + "&pageSize=" + (pageSize+1) + "&startingFrom="+((pageNumber-1)*pageSize));
+      issueRestGet(restURL, onSuccessfulGetChildren, onErrorGetChildren);
+   }
   };
 
   const getSelectedNodeFromServer = (guid) => {
@@ -62,7 +61,7 @@ const GlossaryAuthorCategoriesNavigation = (props) => {
 
     // this rest URL might be for category children of a category or category childen of a glossary
 
-    const restURL = encodeURI(props.getCategoriesRestURL + "/" + guid);
+    const restURL = nodeType.url + "/" + guid;
     issueRestGet(restURL, onSuccessfulGetSelectedNode, onErrorGetSelectedNode);
   };
 
