@@ -15,7 +15,7 @@ import TypeExplorer from "./components/TypeExplorer/TypeExplorer";
 import Dino from "./components/Dino/Dino";
 import ServerAuthor from "./components/ServerAuthor/ServerAuthor";
 import { IdentificationContext } from "./contexts/IdentificationContext";
-import ServerAuthorContext from "./contexts/ServerAuthorContext";
+
 
 import {
   Header,
@@ -180,9 +180,7 @@ export default function Frame() {
                     <TypeExplorer />
                   </Route>
                   <Route path={serverUrl}>
-                    <ServerAuthorContext>
                       <ServerAuthor />
-                    </ServerAuthorContext>
                   </Route>
                   <Route path={dinoUrl}>
                     <Dino />

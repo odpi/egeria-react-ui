@@ -11,7 +11,7 @@ import {
   Subtract16,
 } from "@carbon/icons-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function RegisterCohorts() {
   

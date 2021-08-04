@@ -6,7 +6,7 @@ import {
   Checkbox,
 } from "carbon-components-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 import auditLogDestinations from "./defaults/auditLogDestinations";
 import auditLogSeverities from "./defaults/auditLogSeverities";
 

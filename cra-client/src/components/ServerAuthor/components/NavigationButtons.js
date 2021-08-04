@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import {
   Button
 } from "carbon-components-react";
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function NavigationButtons({ handlePreviousStep, handleNextStep }) {
 

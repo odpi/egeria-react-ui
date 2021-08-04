@@ -5,14 +5,14 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import PropTypes from "prop-types";
 import axios from "axios";
 
-import { IdentificationContext } from "./IdentificationContext";
+import { IdentificationContext } from "../../../contexts/IdentificationContext";
 
-import accessServices from "../components/ServerAuthor/defaults/accessServices";
-import serverTypes from "../components/ServerAuthor/defaults/serverTypes";
-import viewServices from "../components/ServerAuthor/defaults/viewServices";
-import discoveryEngines from "../components/ServerAuthor/defaults/discoveryEngines";
-import stewardshipEngines from "../components/ServerAuthor/defaults/stewardshipEngines";
-import integrationServices from "../components/ServerAuthor/defaults/integrationServices";
+import accessServices from "../components/defaults/accessServices";
+import serverTypes from "../components/defaults/serverTypes";
+import viewServices from "../components/defaults/viewServices";
+import discoveryEngines from "../components/defaults/discoveryEngines";
+import stewardshipEngines from "../components/defaults/stewardshipEngines";
+import integrationServices from "../components/defaults/integrationServices";
 
 export const ServerAuthorContext = createContext();
 export const ServerAuthorContextConsumer = ServerAuthorContext.Consumer;

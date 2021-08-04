@@ -12,8 +12,8 @@ import {
   MisuseOutline16,
 } from "@carbon/icons-react";
 import axios from "axios";
-import { IdentificationContext } from "../../contexts/IdentificationContext";
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { IdentificationContext } from "../../../contexts/IdentificationContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function KnownServers() {
 

@@ -24,8 +24,8 @@ import {
 } from "@carbon/icons-react";
 import JSONPretty from 'react-json-pretty';
 import axios from "axios";
-import { IdentificationContext } from "../../contexts/IdentificationContext";
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { IdentificationContext } from "../../../contexts/IdentificationContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 import './serverConfig.scss';
 
 export default function ConfigPreview({ options }) {

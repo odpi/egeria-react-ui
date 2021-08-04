@@ -7,7 +7,7 @@ import {
   SelectableTile,
 } from "carbon-components-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureAccessServices() {
 
