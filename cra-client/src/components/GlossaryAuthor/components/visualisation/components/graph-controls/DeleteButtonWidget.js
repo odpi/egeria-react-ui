@@ -13,7 +13,6 @@ import ReactDOM from "react-dom";
 import DeleteWizard from "../../../delete/DeleteWizard";
 
 import { Modal, ProgressStep } from "carbon-components-react";
-import { propTypes } from "react-markdown";
 
 export default function DeleteButtonWidget() {
   console.log("DeleteButtonWidget");
@@ -23,10 +22,28 @@ export default function DeleteButtonWidget() {
   const instancesContext = useContext(InstancesContext);
 
   const isDisabled = () => {
-    let isDisabled = true; 
-    const anchorGUID = instancesContext.getAnchorNodeGUID()
-    if  (instancesContext.focus.instance !== null && instancesContext.focus.instance.systemAttributes.guid !== anchorGUID) {
-      isDisabled = false;
+    let isDisabled = false;
+    if (instancesContext.focus.instance === null) {
+      isDisabled = true;
+    } else {
+      const focusRelationship = instancesContext.getFocusRelationship();
+      if (focusRelationship) {
+        const focusRelationshipName = focusRelationship.name;
+        if (
+          focusRelationshipName === "TermAnchor" ||
+          focusRelationshipName === "CategoryAnchor"
+        ) {
+          isDisabled = true;
+        }
+      } else {
+        // do not allow delete of anchor node.
+        const anchorGUID = instancesContext.getAnchorNodeGUID();
+        if (
+          instancesContext.focus.instance.systemAttributes.guid === anchorGUID
+        ) {
+          isDisabled = true;
+        }
+      }
     }
     return isDisabled;
   };
