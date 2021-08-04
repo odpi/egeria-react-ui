@@ -14,7 +14,7 @@ import ParentChild32 from "../../../../images/carbon/Egeria_parent_child_32";
 import GlossaryImage from "../../../../images/odpi/Egeria_glossary_32";
 
 import { LocalNodeCard, NodeCardSection } from "../NodeCard/NodeCard";
-import { issueRestGet, issueRestDelete } from "../RestCaller";
+import { issueRestGet, issueRestDelete } from "../../../common/RestCaller";
 import useDebounce from "../useDebounce";
 import NodeTableView from "../views/NodeTableView";
 import getNodeType from "../properties/NodeTypes.js";

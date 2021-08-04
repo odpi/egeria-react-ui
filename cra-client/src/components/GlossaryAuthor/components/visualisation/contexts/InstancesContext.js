@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
 import PropTypes from "prop-types";
-import { issueRestGet } from "../../RestCaller";
+import { issueRestGet } from "../../../../common/RestCaller";
 import getNodeType from "../../properties/NodeTypes";
 import getRelationshipType from "../../properties/RelationshipTypes";
 import { useHistory } from "react-router";

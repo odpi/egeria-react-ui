@@ -15,9 +15,9 @@ import {
   TableHeader,
   TableBody,
 } from "carbon-components-react";
-import { issueRestCreate } from "../RestCaller";
-import { issueRestUpdate } from "../RestCaller";
-import { issueRestDelete } from "../RestCaller";
+import { issueRestCreate } from "../../../common/RestCaller";
+import { issueRestUpdate } from "../../../common/RestCaller";
+import { issueRestDelete } from "../../../common/RestCaller";
 
 /**
  * Component to show the input page for a node that is about to be created or updated
