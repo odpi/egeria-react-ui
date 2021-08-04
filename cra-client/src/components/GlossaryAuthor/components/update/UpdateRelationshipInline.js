@@ -17,7 +17,7 @@ import {
   TableBody,
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
-import { issueRestUpdate } from "../RestCaller";
+import { issueRestUpdate } from "../../../common/RestCaller";
 
 export default function UpdateRelationshipInline(props) {
   const [updateBody, setUpdateBody] = useState({});

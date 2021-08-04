@@ -18,7 +18,7 @@ import {
   TableBody,
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
-import { issueRestUpdate, issueRestGet } from "../RestCaller";
+import { issueRestUpdate, issueRestGet } from "../../../common/RestCaller";
 import { useHistory } from "react-router-dom";
 
 export default function UpdateNode(props) {

@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
 import { Breadcrumb, BreadcrumbItem } from "carbon-components-react";
-import { useLocation, withRouter, useHistory, Link } from "react-router-dom";
+import { useLocation, withRouter, Link } from "react-router-dom";
 
 function GlossaryAuthorBreadCrumb(props) {
   console.log("GlossaryAuthorBreadCrumb ");
