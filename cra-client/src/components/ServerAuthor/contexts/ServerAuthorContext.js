@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
+// import axios from "axios";
 
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
 
@@ -19,7 +19,7 @@ export const ServerAuthorContextConsumer = ServerAuthorContext.Consumer;
 
 const ServerAuthorContextProvider = props => {
 
-  const { userId, serverName: tenantId, user } = useContext(IdentificationContext);
+  const { userId, serverName: serverName, user } = useContext(IdentificationContext);
 
   // Known Servers
   const [knownServers, setKnownServers] = useState([]);
@@ -90,8 +90,7 @@ const ServerAuthorContextProvider = props => {
 
   useEffect(() => {
     const fetchLists = async () => {
-      const serverList = await fetchKnownServers();
-      setKnownServers(serverList.map((v) => { return { id: v, serverName: v, status: "known" } }));
+      fetchKnownServers();
       const accessServices = await fetchAccessServices();
       setAvailableAccessServices(accessServices);
       setSelectedAccessServices(accessServices);
@@ -105,7 +104,7 @@ const ServerAuthorContextProvider = props => {
     try {
       const fetchAccessServicesResponse = await axios.get(fetchAccessServicesURL, {
         params: {
-          tenantId,
+          serverName,
         },
         timeout: 30000,
       });
@@ -125,29 +124,18 @@ const ServerAuthorContextProvider = props => {
     }
   }
 
-  const fetchKnownServers = async () => {
+  const fetchKnownServers = () => {
     console.log("called fetchKnownServers()");
-    const fetchKnownServersURL = `/open-metadata/platform-services/users/${userId}/server-platform/servers`;
-    try {
-      const fetchKnownServersResponse = await axios.get(fetchKnownServersURL, {
-        params: {
-          tenantId,
-        },
-        timeout: 30000,
-      });
-      if (fetchKnownServersResponse.data.relatedHTTPCode === 200) {
-        return fetchKnownServersResponse.data.serverList || [];
-      } else {
-        throw new Error(fetchKnownServersResponse.data.exceptionErrorMessage);
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error fetching known servers.", { error });
-      }
-      throw error;
-    }
+
+    const restURL = encodeURI("/servers/{serverName}/open-metadata/view-services/server-author/users/${userId}/platforms");
+    issueRestGet(restURL, onSuccessfulFetchPlatforms, onErrorFetchPlatforms);
+
+  }
+  const onSuccessfulFetchPlatforms = (json) => {
+
+  }
+  const onErrorFetchPlatforms = () => {
+      // error
   }
 
   const fetchServerConfig = async () => {
@@ -156,7 +144,7 @@ const ServerAuthorContextProvider = props => {
     try {
       const fetchServerConfigResponse = await axios.get(fetchServerConfigURL, {
         params: {
-          tenantId,
+          serverName,
         },
         timeout: 30000,
       });
@@ -221,7 +209,7 @@ const ServerAuthorContextProvider = props => {
     const registerCohortURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/cohorts/${cohortName}`;
     try {
       const registerCohortResponse = await axios.post(registerCohortURL, {
-        tenantId,
+        serverName,
       }, {
         timeout: 30000,
       });
@@ -246,7 +234,7 @@ const ServerAuthorContextProvider = props => {
     }
     try {
       const configureAccessServicesURLResponse = await axios.post(configureAccessServicesURL, {
-        tenantId,
+        serverName,
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -271,7 +259,7 @@ const ServerAuthorContextProvider = props => {
     const configureArchiveURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/open-metadata-archives/file`;
     try {
       const configureArchiveResponse = await axios.post(configureArchiveURL, {
-        tenantId,
+        serverName,
         config: archiveName
       }, {
         timeout: 30000,
@@ -295,7 +283,7 @@ const ServerAuthorContextProvider = props => {
       const configureRepositoryProxyConnectorURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/local-repository/mode/repository-proxy/details?connectorProvider=${className}`;
       try {
         const configureRepositoryProxyConnectorURLResponse = await axios.post(configureRepositoryProxyConnectorURL, {
-          tenantId,
+          serverName,
         }, {
           headers: {
             'Content-Type': 'application/json'
@@ -322,7 +310,7 @@ const ServerAuthorContextProvider = props => {
       const configureRepositoryEventMapperConnectorURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/local-repository/event-mapper-details?connectorProvider=${className}&eventSource=${eventSource}`;
       try {
         const configureRepositoryEventMapperConnectorURLResponse = await axios.post(configureRepositoryEventMapperConnectorURL, {
-          tenantId,
+          serverName,
         }, {
           headers: {
             'Content-Type': 'application/json'
@@ -351,7 +339,7 @@ const ServerAuthorContextProvider = props => {
     }
     try {
       const configureViewServicesURLResponse = await axios.post(configureViewServicesURL, {
-        tenantId,
+        serverName,
         config: {
           "class": "ViewServiceConfig",
           "omagserverPlatformRootURL": remoteServerURLRoot,
@@ -381,7 +369,7 @@ const ServerAuthorContextProvider = props => {
     const configureDiscoveryEngineClientURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/discovery-server/client-config`;
     try {
       const configureDiscoveryEngineClientURLResponse = await axios.post(configureDiscoveryEngineClientURL, {
-        tenantId,
+        serverName,
         config: {
           "class": "OMAGServerClientConfig",
           "omagserverPlatformRootURL": remoteServerURLRoot,
@@ -411,7 +399,7 @@ const ServerAuthorContextProvider = props => {
     const configureDiscoveryEnginesURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/discovery-server/set-discovery-engines`;
     try {
       const configureDiscoveryEnginesURLResponse = await axios.post(configureDiscoveryEnginesURL, {
-        tenantId,
+        serverName,
         config: engines,
       }, {
         headers: {
@@ -437,7 +425,7 @@ const ServerAuthorContextProvider = props => {
     const configureStewardshipEngineClientURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/stewardship-server/client-config`;
     try {
       const configureStewardshipEngineClientURLResponse = await axios.post(configureStewardshipEngineClientURL, {
-        tenantId,
+        serverName,
         config: {
           "class": "OMAGServerClientConfig",
           "omagserverPlatformRootURL": remoteServerURLRoot,
@@ -467,7 +455,7 @@ const ServerAuthorContextProvider = props => {
     const configureStewardshipEnginesURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/stewardship-server/set-stewardship-engines`;
     try {
       const configureStewardshipEnginesURLResponse = await axios.post(configureStewardshipEnginesURL, {
-        tenantId,
+        serverName,
         config: engines,
       }, {
         headers: {
@@ -543,7 +531,7 @@ const ServerAuthorContextProvider = props => {
     const setServerAttrURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/${attrEndpoint}=${value}`;
     try {
       const setServerAttrResponse = await axios.post(setServerAttrURL, {
-        tenantId,
+        serverName,
       }, {
         timeout: 30000,
       });
@@ -565,7 +553,7 @@ const ServerAuthorContextProvider = props => {
     try {
       const setServerConfigResponse = await axios.post(setServerConfigURL, {
         config: serverConfig,
-        tenantId,
+        serverName,
       }, {
         headers: {
           'Content-Type': 'application/json'

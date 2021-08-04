@@ -19,7 +19,8 @@ export default function KnownServers() {
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
   const {
-    knownServers, setKnownServers,
+    knownServers, 
+    setKnownServers,
     setNotificationType,
     setNotificationTitle,
     setNotificationSubtitle,
@@ -64,8 +65,7 @@ export default function KnownServers() {
       }
     }
     // Refresh Server List
-    const serverList = await fetchKnownServers();
-    setKnownServers(serverList.map((v) => { return { id: v, serverName: v, status: "known" } }));
+    fetchKnownServers();
   }
 
   const stopServers = (selectedRows, del = false) => async () => {
@@ -110,8 +110,7 @@ export default function KnownServers() {
       }
     }
     // Refresh Server List
-    const serverList = await fetchKnownServers();
-    setKnownServers(serverList.map((v) => { return { id: v, serverName: v, status: "known" } }));
+    fetchKnownServers();
   }
 
   const headers = [
