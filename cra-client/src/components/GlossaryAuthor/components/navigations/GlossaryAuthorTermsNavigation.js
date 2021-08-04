@@ -11,7 +11,7 @@ import Term32 from "../../../../images/odpi/Egeria_term_32";
 import { LocalNodeCard, NodeCardSection } from "../NodeCard/NodeCard";
 import { withRouter } from "react-router-dom";
 import getNodeType from "../properties/NodeTypes.js";
-import { issueRestGet, issueRestDelete } from "../RestCaller";
+import { issueRestGet, issueRestDelete } from "../../../common/RestCaller";
 import { Pagination, Toggle } from "carbon-components-react";
 import NodeTableView from "../views/NodeTableView";
 
