@@ -16,12 +16,14 @@ export default function CreateRelationshipButtonWidget() {
   const getCurrentNode = () => {
     let currentNode;
     const focusNode = instancesContext.getFocusNode();
+    let isDisabled = true;
+    // TODO allow for other node types.
     if (focusNode && focusNode.nodeType === "Term") {
       currentNode = focusNode;
-      setCreateButtonDisabled(false);
-    } else {
-      setCreateButtonDisabled(true);
-    }
+      isDisabled = false;
+    } 
+    setCreateButtonDisabled(isDisabled);
+    
     return currentNode;
   };
   const getCurrentNodeType = () => {
