@@ -96,19 +96,15 @@ export default function ServerAuthorWizard() {
     ["Select server type"]: "server-type-container",
     ["Basic configuration"]: "config-basic-container",
     ["Configure audit log destinations"]: "audit-log-container",
+    ["Configure local repository"]: "local-repository-container",
     ["Preview configuration and deploy instance"]: "config-preview-container",
     ["Select access services"]: "access-services-container",
     ["Register to a cohort"]: "cohort-container",
     ["Configure the open metadata archives"]: "archives-container",
     ["Configure the repository proxy connectors"]: "repository-proxy-container",
-    ["Configure the Open Metadata View Services (OMVS)"]:
-      "view-services-container",
-    ["Configure the discovery engine services"]: "discovery-engines-container",
-    // ["Configure the security sync services"]: "security-sync-container",
-    ["Configure the Open Metadata Integration Services (OMIS)"]:
-      "integration-daemon-container",
-    ["Configure the stewardship engine services"]:
-      "stewardship-engines-container",
+    ["Configure the Open Metadata View Services (OMVS)"]: "view-services-container",
+    ["Configure the Open Metadata Integration Services (OMIS)"]: "integration-daemon-container",
+
   };
 
   const showPreviousStep = () => {
@@ -1012,18 +1008,98 @@ export default function ServerAuthorWizard() {
     }
   };
 
+  const firstRowIds = ['omag-server'];
+  const secondRowIds = ['cohort-member', 'view-server', 'governance-server'];
+  const thirdRowLeftIds = ['metadata-server', 'metadata-access-point','repository-proxy', 'conformance-test-server' ];
+  const thirdRowRightIds = ['integration-daemon', 'engine-host', 'data-engine-proxy', 'open-lineage-server'];
+
+  // filter the types 
+  const firstRowServerTypes =  serverTypes.filter( i => firstRowIds.includes( i.id ) );
+  const secondRowServerTypes = serverTypes.filter( i => secondRowIds.includes( i.id ) );
+  const thirdRowLeftServerTypes = serverTypes.filter( i => thirdRowLeftIds.includes( i.id ) );
+  const thirdRowRightServerTypes = serverTypes.filter( i => thirdRowRightIds.includes( i.id ) );
+
   const serverTypeTiles = serverTypes.map((serverType, i) => {
     return (
-      <RadioTile
+        <RadioTile
         id={serverType.id}
         key={`server-type-${i}`}
         light={false}
         name={`server-serverType-${i}`}
         tabIndex={i}
         value={serverType.label}
+        className="server-type-card"
       >
         {serverType.label}
       </RadioTile>
+     
+    );
+  });
+
+  const firstRowServerTypeTiles = firstRowServerTypes.map((serverType, i) => {
+    return (
+        <RadioTile
+        id={serverType.id}
+        key={`server-type-${i}`}
+        light={false}
+        name={`server-serverType-${i}`}
+        tabIndex={i}
+        value={serverType.label}
+        className="server-type-card"
+      >
+        {serverType.label}
+      </RadioTile>
+     
+    );
+  });
+  const secondRowServerTypeTiles = secondRowServerTypes.map((serverType, i) => {
+    return (
+        <RadioTile
+        id={serverType.id}
+        key={`server-type-${i}`}
+        light={false}
+        name={`server-serverType-${i}`}
+        tabIndex={i}
+        value={serverType.label}
+        className="server-type-card"
+      >
+        {serverType.label}
+      </RadioTile>
+     
+    );
+  });
+  const thirdRowLeftServerTypeTiles = thirdRowLeftServerTypes.map((serverType, i) => {
+    return (
+ 
+        <RadioTile
+        id={serverType.id}
+        key={`server-type-${i}`}
+        light={false}
+        name={`server-serverType-${i}`}
+        tabIndex={i}
+        value={serverType.label}
+        className="server-type-card"
+      >
+        {serverType.label}
+      </RadioTile>
+     
+    );
+  });
+  const thirdRowRightServerTypeTiles = thirdRowRightServerTypes.map((serverType, i) => {
+    return (
+ 
+        <RadioTile
+        id={serverType.id}
+        key={`server-type-${i}`}
+        light={false}
+        name={`server-serverType-${i}`}
+        tabIndex={i}
+        value={serverType.label}
+        className="server-type-card"
+      >
+        {serverType.label}
+      </RadioTile>
+     
     );
   });
 
@@ -1037,27 +1113,30 @@ export default function ServerAuthorWizard() {
           lg={{ span: 16 }}
         >
           <h1>All OMAG Servers</h1>
-          <p style={{ marginBottom: "24px" }}>
-            Logged in as <CodeSnippet type="inline">{userId}</CodeSnippet>
-          </p>
-
+  
           <AllServers />
         </Column>
       </Row>
 
-      <Row id="server-config-container" style={{ display: "none" }}>
+      <Row id="server-config-container" className="flex-column" style={{ display: "none" }}>
         {/* Form Column */}
+       {/* Progress Indicator Column */}
+       <h1>Create New OMAG Server</h1>
 
+       <Row
+          id="config-progress-container"
+          sm={{ span: 4 }}
+          md={{ span: 2 }}
+          lg={{ span: 4 }}
+        >
+          <ConfigurationSteps />
+        </Row>
         <Column
           id="server-config-forms"
           sm={{ span: 4 }}
           md={{ span: 6 }}
           lg={{ span: 12 }}
         >
-          <h1>Create New OMAG Server</h1>
-          <p style={{ marginBottom: "24px" }}>
-            Logged in as <CodeSnippet type="inline">{userId}</CodeSnippet>
-          </p>
 
           <div
             id="notification-container"
@@ -1074,18 +1153,23 @@ export default function ServerAuthorWizard() {
           </div>
 
           <div id="server-type-container" className="hideable">
+          <NavigationButtons handleNextStep={handleServerTypeSelection} />
             <h4 style={{ textAlign: "left", marginBottom: "32px" }}>
               Select Server Type
             </h4>
             <TileGroup
               defaultSelected={serverTypes[0].label}
-              name="server-types"
+              name="server-types-omag-server"
               valueSelected=""
               onChange={(value) => setNewServerLocalServerType(value)}
+              // className="server-type-container"
             >
+            {/* <div className="server-type-container">
+              {thirdRowLeftServerTypeTiles}
+              </div> */}
               {serverTypeTiles}
             </TileGroup>
-            <NavigationButtons handleNextStep={handleServerTypeSelection} />
+           
           </div>
 
           <div
@@ -1093,14 +1177,15 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
+             <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleBasicConfig}
+            />
             <h4 style={{ textAlign: "left", marginBottom: "16px" }}>
               Basic Configuration
             </h4>
             <BasicConfig />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleBasicConfig}
-            />
+           
           </div>
 
           <div
@@ -1108,14 +1193,15 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
+              <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleAccessServicesConfig}
+            />
             <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
               Select Access Services
             </h4>
             <ConfigureAccessServices />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleAccessServicesConfig}
-            />
+          
           </div>
 
           <div
@@ -1139,14 +1225,15 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
+             <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleRegisterCohorts}
+            />
             <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
               Register to the following cohort(s):
             </h4>
             <RegisterCohorts />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleRegisterCohorts}
-            />
+           
           </div>
 
           <div
@@ -1154,15 +1241,16 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
+            <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleConfigureArchives}
+            />
             <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
               Configure the Open Metadata Archives that are loaded on server
               startup
             </h4>
             <ConfigureOMArchives />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleConfigureArchives}
-            />
+            
           </div>
 
           <div
@@ -1170,14 +1258,15 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
-              Configure the Repository Proxy Connectors
-            </h4>
-            <ConfigureRepositoryProxyConnectors />
             <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureRepositoryProxyConnectors}
             />
+            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+              Configure the Repository Proxy Connectors
+            </h4>
+            <ConfigureRepositoryProxyConnectors />
+            
           </div>
 
           <div
@@ -1185,29 +1274,15 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
+             <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleConfigureViewServices}
+            />
             <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
               Configure the Open Metadata View Services (OMVS)
             </h4>
             <ConfigureViewServices />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleConfigureViewServices}
-            />
-          </div>
-
-          <div
-            id="discovery-engines-container"
-            className="hideable"
-            style={{ display: "none" }}
-          >
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
-              Configure the discovery engine services
-            </h4>
-            <ConfigureDiscoveryEngines />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleConfigureDiscoveryEngines}
-            />
+           
           </div>
 
           <div
@@ -1215,29 +1290,15 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
+              <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={showNextStep}
+            />
             <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
               Configure the Open Metadata Integration Services (OMIS)
             </h4>
             <ConfigureIntegrationServices />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={showNextStep}
-            />
-          </div>
-
-          <div
-            id="stewardship-engines-container"
-            className="hideable"
-            style={{ display: "none" }}
-          >
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
-              Configure the stewardship engine services
-            </h4>
-            <ConfigureStewardshipEngines />
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleConfigureStewardshipEngines}
-            />
+          
           </div>
 
           <div
@@ -1275,16 +1336,6 @@ export default function ServerAuthorWizard() {
           </div>
         </Column>
 
-        {/* Progress Indicator Column */}
-
-        <Column
-          id="config-progress-container"
-          sm={{ span: 4 }}
-          md={{ span: 2 }}
-          lg={{ span: 4 }}
-        >
-          <ConfigurationSteps />
-        </Column>
       </Row>
     </Grid>
   );

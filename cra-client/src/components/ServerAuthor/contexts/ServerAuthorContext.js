@@ -450,14 +450,6 @@ const ServerAuthorContextProvider = props => {
         steps.splice(steps.length - 1, 0, "Register to a cohort");
         break;
 
-      case "Discovery Server":
-        steps.splice(steps.length - 1, 0, "Configure the discovery engine services");
-        break;
-
-      case "Stewardship Server":
-        steps.splice(steps.length - 1, 0, "Configure the stewardship engine services");
-        break;
-
       case "Integration Daemon":
         steps.splice(steps.length - 1, 0, "Configure the Open Metadata Integration Services (OMIS)");
         break;

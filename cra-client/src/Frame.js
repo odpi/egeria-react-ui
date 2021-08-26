@@ -106,6 +106,9 @@ export default function Frame() {
                 expanded={userOpen}
               >
                 <Switcher aria-label="">
+                  <SwitcherItem    style={{ textAlign: 'left' }}>
+                    Logged in User: {userId}
+                  </SwitcherItem>
                   <SwitcherItem
                     aria-label=""
                     style={{ textAlign: 'left' }}
