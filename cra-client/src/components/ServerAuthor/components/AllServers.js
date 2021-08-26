@@ -15,16 +15,16 @@ import axios from "axios";
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
-export default function KnownServers() {
+export default function AllServers() {
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
   const {
-    knownServers, 
-    setKnownServers,
+    allServers, 
+    setAllServers,
     setNotificationType,
     setNotificationTitle,
     setNotificationSubtitle,
-    fetchKnownServers,
+    fetchAllServers,
     showConfigForm,
   } = useContext(ServerAuthorContext);
 
@@ -65,7 +65,7 @@ export default function KnownServers() {
       }
     }
     // Refresh Server List
-    fetchKnownServers();
+    fetchAllServers();
   }
 
   const stopServers = (selectedRows, del = false) => async () => {
@@ -110,7 +110,7 @@ export default function KnownServers() {
       }
     }
     // Refresh Server List
-    fetchKnownServers();
+    retrieveAllServers();
   }
 
   const headers = [
@@ -119,8 +119,20 @@ export default function KnownServers() {
       header: "Server Name"
     },
     {
-      key: "status",
-      header: "Status"
+      key: "serverType",
+      header: "Server Type"
+    },
+    {
+      key: "platformName",
+      header: "Platform Name"
+    },
+    {
+      key: "platformStatus",
+      header: "Platform Status"
+    },
+    {
+      key: "serverStatus",
+      header: "Server Status"
     }
   ];
 
@@ -128,7 +140,7 @@ export default function KnownServers() {
 
     <div style={{ textAlign: 'left' }}>
 
-      <DataTable rows={knownServers} headers={headers} isSortable>
+      <DataTable rows={allServers} headers={headers} isSortable>
         {({
           rows,
           headers,
@@ -143,8 +155,8 @@ export default function KnownServers() {
           getTableContainerProps,
         }) => (
           <DataTable.TableContainer
-            title="Known OMAG Servers"
-            description="List of all of the known OMAG servers"
+            title="Existing OMAG Servers"
+            description="List of all of the existing OMAG servers"
             {...getTableContainerProps()}
           >
             <DataTable.TableToolbar {...getToolbarProps()}>

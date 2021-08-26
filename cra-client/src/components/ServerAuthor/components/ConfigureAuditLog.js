@@ -8,7 +8,6 @@ import {
 
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 import auditLogDestinations from "./defaults/auditLogDestinations";
-import auditLogSeverities from "./defaults/auditLogSeverities";
 
 export default function ConfigureAuditLog({ previousAction, nextAction }) {
 
@@ -17,6 +16,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
   }
 
   const {
+    supportedAuditLogSeverities,
     newServerLocalServerType,
     progressIndicatorIndex,
     serverConfigurationSteps
@@ -32,7 +32,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
     return {
       ...d,
       selected: d.id === "default",
-      severities: d.id === "default" ? [] : auditLogSeverities.map((s) => {
+      severities: d.id === "default" ? [] : supportedAuditLogSeverities.map((s) => {
         return {
           ...s,
           selected: true

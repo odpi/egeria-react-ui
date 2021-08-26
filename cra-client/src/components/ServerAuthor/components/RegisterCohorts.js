@@ -15,20 +15,40 @@ import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function RegisterCohorts() {
   
-  const { newServerCohorts, setNewServerCohorts, } = useContext(ServerAuthorContext);
+  const { newServerCohorts, setNewServerCohorts, registerCohort, unRegisterCohort } = useContext(ServerAuthorContext);
 
   const handleAddCohort = e => {
     const cohortName = document.getElementById("new-server-cohort-name").value;
     console.log("handleAddCohort() called", { cohortName });
     if (cohortName.length === 0) return;
+    registerCohort(cohortName, onSuccessfulRegisterCohort, onErrorRegisterCohort);
+  }
+  const onSuccessfulRegisterCohort = () => {
+    const cohortName = document.getElementById("new-server-cohort-name").value;
     setNewServerCohorts(newServerCohorts.concat(cohortName));
     document.getElementById("new-server-cohort-name").value = "";
   }
+  const onErrorRegisterCohort = (error) => {
+    alert("Error registering cohort");
+  }
+  const onSuccessfulUnRegisterCohort = () => {
+    const cohortName = document.activeElement.id.substring("cohort-remove-button-".length);
+    const cohortList = newServerCohorts.filter(e => e !== cohortName)
+    // const cohortList = newServerCohorts.filter((v, i) => { return i !== index });
+    setNewServerCohorts(cohortList);
+  }
+  const onErrorUnRegisterCohort = (error) => {
+    alert("Error unregistering cohort");
+  }
+
 
   const handleRemoveCohort = index => {
     console.log("handleRemoveCohort() called", { index });
-    const cohortList = newServerCohorts.filter((v, i) => { return i !== index });
-    setNewServerCohorts(cohortList);
+    const cohortName = newServerCohorts[index];
+
+    unRegisterCohort(cohortName, onSuccessfulUnRegisterCohort, onErrorUnRegisterCohort);
+    // const cohortList = newServerCohorts.filter((v, i) => { return i !== index });
+    // setNewServerCohorts(cohortList);
   }
 
   return (
@@ -45,6 +65,7 @@ export default function RegisterCohorts() {
               kind="tertiary"
               size="small"
               renderIcon={Subtract16}
+              id={`cohort-remove-button-${cohort}`}
               iconDescription="Remove"
               tooltipAlignment="start"
               tooltipPosition="right"

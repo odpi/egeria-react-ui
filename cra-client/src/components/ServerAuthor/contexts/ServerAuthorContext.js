@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-// import axios from "axios";
+import axios from "axios";
 
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
 
@@ -13,6 +13,7 @@ import viewServices from "../components/defaults/viewServices";
 import discoveryEngines from "../components/defaults/discoveryEngines";
 import stewardshipEngines from "../components/defaults/stewardshipEngines";
 import integrationServices from "../components/defaults/integrationServices";
+import { issueRestCreate, issueRestGet, issueRestDelete } from "../../common/RestCaller";
 
 export const ServerAuthorContext = createContext();
 export const ServerAuthorContextConsumer = ServerAuthorContext.Consumer;
@@ -21,8 +22,10 @@ const ServerAuthorContextProvider = props => {
 
   const { userId, serverName: serverName, user } = useContext(IdentificationContext);
 
-  // Known Servers
-  const [knownServers, setKnownServers] = useState([]);
+  // All Servers
+  const [allServers, setAllServers] = useState([]);
+  // supported audit log severities
+  const [supportedAuditLogSeverities, setSupportedAuditLogSeverities] = useState([]);
   // Basic Config
   const [newServerName, setNewServerName] = useState("");
   const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState("https://localhost:9443");
@@ -90,78 +93,68 @@ const ServerAuthorContextProvider = props => {
 
   useEffect(() => {
     const fetchLists = async () => {
-      fetchKnownServers();
-      const accessServices = await fetchAccessServices();
-      setAvailableAccessServices(accessServices);
-      setSelectedAccessServices(accessServices);
+      retrieveAllServers();
     }
     fetchLists();
   }, []);
 
+  const retrieveAllServers = () => {
+    console.log("called retrieveAllServers()");
 
-  const fetchAccessServices = async () => {
-    const fetchAccessServicesURL = `/open-metadata/platform-services/users/${userId}/server-platform/registered-services/access-services`;
-    try {
-      const fetchAccessServicesResponse = await axios.get(fetchAccessServicesURL, {
-        params: {
-          serverName,
-        },
-        timeout: 30000,
-      });
-      console.debug({fetchAccessServicesResponse});
-      if (fetchAccessServicesResponse.data.relatedHTTPCode === 200) {
-        return fetchAccessServicesResponse.data.services;
-      } else {
-        throw new Error("Error in fetchAccessServicesResponse");
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error fetching access services from platform", { error });
-      }
-      throw error;
-    }
-  }
-
-  const fetchKnownServers = () => {
-    console.log("called fetchKnownServers()");
-
-    const restURL = encodeURI("/servers/{serverName}/open-metadata/view-services/server-author/users/${userId}/platforms");
-    issueRestGet(restURL, onSuccessfulFetchPlatforms, onErrorFetchPlatforms);
+    const restURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/platforms");
+    issueRestGet(restURL, onSuccessfulFetchPlatforms, onErrorFetchPlatforms, "platforms");
 
   }
+
   const onSuccessfulFetchPlatforms = (json) => {
+    
+    console.log("Successfully fetched platforms = " + JSON.stringify(json));
+    const platforms = json.platforms;
+    let serverList = [];
+   
+    for (var i=0;i<platforms.length;i++) {
+      const platform = platforms[i];
+      for (var j=0;j < platform.storedServers.length; j++) {
+        let svr = {};
+        const storedServer =platforms[i].storedServers[j];
 
+        svr.serverType = storedServer.serverType; 
+        svr.platformName = platform.platformName;
+        svr.platformStatus = platform.platformStatus;
+        svr.serverName = storedServer.storedServerName;
+        svr.serverStatus = storedServer.serverStatus;
+        svr.id = i + "_" + j; // note that server name is not unique - as it can exist on multiple platforms - so should not be used as the id.
+        serverList.push(svr)
+      }
+    }
+    setAllServers(serverList);
+    const restURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId +"/servers/" + serverName + "/audit-log-destinations");
+    issueRestGet(restURL, onSuccessfulFetchAuditLogSeverities, onErrorFetchAuditLogSeverities, "severities");
   }
   const onErrorFetchPlatforms = () => {
       // error
+      setAllServers([]);
+      alert("Error getting all servers"); 
   }
+  const onErrorFetchAuditLogSeverities = () => {
+    // error
+    setSupportedAuditLogSeverities([]);
+    alert("Error getting audit log supported severities"); 
+  }
+  const  onSuccessfulFetchAuditLogSeverities = (json) => {
+    
+    console.log("Successfully fetched supported sudit log severities = " + JSON.stringify(json));
+    const severities = json.severities;
+    setSupportedAuditLogSeverities(severities);
 
-  const fetchServerConfig = async () => {
+  }
+  const fetchServerConfig = (onSuccessfulFetchServer, onErrorFetchServer ) => {
     console.log("called fetchServerConfig");
-    const fetchServerConfigURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/configuration`;
-    try {
-      const fetchServerConfigResponse = await axios.get(fetchServerConfigURL, {
-        params: {
-          serverName,
-        },
-        timeout: 30000,
-      });
-      console.debug({fetchServerConfigResponse});
-      if (fetchServerConfigResponse.data.relatedHTTPCode === 200) {
-        return fetchServerConfigResponse.data.omagserverConfig;
-      } else {
-        throw new Error("Error in fetchServerConfigResponse");
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error fetching config from platform", { error });
-      }
-      throw error;
-    }
+    const fetchServerConfigURL = 
+    encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/configuration");
+    
+   
+    issueRestGet(fetchServerConfigURL, onSuccessfulFetchServer, onErrorFetchServer, "omagServerConfig");
   }
 
   const generateBasicServerConfig = () => {
@@ -204,78 +197,27 @@ const ServerAuthorContextProvider = props => {
 
   }
 
-  const registerCohort = async (cohortName) => {
+  const registerCohort = (cohortName, onSuccessfulRegisterCohort, onErrorRegisterCohort) => {
     console.log("called registerCohort", { cohortName });
-    const registerCohortURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/cohorts/${cohortName}`;
-    try {
-      const registerCohortResponse = await axios.post(registerCohortURL, {
-        serverName,
-      }, {
-        timeout: 30000,
-      });
-      if (registerCohortResponse.data.relatedHTTPCode !== 200) {
-        throw new Error("Error in registerCohortResponse");
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error registering OMAG Server with cohort", { error });
-      }
-      throw error;
-    }
+
+    const registerCohortURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/cohorts/" + cohortName);
+    issueRestCreate(registerCohortURL, undefined, onSuccessfulRegisterCohort, onErrorRegisterCohort, "");
   }
 
-  const configureAccessServices = async (serviceURLMarker) => {
-    console.log("called configureAccessServices", { serviceURLMarker });
-    let configureAccessServicesURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/access-services`;
-    if (serviceURLMarker && serviceURLMarker !== "") {
-      configureAccessServicesURL += `/${serviceURLMarker}`;
-    }
-    try {
-      const configureAccessServicesURLResponse = await axios.post(configureAccessServicesURL, {
-        serverName,
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000,
-      });
-      if (configureAccessServicesURLResponse.data.relatedHTTPCode !== 200) {
-        throw new Error(configureAccessServicesURLResponse.data.exceptionErrorMessage);
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error configuring access service(s).", error.message);
-      }
-      throw error;
-    }
+
+  const unRegisterCohort = (cohortName, onSuccessfulUnRegisterCohort, onErrorUnRegisterCohort) => {
+    console.log("called unRegisterCohort", { cohortName });
+
+    const unRegisterCohortURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/cohorts/" + cohortName);
+    issueRestDelete(unRegisterCohortURL, onSuccessfulUnRegisterCohort, onErrorUnRegisterCohort);
   }
 
-  const configureArchiveFile = async (archiveName) => {
+  const configureArchiveFile = (archiveName, onSuccessfulConfigureArchiveFile, onErrorConfigureArchiveFile) => {
     console.log("called configureArchive", { archiveName });
-    const configureArchiveURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/open-metadata-archives/file`;
-    try {
-      const configureArchiveResponse = await axios.post(configureArchiveURL, {
-        serverName,
-        config: archiveName
-      }, {
-        timeout: 30000,
-      });
-      if (configureArchiveResponse.data.relatedHTTPCode !== 200) {
-        throw new Error("Error in configureArchiveResponse");
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error registering OMAG Server with cohort", { error });
-      }
-      throw error;
-    }
+    const configureArchiveURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/open-metadata-archives/file");
+    issueRestGet(configureArchiveURL, onSuccessfulConfigureArchiveFile, onErrorConfigureArchiveFile, "????");
   }
+
 
   const configureRepositoryProxyConnector = async (className) => {
     console.log("called configureRepositoryProxyConnector", { className });
@@ -548,35 +490,23 @@ const ServerAuthorContextProvider = props => {
     }
   }
 
-  const setServerConfig = async (serverConfig) => {
-    const setServerConfigURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/configuration`;
-    try {
-      const setServerConfigResponse = await axios.post(setServerConfigURL, {
-        config: serverConfig,
-        serverName,
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000,
-      });
-      if (setServerConfigResponse.data.relatedHTTPCode !== 200) {
-        throw new Error("Error in setServerConfigResponse");
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error updating configuration of OMAG Server", { error });
-      }
-      throw error;
-    }
+  const setServerConfig = (serverConfig) => {
+    const serverConfigURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/configuration");
+    issueRestCreate(serverConfigURL, serverConfig, onSuccessfulSetServer, onErrorSetServer, "omagserverConfig");
   }
+ const onSuccessfulSetServer = (json) =>{
+   const serverConfig = json.omagserverConfig;
+   setNewServerConfig(serverConfig);
+ }
+ const onErrorSetServer = (error) => {
+  alert("Error setting the server config"); 
+ }
 
-  const showConfigForm = () => {
+   
+ const showConfigForm = () => {
     document.getElementById("server-list-container").style.display = "none";
     document.getElementById("server-config-container").style.display = "flex";
-  }
+ }
 
   const hideConfigForm = () => {
     document.getElementById("server-list-container").style.display = "flex";
@@ -591,7 +521,8 @@ const ServerAuthorContextProvider = props => {
     <ServerAuthorContext.Provider
       value={{
         // States
-        knownServers, setKnownServers,
+        allServers, setAllServers,
+        supportedAuditLogSeverities,    // we do not need expose the set as it is only referenced in this context code.
         newServerName, setNewServerName,
         newServerLocalURLRoot, setNewServerLocalURLRoot,
         newServerLocalServerType, setNewServerLocalServerType,
@@ -644,12 +575,13 @@ const ServerAuthorContextProvider = props => {
         stewardshipEnginesFormStartRef,
         integrationServicesFormStartRef,
         // Functions
-        fetchAccessServices,
-        fetchKnownServers,
+  
+        retrieveAllServers,
         fetchServerConfig,
         generateBasicServerConfig,
-        configureAccessServices,
+        // configureAccessServices,
         registerCohort,
+        unRegisterCohort,
         configureArchiveFile,
         configureRepositoryProxyConnector,
         configureRepositoryEventMapperConnector,
