@@ -3,7 +3,6 @@
 
 import React, { useContext } from "react";
 import {
-  CodeSnippet,
   Column,
   Grid,
   InlineNotification,
@@ -24,13 +23,12 @@ import ConfigurationSteps from "./ConfigurationSteps";
 import NavigationButtons from "./NavigationButtons";
 import BasicConfig from "./BasicConfig";
 import ConfigureAccessServices from "./ConfigureAccessServices";
+import ConfigureLocalRepository from "./ConfigureLocalRepository";
 import ConfigureAuditLog from "./ConfigureAuditLog";
 import RegisterCohorts from "./RegisterCohorts";
 import ConfigureOMArchives from "./ConfigureOMArchives";
 import ConfigureRepositoryProxyConnectors from "./ConfigureRepositoryProxyConnectors";
 import ConfigureViewServices from "./ConfigureViewServices";
-import ConfigureDiscoveryEngines from "./ConfigureDiscoveryEngines";
-import ConfigureStewardshipEngines from "./ConfigureStewardshipEngines";
 import ConfigureIntegrationServices from "./ConfigureIntegrationServices";
 import ConfigPreview from "./ConfigPreview";
 
@@ -38,7 +36,6 @@ export default function ServerAuthorWizard() {
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
   console.log(useContext(ServerAuthorContext));
   const {
-    supportedAuditLogSeverities,
     newServerName,
     newServerLocalServerType,
     setNewServerLocalServerType,
@@ -46,7 +43,6 @@ export default function ServerAuthorWizard() {
     availableAccessServices,
     selectedAccessServices,
     newServerRepository,
-    newServerCohorts,
     newServerOMArchives,
     newServerProxyConnector,
     newServerEventMapperConnector,
@@ -77,8 +73,6 @@ export default function ServerAuthorWizard() {
     stewardshipEnginesFormStartRef,
     fetchServerConfig,
     generateBasicServerConfig,
-    registerCohort,
-    // configureAccessServices,
     configureArchiveFile,
     configureRepositoryProxyConnector,
     configureRepositoryEventMapperConnector,
@@ -96,8 +90,8 @@ export default function ServerAuthorWizard() {
     ["Select server type"]: "server-type-container",
     ["Basic configuration"]: "config-basic-container",
     ["Configure audit log destinations"]: "audit-log-container",
-    ["Configure local repository"]: "local-repository-container",
     ["Preview configuration and deploy instance"]: "config-preview-container",
+    ["Configure Local Repository"]: "local-repository-container",
     ["Select access services"]: "access-services-container",
     ["Register to a cohort"]: "cohort-container",
     ["Configure the open metadata archives"]: "archives-container",
@@ -319,6 +313,22 @@ export default function ServerAuthorWizard() {
     showNextStep();
     setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
+  // local repository 
+  const handleLocalRepositoryConfig = () => {
+      setLoadingText("Enabling local repository...");
+      document.getElementById("local-repository-container").style.display = "none";
+      document.getElementById("loading-container").style.display = "block";
+      // Enable Access Services
+      // try {
+        // if (selectedAccessServices.length === availableAccessServices.length) {
+        //   configureAccessServices();
+        // } else {
+        //   for (const service of selectedAccessServices) {
+        //     setLoadingText(`Enabling ${service} access service...`);
+        //     configureAccessServices(service);
+        //   }
+        // }
+    };
 
   // Access Services (optional)
   const handleAccessServicesConfig = () => {
@@ -384,9 +394,6 @@ export default function ServerAuthorWizard() {
     showNextStep();
     setProgressIndicatorIndex(progressIndicatorIndex + 1);
     document.getElementById("loading-container").style.display = "none";
-    document.getElementById("cohort-container").style.display = "block";
-    document.getElementById("notification-container").style.display = "block";
-  
   } 
   const onErrorFetchServer  = (error) => {
     console.error("Error fetching config", { error });
@@ -425,37 +432,7 @@ export default function ServerAuthorWizard() {
     setLoadingText("Registering cohort(s)...");
     document.getElementById("cohort-container").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
-    // Register Cohorts
-    // for (const cohortName of newServerCohorts) {
-    //   try {
-    //     setLoadingText(
-    //       `Registering the OMAG Server to the ${cohortName} cohort...`
-    //     );
-    //     await registerCohort(cohortName);
-    //   } catch (error) {
-    //     console.error(
-    //       `Error registering the OMAG Server to the ${cohortName} cohort`,
-    //       { error }
-    //     );
-    //     setNotificationType("error");
-    //     if (error.code && error.code === "ECONNABORTED") {
-    //       setNotificationTitle("Connection Error");
-    //       setNotificationSubtitle(
-    //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
-    //       );
-    //     } else {
-    //       setNotificationTitle("Configuration Error");
-    //       setNotificationSubtitle(
-    //         `Error registering the OMAG Server to the ${cohortName} cohort`
-    //       );
-    //     }
-    //     document.getElementById("loading-container").style.display = "none";
-    //     document.getElementById("cohort-container").style.display = "block";
-    //     document.getElementById("notification-container").style.display =
-    //       "block";
-    //     return;
-    //   }
-    // }
+   
     // Fetch Server Config
     setLoadingText("Fetching final stored server configuration...");
     fetchServerConfig(onSuccessfulFetchServer, onErrorFetchServer);
@@ -492,6 +469,7 @@ export default function ServerAuthorWizard() {
           );
         }
         document.getElementById("loading-container").style.display = "none";
+        document.getElementById("cohort-container").style.display = "none";
         document.getElementById("archives-container").style.display = "block";
         document.getElementById("notification-container").style.display =
           "block";
@@ -518,6 +496,7 @@ export default function ServerAuthorWizard() {
         setNotificationSubtitle(`Error fetching configuration for the server.`);
       }
       document.getElementById("loading-container").style.display = "none";
+      document.getElementById("cohort-container").style.display = "none";
       document.getElementById("archives-container").style.display = "block";
       document.getElementById("notification-container").style.display = "block";
     }
@@ -1186,6 +1165,22 @@ export default function ServerAuthorWizard() {
             </h4>
             <BasicConfig />
            
+          </div>
+
+          <div
+            id="local-repository-container"
+            className="hideable"
+            style={{ display: "none" }}
+          >
+              <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleAccessServicesConfig}
+            />
+            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+              Select Local Repository
+            </h4>
+            <ConfigureLocalRepository />
+          
           </div>
 
           <div

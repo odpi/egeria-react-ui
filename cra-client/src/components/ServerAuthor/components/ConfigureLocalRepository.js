@@ -3,19 +3,18 @@
 
 import React, { useContext } from "react";
 import {
-  Button,
-  SelectableTile,
+  TileGroup,
+  RadioTile
 } from "carbon-components-react";
 
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
-export default function ConfigureRepository() {
+export default function ConfigureLocalRepository() {
 
   const {
       newServerRepository, setNewServerRepository,
   } = useContext(ServerAuthorContext);
 
-  
 
   return (
 
