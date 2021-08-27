@@ -51,12 +51,6 @@ export default function ServerAuthorWizard() {
     selectedViewServices,
     newServerViewServiceRemoteServerURLRoot,
     newServerViewServiceRemoteServerName,
-    selectedDiscoveryEngines,
-    newServerDiscoveryEngineRemoteServerName,
-    newServerDiscoveryEngineRemoteServerURLRoot,
-    selectedStewardshipEngines,
-    newServerStewardshipEngineRemoteServerName,
-    newServerStewardshipEngineRemoteServerURLRoot,
     notificationType,
     setNotificationType,
     notificationTitle,
@@ -71,17 +65,17 @@ export default function ServerAuthorWizard() {
     basicConfigFormStartRef,
     discoveryEnginesFormStartRef,
     stewardshipEnginesFormStartRef,
+
+    // functions
+    cleanForNewServerType,
     fetchServerConfig,
     generateBasicServerConfig,
     configureArchiveFile,
     configureRepositoryProxyConnector,
     configureRepositoryEventMapperConnector,
     configureViewServices,
-    configureDiscoveryEngineClient,
-    configureDiscoveryEngines,
-    configureStewardshipEngineClient,
-    configureStewardshipEngines,
     serverConfigurationSteps,
+    
   } = useContext(ServerAuthorContext);
 
   // Navigation
@@ -125,12 +119,12 @@ export default function ServerAuthorWizard() {
       case "Basic configuration":
         basicConfigFormStartRef.current.focus();
         break;
-      case "Configure the discovery engine services":
-        discoveryEnginesFormStartRef.current.focus();
-        break;
-      case "Configure the stewardship engine services":
-        stewardshipEnginesFormStartRef.current.focus();
-        break;
+      // case "Configure the discovery engine services":
+      //   discoveryEnginesFormStartRef.current.focus();
+      //   break;
+      // case "Configure the stewardship engine services":
+      //   stewardshipEnginesFormStartRef.current.focus();
+      //   break;
     }
   };
 
@@ -144,6 +138,8 @@ export default function ServerAuthorWizard() {
 
   const handleServerTypeSelection = async (e) => {
     e.preventDefault();
+    // clear out the context.
+    cleanForNewServerType();
     showNextStep();
     setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
@@ -199,25 +195,25 @@ export default function ServerAuthorWizard() {
     setNewServerConfig(serverConfig);
     // Enable chosen repository
     if (newServerLocalServerType === "Metadata Server") {
-      setLoadingText("Enabling chosen local repository...");
-      const newServerName = serverConfig.localServerName;
-      const serverConfigURL = encodeURI(
-        "/servers/" +
-          tenantId +
-          "/server-author/users/" +
-          userId +
-          "/servers/" +
-          newServerName +
-          "/local-repository/mode/" +
-          newServerRepository
-      );
-      issueRestCreate(
-        serverConfigURL,
-        serverConfig,
-        onSuccessfulEnableRepository,
-        onErrorConfigureServer,
-        "omagServerConfig"
-      );
+      // setLoadingText("Enabling chosen local repository...");
+      // const newServerName = serverConfig.localServerName;
+      // const serverConfigURL = encodeURI(
+      //   "/servers/" +
+      //     tenantId +
+      //     "/server-author/users/" +
+      //     userId +
+      //     "/servers/" +
+      //     newServerName +
+      //     "/local-repository/mode/" +
+      //     newServerRepository
+      // );
+      // issueRestCreate(
+      //   serverConfigURL,
+      //   serverConfig,
+      //   onSuccessfulEnableRepository,
+      //   onErrorConfigureServer,
+      //   "omagServerConfig"
+      // );
     } else {
       // TODO handle the other server types
       alert(
@@ -318,6 +314,29 @@ export default function ServerAuthorWizard() {
       setLoadingText("Enabling local repository...");
       document.getElementById("local-repository-container").style.display = "none";
       document.getElementById("loading-container").style.display = "block";
+
+      if (newServerRepository) {
+        setLoadingText("Enabling chosen local repository...");
+        const newServerName = serverConfig.localServerName;
+        const serverConfigURL = encodeURI(
+          "/servers/" +
+            tenantId +
+            "/server-author/users/" +
+            userId +
+            "/servers/" +
+            newServerName +
+            "/local-repository/mode/" +
+            newServerRepository
+        );
+        issueRestCreate(
+          serverConfigURL,
+          serverConfig,
+          onSuccessfulEnableRepository,
+          onErrorConfigureServer,
+          "omagServerConfig"
+        );
+
+      }
       // Enable Access Services
       // try {
         // if (selectedAccessServices.length === availableAccessServices.length) {
@@ -706,230 +725,230 @@ export default function ServerAuthorWizard() {
     }
   };
 
-  // Configure the Discovery Engines
+  // // Configure the Discovery Engines
 
-  const handleConfigureDiscoveryEngines = async () => {
-    // If all three fields are blank, skip to next step
-    if (
-      (!newServerDiscoveryEngineRemoteServerURLRoot ||
-        newServerDiscoveryEngineRemoteServerURLRoot === "") &&
-      (!newServerDiscoveryEngineRemoteServerName ||
-        newServerDiscoveryEngineRemoteServerName === "") &&
-      (!selectedDiscoveryEngines || !selectedDiscoveryEngines.length)
-    ) {
-      showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
-      return;
-    }
-    // If one or two fields are blank, show notification
-    if (
-      !newServerDiscoveryEngineRemoteServerURLRoot ||
-      newServerDiscoveryEngineRemoteServerURLRoot === "" ||
-      !newServerDiscoveryEngineRemoteServerName ||
-      newServerDiscoveryEngineRemoteServerName === "" ||
-      !selectedDiscoveryEngines ||
-      !selectedDiscoveryEngines.length
-    ) {
-      setNotificationType("error");
-      setNotificationTitle("Input Error");
-      setNotificationSubtitle(
-        `All three fields are required to configure the discovery engine. Leave all three fields blank to skip this step.`
-      );
-      document.getElementById("notification-container").style.display = "block";
-      return;
-    }
-    setLoadingText("Configuring discovery engine client...");
-    document.getElementById("discovery-engines-container").style.display =
-      "none";
-    document.getElementById("loading-container").style.display = "block";
-    // Configure the discovery engines client
-    try {
-      await configureDiscoveryEngineClient(
-        newServerDiscoveryEngineRemoteServerURLRoot,
-        newServerDiscoveryEngineRemoteServerName
-      );
-    } catch (error) {
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Configuration Error");
-        setNotificationSubtitle(
-          `Error configuring the discovery engine client. Please ensure the metadata server root URL and name are correct.`
-        );
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("discovery-engines-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-      return;
-    }
-    // Configure the discovery engines
-    setLoadingText("Configuring discovery engines...");
-    try {
-      await configureDiscoveryEngines(selectedDiscoveryEngines);
-    } catch (error) {
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Configuration Error");
-        setNotificationSubtitle(
-          `Error configuring the discovery engines. ${error.message}`
-        );
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("discovery-engines-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-      return;
-    }
-    // Fetch Server Config
-    setLoadingText("Fetching final stored server configuration...");
-    try {
-      const serverConfig = await fetchServerConfig();
-      setNewServerConfig(serverConfig);
-      showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
-    } catch (error) {
-      console.error("error fetching server config", { error });
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Configuration Error");
-        setNotificationSubtitle(`Error fetching configuration for the server.`);
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("discovery-engines-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-    }
-  };
+  // const handleConfigureDiscoveryEngines = async () => {
+  //   // If all three fields are blank, skip to next step
+  //   if (
+  //     (!newServerDiscoveryEngineRemoteServerURLRoot ||
+  //       newServerDiscoveryEngineRemoteServerURLRoot === "") &&
+  //     (!newServerDiscoveryEngineRemoteServerName ||
+  //       newServerDiscoveryEngineRemoteServerName === "") &&
+  //     (!selectedDiscoveryEngines || !selectedDiscoveryEngines.length)
+  //   ) {
+  //     showNextStep();
+  //     setProgressIndicatorIndex(progressIndicatorIndex + 1);
+  //     return;
+  //   }
+  //   // If one or two fields are blank, show notification
+  //   if (
+  //     !newServerDiscoveryEngineRemoteServerURLRoot ||
+  //     newServerDiscoveryEngineRemoteServerURLRoot === "" ||
+  //     !newServerDiscoveryEngineRemoteServerName ||
+  //     newServerDiscoveryEngineRemoteServerName === "" ||
+  //     !selectedDiscoveryEngines ||
+  //     !selectedDiscoveryEngines.length
+  //   ) {
+  //     setNotificationType("error");
+  //     setNotificationTitle("Input Error");
+  //     setNotificationSubtitle(
+  //       `All three fields are required to configure the discovery engine. Leave all three fields blank to skip this step.`
+  //     );
+  //     document.getElementById("notification-container").style.display = "block";
+  //     return;
+  //   }
+  //   setLoadingText("Configuring discovery engine client...");
+  //   document.getElementById("discovery-engines-container").style.display =
+  //     "none";
+  //   document.getElementById("loading-container").style.display = "block";
+  //   // Configure the discovery engines client
+  //   try {
+  //     await configureDiscoveryEngineClient(
+  //       newServerDiscoveryEngineRemoteServerURLRoot,
+  //       newServerDiscoveryEngineRemoteServerName
+  //     );
+  //   } catch (error) {
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Configuration Error");
+  //       setNotificationSubtitle(
+  //         `Error configuring the discovery engine client. Please ensure the metadata server root URL and name are correct.`
+  //       );
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("discovery-engines-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //     return;
+  //   }
+  //   // Configure the discovery engines
+  //   setLoadingText("Configuring discovery engines...");
+  //   try {
+  //     await configureDiscoveryEngines(selectedDiscoveryEngines);
+  //   } catch (error) {
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Configuration Error");
+  //       setNotificationSubtitle(
+  //         `Error configuring the discovery engines. ${error.message}`
+  //       );
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("discovery-engines-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //     return;
+  //   }
+  //   // Fetch Server Config
+  //   setLoadingText("Fetching final stored server configuration...");
+  //   try {
+  //     const serverConfig = await fetchServerConfig();
+  //     setNewServerConfig(serverConfig);
+  //     showNextStep();
+  //     setProgressIndicatorIndex(progressIndicatorIndex + 1);
+  //   } catch (error) {
+  //     console.error("error fetching server config", { error });
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Configuration Error");
+  //       setNotificationSubtitle(`Error fetching configuration for the server.`);
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("discovery-engines-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //   }
+  // };
 
-  // Configure the Stewardship Engines
+  // // Configure the Stewardship Engines
 
-  const handleConfigureStewardshipEngines = async () => {
-    console.log({
-      newServerStewardshipEngineRemoteServerURLRoot,
-      newServerStewardshipEngineRemoteServerName,
-      selectedStewardshipEngines,
-    });
-    // If all three fields are blank, skip to next step
-    if (
-      (!newServerStewardshipEngineRemoteServerURLRoot ||
-        newServerStewardshipEngineRemoteServerURLRoot === "") &&
-      (!newServerStewardshipEngineRemoteServerName ||
-        newServerStewardshipEngineRemoteServerName === "") &&
-      (!selectedStewardshipEngines || !selectedStewardshipEngines.length)
-    ) {
-      showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
-      return;
-    }
-    // If one or two fields are blank, show notification
-    if (
-      !newServerStewardshipEngineRemoteServerURLRoot ||
-      newServerStewardshipEngineRemoteServerURLRoot === "" ||
-      !newServerStewardshipEngineRemoteServerName ||
-      newServerStewardshipEngineRemoteServerName === "" ||
-      !selectedStewardshipEngines ||
-      !selectedStewardshipEngines.length
-    ) {
-      setNotificationType("error");
-      setNotificationTitle("Input Error");
-      setNotificationSubtitle(
-        `All three fields are required to configure the stewardship engine. Leave all three fields blank to skip this step.`
-      );
-      document.getElementById("notification-container").style.display = "block";
-      return;
-    }
-    setLoadingText("Configuring stewardship engine client...");
-    document.getElementById("stewardship-engines-container").style.display =
-      "none";
-    document.getElementById("loading-container").style.display = "block";
-    // Configure the stewardship engines client
-    try {
-      await configureStewardshipEngineClient(
-        newServerStewardshipEngineRemoteServerURLRoot,
-        newServerStewardshipEngineRemoteServerName
-      );
-    } catch (error) {
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Configuration Error");
-        setNotificationSubtitle(
-          `Error configuring the stewardship engine client. Please ensure the metadata server root URL and name are correct.`
-        );
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("stewardship-engines-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-      return;
-    }
-    // Configure the stewardship engines
-    setLoadingText("Configuring stewardship engines...");
-    try {
-      await configureStewardshipEngines(selectedStewardshipEngines);
-    } catch (error) {
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Configuration Error");
-        setNotificationSubtitle(
-          `Error configuring the stewardship engines. ${error.message}`
-        );
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("stewardship-engines-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-      return;
-    }
-    // Fetch Server Config
-    setLoadingText("Fetching final stored server configuration...");
-    try {
-      const serverConfig = await fetchServerConfig();
-      setNewServerConfig(serverConfig);
-      showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
-    } catch (error) {
-      console.error("error fetching server config", { error });
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Configuration Error");
-        setNotificationSubtitle(`Error fetching configuration for the server.`);
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("stewardship-engines-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-    }
-  };
+  // const handleConfigureStewardshipEngines = async () => {
+  //   console.log({
+  //     newServerStewardshipEngineRemoteServerURLRoot,
+  //     newServerStewardshipEngineRemoteServerName,
+  //     selectedStewardshipEngines,
+  //   });
+  //   // If all three fields are blank, skip to next step
+  //   if (
+  //     (!newServerStewardshipEngineRemoteServerURLRoot ||
+  //       newServerStewardshipEngineRemoteServerURLRoot === "") &&
+  //     (!newServerStewardshipEngineRemoteServerName ||
+  //       newServerStewardshipEngineRemoteServerName === "") &&
+  //     (!selectedStewardshipEngines || !selectedStewardshipEngines.length)
+  //   ) {
+  //     showNextStep();
+  //     setProgressIndicatorIndex(progressIndicatorIndex + 1);
+  //     return;
+  //   }
+  //   // If one or two fields are blank, show notification
+  //   if (
+  //     !newServerStewardshipEngineRemoteServerURLRoot ||
+  //     newServerStewardshipEngineRemoteServerURLRoot === "" ||
+  //     !newServerStewardshipEngineRemoteServerName ||
+  //     newServerStewardshipEngineRemoteServerName === "" ||
+  //     !selectedStewardshipEngines ||
+  //     !selectedStewardshipEngines.length
+  //   ) {
+  //     setNotificationType("error");
+  //     setNotificationTitle("Input Error");
+  //     setNotificationSubtitle(
+  //       `All three fields are required to configure the stewardship engine. Leave all three fields blank to skip this step.`
+  //     );
+  //     document.getElementById("notification-container").style.display = "block";
+  //     return;
+  //   }
+  //   setLoadingText("Configuring stewardship engine client...");
+  //   document.getElementById("stewardship-engines-container").style.display =
+  //     "none";
+  //   document.getElementById("loading-container").style.display = "block";
+  //   // Configure the stewardship engines client
+  //   try {
+  //     await configureStewardshipEngineClient(
+  //       newServerStewardshipEngineRemoteServerURLRoot,
+  //       newServerStewardshipEngineRemoteServerName
+  //     );
+  //   } catch (error) {
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Configuration Error");
+  //       setNotificationSubtitle(
+  //         `Error configuring the stewardship engine client. Please ensure the metadata server root URL and name are correct.`
+  //       );
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("stewardship-engines-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //     return;
+  //   }
+  //   // Configure the stewardship engines
+  //   setLoadingText("Configuring stewardship engines...");
+  //   try {
+  //     await configureStewardshipEngines(selectedStewardshipEngines);
+  //   } catch (error) {
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Configuration Error");
+  //       setNotificationSubtitle(
+  //         `Error configuring the stewardship engines. ${error.message}`
+  //       );
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("stewardship-engines-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //     return;
+  //   }
+  //   // Fetch Server Config
+  //   setLoadingText("Fetching final stored server configuration...");
+  //   try {
+  //     const serverConfig = await fetchServerConfig();
+  //     setNewServerConfig(serverConfig);
+  //     showNextStep();
+  //     setProgressIndicatorIndex(progressIndicatorIndex + 1);
+  //   } catch (error) {
+  //     console.error("error fetching server config", { error });
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Configuration Error");
+  //       setNotificationSubtitle(`Error fetching configuration for the server.`);
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("stewardship-engines-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //   }
+  // };
 
   // Config Preview
 

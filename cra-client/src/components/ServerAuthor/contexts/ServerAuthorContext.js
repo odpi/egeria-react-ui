@@ -10,8 +10,6 @@ import { IdentificationContext } from "../../../contexts/IdentificationContext";
 import accessServices from "../components/defaults/accessServices";
 import serverTypes from "../components/defaults/serverTypes";
 import viewServices from "../components/defaults/viewServices";
-import discoveryEngines from "../components/defaults/discoveryEngines";
-import stewardshipEngines from "../components/defaults/stewardshipEngines";
 import integrationServices from "../components/defaults/integrationServices";
 import { issueRestCreate, issueRestGet, issueRestDelete } from "../../common/RestCaller";
 
@@ -52,16 +50,7 @@ const ServerAuthorContextProvider = props => {
   const [selectedViewServices, setSelectedViewServices] = useState([]);
   const [newServerViewServiceRemoteServerName, setNewServerViewServiceRemoteServerName] = useState("");
   const [newServerViewServiceRemoteServerURLRoot, setNewServerViewServiceRemoteServerURLRoot] = useState("");
-  // Discovery Engines
-  const [availableDiscoveryEngines, setAvailableDiscoveryEngines] = useState(discoveryEngines);
-  const [selectedDiscoveryEngines, setSelectedDiscoveryEngines] = useState([]);
-  const [newServerDiscoveryEngineRemoteServerName, setNewServerDiscoveryEngineRemoteServerName] = useState("");
-  const [newServerDiscoveryEngineRemoteServerURLRoot, setNewServerDiscoveryEngineRemoteServerURLRoot] = useState("");
-  // Stewardship Engines
-  const [availableStewardshipEngines, setAvailableStewardshipEngines] = useState(stewardshipEngines);
-  const [selectedStewardshipEngines, setSelectedStewardshipEngines] = useState([]);
-  const [newServerStewardshipEngineRemoteServerName, setNewServerStewardshipEngineRemoteServerName] = useState("");
-  const [newServerStewardshipEngineRemoteServerURLRoot, setNewServerStewardshipEngineRemoteServerURLRoot] = useState("");
+
   // Integration Services
   const [availableIntegrationServices, setAvailableIntegrationServices] = useState(integrationServices);
   const [selectedIntegrationService, setSelectedIntegrationService] = useState("");
@@ -87,8 +76,6 @@ const ServerAuthorContextProvider = props => {
 
   // Refs
   const basicConfigFormStartRef = useRef(null);
-  const discoveryEnginesFormStartRef = useRef(null);
-  const stewardshipEnginesFormStartRef = useRef(null);
   const integrationServicesFormStartRef = useRef(null);
 
   useEffect(() => {
@@ -97,6 +84,39 @@ const ServerAuthorContextProvider = props => {
     }
     fetchLists();
   }, []);
+/**
+ * Clear out all the context so the new server type doe not pick up old values in the wizard.
+ * Leave NewServerLocalServerType
+ */
+const  cleanForNewServerType = () => {
+    setNewServerConfig(null);
+    // can/should we clear refs ???
+    setNewServerName("");
+    setNewServerLocalURLRoot("https://localhost:9443");
+    setNewServerOrganizationName(user ? user.organizationName || "" : "");
+    setNewServerLocalUserId("");
+    setNewServerLocalPassword("");
+    setNewServerSecurityConnector("");
+    setNewServerRepository("in-memory-repository");
+    setNewServerMaxPageSize(1000);
+    // Access Services
+    setAvailableAccessServices(accessServices);
+    setSelectedAccessServices(accessServices);
+    // Cohorts
+    setNewServerCohorts([]);
+    // Archives
+    setNewServerOMArchives([]);
+    // Proxy
+    setNewServerProxyConnector("");
+    setNewServerEventMapperConnector("");
+    setNewServerEventSource("");
+    // View Services
+    setAvailableViewServices(viewServices);
+    setSelectedViewServices([]);
+    setNewServerViewServiceRemoteServerName("");
+    setNewServerViewServiceRemoteServerURLRoot("");
+
+}
 
   const retrieveAllServers = () => {
     console.log("called retrieveAllServers()");
@@ -306,118 +326,7 @@ const ServerAuthorContextProvider = props => {
     }
   }
 
-  const configureDiscoveryEngineClient = async (remoteServerURLRoot, remoteServerName) => {
-    console.log("called configureDiscoveryEngineClient", { remoteServerURLRoot, remoteServerName });
-    const configureDiscoveryEngineClientURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/discovery-server/client-config`;
-    try {
-      const configureDiscoveryEngineClientURLResponse = await axios.post(configureDiscoveryEngineClientURL, {
-        serverName,
-        config: {
-          "class": "OMAGServerClientConfig",
-          "omagserverPlatformRootURL": remoteServerURLRoot,
-          "omagserverName": remoteServerName,
-        }
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000,
-      });
-      if (configureDiscoveryEngineClientURLResponse.data.relatedHTTPCode !== 200) {
-        throw new Error(configureDiscoveryEngineClientURLResponse.data.exceptionErrorMessage);
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error configuring discovery engine client (metadata server).", error.message);
-      }
-      throw error;
-    }
-  }
-
-  const configureDiscoveryEngines = async (engines) => {
-    console.log("called configureDiscoveryEngines", { engines });
-    const configureDiscoveryEnginesURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/discovery-server/set-discovery-engines`;
-    try {
-      const configureDiscoveryEnginesURLResponse = await axios.post(configureDiscoveryEnginesURL, {
-        serverName,
-        config: engines,
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000,
-      });
-      if (configureDiscoveryEnginesURLResponse.data.relatedHTTPCode !== 200) {
-        throw new Error(configureDiscoveryEnginesURLResponse.data.exceptionErrorMessage);
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error configuring discovery engines.", error.message);
-      }
-      throw error;
-    }
-  }
-
-  const configureStewardshipEngineClient = async (remoteServerURLRoot, remoteServerName) => {
-    console.log("called configureStewardshipEngineClient", { remoteServerURLRoot, remoteServerName });
-    const configureStewardshipEngineClientURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/stewardship-server/client-config`;
-    try {
-      const configureStewardshipEngineClientURLResponse = await axios.post(configureStewardshipEngineClientURL, {
-        serverName,
-        config: {
-          "class": "OMAGServerClientConfig",
-          "omagserverPlatformRootURL": remoteServerURLRoot,
-          "omagserverName": remoteServerName,
-        }
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000,
-      });
-      if (configureStewardshipEngineClientURLResponse.data.relatedHTTPCode !== 200) {
-        throw new Error(configureStewardshipEngineClientURLResponse.data.exceptionErrorMessage);
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error configuring stewardship engine client (metadata server).", error.message);
-      }
-      throw error;
-    }
-  }
-
-  const configureStewardshipEngines = async (engines) => {
-    console.log("called configureStewardshipEngines", { engines });
-    const configureStewardshipEnginesURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/stewardship-server/set-stewardship-engines`;
-    try {
-      const configureStewardshipEnginesURLResponse = await axios.post(configureStewardshipEnginesURL, {
-        serverName,
-        config: engines,
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000,
-      });
-      if (configureStewardshipEnginesURLResponse.data.relatedHTTPCode !== 200) {
-        throw new Error(configureStewardshipEnginesURLResponse.data.exceptionErrorMessage);
-      }
-    } catch(error) {
-      if (error.code && error.code === 'ECONNABORTED') {
-        console.error("Error connecting to the platform. Please ensure the OMAG server platform is available.");
-      } else {
-        console.error("Error configuring stewardship engines.", error.message);
-      }
-      throw error;
-    }
-  }
-
+  
   const serverConfigurationSteps = (serverType) => {
 
     const steps = [
@@ -535,14 +444,6 @@ const ServerAuthorContextProvider = props => {
         selectedViewServices, setSelectedViewServices,
         newServerViewServiceRemoteServerName, setNewServerViewServiceRemoteServerName,
         newServerViewServiceRemoteServerURLRoot, setNewServerViewServiceRemoteServerURLRoot,
-        availableDiscoveryEngines, setAvailableDiscoveryEngines,
-        selectedDiscoveryEngines, setSelectedDiscoveryEngines,
-        newServerDiscoveryEngineRemoteServerName, setNewServerDiscoveryEngineRemoteServerName,
-        newServerDiscoveryEngineRemoteServerURLRoot, setNewServerDiscoveryEngineRemoteServerURLRoot,
-        availableStewardshipEngines, setAvailableStewardshipEngines,
-        selectedStewardshipEngines, setSelectedStewardshipEngines,
-        newServerStewardshipEngineRemoteServerName, setNewServerStewardshipEngineRemoteServerName,
-        newServerStewardshipEngineRemoteServerURLRoot, setNewServerStewardshipEngineRemoteServerURLRoot,
         availableIntegrationServices, setAvailableIntegrationServices,
         selectedIntegrationService, setSelectedIntegrationService,
         newServerIntegrationServiceRemoteServerName, setNewServerIntegrationServiceRemoteServerName,
@@ -563,11 +464,9 @@ const ServerAuthorContextProvider = props => {
         preventDeployment, setPreventDeployment,
         // Refs
         basicConfigFormStartRef,
-        discoveryEnginesFormStartRef,
-        stewardshipEnginesFormStartRef,
         integrationServicesFormStartRef,
         // Functions
-  
+        cleanForNewServerType,
         retrieveAllServers,
         fetchServerConfig,
         generateBasicServerConfig,
@@ -578,10 +477,6 @@ const ServerAuthorContextProvider = props => {
         configureRepositoryProxyConnector,
         configureRepositoryEventMapperConnector,
         configureViewServices,
-        configureDiscoveryEngineClient,
-        configureDiscoveryEngines,
-        configureStewardshipEngineClient,
-        configureStewardshipEngines,
         serverConfigurationSteps,
         setServerAttribute,
         setServerConfig,
