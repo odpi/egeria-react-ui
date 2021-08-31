@@ -1085,10 +1085,11 @@ export default function ServerAuthorWizard() {
                   text="Metadata Access Point"
                   value="metadata-access-point"
                 />
-                <SelectItem text="Repository Proxy" value="repository-proxy" />
+                <SelectItem text="Repository Proxy" value="repository-proxy"  disabled/>
                 <SelectItem
                   text="Conformance Test Server"
                   value="conformance-test-server"
+                  disabled
                 />
                 <SelectItem text="Metadata Server" value="metadata-server" />
               </SelectItemGroup>
@@ -1096,18 +1097,21 @@ export default function ServerAuthorWizard() {
                 <SelectItem
                   text="Integration Daemon"
                   value="integration-daemon"
+                  disabled
                 />
-                <SelectItem text="Engine Host" value="engine-host" />
+                <SelectItem text="Engine Host" value="engine-host"  disabled/>
                 <SelectItem
                   text="Data Engine Proxy"
                   value="data-engine-proxy"
+                  disabled
                 />
                 <SelectItem
                   text="Open Lineage Server"
                   value="open-lineage-server"
+                  disabled
                 />
               </SelectItemGroup>
-              <SelectItem text="View Server" value="view-server" />
+              <SelectItem text="View Server" value="view-server"  disabled/>
             </Select>
 
           </div>
