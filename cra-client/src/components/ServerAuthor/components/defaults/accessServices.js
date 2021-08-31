@@ -140,6 +140,6 @@ const accessServices = [
     "serviceDescription": "Capture changes to the data stores and data set managed by a technology managing collections of data",
     "serviceWiki": "https://egeria.odpi.org/open-metadata-implementation/access-services/data-manager/"
   }
-]
+];
 
 export default accessServices;

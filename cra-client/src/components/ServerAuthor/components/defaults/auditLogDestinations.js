@@ -22,6 +22,6 @@ const auditLogDestinations = [
     id: "event-topic",
     label: "Event Bus"
   }
-]
+];
 
 export default auditLogDestinations;

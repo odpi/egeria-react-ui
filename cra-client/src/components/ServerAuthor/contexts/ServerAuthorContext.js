@@ -81,7 +81,7 @@ const ServerAuthorContextProvider = props => {
   useEffect(() => {
     const fetchLists = async () => {
       retrieveAllServers();
-    }
+    };
     fetchLists();
   }, []);
 /**

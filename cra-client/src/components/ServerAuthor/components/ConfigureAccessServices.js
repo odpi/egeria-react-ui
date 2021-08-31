@@ -32,7 +32,7 @@ export default function ConfigureAccessServices() {
       const isChecked = boxes[b].checked;
       if (!isChecked)
         boxes[b].click();
-    };
+    }
     updateAccessServices();
   };
 
