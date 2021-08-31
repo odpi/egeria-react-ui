@@ -116,7 +116,7 @@ const  cleanForNewServerType = () => {
     setNewServerViewServiceRemoteServerName("");
     setNewServerViewServiceRemoteServerURLRoot("");
 
-}
+};
 
   const retrieveAllServers = () => {
     console.log("called retrieveAllServers()");
@@ -124,7 +124,7 @@ const  cleanForNewServerType = () => {
     const restURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/platforms");
     issueRestGet(restURL, onSuccessfulFetchPlatforms, onErrorFetchPlatforms, "platforms");
 
-  }
+  };
 
   const onSuccessfulFetchPlatforms = (json) => {
     
@@ -150,17 +150,17 @@ const  cleanForNewServerType = () => {
     setAllServers(serverList);
     const restURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId +"/servers/" + serverName + "/audit-log-destinations");
     issueRestGet(restURL, onSuccessfulFetchAuditLogSeverities, onErrorFetchAuditLogSeverities, "severities");
-  }
+  };
   const onErrorFetchPlatforms = () => {
       // error
       setAllServers([]);
       alert("Error getting all servers"); 
-  }
+  };
   const onErrorFetchAuditLogSeverities = () => {
     // error
     setSupportedAuditLogSeverities([]);
     alert("Error getting audit log supported severities"); 
-  }
+  };
   const  onSuccessfulFetchAuditLogSeverities = (json) => {
     
     console.log(
@@ -183,7 +183,7 @@ const  cleanForNewServerType = () => {
 
     setSupportedAuditLogSeverities(severitiesWithIds);
 
-  }
+  };
   const fetchServerConfig = (onSuccessfulFetchServer, onErrorFetchServer ) => {
     console.log("called fetchServerConfig");
     const fetchServerConfigURL = 
@@ -191,7 +191,7 @@ const  cleanForNewServerType = () => {
     
    
     issueRestGet(fetchServerConfigURL, onSuccessfulFetchServer, onErrorFetchServer, "omagServerConfig");
-  }
+  };
 
   const generateBasicServerConfig = () => {
 
@@ -231,14 +231,14 @@ const  cleanForNewServerType = () => {
       "maxPageSize": newServerMaxPageSize,
     }
 
-  }
+  };
 
   const registerCohort = (cohortName, onSuccessfulRegisterCohort, onErrorRegisterCohort) => {
     console.log("called registerCohort", { cohortName });
 
     const registerCohortURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/cohorts/" + cohortName);
     issueRestCreate(registerCohortURL, undefined, onSuccessfulRegisterCohort, onErrorRegisterCohort, "");
-  }
+  };
 
 
   const unRegisterCohort = (cohortName, onSuccessfulUnRegisterCohort, onErrorUnRegisterCohort) => {
@@ -246,13 +246,13 @@ const  cleanForNewServerType = () => {
 
     const unRegisterCohortURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/cohorts/" + cohortName);
     issueRestDelete(unRegisterCohortURL, onSuccessfulUnRegisterCohort, onErrorUnRegisterCohort);
-  }
+  };
 
   const configureArchiveFile = (archiveName, onSuccessfulConfigureArchiveFile, onErrorConfigureArchiveFile) => {
     console.log("called configureArchive", { archiveName });
     const configureArchiveURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/open-metadata-archives/file");
     issueRestGet(configureArchiveURL, onSuccessfulConfigureArchiveFile, onErrorConfigureArchiveFile, "????");
-  }
+  };
 
 
   const configureRepositoryProxyConnector = async (className) => {
@@ -280,7 +280,7 @@ const  cleanForNewServerType = () => {
         throw error;
       }
     }
-  }
+  };
 
   const configureRepositoryEventMapperConnector = async (className, eventSource) => {
     console.log("called configureRepositoryEventMapperConnector", { className });
@@ -307,7 +307,7 @@ const  cleanForNewServerType = () => {
         throw error;
       }
     }
-  }
+  };
 
   const configureViewServices = async (remoteServerURLRoot, remoteServerName, serviceURLMarker) => {
     console.log("called configureViewServices", { serviceURLMarker });
@@ -340,7 +340,7 @@ const  cleanForNewServerType = () => {
       }
       throw error;
     }
-  }
+  };
 
   /**
    * Get the config elements for this server type. These will be the steps for the wizard
@@ -393,7 +393,7 @@ const  cleanForNewServerType = () => {
 
     return steps;
 
-  }
+  };
 
   const setServerAttribute = async (attrEndpoint, value) => {
     console.log("called setServerAttribute", { attrEndpoint, value });
@@ -415,25 +415,24 @@ const  cleanForNewServerType = () => {
       }
       throw error;
     }
-  }
+  };
 
   const setServerConfig = (serverConfig) => {
     const serverConfigURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/configuration");
     issueRestCreate(serverConfigURL, serverConfig, onSuccessfulSetServer, onErrorSetServer, "omagserverConfig");
-  }
+  };
  const onSuccessfulSetServer = (json) =>{
    const serverConfig = json.omagserverConfig;
    setNewServerConfig(serverConfig);
- }
+ };
  const onErrorSetServer = (error) => {
   alert("Error setting the server config"); 
- }
+ };
 
-   
  const showConfigForm = () => {
     document.getElementById("server-list-container").style.display = "none";
     document.getElementById("server-config-container").style.display = "flex";
- }
+ };
 
   const hideConfigForm = () => {
     document.getElementById("server-list-container").style.display = "flex";
@@ -441,7 +440,7 @@ const  cleanForNewServerType = () => {
     for (let el of document.querySelectorAll('.hideable')) el.style.display = 'none';
     document.getElementById("server-type-container").style.display = "block";
     setProgressIndicatorIndex(0);
-  }
+  };
 
 
   return (

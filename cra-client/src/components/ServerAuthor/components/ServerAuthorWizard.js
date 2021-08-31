@@ -32,7 +32,6 @@ import ConfigureOMArchives from "./ConfigureOMArchives";
 import ConfigureRepositoryProxyConnectors from "./ConfigureRepositoryProxyConnectors";
 import ConfigureViewServices from "./ConfigureViewServices";
 import ConfigureIntegrationServices from "./ConfigureIntegrationServices";
-import ConfigPreview from "./ConfigPreview";
 
 
 export default function ServerAuthorWizard() {
