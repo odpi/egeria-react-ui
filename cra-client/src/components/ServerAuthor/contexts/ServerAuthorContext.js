@@ -144,7 +144,7 @@ const  cleanForNewServerType = () => {
         svr.serverName = storedServer.storedServerName;
         svr.serverStatus = storedServer.serverStatus;
         svr.id = i + "_" + j; // note that server name is not unique - as it can exist on multiple platforms - so should not be used as the id.
-        serverList.push(svr)
+        serverList.push(svr);
       }
     }
     setAllServers(serverList);

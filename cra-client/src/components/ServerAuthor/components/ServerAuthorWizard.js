@@ -65,7 +65,6 @@ export default function ServerAuthorWizard() {
     setLoadingText,
     newServerConfig,
     setNewServerConfig,
-    basicConfigFormStartRef,
 
     // functions
     cleanForNewServerType,
@@ -80,10 +79,9 @@ export default function ServerAuthorWizard() {
 
   const [serverTypeDescription, setServerTypeDescription] = useState();
 
-
   const displayHelpForServerTypes = () => {
     window.open("https://odpi.github.io/egeria-docs/concepts/omag-server/?h=omag+server+types",'_blank');
-  }
+  };
 
   const showPreviousStep = () => {
     if (progressIndicatorIndex === 0) {
@@ -401,13 +399,6 @@ export default function ServerAuthorWizard() {
     document.getElementById("notification-container").style.display = "block";
   };
 
-  const onSuccessfulAuditLog = (json) => {
-    alert("Successful audit log configure)");
-    // TODO amend context to remove audit log we have just configured.
-  };
-  const onErrorAuditLog = (json) => {
-    alert("Error audit log configure)");
-  };
   const handleConfigureESB = () => {
     setLoadingText("Configuring ESB...");
     document.getElementById("esb-config-element").style.display = "none";
@@ -946,61 +937,61 @@ export default function ServerAuthorWizard() {
 
   // Config Preview
 
-  const handleDeployConfig = async (e) => {
-    e.preventDefault();
-    setLoadingText("Deploying OMAG server from stored configuration...");
-    document.getElementById("config-preview-container").style.display = "none";
-    document.getElementById("loading-container").style.display = "block";
-    // Issue the instance call to start the new server
-    const startServerURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/instance`;
-    try {
-      const startServerResponse = await axios.post(
-        startServerURL,
-        {
-          config: "",
-          tenantId,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          timeout: 30000,
-        }
-      );
-      if (startServerResponse.data.relatedHTTPCode === 200) {
-        setNotificationType("success");
-        setNotificationTitle("Success!");
-        setNotificationSubtitle(`Server instance deployed from configuration.`);
-        document.getElementById("loading-container").style.display = "none";
-        document.getElementById("notification-container").style.display =
-          "block";
-        document.getElementById("server-list-container").style.display = "flex";
-      } else {
-        console.error(startServerResponse.data);
-        throw new Error("Error in startServerResponse");
-      }
-    } catch (error) {
-      console.error("Error starting server from stored config", { error });
-      setNotificationType("error");
-      if (error.code && error.code === "ECONNABORTED") {
-        setNotificationTitle("Connection Error");
-        setNotificationSubtitle(
-          "Error connecting to the platform. Please ensure the OMAG server platform is available."
-        );
-      } else {
-        setNotificationTitle("Deployment Error");
-        setNotificationSubtitle(
-          `Error starting server from stored configuration file.`
-        );
-      }
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("config-preview-container").style.display =
-        "block";
-        document.getElementById("config-final-container").style.display =
-        "block";
-      document.getElementById("notification-container").style.display = "block";
-    }
-  };
+  // const handleDeployConfig = async (e) => {
+  //   e.preventDefault();
+  //   setLoadingText("Deploying OMAG server from stored configuration...");
+  //   document.getElementById("config-preview-container").style.display = "none";
+  //   document.getElementById("loading-container").style.display = "block";
+  //   // Issue the instance call to start the new server
+  //   const startServerURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/instance`;
+  //   try {
+  //     const startServerResponse = await axios.post(
+  //       startServerURL,
+  //       {
+  //         config: "",
+  //         tenantId,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         timeout: 30000,
+  //       }
+  //     );
+  //     if (startServerResponse.data.relatedHTTPCode === 200) {
+  //       setNotificationType("success");
+  //       setNotificationTitle("Success!");
+  //       setNotificationSubtitle(`Server instance deployed from configuration.`);
+  //       document.getElementById("loading-container").style.display = "none";
+  //       document.getElementById("notification-container").style.display =
+  //         "block";
+  //       document.getElementById("server-list-container").style.display = "flex";
+  //     } else {
+  //       console.error(startServerResponse.data);
+  //       throw new Error("Error in startServerResponse");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error starting server from stored config", { error });
+  //     setNotificationType("error");
+  //     if (error.code && error.code === "ECONNABORTED") {
+  //       setNotificationTitle("Connection Error");
+  //       setNotificationSubtitle(
+  //         "Error connecting to the platform. Please ensure the OMAG server platform is available."
+  //       );
+  //     } else {
+  //       setNotificationTitle("Deployment Error");
+  //       setNotificationSubtitle(
+  //         `Error starting server from stored configuration file.`
+  //       );
+  //     }
+  //     document.getElementById("loading-container").style.display = "none";
+  //     document.getElementById("config-preview-container").style.display =
+  //       "block";
+  //       document.getElementById("config-final-container").style.display =
+  //       "block";
+  //     document.getElementById("notification-container").style.display = "block";
+  //   }
+  // };
 
   return (
     <Grid>

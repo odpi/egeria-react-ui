@@ -27,7 +27,7 @@ export default function ConfigureOMArchives() {
 
   const handleRemoveOMArchive = index => {
     console.log("handleRemoveOMArchive() called", { index });
-    const archiveList = newServerOMArchives.filter((v, i) => { return i !== index });
+    const archiveList = newServerOMArchives.filter((v, i) => { return i !== index; });
     setNewServerOMArchives(archiveList);
   };
 

@@ -92,13 +92,13 @@ export async function issueRestCreate(
         Accept: "application/json",
         "Content-Type": "application/json",
       }
-    }
+    };
     if (body) {
       bodyForRest.body = JSON.stringify(body);
     }
     const response = await fetch(url, bodyForRest);
     const json = await response.json();
-    const relatedHTTPCode = json.relatedHTTPCode;
+
     let msg;
 
 

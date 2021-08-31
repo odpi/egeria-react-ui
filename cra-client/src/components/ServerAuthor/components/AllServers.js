@@ -8,7 +8,6 @@ import {
   OverflowMenuItem,
 } from "carbon-components-react";
 import {
-  CheckmarkOutline16,
   MisuseOutline16,
   Edit16,
   Copy16,
