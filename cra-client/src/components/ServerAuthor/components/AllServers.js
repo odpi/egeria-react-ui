@@ -21,7 +21,6 @@ export default function AllServers() {
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
   const {
     allServers,
-    setAllServers,
     setNotificationType,
     setNotificationTitle,
     setNotificationSubtitle,
@@ -174,7 +173,6 @@ export default function AllServers() {
                       getBatchActionProps().shouldShowBatchActions ? 0 : -1
                     }
                     renderIcon={Edit16}
-                    // onClick={stopServers(selectedRows)}
                   >
                     Edit
                   </DataTable.TableBatchAction>
@@ -185,7 +183,6 @@ export default function AllServers() {
                       getBatchActionProps().shouldShowBatchActions ? 0 : -1
                     }
                     renderIcon={Copy16}
-                    // onClick={stopServers(selectedRows)}
                   >
                     Copy
                   </DataTable.TableBatchAction>
@@ -195,16 +192,9 @@ export default function AllServers() {
                     getBatchActionProps().shouldShowBatchActions ? 0 : -1
                   }
                   renderIcon={MisuseOutline16}
-                  // onClick={stopServers(selectedRows, true)}
                 >
                   Delete
                 </DataTable.TableBatchAction>
-                {/* <DataTable.TableBatchAction
-                  tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
-                  renderIcon={CheckmarkOutline16}
-                  onClick={startServers(selectedRows)}>
-                  Start
-                </DataTable.TableBatchAction> */}
               </DataTable.TableBatchActions>
               <DataTable.TableToolbarContent>
                 <DataTable.TableToolbarSearch
