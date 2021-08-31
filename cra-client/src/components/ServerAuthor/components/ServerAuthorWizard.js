@@ -1059,7 +1059,7 @@ export default function ServerAuthorWizard() {
             <NavigationButtons handleNextStep={handleServerTypeSelection} />
             
             <div className ="server-type-container"> 
-            <h4 style={{ textAlign: "left", marginBottom: "32px" }}>
+            <h4 className="left-text-bottom-margin-32">
               Select Server Type
             </h4>
            
@@ -1125,7 +1125,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleBasicConfig}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "16px" }}>
+            <h4 className="left-text-bottom-margin-16">
               Basic Configuration
             </h4>
             <BasicConfig />
@@ -1140,7 +1140,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleLocalRepositoryConfig}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Select Local Repository
             </h4>
             <ConfigureLocalRepository />
@@ -1155,7 +1155,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleAccessServicesConfig}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Select Access Services
             </h4>
             <ConfigureAccessServices />
@@ -1166,7 +1166,7 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Configure Audit Log Destinations
             </h4>
             <ConfigureAuditLog
@@ -1184,10 +1184,10 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureESB}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Configure Enterprise Service Bus
             </h4>
-            <div style={{ textAlign: "left", marginBottom: "24px" }}>
+            <div className="left-text-bottom-margin-24">
               Configure Enterprise Service Bus with default topicURLRoot as
               'egeriaTopics'
             </div>
@@ -1202,7 +1202,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleRegisterCohorts}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Register to the following cohort(s):
             </h4>
             <RegisterCohorts />
@@ -1217,7 +1217,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureArchives}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Configure the Open Metadata Archives that are loaded on server
               startup
             </h4>
@@ -1233,7 +1233,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureRepositoryProxyConnectors}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Configure the Repository Proxy Connectors
             </h4>
             <ConfigureRepositoryProxyConnectors />
@@ -1248,7 +1248,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureViewServices}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Configure the Open Metadata View Services (OMVS)
             </h4>
             <ConfigureViewServices />
@@ -1263,7 +1263,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={showNextStep}
             />
-            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+            <h4 className="left-text-bottom-margin-24">
               Configure the Open Metadata Integration Services (OMIS)
             </h4>
             <ConfigureIntegrationServices />

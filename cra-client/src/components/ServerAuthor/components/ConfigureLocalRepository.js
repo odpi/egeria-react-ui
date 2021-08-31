@@ -11,9 +11,9 @@ export default function ConfigureLocalRepository() {
     useContext(ServerAuthorContext);
 
   return (
-    <div style={{ textAlign: "left" }}>
+    <div className="left-text">
       <fieldset className="bx--fieldset" style={{ marginBottom: "32px" }}>
-        <legend className="bx--label" style={{ textAlign: "left" }}>
+        <legend className="bx--label left-text">
           Server repository type
         </legend>
         <TileGroup

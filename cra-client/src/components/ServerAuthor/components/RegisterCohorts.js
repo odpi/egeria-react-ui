@@ -59,7 +59,7 @@ export default function RegisterCohorts() {
   };
 
   return (
-    <div style={{ textAlign: "left" }}>
+    <div className="left-text">
       <div style={{ display: "flex" }}>
         <TextInput
           id="new-server-cohort-name"

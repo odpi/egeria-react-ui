@@ -115,7 +115,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
   };
 
   return (
-    <div style={{ textAlign: "left" }}>
+    <div className="left-text">
       <fieldset className="bx--fieldset" style={{ marginBottom: "32px" }}>
         <legend className="bx--label">Audit Log Destinations</legend>
         {state.map((destination, i) => (

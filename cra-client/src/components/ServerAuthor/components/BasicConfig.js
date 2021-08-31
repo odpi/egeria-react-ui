@@ -23,7 +23,7 @@ export default function BasicConfig() {
 
   return (
 
-    <div style={{ textAlign: "left" }}>
+    <div className="left-text">
 
       <fieldset className="bx--fieldset" style={{ marginBottom: "32px" }}>
 
