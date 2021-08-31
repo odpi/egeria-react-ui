@@ -146,7 +146,7 @@ export default function AllServers() {
   ];
 
   return (
-    <div style={{ textAlign: "left" }}>
+    <div className="left-text">
       <DataTable rows={allServers} headers={headers} isSortable>
         {({
           rows,
