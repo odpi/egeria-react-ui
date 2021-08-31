@@ -23,7 +23,7 @@ export default function ConfigurationSteps() {
     const id = steps[index];
     const serverTypeElement = serverConfigElements.find(o => o.id === id); 
     return serverTypeElement.label;
-  } 
+  };
 
   return (
 
