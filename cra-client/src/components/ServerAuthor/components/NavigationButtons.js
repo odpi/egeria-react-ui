@@ -23,7 +23,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
     const id = steps[index];
     const serverTypeElement = serverConfigElements.find(o => o.id === id); 
     return serverTypeElement.label;
-  } 
+  } ;
 
   // First step
 
