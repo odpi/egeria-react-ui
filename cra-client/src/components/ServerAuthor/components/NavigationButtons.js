@@ -3,7 +3,7 @@
 
 import React, { useContext } from "react";
 import {
-  Button, FormLabel
+  Button
 } from "carbon-components-react";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 import serverConfigElements from "./defaults/serverConfigElements";
