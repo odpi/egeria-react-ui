@@ -22,12 +22,8 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
 
   const steps = serverConfigurationSteps(newServerLocalServerType);
 
-  const previousIndex =
-    progressIndicatorIndex > 0 ? progressIndicatorIndex - 1 : 0;
-  const nextIndex =
-    progressIndicatorIndex < steps.length - 1
-      ? progressIndicatorIndex + 1
-      : steps.length - 1;
+  const previousIndex = progressIndicatorIndex > 0 ? progressIndicatorIndex - 1 : 0;
+  const nextIndex = progressIndicatorIndex < steps.length - 1 ? progressIndicatorIndex + 1 : steps.length - 1;
 
   const supportedSeverities = supportedAuditLogSeverities.map((s) => {
     return {
@@ -116,7 +112,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
 
   return (
     <div className="left-text">
-      <fieldset className="bx--fieldset" style={{ marginBottom: "32px" }}>
+      <fieldset className="bx--fieldset left-text-bottom-margin-32">
         <legend className="bx--label">Audit Log Destinations</legend>
         {state.map((destination, i) => (
           <div key={`audit-log-destination-wrapper-${i}`}>
@@ -133,7 +129,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
               }
             />
             {destination.selected && destination.severities.length > 0 ? (
-              <div style={{ marginLeft: "32px" }}>
+              <div left-text-bottom-margin-32>
                 {destination.severities.map((severity, j) => (
                   <Checkbox
                     key={`audit-log-severity-${j}`}
