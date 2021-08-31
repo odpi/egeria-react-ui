@@ -58,6 +58,6 @@ const serverTypes = [
     serverConfigElements : ["server-type-config-element", "config-basic-config-element", "audit-log-config-element", "final-config-element"]
   },
   
-]
+];
 
 export default serverTypes;

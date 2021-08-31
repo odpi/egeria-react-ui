@@ -63,6 +63,6 @@ const serverConfigElements = [
     description: "Server has been confiured."
   },
   
-]
+];
 
 export default serverConfigElements;
