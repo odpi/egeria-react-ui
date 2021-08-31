@@ -1,16 +1,18 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Column,
   Grid,
   InlineNotification,
   Loading,
   Row,
-  TileGroup,
-  RadioTile,
+  Select,
+  SelectItem,
+  SelectItemGroup,
 } from "carbon-components-react";
+import Info16 from "@carbon/icons-react/lib/information/16";
 import axios from "axios";
 import { issueRestCreate } from "../../common/RestCaller";
 
@@ -31,6 +33,7 @@ import ConfigureRepositoryProxyConnectors from "./ConfigureRepositoryProxyConnec
 import ConfigureViewServices from "./ConfigureViewServices";
 import ConfigureIntegrationServices from "./ConfigureIntegrationServices";
 import ConfigPreview from "./ConfigPreview";
+
 
 export default function ServerAuthorWizard() {
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
@@ -61,10 +64,9 @@ export default function ServerAuthorWizard() {
     setProgressIndicatorIndex,
     loadingText,
     setLoadingText,
+    newServerConfig,
     setNewServerConfig,
     basicConfigFormStartRef,
-    discoveryEnginesFormStartRef,
-    stewardshipEnginesFormStartRef,
 
     // functions
     cleanForNewServerType,
@@ -75,35 +77,28 @@ export default function ServerAuthorWizard() {
     configureRepositoryEventMapperConnector,
     configureViewServices,
     serverConfigurationSteps,
-    
   } = useContext(ServerAuthorContext);
 
-  // Navigation
+  const [serverTypeDescription, setServerTypeDescription] = useState();
 
-  const sectionMapping = {
-    ["Select server type"]: "server-type-container",
-    ["Basic configuration"]: "config-basic-container",
-    ["Configure audit log destinations"]: "audit-log-container",
-    ["Preview configuration and deploy instance"]: "config-preview-container",
-    ["Configure Local Repository"]: "local-repository-container",
-    ["Select access services"]: "access-services-container",
-    ["Register to a cohort"]: "cohort-container",
-    ["Configure the open metadata archives"]: "archives-container",
-    ["Configure the repository proxy connectors"]: "repository-proxy-container",
-    ["Configure the Open Metadata View Services (OMVS)"]: "view-services-container",
-    ["Configure the Open Metadata Integration Services (OMIS)"]: "integration-daemon-container",
 
-  };
+  const displayHelpForServerTypes = () => {
+    window.open("https://odpi.github.io/egeria-docs/concepts/omag-server/?h=omag+server+types",'_blank');
+  }
 
   const showPreviousStep = () => {
-    const steps = serverConfigurationSteps(newServerLocalServerType);
     if (progressIndicatorIndex === 0) {
       return null;
     }
-    const previous = steps[progressIndicatorIndex - 1];
+    const steps = serverConfigurationSteps(newServerLocalServerType);
+    // hide everything that is hideable
     for (let el of document.querySelectorAll(".hideable"))
       el.style.display = "none";
-    document.getElementById(sectionMapping[previous]).style.display = "block";
+    // previous configElement
+    const previousStep = steps[progressIndicatorIndex - 1];
+    // this has been coded so that the configElement identifier is the same as the html id of the associated section we want to show
+    // for example a config element with id audit-log-config-element with have a html section with that name.
+    document.getElementById(previousStep).style.display = "block";
   };
 
   const showNextStep = () => {
@@ -111,21 +106,23 @@ export default function ServerAuthorWizard() {
     if (progressIndicatorIndex === steps.length) {
       return null;
     }
-    const next = steps[progressIndicatorIndex + 1];
+    // hide everything that is hideable
     for (let el of document.querySelectorAll(".hideable"))
       el.style.display = "none";
-    document.getElementById(sectionMapping[next]).style.display = "block";
-    switch (next) {
-      case "Basic configuration":
-        basicConfigFormStartRef.current.focus();
-        break;
-      // case "Configure the discovery engine services":
-      //   discoveryEnginesFormStartRef.current.focus();
-      //   break;
-      // case "Configure the stewardship engine services":
-      //   stewardshipEnginesFormStartRef.current.focus();
-      //   break;
-    }
+    const nextStep = steps[progressIndicatorIndex + 1];
+
+    document.getElementById(nextStep).style.display = "block";
+    // switch (next) {
+    //   case "Basic configuration":
+    //     basicConfigFormStartRef.current.focus();
+    //     break;
+    // case "Configure the discovery engine services":
+    //   discoveryEnginesFormStartRef.current.focus();
+    //   break;
+    // case "Configure the stewardship engine services":
+    //   stewardshipEnginesFormStartRef.current.focus();
+    //   break;
+    // }
   };
 
   const handleBackToPreviousStep = (e) => {
@@ -150,7 +147,8 @@ export default function ServerAuthorWizard() {
     e.preventDefault();
     // Generate server config
     setLoadingText("Generating server configuration...");
-    document.getElementById("config-basic-container").style.display = "none";
+    document.getElementById("config-basic-config-element").style.display =
+      "none";
     document.getElementById("loading-container").style.display = "block";
     let serverConfig;
     try {
@@ -163,7 +161,8 @@ export default function ServerAuthorWizard() {
         "Error generating OMAG server configuration file. " + error.message
       );
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("config-basic-container").style.display = "block";
+      document.getElementById("config-basic-config-element").style.display =
+        "block";
       document.getElementById("notification-container").style.display = "block";
       return;
     }
@@ -191,81 +190,6 @@ export default function ServerAuthorWizard() {
     );
   };
   const onSuccessfulConfigureServer = (json) => {
-    const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
-    // Enable chosen repository
-    if (newServerLocalServerType === "Metadata Server") {
-      // setLoadingText("Enabling chosen local repository...");
-      // const newServerName = serverConfig.localServerName;
-      // const serverConfigURL = encodeURI(
-      //   "/servers/" +
-      //     tenantId +
-      //     "/server-author/users/" +
-      //     userId +
-      //     "/servers/" +
-      //     newServerName +
-      //     "/local-repository/mode/" +
-      //     newServerRepository
-      // );
-      // issueRestCreate(
-      //   serverConfigURL,
-      //   serverConfig,
-      //   onSuccessfulEnableRepository,
-      //   onErrorConfigureServer,
-      //   "omagServerConfig"
-      // );
-    } else {
-      // TODO handle the other server types
-      alert(
-        "Server Author does not yet support server type " +
-          newServerLocalServerType
-      );
-    }
-  };
-  const onErrorConfigureServer = (error) => {
-    console.error("Error sending config to platform", { error });
-    setNewServerConfig(null);
-    setNotificationType("error");
-    if (error.code && error.code === "ECONNABORTED") {
-      setNotificationTitle("Connection Error");
-      setNotificationSubtitle(
-        "Error connecting to the platform. Please ensure the OMAG server platform is available."
-      );
-    } else {
-      setNotificationTitle("Configuration Error");
-      setNotificationSubtitle(
-        "Error sending server configuration to the platform."
-      );
-    }
-    document.getElementById("loading-container").style.display = "none";
-    document.getElementById("config-basic-container").style.display = "block";
-    document.getElementById("notification-container").style.display = "block";
-  };
-
-  const onSuccessfulEnableRepository = (json) => {
-    const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
-    // Configure event bus
-    setLoadingText("Configuring event bus...");
-    const newServerName = serverConfig.localServerName;
-    const serverConfigURL = encodeURI(
-      "/servers/" +
-        tenantId +
-        "/server-author/users/" +
-        userId +
-        "/servers/" +
-        newServerName +
-        "/event-bus?topicURLRoot=egeriaTopics"
-    );
-    issueRestCreate(
-      serverConfigURL,
-      serverConfig,
-      onSuccessfulConfigureEventBusURL,
-      onErrorConfigureServer,
-      "omagServerConfig"
-    );
-  };
-  const onSuccessfulConfigureEventBusURL = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
     // Configure security connector
@@ -298,6 +222,37 @@ export default function ServerAuthorWizard() {
       directUserToNextStep();
     }
   };
+  const onErrorConfigureServer = (error) => {
+    console.error("Error sending config to platform", { error });
+    setNewServerConfig(null);
+    setNotificationType("error");
+    if (error.code && error.code === "ECONNABORTED") {
+      setNotificationTitle("Connection Error");
+      setNotificationSubtitle(
+        "Error connecting to the platform. Please ensure the OMAG server platform is available."
+      );
+    } else {
+      setNotificationTitle("Configuration Error");
+      setNotificationSubtitle(
+        "Error sending server configuration to the platform."
+      );
+    }
+    document.getElementById("loading-container").style.display = "none";
+    document.getElementById("config-basic-config-element").style.display =
+      "block";
+    document.getElementById("notification-container").style.display = "block";
+  };
+
+  const onSuccessfulEnableRepository = (json) => {
+    const serverConfig = json.omagServerConfig;
+    setNewServerConfig(serverConfig);
+    directUserToNextStep();
+  };
+  const onSuccessfulConfigureEventBusURL = (json) => {
+    const serverConfig = json.omagServerConfig;
+    setNewServerConfig(serverConfig);
+    directUserToNextStep();
+  };
 
   const onSuccessfulConfigurationOfSecurityConnector = (json) => {
     const serverConfig = json.omagServerConfig;
@@ -309,61 +264,74 @@ export default function ServerAuthorWizard() {
     showNextStep();
     setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
-  // local repository 
+  // local repository
   const handleLocalRepositoryConfig = () => {
-      setLoadingText("Enabling local repository...");
-      document.getElementById("local-repository-container").style.display = "none";
-      document.getElementById("loading-container").style.display = "block";
+    setLoadingText("Enabling local repository...");
+    document.getElementById("local-repository-config-element").style.display =
+      "none";
+    document.getElementById("loading-container").style.display = "block";
 
-      if (newServerRepository) {
-        setLoadingText("Enabling chosen local repository...");
-        const newServerName = serverConfig.localServerName;
-        const serverConfigURL = encodeURI(
+    if (newServerRepository) {
+      setLoadingText("Enabling chosen local repository...");
+
+       //local-repository/mode/plugin-repository/connection
+
+      const serverConfigURL = encodeURI(
+        "/servers/" +
+          tenantId +
+          "/server-author/users/" +
+          userId +
           "/servers/" +
-            tenantId +
-            "/server-author/users/" +
-            userId +
-            "/servers/" +
-            newServerName +
-            "/local-repository/mode/" +
-            newServerRepository
-        );
-        issueRestCreate(
-          serverConfigURL,
-          serverConfig,
-          onSuccessfulEnableRepository,
-          onErrorConfigureServer,
-          "omagServerConfig"
-        );
-
+          newServerName +
+          "/local-repository/mode/" +
+          newServerRepository
+      );
+      let body = undefined;
+      if (serverConfigURL.endsWith("plugin-repository/connection")) {
+        body = {
+          "class": "Connection",
+          "connectorType": {
+            "class": "ConnectorType",
+            "connectorProviderClassName": "org.odpi.egeria.connectors.juxt.crux.repositoryconnector.CruxOMRSRepositoryConnectorProvider"
+          }
+        }
       }
-      // Enable Access Services
-      // try {
-        // if (selectedAccessServices.length === availableAccessServices.length) {
-        //   configureAccessServices();
-        // } else {
-        //   for (const service of selectedAccessServices) {
-        //     setLoadingText(`Enabling ${service} access service...`);
-        //     configureAccessServices(service);
-        //   }
-        // }
-    };
+      issueRestCreate(
+        serverConfigURL,
+        body,
+        onSuccessfulEnableRepository,
+        onErrorConfigureServer,
+        "omagServerConfig"
+      );
+    }
+    // Enable Access Services
+    // try {
+    // if (selectedAccessServices.length === availableAccessServices.length) {
+    //   configureAccessServices();
+    // } else {
+    //   for (const service of selectedAccessServices) {
+    //     setLoadingText(`Enabling ${service} access service...`);
+    //     configureAccessServices(service);
+    //   }
+    // }
+  };
 
   // Access Services (optional)
   const handleAccessServicesConfig = () => {
     setLoadingText("Enabling access services...");
-    document.getElementById("access-services-container").style.display = "none";
+    document.getElementById("access-services-config-element").style.display =
+      "none";
     document.getElementById("loading-container").style.display = "block";
     // Enable Access Services
     // try {
-      if (selectedAccessServices.length === availableAccessServices.length) {
-        configureAccessServices();
-      } else {
-        for (const service of selectedAccessServices) {
-          setLoadingText(`Enabling ${service} access service...`);
-          configureAccessServices(service);
-        }
+    if (selectedAccessServices.length === availableAccessServices.length) {
+      configureAccessServices();
+    } else {
+      for (const service of selectedAccessServices) {
+        setLoadingText(`Enabling ${service} access service...`);
+        configureAccessServices(service);
       }
+    }
   };
   const configureAccessServices = (serviceURLMarker) => {
     console.log("called configureAccessServices", { serviceURLMarker });
@@ -382,39 +350,38 @@ export default function ServerAuthorWizard() {
 
     issueRestCreate(
       configureAccessServicesURL,
-      {},    // TODO supply appropriate access service options here - for example supported or default zones for asset orientated OMAS's   
+      {}, // TODO supply appropriate access service options here - for example supported or default zones for asset orientated OMAS's
       onSuccessfulConfigureAccessServices,
       onErrorConfigureServer,
       "omagServerConfig"
     );
-  }
+  };
   const onSuccessfulConfigureAccessServices = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
     configureAuditLogDestinations();
-  }
+  };
 
   // Audit Log Destinations
 
   const configureAuditLogDestinations = () => {
     setLoadingText("Configuring audit log destinations...");
-    document.getElementById("audit-log-container").style.display = "none";
+    document.getElementById("audit-log-config-element").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
 
     // Fetch Server Config
     setLoadingText("Fetching final stored server configuration...");
-      showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
-    
+    showNextStep();
+    setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
-  const onSuccessfulFetchServer  = (json) => {
+  const onSuccessfulFetchServer = (json) => {
     const serverConfig = json.serverConfig;
-    setNewServerConfig(serverConfig)
+    setNewServerConfig(serverConfig);
     showNextStep();
     setProgressIndicatorIndex(progressIndicatorIndex + 1);
     document.getElementById("loading-container").style.display = "none";
-  } 
-  const onErrorFetchServer  = (error) => {
+  };
+  const onErrorFetchServer = (error) => {
     console.error("Error fetching config", { error });
     setNewServerConfig(null);
     setNotificationType("error");
@@ -430,28 +397,48 @@ export default function ServerAuthorWizard() {
       );
     }
     document.getElementById("loading-container").style.display = "none";
-    document.getElementById("config-basic-container").style.display = "block";
+    document.getElementById("config-basic-config-element").style.display =
+      "block";
     document.getElementById("notification-container").style.display = "block";
-  } 
+  };
 
-  
   const onSuccessfulAuditLog = (json) => {
-      alert("Successful audit log configure)");
-      // TODO amend context to remove audit log we have just configured.
+    alert("Successful audit log configure)");
+    // TODO amend context to remove audit log we have just configured.
   };
   const onErrorAuditLog = (json) => {
     alert("Error audit log configure)");
   };
-
-  // Optional Steps
-
+  const handleConfigureESB = () => {
+    setLoadingText("Configuring ESB...");
+    document.getElementById("esb-config-element").style.display = "none";
+    document.getElementById("loading-container").style.display = "block";
+    // Configure event bus
+    setLoadingText("Configuring event bus...");
+    const serverConfigURL = encodeURI(
+      "/servers/" +
+        tenantId +
+        "/server-author/users/" +
+        userId +
+        "/servers/" +
+        newServerName +
+        "/event-bus?topicURLRoot=egeriaTopics"
+    );
+    issueRestCreate(
+      serverConfigURL,
+      newServerConfig,
+      onSuccessfulConfigureEventBusURL,
+      onErrorConfigureServer,
+      "omagServerConfig"
+    );
+  };
   // Register to a cohort
 
-  const handleRegisterCohorts =  () => {
+  const handleRegisterCohorts = () => {
     setLoadingText("Registering cohort(s)...");
-    document.getElementById("cohort-container").style.display = "none";
+    document.getElementById("cohort-config-element").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
-   
+
     // Fetch Server Config
     setLoadingText("Fetching final stored server configuration...");
     fetchServerConfig(onSuccessfulFetchServer, onErrorFetchServer);
@@ -461,9 +448,9 @@ export default function ServerAuthorWizard() {
 
   const handleConfigureArchives = async () => {
     setLoadingText("Configuring archives(s) to load on server startup...");
-    document.getElementById("archives-container").style.display = "none";
+    document.getElementById("archives-config-element").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
-    // Register Cohorts
+    // Register archives
     for (const archiveName of newServerOMArchives) {
       try {
         setLoadingText(
@@ -488,18 +475,19 @@ export default function ServerAuthorWizard() {
           );
         }
         document.getElementById("loading-container").style.display = "none";
-        document.getElementById("cohort-container").style.display = "none";
-        document.getElementById("archives-container").style.display = "block";
+        document.getElementById("cohort-config-element").style.display = "none";
+        document.getElementById("archives-config-element").style.display =
+          "block";
         document.getElementById("notification-container").style.display =
           "block";
         return;
       }
     }
     // Fetch Server Config
-    setLoadingText("Fetching final stored server configuration...");
+    // setLoadingText("Fetching final stored server configuration...");
     try {
-      const serverConfig = await fetchServerConfig();
-      setNewServerConfig(serverConfig);
+      // const serverConfig = await fetchServerConfig();
+      // setNewServerConfig(serverConfig);
       showNextStep();
       setProgressIndicatorIndex(progressIndicatorIndex + 1);
     } catch (error) {
@@ -515,8 +503,9 @@ export default function ServerAuthorWizard() {
         setNotificationSubtitle(`Error fetching configuration for the server.`);
       }
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("cohort-container").style.display = "none";
-      document.getElementById("archives-container").style.display = "block";
+      document.getElementById("cohort-config-element").style.display = "none";
+      document.getElementById("archives-config-element").style.display =
+        "block";
       document.getElementById("notification-container").style.display = "block";
     }
   };
@@ -553,7 +542,7 @@ export default function ServerAuthorWizard() {
       return;
     }
     setLoadingText("Configuring repository proxy connector...");
-    document.getElementById("repository-proxy-container").style.display =
+    document.getElementById("repository-proxy-config-element").style.display =
       "none";
     document.getElementById("loading-container").style.display = "block";
     // Configure the repository proxy connector
@@ -573,7 +562,7 @@ export default function ServerAuthorWizard() {
         );
       }
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("repository-proxy-container").style.display =
+      document.getElementById("repository-proxy-config-element").style.display =
         "block";
       document.getElementById("notification-container").style.display = "block";
       return;
@@ -599,7 +588,7 @@ export default function ServerAuthorWizard() {
         );
       }
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("repository-proxy-container").style.display =
+      document.getElementById("repository-proxy-config-element").style.display =
         "block";
       document.getElementById("notification-container").style.display = "block";
       return;
@@ -624,10 +613,18 @@ export default function ServerAuthorWizard() {
         setNotificationSubtitle(`Error fetching configuration for the server.`);
       }
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("repository-proxy-container").style.display =
+      document.getElementById("repository-proxy-config-element").style.display =
         "block";
       document.getElementById("notification-container").style.display = "block";
     }
+  };
+  const onChangeServerTypeSelected = (e) => {
+    const serverType = e.currentTarget.value;
+    setNewServerLocalServerType(serverType);
+    const serverTypeElement = serverTypes.find((o) => o.id === serverType);
+    setServerTypeDescription(serverTypeElement.description);
+
+    // move to the next screen on click
   };
 
   // Configure the open metadata view services
@@ -663,7 +660,7 @@ export default function ServerAuthorWizard() {
       return;
     }
     setLoadingText("Enabling view services...");
-    document.getElementById("view-services-container").style.display = "none";
+    document.getElementById("view-services-element").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
     // Enable View Services
     try {
@@ -694,8 +691,7 @@ export default function ServerAuthorWizard() {
         setNotificationSubtitle(`Error enabling the view service(s).`);
       }
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("view-services-container").style.display =
-        "block";
+      document.getElementById("view-services-element").style.display = "block";
       document.getElementById("notification-container").style.display = "block";
       return;
     }
@@ -719,8 +715,7 @@ export default function ServerAuthorWizard() {
         setNotificationSubtitle(`Error fetching configuration for the server.`);
       }
       document.getElementById("loading-container").style.display = "none";
-      document.getElementById("view-services-container").style.display =
-        "block";
+      document.getElementById("view-services-element").style.display = "block";
       document.getElementById("notification-container").style.display = "block";
     }
   };
@@ -1002,104 +997,11 @@ export default function ServerAuthorWizard() {
       document.getElementById("loading-container").style.display = "none";
       document.getElementById("config-preview-container").style.display =
         "block";
+        document.getElementById("config-final-container").style.display =
+        "block";
       document.getElementById("notification-container").style.display = "block";
     }
   };
-
-  const firstRowIds = ['omag-server'];
-  const secondRowIds = ['cohort-member', 'view-server', 'governance-server'];
-  const thirdRowLeftIds = ['metadata-server', 'metadata-access-point','repository-proxy', 'conformance-test-server' ];
-  const thirdRowRightIds = ['integration-daemon', 'engine-host', 'data-engine-proxy', 'open-lineage-server'];
-
-  // filter the types 
-  const firstRowServerTypes =  serverTypes.filter( i => firstRowIds.includes( i.id ) );
-  const secondRowServerTypes = serverTypes.filter( i => secondRowIds.includes( i.id ) );
-  const thirdRowLeftServerTypes = serverTypes.filter( i => thirdRowLeftIds.includes( i.id ) );
-  const thirdRowRightServerTypes = serverTypes.filter( i => thirdRowRightIds.includes( i.id ) );
-
-  const serverTypeTiles = serverTypes.map((serverType, i) => {
-    return (
-        <RadioTile
-        id={serverType.id}
-        key={`server-type-${i}`}
-        light={false}
-        name={`server-serverType-${i}`}
-        tabIndex={i}
-        value={serverType.label}
-        className="server-type-card"
-      >
-        {serverType.label}
-      </RadioTile>
-     
-    );
-  });
-
-  const firstRowServerTypeTiles = firstRowServerTypes.map((serverType, i) => {
-    return (
-        <RadioTile
-        id={serverType.id}
-        key={`server-type-${i}`}
-        light={false}
-        name={`server-serverType-${i}`}
-        tabIndex={i}
-        value={serverType.label}
-        className="server-type-card"
-      >
-        {serverType.label}
-      </RadioTile>
-     
-    );
-  });
-  const secondRowServerTypeTiles = secondRowServerTypes.map((serverType, i) => {
-    return (
-        <RadioTile
-        id={serverType.id}
-        key={`server-type-${i}`}
-        light={false}
-        name={`server-serverType-${i}`}
-        tabIndex={i}
-        value={serverType.label}
-        className="server-type-card"
-      >
-        {serverType.label}
-      </RadioTile>
-     
-    );
-  });
-  const thirdRowLeftServerTypeTiles = thirdRowLeftServerTypes.map((serverType, i) => {
-    return (
- 
-        <RadioTile
-        id={serverType.id}
-        key={`server-type-${i}`}
-        light={false}
-        name={`server-serverType-${i}`}
-        tabIndex={i}
-        value={serverType.label}
-        className="server-type-card"
-      >
-        {serverType.label}
-      </RadioTile>
-     
-    );
-  });
-  const thirdRowRightServerTypeTiles = thirdRowRightServerTypes.map((serverType, i) => {
-    return (
- 
-        <RadioTile
-        id={serverType.id}
-        key={`server-type-${i}`}
-        light={false}
-        name={`server-serverType-${i}`}
-        tabIndex={i}
-        value={serverType.label}
-        className="server-type-card"
-      >
-        {serverType.label}
-      </RadioTile>
-     
-    );
-  });
 
   return (
     <Grid>
@@ -1111,17 +1013,21 @@ export default function ServerAuthorWizard() {
           lg={{ span: 16 }}
         >
           <h1>All OMAG Servers</h1>
-  
+
           <AllServers />
         </Column>
       </Row>
 
-      <Row id="server-config-container" className="flex-column" style={{ display: "none" }}>
+      <Row
+        id="server-config-container"
+        className="flex-column"
+        style={{ display: "none" }}
+      >
         {/* Form Column */}
-       {/* Progress Indicator Column */}
-       <h1>Create New OMAG Server</h1>
+        {/* Progress Indicator Column */}
+        <h1>Create New OMAG Server</h1>
 
-       <Row
+        <Row
           id="config-progress-container"
           sm={{ span: 4 }}
           md={{ span: 2 }}
@@ -1135,7 +1041,6 @@ export default function ServerAuthorWizard() {
           md={{ span: 6 }}
           lg={{ span: 12 }}
         >
-
           <div
             id="notification-container"
             className="hideable"
@@ -1151,31 +1056,68 @@ export default function ServerAuthorWizard() {
           </div>
 
           <div id="server-type-container" className="hideable">
-          <NavigationButtons handleNextStep={handleServerTypeSelection} />
+            <NavigationButtons handleNextStep={handleServerTypeSelection} />
+            
+            <div className ="server-type-container"> 
             <h4 style={{ textAlign: "left", marginBottom: "32px" }}>
               Select Server Type
             </h4>
-            <TileGroup
-              defaultSelected={serverTypes[0].label}
-              name="server-types-omag-server"
-              valueSelected=""
-              onChange={(value) => setNewServerLocalServerType(value)}
-              // className="server-type-container"
-            >
-            {/* <div className="server-type-container">
-              {thirdRowLeftServerTypeTiles}
-              </div> */}
-              {serverTypeTiles}
-            </TileGroup>
            
+            <Info16 onClick = { () => displayHelpForServerTypes() }/>
+            {/* <input type="image"  alt="image of question mark"
+                     onClick = { () => displayHelpForServerTypes() }  >
+            </input> */}
+            </div>
+            <Select
+              defaultValue="placeholder-item"
+              helperText={serverTypeDescription}
+              onChange={onChangeServerTypeSelected}
+              id="select-server-type"
+              invalidText="A valid value is required"
+              labelText="Select"
+            >
+              <SelectItem
+                text="Choose a Server type"
+                value="placeholder-item"
+              />
+              <SelectItemGroup label="Cohort Member">
+                <SelectItem
+                  text="Metadata Access Point"
+                  value="metadata-access-point"
+                />
+                <SelectItem text="Repository Proxy" value="repository-proxy" />
+                <SelectItem
+                  text="Conformance Test Server"
+                  value="conformance-test-server"
+                />
+                <SelectItem text="Metadata Server" value="metadata-server" />
+              </SelectItemGroup>
+              <SelectItemGroup label="Governance Servers">
+                <SelectItem
+                  text="Integration Daemon"
+                  value="integration-daemon"
+                />
+                <SelectItem text="Engine Host" value="engine-host" />
+                <SelectItem
+                  text="Data Engine Proxy"
+                  value="data-engine-proxy"
+                />
+                <SelectItem
+                  text="Open Lineage Server"
+                  value="open-lineage-server"
+                />
+              </SelectItemGroup>
+              <SelectItem text="View Server" value="view-server" />
+            </Select>
+
           </div>
 
           <div
-            id="config-basic-container"
+            id="config-basic-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
-             <NavigationButtons
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleBasicConfig}
             />
@@ -1183,31 +1125,29 @@ export default function ServerAuthorWizard() {
               Basic Configuration
             </h4>
             <BasicConfig />
-           
           </div>
 
           <div
-            id="local-repository-container"
+            id="local-repository-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
-              <NavigationButtons
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleAccessServicesConfig}
+              handleNextStep={handleLocalRepositoryConfig}
             />
             <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
               Select Local Repository
             </h4>
             <ConfigureLocalRepository />
-          
           </div>
 
           <div
-            id="access-services-container"
+            id="access-services-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
-              <NavigationButtons
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleAccessServicesConfig}
             />
@@ -1215,11 +1155,10 @@ export default function ServerAuthorWizard() {
               Select Access Services
             </h4>
             <ConfigureAccessServices />
-          
           </div>
 
           <div
-            id="audit-log-container"
+            id="audit-log-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
@@ -1227,19 +1166,35 @@ export default function ServerAuthorWizard() {
               Configure Audit Log Destinations
             </h4>
             <ConfigureAuditLog
-              nextAction={() =>
-                configureAuditLogDestinations()
-              }
+              nextAction={() => configureAuditLogDestinations()}
               previousAction={handleBackToPreviousStep}
             />
           </div>
 
           <div
-            id="cohort-container"
+            id="esb-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
-             <NavigationButtons
+            <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={handleConfigureESB}
+            />
+            <h4 style={{ textAlign: "left", marginBottom: "24px" }}>
+              Configure Enterprise Service Bus
+            </h4>
+            <div style={{ textAlign: "left", marginBottom: "24px" }}>
+              Configure Enterprise Service Bus with default topicURLRoot as
+              'egeriaTopics'
+            </div>
+          </div>
+
+          <div
+            id="cohort-config-element"
+            className="hideable"
+            style={{ display: "none" }}
+          >
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleRegisterCohorts}
             />
@@ -1247,15 +1202,14 @@ export default function ServerAuthorWizard() {
               Register to the following cohort(s):
             </h4>
             <RegisterCohorts />
-           
           </div>
 
           <div
-            id="archives-container"
+            id="archives-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
-            <NavigationButtons
+         <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureArchives}
             />
@@ -1264,11 +1218,10 @@ export default function ServerAuthorWizard() {
               startup
             </h4>
             <ConfigureOMArchives />
-            
           </div>
 
           <div
-            id="repository-proxy-container"
+            id="repository-proxy-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
@@ -1280,15 +1233,14 @@ export default function ServerAuthorWizard() {
               Configure the Repository Proxy Connectors
             </h4>
             <ConfigureRepositoryProxyConnectors />
-            
           </div>
 
           <div
-            id="view-services-container"
+            id="view-services-element"
             className="hideable"
             style={{ display: "none" }}
           >
-             <NavigationButtons
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureViewServices}
             />
@@ -1296,7 +1248,6 @@ export default function ServerAuthorWizard() {
               Configure the Open Metadata View Services (OMVS)
             </h4>
             <ConfigureViewServices />
-           
           </div>
 
           <div
@@ -1304,7 +1255,7 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
-              <NavigationButtons
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={showNextStep}
             />
@@ -1312,11 +1263,10 @@ export default function ServerAuthorWizard() {
               Configure the Open Metadata Integration Services (OMIS)
             </h4>
             <ConfigureIntegrationServices />
-          
           </div>
 
           <div
-            id="config-preview-container"
+            id="final-config-element"
             className="hideable"
             style={{ display: "none" }}
           >
@@ -1327,12 +1277,10 @@ export default function ServerAuthorWizard() {
                 marginLeft: "1rem",
               }}
             >
-              Preview Configuration
+             Congratulations you have successfully configured server '{newServerName}'!
             </h4>
-            <ConfigPreview options={{ editable: true }} />
             <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleDeployConfig}
             />
           </div>
 
@@ -1349,7 +1297,6 @@ export default function ServerAuthorWizard() {
             <p>{loadingText}</p>
           </div>
         </Column>
-
       </Row>
     </Grid>
   );

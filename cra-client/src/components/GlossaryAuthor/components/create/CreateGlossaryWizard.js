@@ -21,7 +21,7 @@ import { parse } from "date-fns";
  *  where the user can confirm the values that will be used to create the glossary.
  *
  * This component drives the NodeInput component, which displays the node. There are callbacks to the wizard
- * when the user has finsished with entering creation content.
+ * when the user has finished with entering creation content.
  * This component then drives NodeReadOnly which displays the confirmation screen, issues the create and then shows the results
  * of the create.
  *

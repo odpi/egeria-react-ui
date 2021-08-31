@@ -3,9 +3,10 @@
 
 import React, { useContext } from "react";
 import {
-  Button
+  Button, FormLabel
 } from "carbon-components-react";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
+import serverConfigElements from "./defaults/serverConfigElements";
 
 export default function NavigationButtons({ handlePreviousStep, handleNextStep }) {
 
@@ -17,6 +18,12 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
   } = useContext(ServerAuthorContext);
 
   const steps = serverConfigurationSteps(newServerLocalServerType);
+
+  const getStepLabel = (index) => {
+    const id = steps[index];
+    const serverTypeElement = serverConfigElements.find(o => o.id === id); 
+    return serverTypeElement.label;
+  } 
 
   // First step
 
@@ -37,7 +44,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
           style={{margin: "16px auto"}}
           onClick={handleNextStep}
         >
-          Proceed to {steps[progressIndicatorIndex + 1].toLowerCase()}
+          Proceed to {getStepLabel(progressIndicatorIndex + 1)}
         </Button>
       </div>
     )
@@ -52,26 +59,11 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
 
       <div className="bx--btn-set">
         <Button
-          kind="danger"
+           kind="primary"
           style={{margin: "16px auto"}}
           onClick={hideConfigForm}
         >
-          Cancel Configuration
-        </Button>
-        <Button
-          kind="secondary"
-          style={{margin: "16px auto"}}
-          onClick={handlePreviousStep}
-        >
-          Back to {steps[progressIndicatorIndex - 1].toLowerCase()}
-        </Button>
-        <Button
-          type="submit"
-          kind="primary"
-          style={{margin: "16px auto"}}
-          onClick={handleNextStep}
-        >
-          Deploy instance
+          Finished
         </Button>
       </div>
   
@@ -96,7 +88,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
         style={{margin: "16px auto"}}
         onClick={handlePreviousStep}
       >
-        Back to {steps[progressIndicatorIndex - 1].toLowerCase()}
+        Back to {getStepLabel(progressIndicatorIndex - 1)}
       </Button>
       <Button
         type="submit"
@@ -104,7 +96,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
         style={{margin: "16px auto"}}
         onClick={handleNextStep}
       >
-        Proceed to {steps[progressIndicatorIndex + 1].toLowerCase()}
+        Proceed to {getStepLabel(progressIndicatorIndex + 1)}
       </Button>
     </div>
 

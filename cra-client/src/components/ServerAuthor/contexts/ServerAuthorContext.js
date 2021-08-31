@@ -27,7 +27,7 @@ const ServerAuthorContextProvider = props => {
   // Basic Config
   const [newServerName, setNewServerName] = useState("");
   const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState("https://localhost:9443");
-  const [newServerLocalServerType, setNewServerLocalServerType] = useState(serverTypes[0].label);
+  const [newServerLocalServerType, setNewServerLocalServerType] = useState(serverTypes[0].id);   // default to metadata server for now  
   const [newServerOrganizationName, setNewServerOrganizationName] = useState(user ? user.organizationName || "" : "");
   const [newServerLocalUserId, setNewServerLocalUserId] = useState("");
   const [newServerLocalPassword, setNewServerLocalPassword] = useState("");
@@ -163,9 +163,25 @@ const  cleanForNewServerType = () => {
   }
   const  onSuccessfulFetchAuditLogSeverities = (json) => {
     
-    console.log("Successfully fetched supported sudit log severities = " + JSON.stringify(json));
+    console.log(
+      "Successfully fetched supported audit log severities = " +
+        JSON.stringify(json)
+    );
     const severities = json.severities;
-    setSupportedAuditLogSeverities(severities);
+    // give the items ids
+    let severitiesWithIds = [];
+    if (severities && severities.length > 0) {
+      severitiesWithIds = severities.map(function (item) {
+        if (item.id !== "<Unknown>") {
+          return {
+            id : item.name,
+            label: item.name,
+          };
+        }
+      });
+    }
+
+    setSupportedAuditLogSeverities(severitiesWithIds);
 
   }
   const fetchServerConfig = (onSuccessfulFetchServer, onErrorFetchServer ) => {
@@ -326,44 +342,54 @@ const  cleanForNewServerType = () => {
     }
   }
 
-  
+  /**
+   * Get the config elements for this server type. These will be the steps for the wizard
+   * @param {*} serverType 
+   * @returns an array (order is important) of config elements relevant for this type.
+   */
   const serverConfigurationSteps = (serverType) => {
 
-    const steps = [
-      "Select server type",
-      "Basic configuration",
-      "Configure audit log destinations",
-      "Preview configuration and deploy instance"
-    ];
+    // find the element in the array with the id of serverType
 
-    switch(serverType) {
+    const serverTypeElement = serverTypes.find(o => o.id === serverType);
 
-      case "View Server":
-        steps.splice(steps.length - 1, 0, "Configure the Open Metadata View Services (OMVS)");
-        break;
+    return serverTypeElement.serverConfigElements;
 
-      case "Metadata Access Point":
-      case "Metadata Server":
-        steps.splice(2, 0, "Select access services");
-        steps.splice(steps.length - 1, 0, "Register to a cohort");
-        steps.splice(steps.length - 1, 0, "Configure the open metadata archives");
-        break;
+    // const steps = [
+    //   "Select server type",
+    //   "Basic configuration",
+    //   "Configure audit log destinations",
+    //   "Preview configuration and deploy instance"
+    // ];
 
-      case "Repository Proxy":
-        steps.splice(steps.length - 1, 0, "Register to a cohort");
-        steps.splice(steps.length - 1, 0, "Configure the open metadata archives");
-        steps.splice(steps.length - 1, 0, "Configure the repository proxy connectors");
-        break;
+    // switch(serverType) {
 
-      case "Conformance Test Server":
-        steps.splice(steps.length - 1, 0, "Register to a cohort");
-        break;
+    //   case "View Server":
+    //     steps.splice(steps.length - 1, 0, "Configure the Open Metadata View Services (OMVS)");
+    //     break;
 
-      case "Integration Daemon":
-        steps.splice(steps.length - 1, 0, "Configure the Open Metadata Integration Services (OMIS)");
-        break;
+    //   case "Metadata Access Point":
+    //   case "Metadata Server":
+    //     steps.splice(2, 0, "Select access services");
+    //     steps.splice(steps.length - 1, 0, "Register to a cohort");
+    //     steps.splice(steps.length - 1, 0, "Configure the open metadata archives");
+    //     break;
 
-    }
+    //   case "Repository Proxy":
+    //     steps.splice(steps.length - 1, 0, "Register to a cohort");
+    //     steps.splice(steps.length - 1, 0, "Configure the open metadata archives");
+    //     steps.splice(steps.length - 1, 0, "Configure the repository proxy connectors");
+    //     break;
+
+    //   case "Conformance Test Server":
+    //     steps.splice(steps.length - 1, 0, "Register to a cohort");
+    //     break;
+
+    //   case "Integration Daemon":
+    //     steps.splice(steps.length - 1, 0, "Configure the Open Metadata Integration Services (OMIS)");
+    //     break;
+
+    // }
 
     return steps;
 

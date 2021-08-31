@@ -7,6 +7,7 @@ import {
   ProgressStep,
 } from "carbon-components-react";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
+import serverConfigElements from "./defaults/serverConfigElements";
 
 export default function ConfigurationSteps() {
 
@@ -17,6 +18,12 @@ export default function ConfigurationSteps() {
   } = useContext(ServerAuthorContext);
 
   const steps = serverConfigurationSteps(newServerLocalServerType);
+
+  const getStepLabel = (index) => {
+    const id = steps[index];
+    const serverTypeElement = serverConfigElements.find(o => o.id === id); 
+    return serverTypeElement.label;
+  } 
 
   return (
 
@@ -30,7 +37,7 @@ export default function ConfigurationSteps() {
       {steps.map((step, i) => (
         <ProgressStep
           key={`server-configuration-step-${i}`}
-          label={step}
+          label={getStepLabel(i)}
           description={`Step ${i + 1}: OMAG server wizard`}
         />
       ))}

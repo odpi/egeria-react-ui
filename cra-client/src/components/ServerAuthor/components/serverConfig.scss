@@ -29,9 +29,13 @@
 .server-type-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-around
+  justify-content: left
 }
 .flex-column {
   flex-direction: column;
+}
+.diagram-heading {
+  margin-top: 30px;
+  text-align: left;
 }
 

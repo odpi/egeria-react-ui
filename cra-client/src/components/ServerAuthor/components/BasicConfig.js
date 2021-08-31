@@ -18,7 +18,6 @@ export default function BasicConfig() {
     newServerLocalPassword, setNewServerLocalPassword,
     newServerMaxPageSize, setNewServerMaxPageSize,
     newServerSecurityConnector, setNewServerSecurityConnector,
-    newServerLocalServerType,
     basicConfigFormStartRef,
   } = useContext(ServerAuthorContext);
 
