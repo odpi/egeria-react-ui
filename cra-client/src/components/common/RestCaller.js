@@ -3,7 +3,7 @@
 
 function processErrorJson(operationName, json, response) {
   const relatedHTTPCode = json.relatedHTTPCode;
-  let msg = operationName + "Unexpected response.";
+  let msg;
   if (relatedHTTPCode) {
     if (json.exceptionUserAction) {
       msg = json.exceptionUserAction;

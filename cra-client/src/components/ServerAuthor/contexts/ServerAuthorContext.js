@@ -391,7 +391,7 @@ const  cleanForNewServerType = () => {
 
     // }
 
-    return steps;
+    // return steps;
 
   };
 
