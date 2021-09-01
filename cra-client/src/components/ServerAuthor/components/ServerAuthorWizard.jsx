@@ -143,6 +143,10 @@ export default function ServerAuthorWizard() {
   const handleBasicConfig = async (e) => {
     e.preventDefault();
     // Generate server config
+    
+    // if the bilateral local repository was chosen and failed to be set then we disable that dom element.
+    // if the basic config has been completed then the platform coudl have been changed - so allow the bilateral server to be chosen again 
+    document.getElementById("bitemporal-repository").removeAttribute("disabled", "");
     setLoadingText("Generating server configuration...");
     document.getElementById("config-basic-config-element").style.display =
       "none";
@@ -245,6 +249,12 @@ export default function ServerAuthorWizard() {
     setNewServerConfig(serverConfig);
     directUserToNextStep();
   };
+  const onErrorEnableCruxServer = () => {
+      alert("The Bilateral repository is not available on the server please choose another local respository to enable.")
+      document.getElementById("bitemporal-repository").setAttribute("disabled","disabled");
+      document.getElementById("loading-container").style.display = "none";
+      document.getElementById("local-repository-config-element").style.display = "block";
+  };
   const onSuccessfulConfigureEventBusURL = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
@@ -283,23 +293,31 @@ export default function ServerAuthorWizard() {
           "/local-repository/mode/" +
           newServerRepository
       );
-      let body = undefined;
+     
       if (serverConfigURL.endsWith("plugin-repository/connection")) {
-        body = {
+        const body = {
           "class": "Connection",
           "connectorType": {
             "class": "ConnectorType",
             "connectorProviderClassName": "org.odpi.egeria.connectors.juxt.crux.repositoryconnector.CruxOMRSRepositoryConnectorProvider"
           }
-        }
-      }
+        };
+        issueRestCreate(
+          serverConfigURL,
+          body,
+          onSuccessfulEnableRepository,
+          onErrorEnableCruxServer,
+          "omagServerConfig"
+        );
+      } else {
       issueRestCreate(
         serverConfigURL,
-        body,
+        undefined,
         onSuccessfulEnableRepository,
         onErrorConfigureServer,
         "omagServerConfig"
       );
+      }
     }
     // Enable Access Services
     // try {
