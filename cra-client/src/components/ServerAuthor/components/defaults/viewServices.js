@@ -20,6 +20,6 @@ const viewServices = [
     "serviceDescription": "Explore the open metadata types.",
     "serviceWiki": "https://odpi.github.io/egeria/open-metadata-implementation/access-services/subject-area/"
   }
-]
+];
 
 export default viewServices;

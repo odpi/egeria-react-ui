@@ -8,7 +8,7 @@ import {
   TextInput,
 } from "carbon-components-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureViewServices() {
 
@@ -26,7 +26,7 @@ export default function ConfigureViewServices() {
       if (isChecked)
         boxes[b].click();
     };
-  }
+  };
 
   const handleSelectAllViewServices = () => {
     const boxes = document.getElementsByName('view-services');
@@ -35,13 +35,13 @@ export default function ConfigureViewServices() {
       if (!isChecked)
         boxes[b].click();
     };
-  }
+  };
 
   const updateViewServices = () => {
     const boxes = document.getElementsByName('view-services');
     const selectedViewServices = Array.from(boxes).filter((box) => box.checked).map((box) => box.value);
     setSelectedViewServices(selectedViewServices);
-  }
+  };
 
   return (
 
@@ -107,6 +107,6 @@ export default function ConfigureViewServices() {
       </fieldset>
     </div>
 
-  )
+  );
 
 }

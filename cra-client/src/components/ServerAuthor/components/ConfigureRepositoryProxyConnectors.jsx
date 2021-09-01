@@ -11,7 +11,7 @@ import {
 //   Subtract16,
 // } from "@carbon/icons-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureRepositoryProxyConnectors() {
   
@@ -56,19 +56,6 @@ export default function ConfigureRepositoryProxyConnectors() {
         style={{marginBottom: "16px"}}
         autoComplete="off"
       />
-      
-      {/* TODO: Add button to test connection */}
-      {/* <Button
-        kind="tertiary"
-        renderIcon={Add16}
-        iconDescription="Add"
-        tooltipAlignment="start"
-        tooltipPosition="right"
-        onClick={handleAddCohort}
-        style={{display: "inline-block"}}
-      >
-        Test Connection
-      </Button> */}
 
     </div>
 

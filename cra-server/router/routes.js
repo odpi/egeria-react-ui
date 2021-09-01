@@ -228,7 +228,7 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     return;
   }
   const servers = req.app.get("servers");
-  const urlRoot = servers[req.query.tenantId].remoteURL;
+  const urlRoot = servers[req.query.serverName].remoteURL;
   const apiReq = {
     method: "get",
     url: urlRoot + incomingPath,
@@ -266,9 +266,9 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
     return;
   }
-  const { config, tenantId } = req.body;
+  const { config, serverName } = req.body;
   const servers = req.app.get("servers");
-  const urlRoot = servers[tenantId].remoteURL;
+  const urlRoot = servers[serverName].remoteURL;
   const apiReq = {
     method: "post",
     url: urlRoot + incomingUrl,
@@ -307,9 +307,9 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
     res.status(400).send("Error, invalid supplied URL: " + incomingUrl);
     return;
   }
-  const { config, tenantId } = req.body;
+  const { config, serverName } = req.body;
   const servers = req.app.get("servers");
-  const urlRoot = servers[tenantId].remoteURL;
+  const urlRoot = servers[serverName].remoteURL;
   const apiReq = {
     method: "delete",
     url: urlRoot + incomingUrl,
@@ -349,8 +349,9 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
   //   res.status(400).send("Error, invalid supplied URL: " + incomingPath);
   //   return;
   // }
+  console.log("/open-metadata/platform-services req.query " + JSON.stringify(req.query) );
   const servers = req.app.get("servers");
-  const urlRoot = servers[req.query.tenantId].remoteURL;
+  const urlRoot = servers[req.query.serverName].remoteURL;
   const apiReq = {
     method: "get",
     url: urlRoot + incomingPath,

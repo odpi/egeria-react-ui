@@ -11,7 +11,7 @@ import {
   Subtract16,
 } from "@carbon/icons-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureOMArchives() {
   
@@ -23,13 +23,13 @@ export default function ConfigureOMArchives() {
     if (archiveName.length === 0) return;
     setNewServerOMArchives(newServerOMArchives.concat(archiveName));
     document.getElementById("new-server-archive-file-name").value = "";
-  }
+  };
 
   const handleRemoveOMArchive = index => {
     console.log("handleRemoveOMArchive() called", { index });
-    const archiveList = newServerOMArchives.filter((v, i) => { return i !== index });
+    const archiveList = newServerOMArchives.filter((v, i) => { return i !== index; });
     setNewServerOMArchives(archiveList);
-  }
+  };
 
   return (
 
@@ -84,6 +84,6 @@ export default function ConfigureOMArchives() {
 
     </div>
 
-  )
+  );
 
 }

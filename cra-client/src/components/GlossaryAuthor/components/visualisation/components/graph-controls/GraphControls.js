@@ -19,7 +19,7 @@ import SearchNodeButtonWidget                    from "./SearchNodeButtonWidget"
 
 import "../../glove.scss";
 
-import { issueRestGet } from "../../../RestCaller";
+import { issueRestGet } from "../../../../../common/RestCaller";
 
 
 export default function GraphControls(props) {

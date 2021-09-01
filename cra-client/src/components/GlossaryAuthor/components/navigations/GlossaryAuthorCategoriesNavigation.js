@@ -17,7 +17,7 @@ import { Pagination, Toggle } from "carbon-components-react";
 import NodeTableView from "../views/NodeTableView";
 
 import getNodeType from "../properties/NodeTypes.js";
-import { issueRestGet, issueRestDelete } from "../RestCaller";
+import { issueRestGet, issueRestDelete } from "../../../common/RestCaller";
 
 import { Link } from "react-router-dom";
 

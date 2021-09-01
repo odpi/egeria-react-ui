@@ -7,7 +7,7 @@ import {
   SelectableTile,
 } from "carbon-components-react";
 
-import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
+import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureAccessServices() {
 
@@ -24,7 +24,7 @@ export default function ConfigureAccessServices() {
         boxes[b].click();
     };
     updateAccessServices();
-  }
+  };
 
   const handleSelectAllAccessServices = () => {
     const boxes = document.getElementsByName('access-services');
@@ -32,15 +32,15 @@ export default function ConfigureAccessServices() {
       const isChecked = boxes[b].checked;
       if (!isChecked)
         boxes[b].click();
-    };
+    }
     updateAccessServices();
-  }
+  };
 
   const updateAccessServices = () => {
     const boxes = document.getElementsByName('access-services');
     const selectedAccessServices = Array.from(boxes).filter((box) => box.checked).map((box) => box.value);
     setSelectedAccessServices(selectedAccessServices);
-  }
+  };
 
   return (
 
@@ -87,6 +87,6 @@ export default function ConfigureAccessServices() {
       </fieldset>
     </div>
 
-  )
+  );
 
 }

@@ -19,7 +19,7 @@ import NodeTableView from "../views/NodeTableView";
 //import GlossaryImage from "../../../images/Egeria_glossary_32";
 import getNodeType from "../properties/NodeTypes.js";
 import getPathTypesAndGuids from "../properties/PathAnalyser";
-import { issueRestGet, issueRestDelete } from "../RestCaller";
+import { issueRestGet, issueRestDelete } from "../../../common/RestCaller";
 
 import { Link } from "react-router-dom";
 

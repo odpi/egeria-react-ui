@@ -32,6 +32,6 @@ const integrationServices = [
     "serviceDescription": "Load information about the teams and people in an organization and return collaboration activity.",
     "serviceWiki": "https://egeria.odpi.org/open-metadata-implementation/integration-services/organization-integrator/"
   }
-]
+];
 
 export default integrationServices;

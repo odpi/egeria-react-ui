@@ -8,7 +8,7 @@ import Add32 from "../../../images/carbon/Egeria_add_32";
 import getNodeType from "./properties/NodeTypes.js";
 import { Button, Form, FormGroup, TextInput, Loading } from "carbon-components-react";
 
-import { issueRestCreate } from "./RestCaller";
+import { issueRestCreate } from "../../common/RestCaller";
 import { useHistory, withRouter } from "react-router-dom";
 
 function GlossaryQuickTerms(props) {

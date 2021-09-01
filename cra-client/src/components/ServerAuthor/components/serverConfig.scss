@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the ODPi Egeria project. */
+
+.customAccordionItem > div.bx--accordion__content {
+  // padding-right: 1rem;
+  // padding-top: 0;
+  // padding-bottom: 0;
+  padding: 0;
+}
+
+.customStructuredListHeader {
+  vertical-align: baseline;
+}
+
+.expanded-td > td {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-left: 64px;
+}
+
+.bx--structured-list:first-child {
+  border-top: 1px solid #e0e0e0;
+}
+
+.server-type-card {
+  width:fit-content;
+  border:1px;
+}
+.server-type-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: left
+}
+.flex-column {
+  flex-direction: column;
+}
+.diagram-heading {
+  margin-top: 30px;
+  text-align: left;
+}
+.left-text {
+  text-align: left;
+}
+
+.left-text-bottom-margin-32 {
+  text-align: left;
+  margin-bottom: 32px;
+}
+.left-text-bottom-margin-24 {
+  text-align: left;
+  margin-bottom: 24px;
+}
+.left-text-bottom-margin-16 {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+
