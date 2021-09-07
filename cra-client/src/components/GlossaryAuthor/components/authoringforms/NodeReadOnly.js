@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import format from "date-fns/format";
 import {
   Accordion,

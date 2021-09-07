@@ -20,7 +20,11 @@ const auditLogDestinations = [
   },
   {
     id: "event-topic",
-    label: "Event Bus"
+    label: "Event Topic"
+  },
+  {
+    id: "connection",
+    label: "Connection"
   }
 ];
 

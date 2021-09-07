@@ -13,7 +13,6 @@ import {
   SelectItemGroup,
 } from "carbon-components-react";
 import Info16 from "@carbon/icons-react/lib/information/16";
-import axios from "axios";
 import { issueRestCreate } from "../../common/RestCaller";
 
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
@@ -26,7 +25,7 @@ import NavigationButtons from "./NavigationButtons";
 import BasicConfig from "./BasicConfig";
 import ConfigureAccessServices from "./ConfigureAccessServices";
 import ConfigureLocalRepository from "./ConfigureLocalRepository";
-import ConfigureAuditLog from "./ConfigureAuditLog";
+import ConfigureAuditLogDestinations from "./ConfigureAuditLogDestinations";
 import RegisterCohorts from "./RegisterCohorts";
 import ConfigureOMArchives from "./ConfigureOMArchives";
 import ConfigureRepositoryProxyConnectors from "./ConfigureRepositoryProxyConnectors";
@@ -120,6 +119,7 @@ export default function ServerAuthorWizard() {
     //   stewardshipEnginesFormStartRef.current.focus();
     //   break;
     // }
+    setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
 
   const handleBackToPreviousStep = (e) => {
@@ -135,7 +135,6 @@ export default function ServerAuthorWizard() {
     // clear out the context.
     cleanForNewServerType();
     showNextStep();
-    setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
 
   // Basic Config
@@ -220,7 +219,7 @@ export default function ServerAuthorWizard() {
         "omagServerConfig"
       );
     } else {
-      directUserToNextStep();
+      showNextStep();
     }
   };
   const onErrorConfigureServer = (error) => {
@@ -247,7 +246,7 @@ export default function ServerAuthorWizard() {
   const onSuccessfulEnableRepository = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
-    directUserToNextStep();
+    showNextStep();
   };
   const onErrorEnableCruxServer = () => {
       alert("The Bilateral repository is not available on the server please choose another local respository to enable.")
@@ -258,18 +257,13 @@ export default function ServerAuthorWizard() {
   const onSuccessfulConfigureEventBusURL = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
-    directUserToNextStep();
+    showNextStep();
   };
 
   const onSuccessfulConfigurationOfSecurityConnector = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
-    directUserToNextStep();
-  };
-  const directUserToNextStep = () => {
-    // Direct User to Next Step
     showNextStep();
-    setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
   // local repository
   const handleLocalRepositoryConfig = () => {
@@ -387,15 +381,14 @@ export default function ServerAuthorWizard() {
     // Fetch Server Config
     setLoadingText("Fetching final stored server configuration...");
     showNextStep();
-    setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
   const onSuccessfulFetchServer = (json) => {
     const serverConfig = json.serverConfig;
     setNewServerConfig(serverConfig);
     showNextStep();
-    setProgressIndicatorIndex(progressIndicatorIndex + 1);
     document.getElementById("loading-container").style.display = "none";
   };
+
   const onErrorFetchServer = (error) => {
     console.error("Error fetching config", { error });
     setNewServerConfig(null);
@@ -418,7 +411,7 @@ export default function ServerAuthorWizard() {
   };
 
   const handleConfigureESB = () => {
-    setLoadingText("Configuring ESB...");
+    setLoadingText("Configuring Event Bus...");
     document.getElementById("esb-config-element").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
     // Configure event bus
@@ -497,7 +490,6 @@ export default function ServerAuthorWizard() {
       // const serverConfig = await fetchServerConfig();
       // setNewServerConfig(serverConfig);
       showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
     } catch (error) {
       console.error("error fetching server config", { error });
       setNotificationType("error");
@@ -529,7 +521,6 @@ export default function ServerAuthorWizard() {
       (!newServerEventSource || newServerEventSource === "")
     ) {
       showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
       return;
     }
     // If one or two fields are blank, show notification
@@ -607,7 +598,6 @@ export default function ServerAuthorWizard() {
       const serverConfig = await fetchServerConfig();
       setNewServerConfig(serverConfig);
       showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
     } catch (error) {
       console.error("error fetching server config", { error });
       setNotificationType("error");
@@ -647,7 +637,6 @@ export default function ServerAuthorWizard() {
       (!selectedViewServices || !selectedViewServices.length)
     ) {
       showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
       return;
     }
     // If one or two fields are blank, show notification
@@ -709,7 +698,6 @@ export default function ServerAuthorWizard() {
       const serverConfig = await fetchServerConfig();
       setNewServerConfig(serverConfig);
       showNextStep();
-      setProgressIndicatorIndex(progressIndicatorIndex + 1);
     } catch (error) {
       console.error("error fetching server config", { error });
       setNotificationType("error");
@@ -1089,6 +1077,7 @@ export default function ServerAuthorWizard() {
                 value="placeholder-item"
               />
               <SelectItemGroup label="Cohort Member">
+                <SelectItem text="Access Store Server (previously referred to as a Metadata Server)" value="access-store-server" />
                 <SelectItem
                   text="Metadata Access Point"
                   value="metadata-access-point"
@@ -1099,7 +1088,6 @@ export default function ServerAuthorWizard() {
                   value="conformance-test-server"
                   disabled
                 />
-                <SelectItem text="Metadata Server" value="metadata-server" />
               </SelectItemGroup>
               <SelectItemGroup label="Governance Servers">
                 <SelectItem
@@ -1177,7 +1165,12 @@ export default function ServerAuthorWizard() {
             <h4 className="left-text-bottom-margin-24">
               Configure Audit Log Destinations
             </h4>
-            <ConfigureAuditLog
+            <NavigationButtons
+              handlePreviousStep={handleBackToPreviousStep}
+              handleNextStep={showNextStep}
+            />
+   
+            <ConfigureAuditLogDestinations
               nextAction={() => configureAuditLogDestinations()}
               previousAction={handleBackToPreviousStep}
             />

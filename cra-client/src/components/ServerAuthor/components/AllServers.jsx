@@ -6,6 +6,8 @@ import {
   DataTable,
   OverflowMenu,
   OverflowMenuItem,
+  TableToolbarMenu,
+  TableToolbarAction
 } from "carbon-components-react";
 import {
   MisuseOutline16,
@@ -200,6 +202,18 @@ export default function AllServers() {
                   id="known-server-search"
                   onChange={onInputChange}
                 />
+                 <TableToolbarMenu
+              tabIndex={getBatchActionProps().shouldShowBatchActions ? -1 : 0}>
+              <TableToolbarAction onClick={() => alert('Alert 1')}>
+                Action 1
+              </TableToolbarAction>
+              <TableToolbarAction onClick={() => alert('Alert 2')}>
+                Action 2
+              </TableToolbarAction>
+              <TableToolbarAction onClick={() => alert('Alert 3')}>
+                Action 3
+              </TableToolbarAction>
+            </TableToolbarMenu>
               </DataTable.TableToolbarContent>
               <Button
                 tabIndex={getBatchActionProps().shouldShowBatchActions ? -1 : 0}
