@@ -34,6 +34,7 @@ const ServerAuthorContextProvider = props => {
   const [newServerSecurityConnector, setNewServerSecurityConnector] = useState("");
   const [newServerRepository, setNewServerRepository] = useState("in-memory-repository");
   const [newServerMaxPageSize, setNewServerMaxPageSize] = useState(1000);
+  const [currentServerAuditDestinations, setCurrentServerAuditDestinations] = useState([]);
   // Access Services
   const [availableAccessServices, setAvailableAccessServices] = useState(accessServices);
   const [selectedAccessServices, setSelectedAccessServices] = useState(accessServices);
@@ -99,6 +100,8 @@ const  cleanForNewServerType = () => {
     setNewServerSecurityConnector("");
     setNewServerRepository("in-memory-repository");
     setNewServerMaxPageSize(1000);
+    // Audit log destinations
+    setCurrentServerAuditDestinations([]);
     // Access Services
     setAvailableAccessServices(accessServices);
     setSelectedAccessServices(accessServices);
@@ -215,10 +218,6 @@ const  cleanForNewServerType = () => {
       throw new Error(`Cannot create OMAG server configuration without Local Server User ID`);
     }
 
-    if (!newServerLocalPassword || newServerLocalPassword === "") {
-      throw new Error(`Cannot create OMAG server configuration without Local Server Password`);
-    }
-
     return {
       "class": "OMAGServerConfig",
       "versionId": "V2.0",
@@ -246,6 +245,21 @@ const  cleanForNewServerType = () => {
 
     const unRegisterCohortURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/cohorts/" + cohortName);
     issueRestDelete(unRegisterCohortURL, onSuccessfulUnRegisterCohort, onErrorUnRegisterCohort);
+  };
+
+  const enableAuditDestination = (auditDestinationName, onSuccessfulEnableAuditDestination, onErrorEnableAuditDestination) => {
+    console.log("called renableAuditDestination", { auditDestinationName });
+///servers/{serverName}/open-metadata/view-services/server-author/users/{userId}/servers/{serverToBeConfiguredName}
+    const enableAuditDestinationURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/audit-log-destinations/" + auditDestinationName);
+    issueRestCreate(enableAuditDestination, body, onSuccessfulRegisterCohort, onErrorRegisterCohort, "");
+  };
+
+
+  const clearAuditDestination = (auditDestinationName, onSuccessfulEnableAuditDestination, onErrorEnableAuditDestination) => {
+    console.log("called renableAuditDestination", { auditDestinationName });
+
+    const clearAuditDestinationsURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId + "/servers/" + newServerName + "/audit-log-destinations");
+    issueRestDelete(rclearAuditDestinationsURL, onSuccessfulClear, onErrorRegisterCohort, "");
   };
 
   const configureArchiveFile = (archiveName, onSuccessfulConfigureArchiveFile, onErrorConfigureArchiveFile) => {
@@ -448,6 +462,7 @@ const  cleanForNewServerType = () => {
       value={{
         // States
         allServers, setAllServers,
+        currentServerAuditDestinations, setCurrentServerAuditDestinations,
         supportedAuditLogSeverities,    // we do not need expose the set as it is only referenced in this context code.
         newServerName, setNewServerName,
         newServerLocalURLRoot, setNewServerLocalURLRoot,

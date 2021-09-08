@@ -153,7 +153,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
 
       <div className="bx--btn-set">
         <Button
-          kind="secondary"
+          kind="tertiary"
           style={{ margin: "16px auto" }}
           onClick={previousAction}
         >
@@ -161,7 +161,7 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
         </Button>
         <Button
           type="submit"
-          kind="primary"
+          kind="tertiary"
           style={{ margin: "16px auto" }}
           onClick={() => handleClick()}
         >

@@ -49,7 +49,7 @@ export default function ConfigureAccessServices() {
       <div className="bx--btn-set">
 
         <Button
-          kind="secondary"
+          kind="tertiary"
           style={{margin: "4px auto"}}
           onClick={handleDeselectAllAccessServices}
         >
@@ -57,7 +57,7 @@ export default function ConfigureAccessServices() {
         </Button>
         
         <Button
-          kind="secondary"
+          kind="tertiary"
           style={{margin: "4px auto"}}
           onClick={handleSelectAllAccessServices}
         >

@@ -4,15 +4,15 @@
 const serverTypes = [
 
   {
-    id: "metadata-server",
-    label: "Metadata Server",
-    description: "Supports a metadata repository that can natively store open metadata types as well as specialized metadata APIs for different types of tools (these APIs are called access services).",
+    id: "access-store-server",
+    label: "Access Store Server (previously called Metadata Server)",
+    description: "Supports the access services and supports a metadata repository that can natively store open metadata types as well as specialized metadata APIs for different types of tools (these APIs are called access services).",
     serverConfigElements : ["server-type-config-element", "config-basic-config-element", "local-repository-config-element", "esb-config-element", "cohort-config-element", "access-services-config-element", "archives-config-element", "audit-log-config-element", "final-config-element"]
   },
   {
     id: "metadata-access-point",
     label: "Metadata Access Point",
-    description: "Supports the access services like the metadata server but does not have a repository. All of the metadata it serves up and stores belongs to the metadata repositories in other members of the cohort.",
+    description: "Supports the access services like the access store server, but does not have a repository. All of the metadata it serves up and stores belongs to the metadata repositories in other members of the cohort.",
     serverConfigElements : ["server-type-config-element", "config-basic-config-element", "esb-config-element", "cohort-config-element", "access-services-config-element", "archives-config-element", "audit-log-config-element", "final-config-element"] 
   },
   {

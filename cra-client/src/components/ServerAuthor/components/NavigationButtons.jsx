@@ -32,7 +32,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
     return (
       <div className="bx--btn-set">
         <Button
-          kind="danger"
+          kind="tertiary"
           style={{margin: "16px auto"}}
           onClick={hideConfigForm}
         >
@@ -40,7 +40,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
         </Button>
         <Button
           type="submit"
-          kind="primary"
+          kind="tertiary"
           style={{margin: "16px auto"}}
           onClick={handleNextStep}
         >
@@ -59,7 +59,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
 
       <div className="bx--btn-set">
         <Button
-           kind="primary"
+           kind="tertiary"
           style={{margin: "16px auto"}}
           onClick={hideConfigForm}
         >
@@ -77,14 +77,14 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
 
     <div className="bx--btn-set">
       <Button
-        kind="danger"
+         kind="tertiary"
         style={{margin: "16px auto"}}
         onClick={hideConfigForm}
       >
         Cancel Configuration
       </Button>
       <Button
-        kind="secondary"
+        kind="tertiary"
         style={{margin: "16px auto"}}
         onClick={handlePreviousStep}
       >
@@ -92,7 +92,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
       </Button>
       <Button
         type="submit"
-        kind="primary"
+        kind="tertiary"
         style={{margin: "16px auto"}}
         onClick={handleNextStep}
       >

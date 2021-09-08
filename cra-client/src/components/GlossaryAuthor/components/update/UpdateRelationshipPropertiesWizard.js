@@ -222,7 +222,7 @@ export default function UpdateRelationshipPropertiesWizard(props) {
         {currentStepIndex === 0 && (
           <div>
             <Button
-              kind="secondary"
+              kind="tertiary"
               onClick={handleGotUpdateDetailsOnClick}
               disabled={!validateUserInput()}
             >
@@ -233,14 +233,14 @@ export default function UpdateRelationshipPropertiesWizard(props) {
 
         {currentStepIndex === 1 && relationshipUpdated === undefined && (
           <div>
-            <Button kind="secondary" onClick={previousStep}>
+            <Button kind="tertiary" onClick={previousStep}>
               Previous
             </Button>
           </div>
         )}
         {currentStepIndex === 1 && relationshipUpdated !== undefined && (
           <div>
-            <Button kind="secondary" onClick={finished}>
+            <Button kind="tertiary" onClick={finished}>
               Finished
             </Button>
           </div>

@@ -40,6 +40,29 @@ export default function BasicConfig() {
           ref={basicConfigFormStartRef}
           autoComplete="off"
         />
+        <TextInput
+          id="new-server-local-user-id"
+          name="new-server-local-user-id"
+          type="text"
+          labelText="Local user ID"
+          value={newServerLocalUserId}
+          onChange={e => setNewServerLocalUserId(e.target.value)}
+          placeholder="my_server_user_id"
+          invalid={newServerLocalUserId === ""}
+          style={{marginBottom: "16px"}}
+          autoComplete="off"
+        />
+
+        <TextInput.PasswordInput
+          id="new-server-local-password"
+          name="new-server-local-password"
+          labelText="Local password"
+          value={newServerLocalPassword}
+          onChange={e => setNewServerLocalPassword(e.target.value)}
+          placeholder="my_server_Password"
+          style={{marginBottom: "16px"}}
+          autoComplete="new-password"
+        />
 
         <TextInput
           id="new-server-local-url-root"
@@ -64,31 +87,6 @@ export default function BasicConfig() {
           invalid={newServerOrganizationName === ""}
           style={{marginBottom: "16px"}}
           autoComplete="off"
-        />
-
-        <TextInput
-          id="new-server-local-user-id"
-          name="new-server-local-user-id"
-          type="text"
-          labelText="Local user ID"
-          value={newServerLocalUserId}
-          onChange={e => setNewServerLocalUserId(e.target.value)}
-          placeholder="my_server_user_id"
-          invalid={newServerLocalUserId === ""}
-          style={{marginBottom: "16px"}}
-          autoComplete="off"
-        />
-
-        <TextInput.PasswordInput
-          id="new-server-local-password"
-          name="new-server-local-password"
-          labelText="Local password"
-          value={newServerLocalPassword}
-          onChange={e => setNewServerLocalPassword(e.target.value)}
-          placeholder="my_server_Password"
-          invalid={newServerLocalPassword === ""}
-          style={{marginBottom: "16px"}}
-          autoComplete="new-password"
         />
 
         <TextInput

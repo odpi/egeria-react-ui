@@ -139,7 +139,11 @@ export async function issueRestDelete(deleteUrl, onSuccessful, onError) {
   }
 }
 
-export async function issueRestUpdate(url, body, onSuccessful, onError) {
+export async function issueRestUpdate(url, body, onSuccessful, onError, 
+  expectedResult) {
+  if (expectedResult === undefined) {
+      expectedResult = "result";
+  }
   try {
     const response = await fetch(url, {
       method: "put",
@@ -151,14 +155,14 @@ export async function issueRestUpdate(url, body, onSuccessful, onError) {
     });
     const json = await response.json();
     let msg;
-    const relatedHTTPCode = json.relatedHTTPCode;
-    if (relatedHTTPCode === 200 && json.result) {
-      if (json.result) {
+    if (json.relatedHTTPCode === 200) {
+      if (json.class === 'VoidResponse') {
+        onSuccessful();
+      } else if (json[expectedResult]) {
         onSuccessful(json);
       } else {
-        // got nothing
-        msg =
-          "Error. Update request succeded but there were no results. Contact your administrator to review the server logs for errors.";
+        // 200 successful response but we did not get what we expected 
+        msg = "Error. Update request succeeded but there were no " + expectedResult  + ". Contact your administrator to review the server logs for errors.";
       }
     } else {
       msg = processErrorJson("Update", json, response);
