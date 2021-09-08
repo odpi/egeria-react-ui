@@ -219,7 +219,7 @@ export default function ConfigureAuditLogDestinations({
       if (!isCopy) {
         destinationName = auditLogDestinationToEdit.name;
       }
-      //we need to store theoriginal name as thisis thekey that will be updatedintherest call.
+      //we need to store the original name as this is the key that will be updated in the rest call.
       setCurrentDestinationId(destinationName);
       //the name could change in the editor
       setCurrentDestinationName(destinationName);
