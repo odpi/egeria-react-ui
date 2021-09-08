@@ -5,7 +5,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 import auditLogDestinations from "./defaults/auditLogDestinations";
-import { issueRestCreate, issueRestDelete } from "../../common/RestCaller";
+import { issueRestCreate, issueRestDelete, issueRestUpdate } from "../../common/RestCaller";
 import {
   Column,
   Grid,
@@ -26,6 +26,7 @@ export default function ConfigureAuditLogDestinations({
   nextAction,
 }) {
   const [currentDestinationName, setCurrentDestinationName] = useState();
+  const [currentDestinationId, setCurrentDestinationId] = useState();
   const [currentDestinationTypeName, setCurrentDestinationTypeName] =
     useState();
   const [currentDestinationDescription, setCurrentDestinationDescription] =
@@ -120,12 +121,14 @@ export default function ConfigureAuditLogDestinations({
 
   const onClickAdd = () => {
     setCurrentDestinationName(undefined);
+    setCurrentDestinationId(undefined);
     setCurrentDestinationDescription(undefined);
     setCurrentSupportedSeverities(undefined);
     setCurrentDestinationTypeName('default');
 
     setOperation("Add");
   };
+
   const onClickRemoveAll = () => {
     const deleteAllAuditLogDestinationURL = encodeURI(
       "/servers/" +
@@ -146,13 +149,22 @@ export default function ConfigureAuditLogDestinations({
 
   const onClickEditOverflow = (selectedRows) => () => {
     console.log("called onClickEditOverflow", { selectedRows });
+    if (selectedRows.length === 1) {
+      editAction(selectedRows[0].id);
+    }
   };
   const onClickCopyOverflow = (selectedRows) => () => {
     console.log("called onClickCopyOverflow", { selectedRows });
+    if (selectedRows.length === 1) {
+      editAction(selectedRows[0].id, true);
+    }
   };
 
   const onClickDeleteOverflow = (selectedRows) => () => {
     console.log("called onClickDeleteOverflow", { selectedRows });
+    if (selectedRows.length === 1) {
+      deleteAction(selectedRows[0].id);
+    }
   };
 
   const onClickDeleteBatchAction = (selectedRows) => {
@@ -164,10 +176,16 @@ export default function ConfigureAuditLogDestinations({
 
   const onClickCopyBatchAction = (selectedRows) => {
     console.log("called onClickCopyBatchAction", { selectedRows });
+    if (selectedRows.length === 1) {
+      editAction(selectedRows[0].id, true);
+    }
   };
 
   const onClickEditBatchAction = (selectedRows) => {
     console.log("called onClickEditBatchAction", { selectedRows });
+    if (selectedRows.length === 1) {
+      editAction(selectedRows[0].id);
+    }
   };
 
   const deleteAction = (name) => {
@@ -189,7 +207,45 @@ export default function ConfigureAuditLogDestinations({
     );
   };
 
-  const onClickFinishedAddOperation = () => {
+  const editAction = (id, isCopy) => {
+    let auditLogDestinationToEdit;
+    for (let i = 0; i < currentServerAuditDestinations.length; i++) {
+      if (currentServerAuditDestinations[i].id === id) {
+        auditLogDestinationToEdit = currentServerAuditDestinations[i];
+      }
+    }
+    if (auditLogDestinationToEdit) {
+      let destinationName = undefined;
+      if (!isCopy) {
+        destinationName = auditLogDestinationToEdit.name;
+      }
+      //we need to store theoriginal name as thisis thekey that will be updatedintherest call.
+      setCurrentDestinationId(destinationName);
+      //the name could change in the editor
+      setCurrentDestinationName(destinationName);
+      setCurrentDestinationDescription(auditLogDestinationToEdit.description);
+      setCurrentSupportedSeverities(auditLogDestinationToEdit.severities);
+      setCurrentDestinationTypeName(auditLogDestinationToEdit.type);
+
+      let op = "Edit";
+      if (isCopy) {
+        op = "Copy";
+      }
+      setOperation(op);
+    } else {
+      alert("unable to find name " + name);
+    }
+  
+  };
+
+  const onClickFinishedOperation = () => {
+    if (operation === "Add" || operation === "Copy") {
+       issueAdd();
+    } else if (operation === "Edit") {
+       issueEdit();
+    } 
+  };
+  const issueAdd = () => {
     let nameExists = false;
     for (let i = 0; i < currentServerAuditDestinations.length; i++) {
       if (currentServerAuditDestinations[i].name === currentDestinationName) {
@@ -259,25 +315,88 @@ export default function ConfigureAuditLogDestinations({
       );
     }
   };
+  const issueEdit = () => {
+    setOperation(undefined);
+
+    const editAuditLogDestinationURL = encodeURI(
+      "/servers/" +
+        tenantId +
+        "/server-author/users/" +
+        userId +
+        "/servers/" +
+        newServerName +
+        "/audit-log-destinations/connection/" + 
+        currentDestinationId
+    );
+    const body = {
+      class: "Connection",
+      headerVersion: 0,
+      displayName: currentDestinationName,
+      description: currentDestinationDescription,
+      connectorType: {
+        class: "ConnectorType",
+        headerVersion: 0,
+        type: {
+          class: "ElementType",
+          headerVersion: 0,
+          elementOrigin: "LOCAL_COHORT",
+          elementVersion: 0,
+          elementTypeId: "954421eb-33a6-462d-a8ca-b5709a1bd0d4",
+          elementTypeName: "ConnectorType",
+          elementTypeVersion: 1,
+          elementTypeDescription:
+            "A set of properties describing a type of connector.",
+        },
+        guid: "4afac741-3dcc-4c60-a4ca-a6dede994e3f",
+        qualifiedName: "Console Audit Log Store Connector",
+        displayName: "Console Audit Log Store Connector",
+        description:
+          "Connector supports logging of audit log messages to stdout.",
+        connectorProviderClassName: getConnectorProviderClass(),
+      },
+      configurationProperties: {
+        supportedSeverities: currentSupportedSeverities,
+      },
+    };
+    console.log("editAuditLogDestinationURL " + editAuditLogDestinationURL);
+    setLoadingText("Editing audit log destination");
+    issueRestUpdate(
+      editAuditLogDestinationURL,
+      body,
+      onSuccessfulEditAuditLogDestination,
+      onErrorAuditLogDestination,
+      "omagServerConfig"
+    );
+  };
   const onSuccessfulAddAuditLogDestination = () => {
     console.log("onSuccessfulAddAuditLogDestination entry");
     console.log(currentServerAuditDestinations);
-    let existingAuditLogDestinations = currentServerAuditDestinations;
-    const current = {
-      id: currentDestinationName,
-      // key: currentDestinationName,
-      name: currentDestinationName,
-      type: currentDestinationTypeName,
-      severities: currentSupportedSeverities,
-      description: currentDestinationDescription,
-    };
-    // clone the existing array
-    let newAuditLogDestinations = existingAuditLogDestinations.slice();
-    newAuditLogDestinations.push(current);
-    console.log("onSuccessfulAddAuditLogDestination exit");
-    console.log(newAuditLogDestinations);
-    setCurrentServerAuditDestinations(newAuditLogDestinations);
+    // let existingAuditLogDestinations = currentServerAuditDestinations;
+    // const current = {
+    //   id: currentDestinationName,
+    //   // key: currentDestinationName,
+    //   name: currentDestinationName,
+    //   type: currentDestinationTypeName,
+    //   severities: currentSupportedSeverities,
+    //   description: currentDestinationDescription,
+    // };
+    // // clone the existing array
+    // let newAuditLogDestinations = existingAuditLogDestinations.slice();
+    // newAuditLogDestinations.push(current);
+    // console.log("onSuccessfulAddAuditLogDestination exit");
+    // console.log(newAuditLogDestinations);
+    // setCurrentServerAuditDestinations(newAuditLogDestinations);
     document.getElementById("loading-container").style.display = "none";
+    setLoadingText("Refreshing audit log destinations ");
+    fetchServerConfig(refreshAuditLogDestinations, onErrorAuditLogDestination);
+   
+  };
+  const onSuccessfulEditAuditLogDestination = () => {
+    console.log("onSuccessfulEditAuditLogDestination ");
+    console.log(currentServerAuditDestinations);
+    document.getElementById("loading-container").style.display = "none";
+    setLoadingText("Refreshing audit log destinations ");
+    fetchServerConfig(refreshAuditLogDestinations, onErrorAuditLogDestination);
   };
 
   const onSuccessfulRemoveAll = () => {
@@ -356,7 +475,17 @@ export default function ConfigureAuditLogDestinations({
 
   return (
     <div className="left-text">
-      {operation === "Add" && (
+       {operation === "Add" && (
+         <h4>Add Audit Log Destination</h4>
+       )}  
+       {operation === "Edit" && (
+         <h4>Edit Audit Log Destination</h4>
+       )}  
+       {operation === "Copy" && (
+         <h4>Copy Audit Log Destination</h4>
+       )}  
+
+      {operation !== undefined && (
         <fieldset className="bx--fieldset left-text-bottom-margin-32">
           <TextInput
             id="new-destination-name"
@@ -430,7 +559,7 @@ export default function ConfigureAuditLogDestinations({
             </div>
           </div>
 
-          <button onClick={(e) => onClickFinishedAddOperation()}>
+          <button onClick={(e) => onClickFinishedOperation()}>
             Enable this Audit Log Destination
           </button>
         </fieldset>
@@ -595,16 +724,15 @@ export default function ConfigureAuditLogDestinations({
                                     <OverflowMenu flipped>
                                       <OverflowMenuItem
                                         id="edit-audit-log-overflow"
-                                        itemText="Edit Audit Log Destination"
+                                        itemText="Edit"
                                         onClick={onClickEditOverflow([row])}
-                                        // onClick={onClickEditOverflow}
                                       />
                                       <OverflowMenuItem
-                                        itemText="Copy Audit Log Destination"
+                                        itemText="Copy"
                                         onClick={onClickCopyOverflow([row])}
                                       />
                                       <OverflowMenuItem
-                                        itemText={"Delete AuditLog Destination"}
+                                        itemText={"Delete"}
                                         onClick={onClickDeleteOverflow([row])}
                                         isDelete
                                         requireTitle
