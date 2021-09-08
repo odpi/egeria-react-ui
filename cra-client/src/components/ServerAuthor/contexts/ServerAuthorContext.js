@@ -100,6 +100,8 @@ const  cleanForNewServerType = () => {
     setNewServerSecurityConnector("");
     setNewServerRepository("in-memory-repository");
     setNewServerMaxPageSize(1000);
+    // Audit log destinations
+    setCurrentServerAuditDestinations([]);
     // Access Services
     setAvailableAccessServices(accessServices);
     setSelectedAccessServices(accessServices);

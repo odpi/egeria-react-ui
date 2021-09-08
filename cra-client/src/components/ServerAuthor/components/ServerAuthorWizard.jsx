@@ -64,6 +64,7 @@ export default function ServerAuthorWizard() {
     setLoadingText,
     newServerConfig,
     setNewServerConfig,
+    currentServerAuditDestinations,
 
     // functions
     cleanForNewServerType,
@@ -380,6 +381,11 @@ export default function ServerAuthorWizard() {
 
     // Fetch Server Config
     setLoadingText("Fetching final stored server configuration...");
+    // if (!currentServerAuditDestinations || currentServerAuditDestinations.length === 0) {
+    //   throw new Error(`Cannot create OMAG server configuration without an audit log destination.`);
+    // } 
+
+    
     showNextStep();
   };
   const onSuccessfulFetchServer = (json) => {

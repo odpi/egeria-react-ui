@@ -17,7 +17,7 @@ import {
   Checkbox,
   DataTable,
   OverflowMenu,
-  OverflowMenuItem
+  OverflowMenuItem,
 } from "carbon-components-react";
 import { MisuseOutline16, Edit16, Copy16 } from "@carbon/icons-react";
 
@@ -46,7 +46,7 @@ export default function ConfigureAuditLogDestinations({
     setCurrentServerAuditDestinations,
     newServerName,
     fetchServerConfig,
-    setLoadingText
+    setLoadingText,
   } = useContext(ServerAuthorContext);
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
 
@@ -93,37 +93,37 @@ export default function ConfigureAuditLogDestinations({
     console.log("onChangeTypeSelected " + e.target.value);
     setCurrentDestinationTypeName(e.target.value);
   };
-  const getConnectorProvidorClass = () => {
-    let connectorClass = "";
-    const AUDIT_LOG_DESTINATION_PREFIX =
-      "org.odpi.openmetadata.adapters.repositoryservices.auditlogstore.";
-    switch (currentDestinationTypeName) {
-      case "default":
-      case "console":
-        connectorClass =
-          AUDIT_LOG_DESTINATION_PREFIX + "console.ConsoleAuditLogStoreProvider";
-        break;
-      case "slf4j":
-        connectorClass =
-          AUDIT_LOG_DESTINATION_PREFIX + "slf4j.SLF4JAuditLogStoreProvider";
-        break;
-      case "files":
-        connectorClass =
-          AUDIT_LOG_DESTINATION_PREFIX + "file.FileBasedAuditLogStoreProvider";
-        break;
-      case "event-topic":
-        connectorClass =
-          AUDIT_LOG_DESTINATION_PREFIX +
-          "eventtopic.EventTopicAuditLogStoreProvider";
-        break;
-      case "connection":
-        connectorClass = currentCustomConnectorClass;
-        break;
+  const getConnectorProviderClass = () => {
+    let connectorClass = currentCustomConnectorClass;
+
+    if (currentDestinationTypeName !== "connection") {
+      for (let i = 0; i < auditLogDestinations.length; i++) {
+        const auditLogDestination = auditLogDestinations[i];
+        if (auditLogDestination.id === currentDestinationTypeName) {
+          connectorClass = auditLogDestination.connectorProviderClassName;
+        }
+      }
     }
 
     return connectorClass;
   };
+  const getTypeFromConnectorProviderClass = (className) => {
+    let type = "connection";
+    for (let i = 0; i < auditLogDestinations.length; i++) {
+      const auditLogDestination = auditLogDestinations[i];
+      if (auditLogDestination.connectorProviderClassName === className) {
+        type = auditLogDestination.id;
+      }
+    }
+    return type;
+  };
+
   const onClickAdd = () => {
+    setCurrentDestinationName(undefined);
+    setCurrentDestinationDescription(undefined);
+    setCurrentSupportedSeverities(undefined);
+    setCurrentDestinationTypeName('default');
+
     setOperation("Add");
   };
   const onClickRemoveAll = () => {
@@ -144,24 +144,21 @@ export default function ConfigureAuditLogDestinations({
     );
   };
 
-  const onClickEditOverflow = (selectedRows) => 
-  () => {
-     console.log("called onClickEditOverflow", { selectedRows });
-   };
-  const onClickCopyOverflow = (selectedRows) => 
-  () => {
-     console.log("called onClickCopyOverflow", { selectedRows });
-   };
-    
-  const onClickDeleteOverflow = (selectedRows) => 
- () => {
+  const onClickEditOverflow = (selectedRows) => () => {
+    console.log("called onClickEditOverflow", { selectedRows });
+  };
+  const onClickCopyOverflow = (selectedRows) => () => {
+    console.log("called onClickCopyOverflow", { selectedRows });
+  };
+
+  const onClickDeleteOverflow = (selectedRows) => () => {
     console.log("called onClickDeleteOverflow", { selectedRows });
   };
 
   const onClickDeleteBatchAction = (selectedRows) => {
     console.log("called onClickDeleteBatchAction", { selectedRows });
     if (selectedRows.length === 1) {
-         deleteAction(selectedRows[0].id);
+      deleteAction(selectedRows[0].id);
     }
   };
 
@@ -174,7 +171,6 @@ export default function ConfigureAuditLogDestinations({
   };
 
   const deleteAction = (name) => {
-
     const deleteAuditLogDestinationURL = encodeURI(
       "/servers/" +
         tenantId +
@@ -191,27 +187,25 @@ export default function ConfigureAuditLogDestinations({
       onSuccessfulRemove,
       onErrorAuditLogDestination
     );
+  };
 
-  }; 
-
-
-  
   const onClickFinishedAddOperation = () => {
     let nameExists = false;
-    for (let i=0; i < currentServerAuditDestinations.length; i++) {
+    for (let i = 0; i < currentServerAuditDestinations.length; i++) {
       if (currentServerAuditDestinations[i].name === currentDestinationName) {
         nameExists = true;
       }
     }
     if (nameExists) {
       alert(
-        "The requested Audit Log Destination Name '" + currentDestinationName + "' already exists. Please choose different one."
+        "The requested Audit Log Destination Name '" +
+          currentDestinationName +
+          "' already exists. Please choose different one."
       );
     } else if (!currentDestinationName) {
       alert(
         "The requested Audit Log Destination Name need to have a value. Please specify one."
       );
-    
     } else {
       setOperation(undefined);
 
@@ -228,6 +222,7 @@ export default function ConfigureAuditLogDestinations({
         class: "Connection",
         headerVersion: 0,
         displayName: currentDestinationName,
+        description: currentDestinationDescription,
         connectorType: {
           class: "ConnectorType",
           headerVersion: 0,
@@ -247,7 +242,7 @@ export default function ConfigureAuditLogDestinations({
           displayName: "Console Audit Log Store Connector",
           description:
             "Connector supports logging of audit log messages to stdout.",
-          connectorProviderClassName: getConnectorProvidorClass(),
+          connectorProviderClassName: getConnectorProviderClass(),
         },
         configurationProperties: {
           supportedSeverities: currentSupportedSeverities,
@@ -288,15 +283,14 @@ export default function ConfigureAuditLogDestinations({
   const onSuccessfulRemoveAll = () => {
     setCurrentServerAuditDestinations([]);
     document.getElementById("loading-container").style.display = "none";
-    
   };
 
   const onSuccessfulRemove = (e) => {
-    // update currentServerAuditDestinations 
+    // update currentServerAuditDestinations
     console.log("onSuccessfulRemove");
-     // Fetch Server Config
-     setLoadingText("Refreshing audit log destinations ");
-     fetchServerConfig(refreshAuditLogDestinations,  onErrorAuditLogDestination);
+    // Fetch Server Config
+    setLoadingText("Refreshing audit log destinations ");
+    fetchServerConfig(refreshAuditLogDestinations, onErrorAuditLogDestination);
   };
 
   const refreshAuditLogDestinations = (response) => {
@@ -307,31 +301,48 @@ export default function ConfigureAuditLogDestinations({
     if (config) {
       const repositoryServicesConfig = config.repositoryServicesConfig;
       if (repositoryServicesConfig) {
-        const auditLogConnections = repositoryServicesConfig.auditLogConnections;
+        const auditLogConnections =
+          repositoryServicesConfig.auditLogConnections;
 
-        if (auditLogConnections === undefined || auditLogConnections.length === 0) {
+        if (
+          auditLogConnections === undefined ||
+          auditLogConnections.length === 0
+        ) {
           setCurrentServerAuditDestinations([]);
         } else {
-          let refreshedAuditLogConnections = []; 
-           for (let i=0; i < auditLogConnections.length ; i++) {
-              let refreshedAuditLogConnection = {};
-              const auditLogConnection = auditLogConnections[i];
-              refreshedAuditLogConnection.id= auditLogConnection.displayName;
-              refreshedAuditLogConnection.name= auditLogConnection.displayName;
-              refreshedAuditLogConnection.type= "Console";  // TODO
-              refreshedAuditLogConnection.supportedSeverities = [];
-              if (auditLogConnection.configurationProperties &&  auditLogConnection.configurationProperties.supportedSeverities) {
-                   refreshedAuditLogConnection.supportedSeverities = auditLogConnection.configurationProperties.supportedSeverities;
-              }
-              refreshedAuditLogConnections.push(refreshedAuditLogConnection);
-           }
+          let refreshedAuditLogConnections = [];
+          for (let i = 0; i < auditLogConnections.length; i++) {
+            let refreshedAuditLogConnection = {};
+            const auditLogConnection = auditLogConnections[i];
+            refreshedAuditLogConnection.id = auditLogConnection.displayName;
+            refreshedAuditLogConnection.name = auditLogConnection.displayName;
+            refreshedAuditLogConnection.description =
+              auditLogConnection.description;
+            if (
+              auditLogConnection.connectorType &&
+              auditLogConnection.connectorType.connectorProviderClassName
+            ) {
+              refreshedAuditLogConnection.type =
+                getTypeFromConnectorProviderClass(
+                  auditLogConnection.connectorType.connectorProviderClassName
+                );
+            }
+
+            refreshedAuditLogConnection.supportedSeverities = [];
+            if (
+              auditLogConnection.configurationProperties &&
+              auditLogConnection.configurationProperties.supportedSeverities
+            ) {
+              refreshedAuditLogConnection.supportedSeverities =
+                auditLogConnection.configurationProperties.supportedSeverities;
+            }
+            refreshedAuditLogConnections.push(refreshedAuditLogConnection);
+          }
 
           setCurrentServerAuditDestinations(refreshedAuditLogConnections);
         }
       }
     }
-
-
 
     document.getElementById("loading-container").style.display = "none";
   };
@@ -470,7 +481,9 @@ export default function ConfigureAuditLogDestinations({
                                     : -1
                                 }
                                 renderIcon={Edit16}
-                                onClick={() => { onClickEditBatchAction(selectedRows); }}
+                                onClick={() => {
+                                  onClickEditBatchAction(selectedRows);
+                                }}
                               >
                                 Edit
                               </DataTable.TableBatchAction>
@@ -482,7 +495,9 @@ export default function ConfigureAuditLogDestinations({
                                     ? 0
                                     : -1
                                 }
-                                onClick={() => { onClickCopyBatchAction(selectedRows); }}
+                                onClick={() => {
+                                  onClickCopyBatchAction(selectedRows);
+                                }}
                                 renderIcon={Copy16}
                               >
                                 Copy
@@ -495,7 +510,9 @@ export default function ConfigureAuditLogDestinations({
                                   : -1
                               }
                               renderIcon={MisuseOutline16}
-                              onClick={() => { onClickDeleteBatchAction(selectedRows); }}
+                              onClick={() => {
+                                onClickDeleteBatchAction(selectedRows);
+                              }}
                             >
                               Delete
                             </DataTable.TableBatchAction>
