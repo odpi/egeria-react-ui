@@ -7,25 +7,25 @@ const serverTypes = [
     id: "access-store-server",
     label: "Access Store Server (previously called Metadata Server)",
     description: "Supports the access services and supports a metadata repository that can natively store open metadata types as well as specialized metadata APIs for different types of tools (these APIs are called access services).",
-    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "local-repository-config-element", "esb-config-element", "cohort-config-element",  "audit-log-config-element", "access-services-config-element", "archives-config-element", "final-config-element"]
+    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "local-repository-config-element", "esb-config-element", "cohort-config-element", "access-services-config-element", "archives-config-element", "audit-log-config-element", "final-config-element"]
   },
   {
     id: "metadata-access-point",
     label: "Metadata Access Point",
     description: "Supports the access services like the access store server, but does not have a repository. All of the metadata it serves up and stores belongs to the metadata repositories in other members of the cohort.",
-    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "esb-config-element", "cohort-config-element", "audit-log-config-element", "access-services-config-element", "archives-config-element", "final-config-element"] 
+    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "esb-config-element", "cohort-config-element", "access-services-config-element", "archives-config-element", "audit-log-config-element", "final-config-element"] 
   },
   {
     id: "repository-proxy",
     label: "Repository Proxy",
     description: "Acts as an open metadata translator for a proprietary metadata repository. It supports open metadata API calls and translates them to the proprietary APIs of the repository. It also translates events from the proprietary repository into open metadata events that flow over the cohort.",
-    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "esb-config-element", "cohort-config-element", "audit-log-config-element", "archives-config-element", "final-config-element"]
+    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "esb-config-element", "cohort-config-element", "archives-config-element", "audit-log-config-element", "final-config-element"]
   },
   {
     id: "view-server",
     label: "View Server",
     description: "Manages specialist services for user interfaces.",
-    serverConfigElements : ["server-type-config-element", "config-basic-config-element",  "audit-log-config-element", "view-services-config-element", "final-config-element"]
+    serverConfigElements : ["server-type-config-element", "config-basic-config-element", "view-services-config-element", "audit-log-config-element", "final-config-element"]
   },
   {
     id: "conformance-test-server",
