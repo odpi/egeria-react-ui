@@ -20,6 +20,9 @@ import { InstancesContext } from "../../contexts/InstancesContext";
 import termImage from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_glossaryterm.svg";
 import categoryImage from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_glossarycategory.svg";
 import glossaryImage from "../../../../../../imagesHolder/odpi/Egeria_glossary.svg";
+import canonicalGlossaryImage from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_canonicalglossary.svg";
+import taxonomyCanonicalGlossaryImage from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_taxonomycanonicalglossary.svg";
+import taxonomyImage from "../../../../../../imagesHolder/odpi/ODPiEgeria_Icon_taxonomy.svg";
 
 export default function Diagram(props) {
   /*
@@ -381,17 +384,21 @@ export default function Diagram(props) {
 
   const nodeImage = (d) => {
     switch (d.category) {
+      case "CanonicalGlossary":
+        return canonicalGlossaryImage;
+      case "TaxonomyAndCanonicalGlossary":
+        return taxonomyCanonicalGlossaryImage;
+      case "Taxonomy":
+        return taxonomyImage;
       case "Glossary":
         return glossaryImage;
-
       case "Category":
         return categoryImage;
-
       case "Term":
         return termImage;
 
       default:
-        return null;
+        return termImage;
     }
   };
 
