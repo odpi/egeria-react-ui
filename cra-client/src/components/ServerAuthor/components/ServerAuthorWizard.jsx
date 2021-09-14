@@ -1192,10 +1192,10 @@ export default function ServerAuthorWizard() {
               handleNextStep={handleConfigureESB}
             />
             <h4 className="left-text-bottom-margin-24">
-              Configure Enterprise Service Bus
+              Configure Event Bus
             </h4>
             <div className="left-text-bottom-margin-24">
-              Configure Enterprise Service Bus with default topicURLRoot as
+              Configure Event Bus with default topicURLRoot as
               'egeriaTopics'
             </div>
           </div>
