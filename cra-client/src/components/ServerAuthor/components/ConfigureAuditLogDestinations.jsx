@@ -47,7 +47,7 @@ export default function ConfigureAuditLogDestinations({
     setCurrentServerAuditDestinations,
     newServerName,
     fetchServerConfig,
-    setLoadingText,
+    setLoadingText
   } = useContext(ServerAuthorContext);
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
 
@@ -94,6 +94,30 @@ export default function ConfigureAuditLogDestinations({
     console.log("onChangeTypeSelected " + e.target.value);
     setCurrentDestinationTypeName(e.target.value);
   };
+/**
+ * We are padded the id of the severity that has changed. This fuctions is careful to clone 
+ * the existing currentSupportedSeverities, so we can amend the array and then set it in state.
+ */
+  const handleOnChangeSeverity = (id) => {
+    console.log("onChangeTypeSelected ");
+    let newCurrentSeverities;
+    for (let i=0; i<currentSupportedSeverities.length; i++) {
+        const currentSeverity = currentSupportedSeverities[i];
+        if (currentSeverity.id === id) {
+          // clone to a new object
+          let newSeverity =  {
+            ...currentSeverity,
+            selected: !currentSeverity.selected, // toggle the selected state
+          };
+          //replace the element in the array
+          newCurrentSeverities =  currentSupportedSeverities.map(function(severity) { return severity.id == id ? newSeverity : severity; });
+      
+          break;
+        }
+    }
+    // set the new current supported severities in state 
+    setCurrentSupportedSeverities(newCurrentSeverities);
+  };
   const getConnectorProviderClass = () => {
     let connectorClass = currentCustomConnectorClass;
 
@@ -118,12 +142,18 @@ export default function ConfigureAuditLogDestinations({
     }
     return type;
   };
+  const supportedSeverities = supportedAuditLogSeverities.map((s) => {
+    return {
+      ...s,
+      selected: true,
+    };
+  });
 
   const onClickAdd = () => {
     setCurrentDestinationName(undefined);
     setCurrentDestinationId(undefined);
     setCurrentDestinationDescription(undefined);
-    setCurrentSupportedSeverities(undefined);
+    setCurrentSupportedSeverities(supportedSeverities);
     setCurrentDestinationTypeName('default');
 
     setOperation("Add");
@@ -219,12 +249,23 @@ export default function ConfigureAuditLogDestinations({
       if (!isCopy) {
         destinationName = auditLogDestinationToEdit.name;
       }
+
+
+
+      const supportedSeveritiesSelectedNames = auditLogDestinationToEdit.supportedSeverities;
+            
+            let checkedSupportedSeverities = [];
+            for (let i=0;i<supportedAuditLogSeverities.length;i++) {
+                let severity = supportedAuditLogSeverities[i];
+                severity.selected = supportedSeveritiesSelectedNames.includes(severity.id);
+                checkedSupportedSeverities.push(severity);
+            }
       //we need to store the original name as this is the key that will be updated in the rest call.
       setCurrentDestinationId(destinationName);
       //the name could change in the editor
       setCurrentDestinationName(destinationName);
       setCurrentDestinationDescription(auditLogDestinationToEdit.description);
-      setCurrentSupportedSeverities(auditLogDestinationToEdit.severities);
+      setCurrentSupportedSeverities(checkedSupportedSeverities);
       setCurrentDestinationTypeName(auditLogDestinationToEdit.type);
 
       let op = "Edit";
@@ -245,6 +286,10 @@ export default function ConfigureAuditLogDestinations({
        issueEdit();
     } 
   };
+  const onClickCancelOperation = () => {
+    setOperation(undefined);
+  };
+
   const issueAdd = () => {
     let nameExists = false;
     for (let i = 0; i < currentServerAuditDestinations.length; i++) {
@@ -263,7 +308,7 @@ export default function ConfigureAuditLogDestinations({
         "The requested Audit Log Destination Name need to have a value. Please specify one."
       );
     } else {
-      setOperation(undefined);
+     
 
       const addAuditLogDestinationURL = encodeURI(
         "/servers/" +
@@ -274,36 +319,8 @@ export default function ConfigureAuditLogDestinations({
           newServerName +
           "/audit-log-destinations/connection"
       );
-      const body = {
-        class: "Connection",
-        headerVersion: 0,
-        displayName: currentDestinationName,
-        description: currentDestinationDescription,
-        connectorType: {
-          class: "ConnectorType",
-          headerVersion: 0,
-          type: {
-            class: "ElementType",
-            headerVersion: 0,
-            elementOrigin: "LOCAL_COHORT",
-            elementVersion: 0,
-            elementTypeId: "954421eb-33a6-462d-a8ca-b5709a1bd0d4",
-            elementTypeName: "ConnectorType",
-            elementTypeVersion: 1,
-            elementTypeDescription:
-              "A set of properties describing a type of connector.",
-          },
-          guid: "4afac741-3dcc-4c60-a4ca-a6dede994e3f",
-          qualifiedName: "Console Audit Log Store Connector",
-          displayName: "Console Audit Log Store Connector",
-          description:
-            "Connector supports logging of audit log messages to stdout.",
-          connectorProviderClassName: getConnectorProviderClass(),
-        },
-        configurationProperties: {
-          supportedSeverities: currentSupportedSeverities,
-        },
-      };
+      setOperation(undefined);
+      const body = getRestBody();     
       console.log("addAuditLogDestinationURL " + addAuditLogDestinationURL);
       setLoadingText("Adding audit log destination");
       issueRestCreate(
@@ -328,7 +345,28 @@ export default function ConfigureAuditLogDestinations({
         "/audit-log-destinations/connection/" + 
         currentDestinationId
     );
-    const body = {
+    const body = getRestBody();     
+    console.log("editAuditLogDestinationURL " + editAuditLogDestinationURL);
+    setLoadingText("Editing audit log destination");
+    issueRestUpdate(
+      editAuditLogDestinationURL,
+      body,
+      onSuccessfulEditAuditLogDestination,
+      onErrorAuditLogDestination,
+      "omagServerConfig"
+    );
+  };
+
+  const getRestBody = () => {
+    let restSeverities = [];
+    for (let i=0;i<currentSupportedSeverities.length; i++) {
+      const currentSeverity = currentSupportedSeverities[i];
+      if (currentSeverity.selected) {
+        restSeverities.push(currentSeverity.id);
+      }  
+    }
+
+    return {
       class: "Connection",
       headerVersion: 0,
       displayName: currentDestinationName,
@@ -355,18 +393,10 @@ export default function ConfigureAuditLogDestinations({
         connectorProviderClassName: getConnectorProviderClass(),
       },
       configurationProperties: {
-        supportedSeverities: currentSupportedSeverities,
+        supportedSeverities: restSeverities
       },
     };
-    console.log("editAuditLogDestinationURL " + editAuditLogDestinationURL);
-    setLoadingText("Editing audit log destination");
-    issueRestUpdate(
-      editAuditLogDestinationURL,
-      body,
-      onSuccessfulEditAuditLogDestination,
-      onErrorAuditLogDestination,
-      "omagServerConfig"
-    );
+
   };
   const onSuccessfulAddAuditLogDestination = () => {
     console.log("onSuccessfulAddAuditLogDestination entry");
@@ -388,7 +418,8 @@ export default function ConfigureAuditLogDestinations({
     // setCurrentServerAuditDestinations(newAuditLogDestinations);
     document.getElementById("loading-container").style.display = "none";
     setLoadingText("Refreshing audit log destinations ");
-    fetchServerConfig(refreshAuditLogDestinations, onErrorAuditLogDestination);
+    // retrieveAllServers
+    fetchServerConfig(refreshCurrentAuditLogDestinations, onErrorAuditLogDestination);
    
   };
   const onSuccessfulEditAuditLogDestination = () => {
@@ -396,7 +427,7 @@ export default function ConfigureAuditLogDestinations({
     console.log(currentServerAuditDestinations);
     document.getElementById("loading-container").style.display = "none";
     setLoadingText("Refreshing audit log destinations ");
-    fetchServerConfig(refreshAuditLogDestinations, onErrorAuditLogDestination);
+    fetchServerConfig(refreshCurrentAuditLogDestinations, onErrorAuditLogDestination);
   };
 
   const onSuccessfulRemoveAll = () => {
@@ -409,11 +440,11 @@ export default function ConfigureAuditLogDestinations({
     console.log("onSuccessfulRemove");
     // Fetch Server Config
     setLoadingText("Refreshing audit log destinations ");
-    fetchServerConfig(refreshAuditLogDestinations, onErrorAuditLogDestination);
+    fetchServerConfig(refreshCurrentAuditLogDestinations, onErrorAuditLogDestination);
   };
 
-  const refreshAuditLogDestinations = (response) => {
-    console.log("refreshAuditLogDestinations");
+  const refreshCurrentAuditLogDestinations = (response) => {
+    console.log("refreshCurrentAuditLogDestinations");
     console.log(response);
 
     const config = response.omagServerConfig;
@@ -446,8 +477,15 @@ export default function ConfigureAuditLogDestinations({
                   auditLogConnection.connectorType.connectorProviderClassName
                 );
             }
-
-            refreshedAuditLogConnection.supportedSeverities = [];
+            //TODO
+            const supportedSeveritiesSelectedNames = auditLogConnection.configurationProperties.supportedSeverities;
+            const supportedSeveritiesNames =  supportedAuditLogSeverities.map(a => a.id);
+            let checkedSupportedSeverities = [];
+            for (let i=0;i<supportedAuditLogSeverities.length;i++) {
+                let severity = supportedAuditLogSeverities[i];
+                severity.selected = supportedSeveritiesSelectedNames.includes(severity.id);
+                checkedSupportedSeverities.push(severity);
+            }
             if (
               auditLogConnection.configurationProperties &&
               auditLogConnection.configurationProperties.supportedSeverities
@@ -457,7 +495,7 @@ export default function ConfigureAuditLogDestinations({
             }
             refreshedAuditLogConnections.push(refreshedAuditLogConnection);
           }
-
+          // update the current server audit destinations with the values from the servere  
           setCurrentServerAuditDestinations(refreshedAuditLogConnections);
         }
       }
@@ -510,7 +548,7 @@ export default function ConfigureAuditLogDestinations({
             autoComplete="off"
           />
           <Select
-            defaultValue="placeholder-item"
+            defaultValue={currentDestinationTypeName}
             helperText={destinationTypeDescription}
             onChange={onChangeTypeSelected}
             id="select-server-type"
@@ -518,7 +556,7 @@ export default function ConfigureAuditLogDestinations({
             labelText="Select Audit Log Destination Type"
           >
             {auditLogDestinations.map((dest, i) => (
-              <SelectItem text={dest.label} value={dest.id} id={dest.id} />
+              <SelectItem text={dest.label} value={dest.id} id={dest.id}  />
             ))}
           </Select>
           {currentDestinationTypeName === "connection" && (
@@ -554,14 +592,19 @@ export default function ConfigureAuditLogDestinations({
                     labelText={severity.label}
                     id={severity.id}
                     checked={severity.selected}
+                    onChange={j => handleOnChangeSeverity(severity.id)}
+                   
                   />
                 ))}
             </div>
           </div>
-
-          <button onClick={(e) => onClickFinishedOperation()}>
-            Enable this Audit Log Destination
+          <button onClick={(e) => onClickCancelOperation()}>
+             Cancel {operation}
           </button>
+          <button onClick={(e) => onClickFinishedOperation()}>
+             Issue {operation}
+          </button>
+         
         </fieldset>
       )}
       {operation === undefined && (
