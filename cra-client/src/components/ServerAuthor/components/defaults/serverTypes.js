@@ -5,7 +5,7 @@ const serverTypes = [
 
   {
     id: "access-store-server",
-    label: "Access Store Server (previously called Metadata Server)",
+    label: "Metadata Access Store Server (previously called Metadata Server)",
     description: "Supports the access services and supports a metadata repository that can natively store open metadata types as well as specialized metadata APIs for different types of tools (these APIs are called access services).",
     serverConfigElements : ["server-type-config-element", "config-basic-config-element", "local-repository-config-element", "esb-config-element", "cohort-config-element", "access-services-config-element", "archives-config-element", "audit-log-config-element", "final-config-element"]
   },
