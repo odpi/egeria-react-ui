@@ -80,10 +80,7 @@ const ServerAuthorContextProvider = props => {
   const integrationServicesFormStartRef = useRef(null);
 
   useEffect(() => {
-    const fetchLists = async () => {
-      retrieveAllServers();
-    };
-    fetchLists();
+    retrieveAllServers();
   }, []);
 /**
  * Clear out all the context so the new server type doe not pick up old values in the wizard.
@@ -154,6 +151,8 @@ const  cleanForNewServerType = () => {
     const restURL = encodeURI("/servers/" + serverName + "/server-author/users/" + userId +"/servers/" + serverName + "/audit-log-destinations");
     issueRestGet(restURL, onSuccessfulFetchAuditLogSeverities, onErrorFetchAuditLogSeverities, "severities");
   };
+
+
   const onErrorFetchPlatforms = () => {
       // error
       setAllServers([]);
