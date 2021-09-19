@@ -23,6 +23,7 @@ import {
   OverflowMenuItem,
 } from "carbon-components-react";
 import { MisuseOutline16, Edit16 } from "@carbon/icons-react";
+import areIntervalsOverlappingWithOptions from "date-fns/esm/fp/areIntervalsOverlappingWithOptions/index.js";
 // protected String   supportedZonesPropertyName      = "SupportedZones";      /* Common */
 // protected String   defaultZonesPropertyName        = "DefaultZones";        /* Common */
 // protected String   publishZonesPropertyName        = "PublishZones";        /* Common */
@@ -106,8 +107,13 @@ export default function ConfigureAccessServices() {
         onChange={onChangeAccessServiceSelected}
         id="select-access-server"
         invalidText="A valid value is required"
-        labelText="Choose an access service"
       >
+        <SelectItem
+                text="Choose an access service"
+                value="placeholder-item"
+                disabled
+                hidden
+              />
           {potentialNewAccessServices.map((service) => (
               <SelectItem text={service.serviceName} value={service.serviceURLMarker} id={service.serviceURLMarker} />
             ))}
@@ -223,6 +229,7 @@ export default function ConfigureAccessServices() {
   };
 
   const issueAdd = () => {
+    if (currentAccessServiceId) {
     const addAccessServiceURL = encodeURI(
       "/servers/" +
         tenantId +
@@ -244,6 +251,9 @@ export default function ConfigureAccessServices() {
       onErrorAccessServices,
       "omagServerConfig"
     );
+    } else {
+      alert("Please choose a type of access service");
+    }
   };
   const issueEdit = () => {
     setOperation(undefined);

@@ -62,8 +62,7 @@ const ServerAuthorContextProvider = (props) => {
   // Access Services
   const [availableAccessServices, setAvailableAccessServices] =
     useState(accessServices);
-  const [currentAccessServices, setCurrentAccessServices] =
-    useState([]);
+  const [currentAccessServices, setCurrentAccessServices] = useState([]);
   // Cohorts
   const [newServerCohorts, setNewServerCohorts] = useState([]);
   const [registerCohortName, setRegisterCohortName] = useState();
@@ -166,9 +165,10 @@ const ServerAuthorContextProvider = (props) => {
     setCurrentServerAuditDestinations([]);
     // Access Services
     setAvailableAccessServices(accessServices);
-    currentAccessServices, setCurrentAccessServices,
-    // Cohorts
-    setNewServerCohorts([]);
+    currentAccessServices,
+      setCurrentAccessServices,
+      // Cohorts
+      setNewServerCohorts([]);
     setRegisterCohortName("");
     setUnregisterCohortName("");
     // Archives
@@ -336,24 +336,26 @@ const ServerAuthorContextProvider = (props) => {
     onSuccessfulRegisterCohort,
     onErrorRegisterCohort
   ) => {
-    console.log("called registerCohort", { cohortName });
-    const registerCohortURL = encodeURI(
-      "/servers/" +
-        serverName +
-        "/server-author/users/" +
-        userId +
+    if (cohortName !== undefined) {
+      console.log("called registerCohort", { cohortName });
+      const registerCohortURL = encodeURI(
         "/servers/" +
-        newServerName +
-        "/cohorts/" +
-        cohortName
-    );
-    issueRestCreate(
-      registerCohortURL,
-      undefined,
-      onSuccessfulRegisterCohort,
-      onErrorRegisterCohort,
-      ""
-    );
+          serverName +
+          "/server-author/users/" +
+          userId +
+          "/servers/" +
+          newServerName +
+          "/cohorts/" +
+          cohortName
+      );
+      issueRestCreate(
+        registerCohortURL,
+        undefined,
+        onSuccessfulRegisterCohort,
+        onErrorRegisterCohort,
+        ""
+      );
+    }
   };
 
   const unRegisterCohort = (
@@ -361,23 +363,25 @@ const ServerAuthorContextProvider = (props) => {
     onSuccessfulUnRegisterCohort,
     onErrorUnRegisterCohort
   ) => {
-    console.log("called unRegisterCohort", { cohortName });
+    if (cohortName !== undefined) {
+      console.log("called unRegisterCohort", { cohortName });
 
-    const unRegisterCohortURL = encodeURI(
-      "/servers/" +
-        serverName +
-        "/server-author/users/" +
-        userId +
+      const unRegisterCohortURL = encodeURI(
         "/servers/" +
-        newServerName +
-        "/cohorts/" +
-        cohortName
-    );
-    issueRestDelete(
-      unRegisterCohortURL,
-      onSuccessfulUnRegisterCohort,
-      onErrorUnRegisterCohort
-    );
+          serverName +
+          "/server-author/users/" +
+          userId +
+          "/servers/" +
+          newServerName +
+          "/cohorts/" +
+          cohortName
+      );
+      issueRestDelete(
+        unRegisterCohortURL,
+        onSuccessfulUnRegisterCohort,
+        onErrorUnRegisterCohort
+      );
+    }
   };
 
   const enableAuditDestination = (
@@ -716,44 +720,82 @@ const ServerAuthorContextProvider = (props) => {
         currentServerAuditDestinations,
         setCurrentServerAuditDestinations,
         supportedAuditLogSeverities, // we do not need expose the set as it is only referenced in this context code.
-        newServerName, setNewServerName,
-        newServerLocalURLRoot, setNewServerLocalURLRoot,
-        newServerLocalServerType, setNewServerLocalServerType,
-        newServerOrganizationName, setNewServerOrganizationName,
-        newServerLocalUserId, setNewServerLocalUserId,
-        newServerLocalPassword, setNewServerLocalPassword,
-        newServerSecurityConnector, setNewServerSecurityConnector,
-        newServerRepository, setNewServerRepository,
-        newServerMaxPageSize, setNewServerMaxPageSize,
-        availableAccessServices, setAvailableAccessServices,
-        newServerCohorts, setNewServerCohorts,
-        registerCohortName, setRegisterCohortName,
-        unregisterCohortName, setUnregisterCohortName,
-        newServerOMArchives, setNewServerOMArchives,
-        newServerProxyConnector, setNewServerProxyConnector,
-        newServerEventMapperConnector, setNewServerEventMapperConnector,
-        newServerEventSource, setNewServerEventSource,
-        availableViewServices, setAvailableViewServices,
-        currentAccessServices, setCurrentAccessServices,
-        newServerViewServiceRemoteServerName, setNewServerViewServiceRemoteServerName,
-        newServerViewServiceRemoteServerURLRoot, setNewServerViewServiceRemoteServerURLRoot,
-        availableIntegrationServices, setAvailableIntegrationServices,
-        newServerIntegrationServiceRemoteServerName, setNewServerIntegrationServiceRemoteServerName,
-        newServerIntegrationServiceRemoteServerURLRoot, setNewServerIntegrationServiceRemoteServerURLRoot,
-        newServerIntegrationServiceConnectorName, setNewServerIntegrationServiceConnectorName,
-        newServerIntegrationServiceConnectorUserId, setNewServerIntegrationServiceConnectorUserId,
-        newServerIntegrationServiceConnection, setNewServerIntegrationServiceConnection,
-        newServerIntegrationServiceMetadataSource, setNewServerIntegrationServiceMetadataSource,
-        newServerIntegrationServiceRefreshTimeInterval, setNewServerIntegrationServiceRefreshTimeInterval,
-        newServerIntegrationServiceUsesBlockingCalls, setNewServerIntegrationServiceUsesBlockingCalls,
-        newServerIntegrationServicePermittedSynchronization, setNewServerIntegrationServicePermittedSynchronization,
-        notificationType, setNotificationType,
-        notificationTitle, setNotificationTitle,
-        notificationSubtitle, setNotificationSubtitle,
-        progressIndicatorIndex, setProgressIndicatorIndex,
-        loadingText, setLoadingText,
-        newServerConfig, setNewServerConfig,
-        preventDeployment, setPreventDeployment,
+        newServerName,
+        setNewServerName,
+        newServerLocalURLRoot,
+        setNewServerLocalURLRoot,
+        newServerLocalServerType,
+        setNewServerLocalServerType,
+        newServerOrganizationName,
+        setNewServerOrganizationName,
+        newServerLocalUserId,
+        setNewServerLocalUserId,
+        newServerLocalPassword,
+        setNewServerLocalPassword,
+        newServerSecurityConnector,
+        setNewServerSecurityConnector,
+        newServerRepository,
+        setNewServerRepository,
+        newServerMaxPageSize,
+        setNewServerMaxPageSize,
+        availableAccessServices,
+        setAvailableAccessServices,
+        newServerCohorts,
+        setNewServerCohorts,
+        registerCohortName,
+        setRegisterCohortName,
+        unregisterCohortName,
+        setUnregisterCohortName,
+        newServerOMArchives,
+        setNewServerOMArchives,
+        newServerProxyConnector,
+        setNewServerProxyConnector,
+        newServerEventMapperConnector,
+        setNewServerEventMapperConnector,
+        newServerEventSource,
+        setNewServerEventSource,
+        availableViewServices,
+        setAvailableViewServices,
+        currentAccessServices,
+        setCurrentAccessServices,
+        newServerViewServiceRemoteServerName,
+        setNewServerViewServiceRemoteServerName,
+        newServerViewServiceRemoteServerURLRoot,
+        setNewServerViewServiceRemoteServerURLRoot,
+        availableIntegrationServices,
+        setAvailableIntegrationServices,
+        newServerIntegrationServiceRemoteServerName,
+        setNewServerIntegrationServiceRemoteServerName,
+        newServerIntegrationServiceRemoteServerURLRoot,
+        setNewServerIntegrationServiceRemoteServerURLRoot,
+        newServerIntegrationServiceConnectorName,
+        setNewServerIntegrationServiceConnectorName,
+        newServerIntegrationServiceConnectorUserId,
+        setNewServerIntegrationServiceConnectorUserId,
+        newServerIntegrationServiceConnection,
+        setNewServerIntegrationServiceConnection,
+        newServerIntegrationServiceMetadataSource,
+        setNewServerIntegrationServiceMetadataSource,
+        newServerIntegrationServiceRefreshTimeInterval,
+        setNewServerIntegrationServiceRefreshTimeInterval,
+        newServerIntegrationServiceUsesBlockingCalls,
+        setNewServerIntegrationServiceUsesBlockingCalls,
+        newServerIntegrationServicePermittedSynchronization,
+        setNewServerIntegrationServicePermittedSynchronization,
+        notificationType,
+        setNotificationType,
+        notificationTitle,
+        setNotificationTitle,
+        notificationSubtitle,
+        setNotificationSubtitle,
+        progressIndicatorIndex,
+        setProgressIndicatorIndex,
+        loadingText,
+        setLoadingText,
+        newServerConfig,
+        setNewServerConfig,
+        preventDeployment,
+        setPreventDeployment,
         // Refs
         basicConfigFormStartRef,
         integrationServicesFormStartRef,

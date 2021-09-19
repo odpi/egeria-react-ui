@@ -337,24 +337,24 @@ export default function ServerAuthorWizard() {
   };
 
   // Access Services (optional)
-  const handleAccessServicesConfig = () => {
-    setLoadingText("Enabling access services...");
-    document.getElementById("access-services-config-element").style.display =
-      "none";
-    document.getElementById("loading-container").style.display = "block";
-    // Enable Access Services
-    // try {
-    if (selectedAccessServices !== undefined) {
-      if (selectedAccessServices.length === availableAccessServices.length) {
-        configureAccessServices();
-      } else {
-        for (const service of selectedAccessServices) {
-          setLoadingText(`Enabling ${service} access service...`);
-          configureAccessServices(service);
-        }
-      }
-    }
-  };
+  // const handleAccessServicesConfig = () => {
+  //   setLoadingText("Enabling access services...");
+  //   document.getElementById("access-services-config-element").style.display =
+  //     "none";
+  //   document.getElementById("loading-container").style.display = "block";
+  //   // Enable Access Services
+  //   // try {
+  //   if (selectedAccessServices !== undefined) {
+  //     if (selectedAccessServices.length === availableAccessServices.length) {
+  //       configureAccessServices();
+  //     } else {
+  //       for (const service of selectedAccessServices) {
+  //         setLoadingText(`Enabling ${service} access service...`);
+  //         configureAccessServices(service);
+  //       }
+  //     }
+  //   }
+  // };
   const configureAccessServices = (serviceURLMarker) => {
     console.log("called configureAccessServices", { serviceURLMarker });
     let configureAccessServicesURL = encodeURI(
@@ -1086,10 +1086,13 @@ export default function ServerAuthorWizard() {
               id="select-server-type"
               invalidText="A valid value is required"
               labelText="Select"
+              
             >
               <SelectItem
                 text="Choose a Server type"
                 value="placeholder-item"
+                disabled
+                hidden
               />
               <SelectItemGroup label="Cohort Member">
                 <SelectItem
@@ -1168,7 +1171,7 @@ export default function ServerAuthorWizard() {
           >
             <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
-              handleNextStep={handleAccessServicesConfig}
+              handleNextStep={showNextStep}
             />
             <h4 className="left-text-bottom-margin-24">
               Select Access Services
