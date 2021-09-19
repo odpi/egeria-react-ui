@@ -13,12 +13,14 @@ import { Add16, Subtract16 } from "@carbon/icons-react";
  * @returns 
  */
 export default function ListOfStrings(props) {
+  
   const handleAddString = (e) => {
     const stringValue = document.getElementById("new-string-value").value;
     console.log("handleAddString() called", { stringValue });
     if (stringValue.length === 0) return;
     props.handleAddString(stringValue);
   };
+
   const handleRemoveString = (index) => {
     console.log("handleRemoveString() called", { index });
     props.handleRemoveStringAtIndex(index);
