@@ -32,7 +32,6 @@ import ConfigureRepositoryProxyConnectors from "./ConfigureRepositoryProxyConnec
 import ConfigureViewServices from "./ConfigureViewServices";
 import ConfigureIntegrationServices from "./ConfigureIntegrationServices";
 
-
 export default function ServerAuthorWizard() {
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
   console.log(useContext(ServerAuthorContext));
@@ -80,7 +79,10 @@ export default function ServerAuthorWizard() {
   const [serverTypeDescription, setServerTypeDescription] = useState();
 
   const displayHelpForServerTypes = () => {
-    window.open("https://odpi.github.io/egeria-docs/concepts/omag-server/?h=omag+server+types",'_blank');
+    window.open(
+      "https://odpi.github.io/egeria-docs/concepts/omag-server/?h=omag+server+types",
+      "_blank"
+    );
   };
 
   const showPreviousStep = () => {
@@ -143,10 +145,12 @@ export default function ServerAuthorWizard() {
   const handleBasicConfig = async (e) => {
     e.preventDefault();
     // Generate server config
-    
+
     // if the bilateral local repository was chosen and failed to be set then we disable that dom element.
-    // if the basic config has been completed then the platform coudl have been changed - so allow the bilateral server to be chosen again 
-    document.getElementById("bitemporal-repository").removeAttribute("disabled", "");
+    // if the basic config has been completed then the platform coudl have been changed - so allow the bilateral server to be chosen again
+    document
+      .getElementById("bitemporal-repository")
+      .removeAttribute("disabled", "");
     setLoadingText("Generating server configuration...");
     document.getElementById("config-basic-config-element").style.display =
       "none";
@@ -250,10 +254,15 @@ export default function ServerAuthorWizard() {
     showNextStep();
   };
   const onErrorEnableCruxServer = () => {
-      alert("The Bilateral repository is not available on the server please choose another local respository to enable.")
-      document.getElementById("bitemporal-repository").setAttribute("disabled","disabled");
-      document.getElementById("loading-container").style.display = "none";
-      document.getElementById("local-repository-config-element").style.display = "block";
+    alert(
+      "The Bilateral repository is not available on the server please choose another local respository to enable."
+    );
+    document
+      .getElementById("bitemporal-repository")
+      .setAttribute("disabled", "disabled");
+    document.getElementById("loading-container").style.display = "none";
+    document.getElementById("local-repository-config-element").style.display =
+      "block";
   };
   const onSuccessfulConfigureEventBusURL = (json) => {
     const serverConfig = json.omagServerConfig;
@@ -276,7 +285,7 @@ export default function ServerAuthorWizard() {
     if (newServerRepository) {
       setLoadingText("Enabling chosen local repository...");
 
-       //local-repository/mode/plugin-repository/connection
+      //local-repository/mode/plugin-repository/connection
 
       const serverConfigURL = encodeURI(
         "/servers/" +
@@ -288,14 +297,15 @@ export default function ServerAuthorWizard() {
           "/local-repository/mode/" +
           newServerRepository
       );
-     
+
       if (serverConfigURL.endsWith("plugin-repository/connection")) {
         const body = {
-          "class": "Connection",
-          "connectorType": {
-            "class": "ConnectorType",
-            "connectorProviderClassName": "org.odpi.egeria.connectors.juxt.crux.repositoryconnector.CruxOMRSRepositoryConnectorProvider"
-          }
+          class: "Connection",
+          connectorType: {
+            class: "ConnectorType",
+            connectorProviderClassName:
+              "org.odpi.egeria.connectors.juxt.crux.repositoryconnector.CruxOMRSRepositoryConnectorProvider",
+          },
         };
         issueRestCreate(
           serverConfigURL,
@@ -305,13 +315,13 @@ export default function ServerAuthorWizard() {
           "omagServerConfig"
         );
       } else {
-      issueRestCreate(
-        serverConfigURL,
-        undefined,
-        onSuccessfulEnableRepository,
-        onErrorConfigureServer,
-        "omagServerConfig"
-      );
+        issueRestCreate(
+          serverConfigURL,
+          undefined,
+          onSuccessfulEnableRepository,
+          onErrorConfigureServer,
+          "omagServerConfig"
+        );
       }
     }
     // Enable Access Services
@@ -334,12 +344,14 @@ export default function ServerAuthorWizard() {
     document.getElementById("loading-container").style.display = "block";
     // Enable Access Services
     // try {
-    if (selectedAccessServices.length === availableAccessServices.length) {
-      configureAccessServices();
-    } else {
-      for (const service of selectedAccessServices) {
-        setLoadingText(`Enabling ${service} access service...`);
-        configureAccessServices(service);
+    if (selectedAccessServices !== undefined) {
+      if (selectedAccessServices.length === availableAccessServices.length) {
+        configureAccessServices();
+      } else {
+        for (const service of selectedAccessServices) {
+          setLoadingText(`Enabling ${service} access service...`);
+          configureAccessServices(service);
+        }
       }
     }
   };
@@ -383,9 +395,8 @@ export default function ServerAuthorWizard() {
     setLoadingText("Fetching final stored server configuration...");
     // if (!currentServerAuditDestinations || currentServerAuditDestinations.length === 0) {
     //   throw new Error(`Cannot create OMAG server configuration without an audit log destination.`);
-    // } 
+    // }
 
-    
     showNextStep();
   };
   const onSuccessfulFetchServer = (json) => {
@@ -1059,14 +1070,12 @@ export default function ServerAuthorWizard() {
 
           <div id="server-type-container" className="hideable">
             <NavigationButtons handleNextStep={handleServerTypeSelection} />
-            
-            <div className ="server-type-container"> 
-            <h4 className="left-text-bottom-margin-32">
-              Select Server Type
-            </h4>
-           
-            <Info16 onClick = { () => displayHelpForServerTypes() }/>
-            {/* <input type="image"  alt="image of question mark"
+
+            <div className="server-type-container">
+              <h4 className="left-text-bottom-margin-32">Select Server Type</h4>
+
+              <Info16 onClick={() => displayHelpForServerTypes()} />
+              {/* <input type="image"  alt="image of question mark"
                      onClick = { () => displayHelpForServerTypes() }  >
             </input> */}
             </div>
@@ -1083,12 +1092,19 @@ export default function ServerAuthorWizard() {
                 value="placeholder-item"
               />
               <SelectItemGroup label="Cohort Member">
-                <SelectItem text="Access Store Server (previously referred to as a Metadata Server)" value="access-store-server" />
+                <SelectItem
+                  text="Access Store Server (previously referred to as a Metadata Server)"
+                  value="access-store-server"
+                />
                 <SelectItem
                   text="Metadata Access Point"
                   value="metadata-access-point"
                 />
-                <SelectItem text="Repository Proxy" value="repository-proxy"  disabled/>
+                <SelectItem
+                  text="Repository Proxy"
+                  value="repository-proxy"
+                  disabled
+                />
                 <SelectItem
                   text="Conformance Test Server"
                   value="conformance-test-server"
@@ -1101,7 +1117,7 @@ export default function ServerAuthorWizard() {
                   value="integration-daemon"
                   disabled
                 />
-                <SelectItem text="Engine Host" value="engine-host"  disabled/>
+                <SelectItem text="Engine Host" value="engine-host" disabled />
                 <SelectItem
                   text="Data Engine Proxy"
                   value="data-engine-proxy"
@@ -1113,9 +1129,8 @@ export default function ServerAuthorWizard() {
                   disabled
                 />
               </SelectItemGroup>
-              <SelectItem text="View Server" value="view-server"  disabled/>
+              <SelectItem text="View Server" value="view-server" disabled />
             </Select>
-
           </div>
 
           <div
@@ -1127,9 +1142,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleBasicConfig}
             />
-            <h4 className="left-text-bottom-margin-16">
-              Basic Configuration
-            </h4>
+            <h4 className="left-text-bottom-margin-16">Basic Configuration</h4>
             <BasicConfig />
           </div>
 
@@ -1175,7 +1188,7 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={showNextStep}
             />
-   
+
             <ConfigureAuditLogDestinations
               nextAction={() => configureAuditLogDestinations()}
               previousAction={handleBackToPreviousStep}
@@ -1191,12 +1204,9 @@ export default function ServerAuthorWizard() {
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureESB}
             />
-            <h4 className="left-text-bottom-margin-24">
-              Configure Event Bus
-            </h4>
+            <h4 className="left-text-bottom-margin-24">Configure Event Bus</h4>
             <div className="left-text-bottom-margin-24">
-              Configure Event Bus with default topicURLRoot as
-              'egeriaTopics'
+              Configure Event Bus with default topicURLRoot as 'egeriaTopics'
             </div>
           </div>
 
@@ -1220,7 +1230,7 @@ export default function ServerAuthorWizard() {
             className="hideable"
             style={{ display: "none" }}
           >
-         <NavigationButtons
+            <NavigationButtons
               handlePreviousStep={handleBackToPreviousStep}
               handleNextStep={handleConfigureArchives}
             />
@@ -1288,11 +1298,10 @@ export default function ServerAuthorWizard() {
                 marginLeft: "1rem",
               }}
             >
-             Congratulations you have successfully configured server '{newServerName}'!
+              Congratulations you have successfully configured server '
+              {newServerName}'!
             </h4>
-            <NavigationButtons
-              handlePreviousStep={handleBackToPreviousStep}
-            />
+            <NavigationButtons handlePreviousStep={handleBackToPreviousStep} />
           </div>
 
           <div

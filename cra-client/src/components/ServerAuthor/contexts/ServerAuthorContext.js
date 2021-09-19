@@ -66,6 +66,8 @@ const ServerAuthorContextProvider = (props) => {
     useState([]);
   // Cohorts
   const [newServerCohorts, setNewServerCohorts] = useState([]);
+  const [registerCohortName, setRegisterCohortName] = useState();
+  const [unregisterCohortName, setUnregisterCohortName] = useState();
   // Archives
   const [newServerOMArchives, setNewServerOMArchives] = useState([]);
   // Proxy
@@ -167,6 +169,8 @@ const ServerAuthorContextProvider = (props) => {
     currentAccessServices, setCurrentAccessServices,
     // Cohorts
     setNewServerCohorts([]);
+    setRegisterCohortName("");
+    setUnregisterCohortName("");
     // Archives
     setNewServerOMArchives([]);
     // Proxy
@@ -333,7 +337,6 @@ const ServerAuthorContextProvider = (props) => {
     onErrorRegisterCohort
   ) => {
     console.log("called registerCohort", { cohortName });
-
     const registerCohortURL = encodeURI(
       "/servers/" +
         serverName +
@@ -713,78 +716,44 @@ const ServerAuthorContextProvider = (props) => {
         currentServerAuditDestinations,
         setCurrentServerAuditDestinations,
         supportedAuditLogSeverities, // we do not need expose the set as it is only referenced in this context code.
-        newServerName,
-        setNewServerName,
-        newServerLocalURLRoot,
-        setNewServerLocalURLRoot,
-        newServerLocalServerType,
-        setNewServerLocalServerType,
-        newServerOrganizationName,
-        setNewServerOrganizationName,
-        newServerLocalUserId,
-        setNewServerLocalUserId,
-        newServerLocalPassword,
-        setNewServerLocalPassword,
-        newServerSecurityConnector,
-        setNewServerSecurityConnector,
-        newServerRepository,
-        setNewServerRepository,
-        newServerMaxPageSize,
-        setNewServerMaxPageSize,
-        availableAccessServices,
-        setAvailableAccessServices,
-        newServerCohorts,
-        setNewServerCohorts,
-        newServerOMArchives,
-        setNewServerOMArchives,
-        newServerProxyConnector,
-        setNewServerProxyConnector,
-        newServerEventMapperConnector,
-        setNewServerEventMapperConnector,
-        newServerEventSource,
-        setNewServerEventSource,
-        availableViewServices,
-        setAvailableViewServices,
-        currentAccessServices, 
-        setCurrentAccessServices,
-        newServerViewServiceRemoteServerName,
-        setNewServerViewServiceRemoteServerName,
-        newServerViewServiceRemoteServerURLRoot,
-        setNewServerViewServiceRemoteServerURLRoot,
-        availableIntegrationServices,
-        setAvailableIntegrationServices,
-        newServerIntegrationServiceRemoteServerName,
-        setNewServerIntegrationServiceRemoteServerName,
-        newServerIntegrationServiceRemoteServerURLRoot,
-        setNewServerIntegrationServiceRemoteServerURLRoot,
-        newServerIntegrationServiceConnectorName,
-        setNewServerIntegrationServiceConnectorName,
-        newServerIntegrationServiceConnectorUserId,
-        setNewServerIntegrationServiceConnectorUserId,
-        newServerIntegrationServiceConnection,
-        setNewServerIntegrationServiceConnection,
-        newServerIntegrationServiceMetadataSource,
-        setNewServerIntegrationServiceMetadataSource,
-        newServerIntegrationServiceRefreshTimeInterval,
-        setNewServerIntegrationServiceRefreshTimeInterval,
-        newServerIntegrationServiceUsesBlockingCalls,
-        setNewServerIntegrationServiceUsesBlockingCalls,
-        newServerIntegrationServicePermittedSynchronization,
-        setNewServerIntegrationServicePermittedSynchronization,
-        notificationType,
-        setNotificationType,
-        notificationTitle,
-        setNotificationTitle,
-        notificationSubtitle,
-        setNotificationSubtitle,
-        progressIndicatorIndex,
-        setProgressIndicatorIndex,
-        loadingText,
-        setLoadingText,
-        newServerConfig,
-        setNewServerConfig,
-        preventDeployment,
-        setPreventDeployment,
+        newServerName, setNewServerName,
+        newServerLocalURLRoot, setNewServerLocalURLRoot,
+        newServerLocalServerType, setNewServerLocalServerType,
+        newServerOrganizationName, setNewServerOrganizationName,
+        newServerLocalUserId, setNewServerLocalUserId,
+        newServerLocalPassword, setNewServerLocalPassword,
+        newServerSecurityConnector, setNewServerSecurityConnector,
+        newServerRepository, setNewServerRepository,
+        newServerMaxPageSize, setNewServerMaxPageSize,
+        availableAccessServices, setAvailableAccessServices,
+        newServerCohorts, setNewServerCohorts,
+        registerCohortName, setRegisterCohortName,
+        unregisterCohortName, setUnregisterCohortName,
+        newServerOMArchives, setNewServerOMArchives,
+        newServerProxyConnector, setNewServerProxyConnector,
+        newServerEventMapperConnector, setNewServerEventMapperConnector,
+        newServerEventSource, setNewServerEventSource,
+        availableViewServices, setAvailableViewServices,
+        currentAccessServices, setCurrentAccessServices,
+        newServerViewServiceRemoteServerName, setNewServerViewServiceRemoteServerName,
+        newServerViewServiceRemoteServerURLRoot, setNewServerViewServiceRemoteServerURLRoot,
+        availableIntegrationServices, setAvailableIntegrationServices,
+        newServerIntegrationServiceRemoteServerName, setNewServerIntegrationServiceRemoteServerName,
+        newServerIntegrationServiceRemoteServerURLRoot, setNewServerIntegrationServiceRemoteServerURLRoot,
+        newServerIntegrationServiceConnectorName, setNewServerIntegrationServiceConnectorName,
+        newServerIntegrationServiceConnectorUserId, setNewServerIntegrationServiceConnectorUserId,
+        newServerIntegrationServiceConnection, setNewServerIntegrationServiceConnection,
+        newServerIntegrationServiceMetadataSource, setNewServerIntegrationServiceMetadataSource,
+        newServerIntegrationServiceRefreshTimeInterval, setNewServerIntegrationServiceRefreshTimeInterval,
+        newServerIntegrationServiceUsesBlockingCalls, setNewServerIntegrationServiceUsesBlockingCalls,
+        newServerIntegrationServicePermittedSynchronization, setNewServerIntegrationServicePermittedSynchronization,
+        notificationType, setNotificationType,
+        notificationTitle, setNotificationTitle,
+        notificationSubtitle, setNotificationSubtitle,
+        progressIndicatorIndex, setProgressIndicatorIndex,
+        loadingText, setLoadingText,
+        newServerConfig, setNewServerConfig,
+        preventDeployment, setPreventDeployment,
         // Refs
         basicConfigFormStartRef,
         integrationServicesFormStartRef,

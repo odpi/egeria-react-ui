@@ -1,107 +1,80 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React, { useContext } from "react";
-import { Button, TextInput } from "carbon-components-react";
-import { Add16, Subtract16 } from "@carbon/icons-react";
-
+import React, { useContext, useEffect } from "react";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
+import ListOfStrings from "../../common/ListOfStrings";
 
 export default function RegisterCohorts() {
   const {
     newServerCohorts,
     setNewServerCohorts,
+    registerCohortName,
+    setRegisterCohortName,
+    unregisterCohortName,
+    setUnregisterCohortName,
     registerCohort,
     unRegisterCohort,
   } = useContext(ServerAuthorContext);
 
-  const handleAddCohort = (e) => {
-    const cohortName = document.getElementById("new-server-cohort-name").value;
+  useEffect(() => {
+    if (registerCohortName !== "") {
+      registerCohort(
+        registerCohortName,
+        onSuccessfulRegisterCohort,
+        onErrorRegisterCohort
+      );
+    }
+  }, [registerCohortName]);
+
+  useEffect(() => {
+    if (unregisterCohortName !== "") {
+      unRegisterCohort(
+        unregisterCohortName,
+        onSuccessfulUnRegisterCohort,
+        onErrorUnRegisterCohort
+      );
+    }
+  }, [unregisterCohortName]);
+
+  const handleAddCohort = (cohortName) => {
     console.log("handleAddCohort() called", { cohortName });
     if (cohortName.length === 0) return;
-    registerCohort(
-      cohortName,
-      onSuccessfulRegisterCohort,
-      onErrorRegisterCohort
-    );
+    setRegisterCohortName(cohortName);
   };
+  const handleRemoveCohort = (index) => {
+    console.log("handleRemoveCohort() called", { index });
+    const cohortName = newServerCohorts[index];
+    setUnregisterCohortName(cohortName);
+  };
+
   const onSuccessfulRegisterCohort = () => {
-    const cohortName = document.getElementById("new-server-cohort-name").value;
-    setNewServerCohorts(newServerCohorts.concat(cohortName));
-    document.getElementById("new-server-cohort-name").value = "";
+    setNewServerCohorts(newServerCohorts.concat(registerCohortName));
+    document.getElementById("new-string-value").value = "";
   };
   const onErrorRegisterCohort = (error) => {
+    setRegisterCohortName("");
     alert("Error registering cohort");
   };
   const onSuccessfulUnRegisterCohort = () => {
-    const cohortName = document.activeElement.id.substring(
-      "cohort-remove-button-".length
-    );
-    const cohortList = newServerCohorts.filter((e) => e !== cohortName);
+    // const cohortName = document.activeElement.id.substring(
+    //   "cohort-remove-button-".length
+    // );
+    const cohortList = newServerCohorts.filter((e) => e !== unregisterCohortName);
     // const cohortList = newServerCohorts.filter((v, i) => { return i !== index });
     setNewServerCohorts(cohortList);
   };
   const onErrorUnRegisterCohort = (error) => {
+    setUnregisterCohortName("");
     alert("Error unregistering cohort");
   };
 
-  const handleRemoveCohort = (index) => {
-    console.log("handleRemoveCohort() called", { index });
-    const cohortName = newServerCohorts[index];
-
-    unRegisterCohort(
-      cohortName,
-      onSuccessfulUnRegisterCohort,
-      onErrorUnRegisterCohort
-    );
-    // const cohortList = newServerCohorts.filter((v, i) => { return i !== index });
-    // setNewServerCohorts(cohortList);
-  };
-
   return (
-    <div className="left-text">
-      <div style={{ display: "flex" }}>
-        <TextInput
-          id="new-server-cohort-name"
-          name="new-server-cohort-name"
-          type="text"
-          labelText="Cohort Name"
-          inline={true}
-          style={{ display: "inline-block" }}
-          autoComplete="off"
-        />
-
-        <Button
-          kind="tertiary"
-          size="field"
-          renderIcon={Add16}
-          iconDescription="Add"
-          tooltipAlignment="start"
-          tooltipPosition="right"
-          onClick={handleAddCohort}
-          style={{ display: "inline-block" }}
-        >
-          Add
-        </Button>
-      </div>
-      <ul style={{ marginBottom: "32px" }}>
-        {newServerCohorts.map((cohort, i) => (
-          <li key={`cohort-${i}`} style={{ display: "flex" }}>
-            <Button
-              hasIconOnly
-              kind="tertiary"
-              size="small"
-              renderIcon={Subtract16}
-              id={`cohort-remove-button-${cohort}`}
-              iconDescription="Remove"
-              tooltipAlignment="start"
-              tooltipPosition="right"
-              onClick={() => handleRemoveCohort(i)}
-            />
-             {cohort}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ListOfStrings
+      handleAddString={handleAddCohort}
+      handleRemoveStringAtIndex={handleRemoveCohort}
+      stringLabel={"Cohort Name"}
+      stringValues={newServerCohorts}
+    />
   );
 }

@@ -23,6 +23,11 @@ import {
   OverflowMenuItem,
 } from "carbon-components-react";
 import { MisuseOutline16, Edit16 } from "@carbon/icons-react";
+// protected String   supportedZonesPropertyName      = "SupportedZones";      /* Common */
+// protected String   defaultZonesPropertyName        = "DefaultZones";        /* Common */
+// protected String   publishZonesPropertyName        = "PublishZones";        /* Common */
+// protected String   karmaPointPlateauPropertyName   = "KarmaPointPlateau";   /* Community Profile OMAS */
+// protected String   karmaPointIncrementPropertyName = "KarmaPointIncrement"; /* Community Profile OMAS */
 
 export default function ConfigureAccessServices() {
   const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
@@ -82,8 +87,6 @@ export default function ConfigureAccessServices() {
     );
   };
   const getAccessServicesSelectionForAdd = () => {
-    
-    let accessServices = [...availableAccessServices];
     let currentUrlMarkers = [];
     if (currentAccessServices && currentAccessServices.length >0) {
       currentUrlMarkers = currentAccessServices.map((service) => service.id);
