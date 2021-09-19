@@ -84,11 +84,17 @@ export default function ConfigureAccessServices() {
   const getAccessServicesSelectionForAdd = () => {
     
     let accessServices = [...availableAccessServices];
-    let currentNames = [];
+    let currentUrlMarkers = [];
     if (currentAccessServices && currentAccessServices.length >0) {
-      currentNames = currentAccessServices.map((service) => service.name);
+      currentUrlMarkers = currentAccessServices.map((service) => service.id);
     }
-
+    let potentialNewAccessServices = [];
+    for (let i=0;i<availableAccessServices.length;i++) {
+      const availableAccessService = availableAccessServices[i];
+        if (!currentUrlMarkers.includes(availableAccessService.serviceURLMarker)) {
+          potentialNewAccessServices.push(availableAccessService);
+        }
+    }
     return (
       <div>
       <Select
@@ -99,8 +105,8 @@ export default function ConfigureAccessServices() {
         invalidText="A valid value is required"
         labelText="Choose an access service"
       >
-          {accessServices.map((service) => (
-              <SelectItem text={service.serviceName} value={service.serviceURLMarker} id={service.serviceURLMarker} disabled={currentNames.includes(service.serviceName)} />
+          {potentialNewAccessServices.map((service) => (
+              <SelectItem text={service.serviceName} value={service.serviceURLMarker} id={service.serviceURLMarker} />
             ))}
       </Select>
       </div>
