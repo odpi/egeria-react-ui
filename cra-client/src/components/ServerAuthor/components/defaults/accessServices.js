@@ -79,13 +79,6 @@ const accessServices = [
     "serviceURLMarker": "community-profile",
     "serviceDescription": "Define personal profile and collaborate",
     "serviceWiki": "https://egeria.odpi.org/open-metadata-implementation/access-services/community-profile/",
-    "options" : [
-        {"name":"supportedZones", "type":"Stringarray"},
-        {"name":"defaultZones", "type":"Stringarray"},
-        {"name":"publishZones", "type":"Stringarray"},
-        {"name":"KarmaPointPlateau", "type":"Number"},
-        {"name":"KarmaPointIncrement", "type":"Number"}
-    ],
     "defaultInTopicName": "",
     "defaultOutTopicName": "",
   },

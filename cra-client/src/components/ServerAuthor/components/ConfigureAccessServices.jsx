@@ -17,7 +17,6 @@ import {
   SelectItem,
   TextInput,
   Button,
-  Checkbox,
   DataTable,
   OverflowMenu,
   OverflowMenuItem,
@@ -51,8 +50,14 @@ export default function ConfigureAccessServices() {
   const [addPublishZoneName, setAddPublishZoneName] = useState();
   const [removePublishZoneIndex, setRemovePublishZoneIndex] = useState();
   const [publishZoneNames, setPublishZones] = useState([]);
+  // Karma Point Plateau
+  const [newKarmaPointPlateau, setKarmaPointPlateau] = useState();
+  // Karma Point Increment
+  const [newKarmaPointIncrement, setKarmaPointIncrement] = useState();
 
-  const [unconfiguredAccessServices, setUnconfiguredAccessServices]= useState([]);
+  const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState(
+    []
+  );
 
   const {
     currentAccessServices,
@@ -484,29 +489,29 @@ useEffect(() => {
         <div>
           <h4>Add Access Service</h4>
           <div>
-        <Select
-          defaultValue="placeholder-item"
-          // helperText={serverTypeDescription}
-          onChange={onChangeAccessServiceSelected}
-          id="select-access-server"
-          invalidText="A valid value is required"
-        >
-          <SelectItem
-            text="Choose an access service"
-            value="placeholder-item"
-            disabled
-            hidden
-          />
-          {unconfiguredAccessServices.map((service) => (
-            <SelectItem
-              text={service.serviceName}
-              value={service.serviceURLMarker}
-              id={service.serviceURLMarker}
-              key={service.serviceURLMarker}
-            />
-          ))}
-        </Select>
-      </div>
+            <Select
+              defaultValue="placeholder-item"
+              // helperText={serverTypeDescription}
+              onChange={onChangeAccessServiceSelected}
+              id="select-access-server"
+              invalidText="A valid value is required"
+            >
+              <SelectItem
+                text="Choose an access service"
+                value="placeholder-item"
+                disabled
+                hidden
+              />
+              {unconfiguredAccessServices.map((service) => (
+                <SelectItem
+                  text={service.serviceName}
+                  value={service.serviceURLMarker}
+                  id={service.serviceURLMarker}
+                  key={service.serviceURLMarker}
+                />
+              ))}
+            </Select>
+          </div>
 
           {currentAccessServiceId === "community-profile" && (
             <div>
@@ -532,6 +537,28 @@ useEffect(() => {
                 stringLabel={"Supported Zones"}
                 idPrefix="supported-zones"
                 stringValues={supportedZoneNames}
+              />
+
+              <TextInput
+                id="KarmaPointPlateau"
+                name="KarmaPointPlateau"
+                type="number"
+                labelText="Karma Point Plateau"
+                value={newKarmaPointPlateau}
+                onChange={(e) => setKarmaPointPlateau(e.target.value)}
+                invalid={newKarmaPointPlateau === ""}
+                style={{ marginBottom: "16px", width: "100%" }}
+                autoComplete="off"
+              />
+              <TextInput
+                id="KarmaPointIncrement"
+                name="KarmaPointIncrement"
+                type="number"
+                labelText="Karma Point Increment"
+                value={newKarmaPointIncrement}
+                onChange={(e) => setKarmaPointIncrement(e.target.value)}
+                style={{ marginBottom: "16px", width: "100%" }}
+                autoComplete="off"
               />
             </div>
           )}
