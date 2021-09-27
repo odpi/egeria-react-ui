@@ -3,16 +3,14 @@
 
 import React, { useContext, useEffect } from "react";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
-import ListOfStrings from "../../common/ListOfStrings";
+import AuthorStringList from "../../common/AuthorStringList";
 
 export default function RegisterCohorts() {
   const {
-    newServerCohorts,
-    setNewServerCohorts,
-    registerCohortName,
-    setRegisterCohortName,
-    unregisterCohortName,
-    setUnregisterCohortName,
+    newServerCohorts, setNewServerCohorts,
+    registerCohortName, setRegisterCohortName,
+    unregisterCohortName, setUnregisterCohortName,
+    // calls to server
     registerCohort,
     unRegisterCohort,
   } = useContext(ServerAuthorContext);
@@ -50,7 +48,7 @@ export default function RegisterCohorts() {
 
   const onSuccessfulRegisterCohort = () => {
     setNewServerCohorts(newServerCohorts.concat(registerCohortName));
-    document.getElementById("new-string-value").value = "";
+    document.getElementById("cohort-new-string-value").value = "";
   };
   const onErrorRegisterCohort = (error) => {
     setRegisterCohortName("");
@@ -70,10 +68,11 @@ export default function RegisterCohorts() {
   };
 
   return (
-    <ListOfStrings
+    <AuthorStringList
       handleAddString={handleAddCohort}
       handleRemoveStringAtIndex={handleRemoveCohort}
       stringLabel={"Cohort Name"}
+      idPrefix="cohort"
       stringValues={newServerCohorts}
     />
   );

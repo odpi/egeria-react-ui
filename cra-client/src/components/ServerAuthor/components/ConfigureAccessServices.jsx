@@ -23,12 +23,7 @@ import {
   OverflowMenuItem,
 } from "carbon-components-react";
 import { MisuseOutline16, Edit16 } from "@carbon/icons-react";
-import areIntervalsOverlappingWithOptions from "date-fns/esm/fp/areIntervalsOverlappingWithOptions/index.js";
-// protected String   supportedZonesPropertyName      = "SupportedZones";      /* Common */
-// protected String   defaultZonesPropertyName        = "DefaultZones";        /* Common */
-// protected String   publishZonesPropertyName        = "PublishZones";        /* Common */
-// protected String   karmaPointPlateauPropertyName   = "KarmaPointPlateau";   /* Community Profile OMAS */
-// protected String   karmaPointIncrementPropertyName = "KarmaPointIncrement"; /* Community Profile OMAS */
+import AuthorStringList from "../../common/AuthorStringList";
 
 export default function ConfigureAccessServices() {
   const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
@@ -38,18 +33,155 @@ export default function ConfigureAccessServices() {
   const [currentAccessServiceURL, setCurrentAccessServiceURL] = useState();
   const [currentAccessServiceOptions, setCurrentAccessServiceOptions] =
     useState();
-  const [accessServicesSelectionForAdd, setAccessServicesSelectionForAdd] = useState();  
+  const [accessServicesSelectionForAdd, setAccessServicesSelectionForAdd] =
+    useState();
   const [operation, setOperation] = useState();
 
-  const { currentAccessServices, setCurrentAccessServices,
-          setLoadingText,
-          availableAccessServices,
-          newServerName,
-          fetchServerConfig
-     } =
-    useContext(ServerAuthorContext);
+  // access service options.
+
+  // supported zones
+  const [addSupportedZoneName, setAddSupportedZoneName] = useState();
+  const [removeSupportedZoneIndex, setRemoveSupportedZoneIndex] = useState();
+  const [supportedZoneNames, setSupportedZones] = useState([]);
+  // default zones
+  const [addDefaultZoneName, setAddDefaultZoneName] = useState();
+  const [removeDefaultZoneIndex, setRemoveDefaultZoneIndex] = useState();
+  const [defaultZones, setDefaultZones] = useState([]);
+  // publish zones
+  const [addPublishZoneName, setAddPublishZoneName] = useState();
+  const [removePublishZoneIndex, setRemovePublishZoneIndex] = useState();
+  const [publishZoneNames, setPublishZones] = useState([]);
+
+  const [unconfiguredAccessServices, setUnconfiguredAccessServices]= useState([]);
+
+  const {
+    currentAccessServices,
+    setCurrentAccessServices,
+    setLoadingText,
+    availableAccessServices,
+    newServerName,
+    fetchServerConfig,
+  } = useContext(ServerAuthorContext);
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
+
+  useEffect(() => {
+    let accessServiceDefinition;
+    for (let i = 0; i < availableAccessServices.length; i++) {
+      accessServiceDefinition = availableAccessServices[i];
+      if (currentAccessServiceId === accessServiceDefinition.serviceURLMarker) {
+        setCurrentAccessServiceId(accessServiceDefinition.serviceURLMarker);
+        setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
+        setCurrentAccessServiceDescription(
+          accessServiceDefinition.serviceDescription
+        );
+      }
+    }
+    if (accessServiceDefinition === undefined) {
+      alert(
+        "Error could not find " +
+          currentAccessServiceId +
+          " in the available access services"
+      );
+    } else {
+      let isCurrentAccessService = false;
+      for (let j = 0; j < currentAccessServices.length; j++) {
+        const currentAccessService = currentAccessServices[j];
+        if (currentAccessServiceId === currentAccessService.serviceURLMarker) {
+          // indicate this access service already is associated with the server so copy in its options
+          isCurrentAccessService = true;
+        }
+      }
+      // if (!isCurrentAccessService) {
+      //   clearCurrentOptions();
+      // }
+    }
+  }, [currentAccessServiceId]);
+
+  // Default zones
+  useEffect(() => {
+    if (addDefaultZoneName !== undefined && addDefaultZoneName !== "") {
+
+      const newDefaultZones = [...defaultZones, addDefaultZoneName];
+      setDefaultZones(newDefaultZones);
+      setAddDefaultZoneName("");
+    }
+  }, [addDefaultZoneName]);
+
+  useEffect(() => {
+    if (removeDefaultZoneIndex !== undefined && removeDefaultZoneIndex !== "") {
+      let newDefaultZones = [...defaultZones];
+   
+      if (removeDefaultZoneIndex > -1) {
+        newDefaultZones.splice(removeDefaultZoneIndex, 1);
+        setDefaultZones(newDefaultZones);
+        setRemoveDefaultZoneIndex("");
+      }
+    }
+  }, [removeDefaultZoneIndex]);
+
+  // Publish zones
+  useEffect(() => {
+    if (addPublishZoneName !== undefined && addPublishZoneName !== "") {
+      const newPublishZoneNames = [...publishZoneNames, addPublishZoneName];
+      setPublishZones(newPublishZoneNames);
+      setAddPublishZoneName("");
+    }
+  }, [addPublishZoneName]);
+
+  useEffect(() => {
+    if (removePublishZoneIndex !== undefined && removePublishZoneIndex !== "") {
+      let newPublishZoneNames = [...publishZoneNames];
+      if (removePublishZoneIndex > -1) {
+        newPublishZoneNames.splice(removePublishZoneIndex, 1);
+        setPublishZones(newPublishZoneNames);
+        setRemovePublishZoneIndex("");
+      }
+    }
+  }, [removePublishZoneIndex]);
+
+  // Supported zones
+
+  useEffect(() => {
+    if (addSupportedZoneName !== undefined && addSupportedZoneName !== "") {
+      const newSupportedZoneNames = [...supportedZoneNames, addSupportedZoneName];
+      setSupportedZones(newSupportedZoneNames);
+      setAddSupportedZoneName("");
+    }
+  }, [addSupportedZoneName]);
+
+  useEffect(() => {
+    if (removeSupportedZoneIndex !== undefined && removeSupportedZoneIndex !== "") {
+      let newSupportedZoneNames = [...supportedZoneNames];
+      if (removeSupportedZoneIndex > -1) {
+        newSupportedZoneNames.splice(removeSupportedZoneIndex, 1);
+        setSupportedZones(newSupportedZoneNames);
+        setRemoveSupportedZoneIndex("");
+      }
+    }
+  }, [removeSupportedZoneIndex]);
+
+useEffect(() => {
+  let currentUrlMarkers = [];
+  if (currentAccessServices && currentAccessServices.length > 0) {
+    currentUrlMarkers = currentAccessServices.map((service) => service.id);
+  }
+  let services = [];
+  for (let i = 0; i < availableAccessServices.length; i++) {
+    const availableAccessService = availableAccessServices[i];
+    if (
+      !currentUrlMarkers.includes(availableAccessService.serviceURLMarker)
+    ) {
+     services.push(availableAccessService);
+      // clear out the option states
+      // clearCurrentOptions();
+    }
+  }
+  setUnconfiguredAccessServices(services);
+
+}, [currentAccessServices]);
+
+
 
   const headers = [
     {
@@ -87,39 +219,19 @@ export default function ConfigureAccessServices() {
       onErrorAccessServices
     );
   };
-  const getAccessServicesSelectionForAdd = () => {
-    let currentUrlMarkers = [];
-    if (currentAccessServices && currentAccessServices.length >0) {
-      currentUrlMarkers = currentAccessServices.map((service) => service.id);
-    }
-    let potentialNewAccessServices = [];
-    for (let i=0;i<availableAccessServices.length;i++) {
-      const availableAccessService = availableAccessServices[i];
-        if (!currentUrlMarkers.includes(availableAccessService.serviceURLMarker)) {
-          potentialNewAccessServices.push(availableAccessService);
-        }
-    }
-    return (
-      <div>
-      <Select
-        defaultValue="placeholder-item"
-        // helperText={serverTypeDescription}
-        onChange={onChangeAccessServiceSelected}
-        id="select-access-server"
-        invalidText="A valid value is required"
-      >
-        <SelectItem
-                text="Choose an access service"
-                value="placeholder-item"
-                disabled
-                hidden
-              />
-          {potentialNewAccessServices.map((service) => (
-              <SelectItem text={service.serviceName} value={service.serviceURLMarker} id={service.serviceURLMarker} />
-            ))}
-      </Select>
-      </div>
-    );
+  const clearCurrentOptions = () => {
+    // supported zones
+    setAddSupportedZoneName(undefined);
+    setRemoveSupportedZoneIndex(undefined);
+    setSupportedZones = useState([]);
+    // default zones
+    setAddDefaultZoneName(undefined);
+    setRemoveDefaultZoneIndex(undefined);
+    setDefaultZones([]);
+    // publish zones
+    setAddPublishZoneName(undefined);
+    setRemovePublishZoneIndex(undefined);
+    setPublishZones([]);
   };
 
   const onClickEditOverflow = (selectedRows) => () => {
@@ -151,19 +263,8 @@ export default function ConfigureAccessServices() {
   };
 
   const onChangeAccessServiceSelected = (e) => {
-      // TODO
-      const currentUrlMarker = e.target.value;
-      
-      for (let i=0;i<availableAccessServices.length;i++) {
-        const accessService = availableAccessServices[i];
-        if (currentUrlMarker === accessService.serviceURLMarker) {
-            setCurrentAccessServiceId(accessService.serviceURLMarker);
-            setCurrentAccessServiceName(accessService.serviceFullName);
-            setCurrentAccessServiceDescription(accessService.serviceDescription);
-            // setCurrentAccessServiceOptions(accessService.); 
-        }
-      }
-  }
+    setCurrentAccessServiceId(e.target.value);
+  };
 
   const deleteAction = (name) => {
     const deleteAccessServiceURL = encodeURI(
@@ -186,39 +287,10 @@ export default function ConfigureAccessServices() {
 
   const editAction = (id) => {
     let accessServiceToEdit;
-   
-
-    //   const supportedSeveritiesSelectedNames =
-    //     accessServiceToEdit.supportedSeverities;
-
-    //   let checkedSupportedSeverities = [];
-    //   for (let i = 0; i < supportedAuditLogSeverities.length; i++) {
-    //     let severity = supportedAuditLogSeverities[i];
-    //     severity.selected = supportedSeveritiesSelectedNames.includes(
-    //       severity.id
-    //     );
-    //     checkedSupportedSeverities.push(severity);
-    //   }
-    //   //we need to store the original name as this is the key that will be updated in the rest call.
-    //   setCurrentDestinationId(destinationName);
-    //   //the name could change in the editor
-    //   setCurrentDestinationName(destinationName);
-    //   setCurrentDestinationDescription(accessServiceToEdit.description);
-    //   setCurrentSupportedSeverities(checkedSupportedSeverities);
-    //   setCurrentDestinationTypeName(accessServiceToEdit.type);
-
-    //   let op = "Edit";
-    //   if (isCopy) {
-    //     op = "Copy";
-    //   }
-    //   setOperation(op);
-    // } else {
-    //   alert("unable to find name " + name);
-    // }
   };
 
   const onClickFinishedOperation = () => {
-    if (operation === "Add" ) {
+    if (operation === "Add") {
       issueAdd();
     } else if (operation === "Edit") {
       issueEdit();
@@ -230,27 +302,27 @@ export default function ConfigureAccessServices() {
 
   const issueAdd = () => {
     if (currentAccessServiceId) {
-    const addAccessServiceURL = encodeURI(
-      "/servers/" +
-        tenantId +
-        "/server-author/users/" +
-        userId +
+      const addAccessServiceURL = encodeURI(
         "/servers/" +
-        newServerName +
-        "/access-services/" +
-        currentAccessServiceId
-    );
-    setOperation(undefined);
-    // const body = getRestBody();
-    console.log("addAccessServiceURL " + addAccessServiceURL);
-    setLoadingText("Adding access service");
-    issueRestCreate(
-      addAccessServiceURL,
-      undefined,
-      onSuccessfulAddAccessService,
-      onErrorAccessServices,
-      "omagServerConfig"
-    );
+          tenantId +
+          "/server-author/users/" +
+          userId +
+          "/servers/" +
+          newServerName +
+          "/access-services/" +
+          currentAccessServiceId
+      );
+      setOperation(undefined);
+       const body = getAccessOptionsForBody();
+      console.log("addAccessServiceURL " + addAccessServiceURL);
+      setLoadingText("Adding access service");
+      issueRestCreate(
+        addAccessServiceURL,
+        body,
+        onSuccessfulAddAccessService,
+        onErrorAccessServices,
+        "omagServerConfig"
+      );
     } else {
       alert("Please choose a type of access service");
     }
@@ -268,7 +340,7 @@ export default function ConfigureAccessServices() {
         "/access-services/" +
         currentAccessServiceId
     );
-    const body = getRestBody();
+    const body = getAccessOptionsForBody();
     console.log("editAccessServiceURL " + editAccessServiceURL);
     setLoadingText("Editing audit log destination");
     issueRestUpdate(
@@ -279,9 +351,36 @@ export default function ConfigureAccessServices() {
       "omagServerConfig"
     );
   };
+/**
+ * 
+ *  for each access service
+ *    if there are options,
+ *    if those options have been specified
+ *        then copy them from the state into the json.
+ * else
+ *    return undefined
+ *
+ *   @returns options or undefined
+ */
+  const getAccessOptionsForBody = () => {
+    let options = {};
 
-  const getRestBody = () => {
-   return undefined;
+    if (currentAccessServiceId === "community-profile") {
+      if (defaultZones !== undefined && defaultZones.length > 0) {
+        options.DefaultZones = defaultZones;
+      }
+      if (supportedZoneNames !== undefined && supportedZoneNames.length > 0) {
+        options.SupportedZones = supportedZoneNames;
+      }
+      if (publishZoneNames !== undefined && publishZoneNames.length > 0) {
+        options.PublishZones = publishZoneNames;
+      }
+    }
+
+    if(!Object.keys(options).length){
+       options = undefined;
+     }
+     return options;
   };
   const onSuccessfulAddAccessService = () => {
     console.log("onSuccessfulAddAccessService entry");
@@ -348,53 +447,100 @@ export default function ConfigureAccessServices() {
     alert("Error occurred configuring access services");
   };
 
+  // options functions
+  const handleAddPublishZones = (zoneName) => {
+    console.log("handleAddPublishZones() called", { zoneName });
+    if (zoneName.length === 0) return;
+    setAddPublishZoneName(zoneName);
+  };
+  const handleRemovePublishZones = (index) => {
+    console.log("handleRemovePublishZones() called", { index });
+    setRemovePublishZoneIndex(index);
+  };
+
+  const handleAddDefaultZones = (zoneName) => {
+    console.log("handleAddDefaultZones() called", { zoneName });
+    if (zoneName.length === 0) return;
+    setAddDefaultZoneName(zoneName);
+  };
+  const handleRemoveDefaultZones = (index) => {
+    console.log("handleRemoveDefaultZones() called", { index });
+    setRemoveDefaultZoneIndex(index);
+  };
+
+  const handleAddSupportedZones = (zoneName) => {
+    console.log("handleAddSupportedZones() called", { zoneName });
+    if (zoneName.length === 0) return;
+    setAddSupportedZoneName(zoneName);
+  };
+  const handleRemoveSupportedZones = (index) => {
+    console.log("handleRemoveSupportedZones() called", { index });
+    setRemoveSupportedZoneIndex(index);
+  };
+
   return (
     <div className="left-text">
       {operation === "Add" && (
-       <div> 
-      <h4>Add Access Service</h4>
-      {getAccessServicesSelectionForAdd()}
+        <div>
+          <h4>Add Access Service</h4>
+          <div>
+        <Select
+          defaultValue="placeholder-item"
+          // helperText={serverTypeDescription}
+          onChange={onChangeAccessServiceSelected}
+          id="select-access-server"
+          invalidText="A valid value is required"
+        >
+          <SelectItem
+            text="Choose an access service"
+            value="placeholder-item"
+            disabled
+            hidden
+          />
+          {unconfiguredAccessServices.map((service) => (
+            <SelectItem
+              text={service.serviceName}
+              value={service.serviceURLMarker}
+              id={service.serviceURLMarker}
+              key={service.serviceURLMarker}
+            />
+          ))}
+        </Select>
       </div>
+
+          {currentAccessServiceId === "community-profile" && (
+            <div>
+              <AuthorStringList
+                handleAddString={handleAddDefaultZones}
+                handleRemoveStringAtIndex={handleRemoveDefaultZones}
+                stringLabel={"Default Zones"}
+                idPrefix="default-zones"
+                stringValues={defaultZones}
+              />
+
+              <AuthorStringList
+                handleAddString={handleAddPublishZones}
+                handleRemoveStringAtIndex={handleRemovePublishZones}
+                stringLabel={"Publish Zones"}
+                idPrefix="publish-zones"
+                stringValues={publishZoneNames}
+              />
+
+              <AuthorStringList
+                handleAddString={handleAddSupportedZones}
+                handleRemoveStringAtIndex={handleRemoveSupportedZones}
+                stringLabel={"Supported Zones"}
+                idPrefix="supported-zones"
+                stringValues={supportedZoneNames}
+              />
+            </div>
+          )}
+        </div>
       )}
       {operation === "Edit" && <h4>Edit Access Service</h4>}
 
       {operation !== undefined && (
         <fieldset className="bx--fieldset left-text-bottom-margin-32">
-          {/* <TextInput
-            id="new-access-service-name"
-            name="new-access-service-name"
-            type="text"
-            labelText="Audit Log Destination Name"
-            value={currentAccessServiceName}
-            onChange={(e) => setCurrentDestinationName(e.target.value)}
-            placeholder="my console"
-            invalid={currentDestinationName === ""}
-            style={{ marginBottom: "16px", width: "100%" }}
-            autoComplete="off"
-          />
-          <TextInput
-            id="new-access-service-description"
-            name="new-access-service-description"
-            type="text"
-            labelText="Audit Log Destination Description"
-            value={currentDestinationDescription}
-            onChange={(e) => setCurrentDestinationDescription(e.target.value)}
-            style={{ marginBottom: "16px", width: "100%" }}
-            autoComplete="off"
-          /> */}
-          {/* <Select
-            // defaultValue={currentAccessService}
-            helperText={destinationTypeDescription}
-            onChange={onChangeTypeSelected}
-            id="select-server-type"
-            invalidText="A valid value is required"
-            labelText="Select Audit Log Destination Type"
-          >
-            {accessServices.map((dest) => (
-              <SelectItem text={dest.label} value={dest.id} id={dest.id} />
-            ))}
-          </Select> */}
-    
           <button onClick={(e) => onClickCancelOperation()}>
             Cancel {operation}
           </button>
@@ -456,7 +602,7 @@ export default function ConfigureAccessServices() {
                                 Edit
                               </DataTable.TableBatchAction>
                             )}
-            
+
                             <DataTable.TableBatchAction
                               tabIndex={
                                 getBatchActionProps().shouldShowBatchActions

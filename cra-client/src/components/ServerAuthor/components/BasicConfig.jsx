@@ -14,6 +14,7 @@ export default function BasicConfig() {
     newServerName, setNewServerName,
     newServerLocalURLRoot, setNewServerLocalURLRoot,
     newServerOrganizationName, setNewServerOrganizationName,
+    newServerDescription, setNewServerDescription,
     newServerLocalUserId, setNewServerLocalUserId,
     newServerLocalPassword, setNewServerLocalPassword,
     newServerMaxPageSize, setNewServerMaxPageSize,
@@ -88,6 +89,18 @@ export default function BasicConfig() {
           style={{marginBottom: "16px"}}
           autoComplete="off"
         />
+
+        <TextInput
+          id="new-server-description"
+          name="new-server-description"
+          type="text"
+          labelText="Server Description"
+          value={newServerDescription}
+          onChange={e => setNewServerDescription(e.target.value)}
+          placeholder=""
+          style={{marginBottom: "16px"}}
+          autoComplete="off"
+        /> 
 
         <TextInput
           id="new-server-max-page-size"

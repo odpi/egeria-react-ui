@@ -1096,8 +1096,8 @@ export default function ServerAuthorWizard() {
               />
               <SelectItemGroup label="Cohort Member">
                 <SelectItem
-                  text="Access Store Server (previously referred to as a Metadata Server)"
-                  value="access-store-server"
+                  text="Metadata Access Store (previously referred to as a Metadata Server)"
+                  value="metadata-server"
                 />
                 <SelectItem
                   text="Metadata Access Point"

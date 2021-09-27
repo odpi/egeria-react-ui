@@ -46,8 +46,6 @@ We can see this is set as we expect
 $ echo $EGERIA_PRESENTATIONSERVER_SERVER_aaa
 {"remoteServerName":"cocoView1","remoteURL":"https://localhost:9443"}
 
-To get an initial environment up-and-running just download the `truststore.p12`
-file from: [https://github.com/odpi/egeria/raw/master/truststore.p12](https://github.com/odpi/egeria/raw/master/truststore.p12).
 
 ??? question "Transport-level security"
     The [truststore.p12](https://github.com/odpi/egeria/raw/master/truststore.p12)

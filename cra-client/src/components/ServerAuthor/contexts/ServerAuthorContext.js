@@ -50,6 +50,7 @@ const ServerAuthorContextProvider = (props) => {
     user ? user.organizationName || "" : ""
   );
   const [newServerLocalUserId, setNewServerLocalUserId] = useState("");
+  const [newServerDescription, setNewServerDescription] = useState("");
   const [newServerLocalPassword, setNewServerLocalPassword] = useState("");
   const [newServerSecurityConnector, setNewServerSecurityConnector] =
     useState("");
@@ -213,6 +214,7 @@ const ServerAuthorContextProvider = (props) => {
         svr.platformName = platform.platformName;
         svr.platformStatus = platform.platformStatus;
         svr.serverName = storedServer.storedServerName;
+        svr.serverDescription = storedServer.storedServerDescription;
         svr.serverStatus = storedServer.serverStatus;
         svr.id = i + "_" + j; // note that server name is not unique - as it can exist on multiple platforms - so should not be used as the id.
         serverList.push(svr);
@@ -324,6 +326,7 @@ const ServerAuthorContextProvider = (props) => {
       localServerName: newServerName,
       localServerType: newServerLocalServerType,
       organizationName: newServerOrganizationName,
+      localServerDescription: newServerDescription,
       localServerURL: newServerLocalURLRoot,
       localServerUserId: newServerLocalUserId,
       localServerPassword: newServerLocalPassword,
@@ -728,6 +731,8 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerLocalServerType,
         newServerOrganizationName,
         setNewServerOrganizationName,
+        newServerDescription, 
+        setNewServerDescription,
         newServerLocalUserId,
         setNewServerLocalUserId,
         newServerLocalPassword,

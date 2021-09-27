@@ -6,16 +6,16 @@ import { Button, TextInput } from "carbon-components-react";
 import { Add16, Subtract16 } from "@carbon/icons-react";
 /**
  * This is a widget that allows the caller to add strings to a list and remove them by pressing buttons labeled with the string values 
- * that have already been added
+ * that have already been added. This is a managed component, meaning it does not store any state itself. 
  * 
  * It is passed the label of the String, a function to call when there is an add, a function to call when there is a remove and the list of current strings.
  * @param {*} props 
  * @returns 
  */
-export default function ListOfStrings(props) {
+export default function AuthorStringList(props) {
   
   const handleAddString = (e) => {
-    const stringValue = document.getElementById("new-string-value").value;
+    const stringValue = document.getElementById(props.idPrefix + "-new-string-value").value;
     console.log("handleAddString() called", { stringValue });
     if (stringValue.length === 0) return;
     props.handleAddString(stringValue);
@@ -29,7 +29,7 @@ export default function ListOfStrings(props) {
     <div className="left-text">
       <div style={{ display: "flex" }}>
         <TextInput
-          id="new-string-value"
+          id={`${props.idPrefix}-new-string-value`}
           name="new-string-value"
           type="text"
           labelText={props.stringLabel}
@@ -59,7 +59,7 @@ export default function ListOfStrings(props) {
               kind="tertiary"
               size="small"
               renderIcon={Subtract16}
-              id={`string-remove-button-${stringValue}`}
+              id={`${props.idPrefix}-string-remove-button-${stringValue}`}
               iconDescription="Remove"
               tooltipAlignment="start"
               tooltipPosition="right"
