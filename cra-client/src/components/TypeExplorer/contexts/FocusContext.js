@@ -64,6 +64,7 @@ const FocusContextProvider = (props) => {
         setView({ typeName : typeName , category : category });
         break;
       default:
+        console.log("Unknown type selection category in FocusContext");
         alert("Unknown type selection category in FocusContext "+category+" for type "+typeName);
         break;
     }
