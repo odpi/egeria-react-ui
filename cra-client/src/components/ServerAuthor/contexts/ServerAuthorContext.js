@@ -39,9 +39,9 @@ const ServerAuthorContextProvider = (props) => {
     useState([]);
   // Basic Config
   const [newServerName, setNewServerName] = useState("");
-  // const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState(
-  //   "https://localhost:9443"
-  // );
+  const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState(
+    "https://localhost:9443"
+  );
   const [newPlatformName, setNewPlatformName] = useState("");
 
   const [newServerLocalServerType, setNewServerLocalServerType] = useState(
@@ -152,7 +152,7 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerConfig(null);
     // can/should we clear refs ???
     setNewServerName("");
-    // setNewServerLocalURLRoot("https://localhost:9443");
+    setNewServerLocalURLRoot("https://localhost:9443");
     setNewPlatformName = "";
     setNewServerOrganizationName(user ? user.organizationName || "" : "");
     setNewServerLocalUserId("");
