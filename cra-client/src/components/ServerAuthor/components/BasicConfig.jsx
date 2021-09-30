@@ -12,15 +12,19 @@ export default function BasicConfig() {
   
   const {
     newServerName, setNewServerName,
-    newServerLocalURLRoot, setNewServerLocalURLRoot,
+    newPlatformName, setNewPlatformName,
     newServerOrganizationName, setNewServerOrganizationName,
     newServerDescription, setNewServerDescription,
     newServerLocalUserId, setNewServerLocalUserId,
     newServerLocalPassword, setNewServerLocalPassword,
     newServerMaxPageSize, setNewServerMaxPageSize,
     newServerSecurityConnector, setNewServerSecurityConnector,
-    basicConfigFormStartRef,
+    basicConfigFormStartRef
   } = useContext(ServerAuthorContext);
+
+  const onChangePlatformSelected = (e) => {
+    setNewPlatformName(e.target.value);
+  }
 
   return (
 
@@ -65,18 +69,29 @@ export default function BasicConfig() {
           autoComplete="new-password"
         />
 
-        <TextInput
-          id="new-server-local-url-root"
-          name="new-server-local-url-root"
-          type="text"
-          labelText="Local URL root"
-          value={newServerLocalURLRoot}
-          onChange={e => setNewServerLocalURLRoot(e.target.value)}
-          placeholder="https://localhost:9443"
-          invalid={newServerLocalURLRoot  ===  ""}
-          style={{marginBottom: "16px"}}
-        />
 
+      <Select
+              defaultValue="placeholder-item"
+              // helperText={serverTypeDescription}
+              onChange={onChangePlatformSelected}
+              id="select-platform"
+              invalidText="A valid value is required"
+            >
+              <SelectItem
+                text="Choose a platform"
+                value="placeholder-item"
+                disabled
+                hidden
+              />
+              {activePlatforms.map((platform) => (
+                <SelectItem
+                  text={platform.name}
+                  value={platform.name}
+                  id={platform.name}
+                  key={platform.name}
+                />
+              ))}
+            </Select>
         <TextInput
           id="new-server-organization-name"
           name="new-server-organization-name"

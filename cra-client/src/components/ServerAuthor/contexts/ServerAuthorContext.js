@@ -13,7 +13,6 @@ import axios from "axios";
 
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
 
-import accessServices from "../components/defaults/accessServices";
 import serverTypes from "../components/defaults/serverTypes";
 import viewServices from "../components/defaults/viewServices";
 import integrationServices from "../components/defaults/integrationServices";
@@ -40,9 +39,11 @@ const ServerAuthorContextProvider = (props) => {
     useState([]);
   // Basic Config
   const [newServerName, setNewServerName] = useState("");
-  const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState(
-    "https://localhost:9443"
-  );
+  // const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState(
+  //   "https://localhost:9443"
+  // );
+  const [newPlatformName, setNewPlatformName] = useState("");
+
   const [newServerLocalServerType, setNewServerLocalServerType] = useState(
     serverTypes[0].id
   ); // default to metadata server for now
@@ -60,9 +61,8 @@ const ServerAuthorContextProvider = (props) => {
   const [newServerMaxPageSize, setNewServerMaxPageSize] = useState(1000);
   const [currentServerAuditDestinations, setCurrentServerAuditDestinations] =
     useState([]);
-  // Access Services
-  const [availableAccessServices, setAvailableAccessServices] =
-    useState(accessServices);
+  // Active Platforms by name
+  const [activePlatforms, setActivePlatforms] = useState();
   const [currentAccessServices, setCurrentAccessServices] = useState([]);
   // Cohorts
   const [newServerCohorts, setNewServerCohorts] = useState([]);
@@ -75,9 +75,6 @@ const ServerAuthorContextProvider = (props) => {
   const [newServerEventMapperConnector, setNewServerEventMapperConnector] =
     useState("");
   const [newServerEventSource, setNewServerEventSource] = useState("");
-  // View Services
-  const [availableViewServices, setAvailableViewServices] =
-    useState(viewServices);
   const [currentViewServices, setCurrentViewServices] = useState([]);
   const [
     newServerViewServiceRemoteServerName,
@@ -89,8 +86,7 @@ const ServerAuthorContextProvider = (props) => {
   ] = useState("");
 
   // Integration Services
-  const [availableIntegrationServices, setAvailableIntegrationServices] =
-    useState(integrationServices);
+
   const [currentIntegrationServices, setCurrentIntegrationServices] =
     useState("");
   const [
@@ -129,6 +125,7 @@ const ServerAuthorContextProvider = (props) => {
     newServerIntegrationServicePermittedSynchronization,
     setNewServerIntegrationServicePermittedSynchronization,
   ] = useState("BOTH_DIRECTIONS");
+
   // Notifications
   const [notificationType, setNotificationType] = useState("error");
   const [notificationTitle, setNotificationTitle] = useState("");
@@ -155,7 +152,8 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerConfig(null);
     // can/should we clear refs ???
     setNewServerName("");
-    setNewServerLocalURLRoot("https://localhost:9443");
+    // setNewServerLocalURLRoot("https://localhost:9443");
+    setNewPlatformName = "";
     setNewServerOrganizationName(user ? user.organizationName || "" : "");
     setNewServerLocalUserId("");
     setNewServerLocalPassword("");
@@ -164,8 +162,7 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerMaxPageSize(1000);
     // Audit log destinations
     setCurrentServerAuditDestinations([]);
-    // Access Services
-    setAvailableAccessServices(accessServices);
+
     currentAccessServices,
       setCurrentAccessServices,
       // Cohorts
@@ -178,8 +175,6 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerProxyConnector("");
     setNewServerEventMapperConnector("");
     setNewServerEventSource("");
-    // View Services
-    setAvailableViewServices(viewServices);
     setCurrentViewServices([]);
     setNewServerViewServiceRemoteServerName("");
     setNewServerViewServiceRemoteServerURLRoot("");
@@ -203,24 +198,30 @@ const ServerAuthorContextProvider = (props) => {
     console.log("Successfully fetched platforms = " + JSON.stringify(json));
     const platforms = json.platforms;
     let serverList = [];
+    if (platforms !== undefined && platforms.length > 0) {
+      let platformMap = {};
+      for (var i = 0; i < platforms.length; i++) {
+        const platform = platforms[i];
+        for (var j = 0; j < platform.storedServers.length; j++) {
+          let svr = {};
+          const storedServer = platforms[i].storedServers[j];
 
-    for (var i = 0; i < platforms.length; i++) {
-      const platform = platforms[i];
-      for (var j = 0; j < platform.storedServers.length; j++) {
-        let svr = {};
-        const storedServer = platforms[i].storedServers[j];
-
-        svr.serverType = storedServer.serverType;
-        svr.platformName = platform.platformName;
-        svr.platformStatus = platform.platformStatus;
-        svr.serverName = storedServer.storedServerName;
-        svr.serverDescription = storedServer.storedServerDescription;
-        svr.serverStatus = storedServer.serverStatus;
-        svr.id = i + "_" + j; // note that server name is not unique - as it can exist on multiple platforms - so should not be used as the id.
-        serverList.push(svr);
+          svr.serverType = storedServer.serverType;
+          svr.platformName = platform.platformName;
+          svr.platformStatus = platform.platformStatus;
+          svr.serverName = storedServer.storedServerName;
+          svr.serverDescription = storedServer.storedServerDescription;
+          svr.serverStatus = storedServer.serverStatus;
+          svr.id = i + "_" + j; // note that server name is not unique - as it can exist on multiple platforms - so should not be used as the id.
+          serverList.push(svr);
+        }
+        if (platform.platformStatus === "ACTIVE") {
+          platformMap[platform.name] = platform;
+        }
       }
+      setAllServers(serverList);
+      setActivePlatforms(platformMap);
     }
-    setAllServers(serverList);
     const restURL = encodeURI(
       "/servers/" +
         serverName +
@@ -296,9 +297,9 @@ const ServerAuthorContextProvider = (props) => {
       );
     }
 
-    if (!newServerLocalURLRoot || newServerLocalURLRoot === "") {
+    if (!newPlatformName || newPlatformName === "") {
       throw new Error(
-        `Cannot create OMAG server configuration without Local Server URL Root`
+        `Cannot create OMAG server configuration without a platform`
       );
     }
 
@@ -731,7 +732,7 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerLocalServerType,
         newServerOrganizationName,
         setNewServerOrganizationName,
-        newServerDescription, 
+        newServerDescription,
         setNewServerDescription,
         newServerLocalUserId,
         setNewServerLocalUserId,
@@ -743,8 +744,6 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerRepository,
         newServerMaxPageSize,
         setNewServerMaxPageSize,
-        availableAccessServices,
-        setAvailableAccessServices,
         newServerCohorts,
         setNewServerCohorts,
         registerCohortName,
@@ -759,17 +758,14 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerEventMapperConnector,
         newServerEventSource,
         setNewServerEventSource,
-        availableViewServices,
-        setAvailableViewServices,
         currentAccessServices,
         setCurrentAccessServices,
         newServerViewServiceRemoteServerName,
         setNewServerViewServiceRemoteServerName,
         newServerViewServiceRemoteServerURLRoot,
         setNewServerViewServiceRemoteServerURLRoot,
-        availableIntegrationServices,
-        setAvailableIntegrationServices,
-        newServerIntegrationServiceRemoteServerName,
+        activePlatforms,   
+        setActivePlatforms,
         setNewServerIntegrationServiceRemoteServerName,
         newServerIntegrationServiceRemoteServerURLRoot,
         setNewServerIntegrationServiceRemoteServerURLRoot,

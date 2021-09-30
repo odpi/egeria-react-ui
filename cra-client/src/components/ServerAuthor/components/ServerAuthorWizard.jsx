@@ -23,7 +23,7 @@ import AllServers from "./AllServers";
 import ConfigurationSteps from "./ConfigurationSteps";
 import NavigationButtons from "./NavigationButtons";
 import BasicConfig from "./BasicConfig";
-import ConfigureAccessServices from "./ConfigureAccessServices";
+import ConfigureAccessServices from "./accessServices/ConfigureAccessServices";
 import ConfigureLocalRepository from "./ConfigureLocalRepository";
 import ConfigureAuditLogDestinations from "./ConfigureAuditLogDestinations";
 import RegisterCohorts from "./RegisterCohorts";
