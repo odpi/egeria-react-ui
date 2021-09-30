@@ -409,7 +409,6 @@ export default function EntityInheritanceDiagram(props) {
    */
   const typeSelected = useCallback(
     (cat, typeName) => {
-
       focusContext.typeSelected("Entity", typeName);
     },
     [focusContext]
@@ -524,7 +523,7 @@ export default function EntityInheritanceDiagram(props) {
                .attr("x", 12)
                .attr("text-anchor", "start")
                .text(d => typesContext.isTypeDeprecated("Entity", d.data.name) ? "["+d.data.name+"]" : d.data.name )
-               .on("click", d => { typeSelected("Entity", d.data.name); })
+               .on("click", d => { typeSelected("Entity", d.currentTarget.textContent); })
                .clone(true)
                .lower()
                .attr("stroke-linejoin", "round")
