@@ -719,7 +719,7 @@ export default function EntityNeighborhoodDiagram(props) {
            .style("font-style", d => d.inherited ? "italic" : "normal")
            .text(d => d.name)
            .text(d => typesContext.isTypeDeprecated(d.category, d.name) ? "["+d.name+"]" : d.name )
-           .on("click", d => { nodeSelected(d.category, d.name); })
+           .on("click", d => { nodeSelected("Entity", d.currentTarget.textContent); })
            .clone(true)
            .lower()
            .attr("stroke-linejoin", "round")
@@ -734,7 +734,7 @@ export default function EntityNeighborhoodDiagram(props) {
            .attr("stroke-width",1)
            .attr("stroke", "#000")
            .attr("fill", d => (d.category === "Relationship" ? "none" : "#FFF"))
-           .on("click", d => { nodeSelected(d.category, d.name); });
+           .on("click", d => { nodeSelected("Entity", d.currentTarget.textContent); });
 
     nodeEnter.append("polyline")
            .lower()

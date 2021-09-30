@@ -69,7 +69,7 @@ export default function FocusControls() {
 
   const classificationSelectorHandler = (e) => {    
     const typeName = e.target.value;
-    resetRelTypeSelector();     
+    resetRelTypeSelector();    
     focusContext.typeSelected("Classification",typeName);
   };
 
