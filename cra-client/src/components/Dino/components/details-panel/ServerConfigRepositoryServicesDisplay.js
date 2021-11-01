@@ -141,12 +141,12 @@ export default function ServerConfigRepositoryServicesDisplay(props) {
     return (
       <div>
       <div>
-        Connector Provider : {tc.connectorType.connectorProviderClassName}
+        Connector Provider : {tc !== undefined && tc.connectorType !== undefined ? tc.connectorType.connectorProviderClassName : <i>blank</i>}
       </div>
       <div>
         Embedded Connections : 
         <ul>
-          {formatEmbeddedConnections(tc.embeddedConnections)}
+          {tc !== undefined && tc.embeddedConnections !== undefined ?formatEmbeddedConnections(tc.embeddedConnections): <i>blank</i>}
         </ul>
       </div>
       </div>
