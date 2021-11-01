@@ -40,14 +40,12 @@ export default function ServerAuthorWizard() {
     newServerLocalServerType,
     setNewServerLocalServerType,
     newServerSecurityConnector,
-    availableAccessServices,
     selectedAccessServices,
     newServerRepository,
     newServerOMArchives,
     newServerProxyConnector,
     newServerEventMapperConnector,
     newServerEventSource,
-    availableViewServices,
     selectedViewServices,
     newServerViewServiceRemoteServerURLRoot,
     newServerViewServiceRemoteServerName,
@@ -63,7 +61,16 @@ export default function ServerAuthorWizard() {
     setLoadingText,
     newServerConfig,
     setNewServerConfig,
-    currentServerAuditDestinations,
+
+    activePlatforms,
+    newPlatformName,
+    // available services for this servers platforms.
+    setAvailableAccessServices,
+    setAvailableEngineServices,
+    setAvailableViewServices,
+    setAvailableIntegrationServices,
+    setUnconfiguredAccessServices,
+    unconfiguredAccessServices,
 
     // functions
     cleanForNewServerType,
@@ -197,6 +204,48 @@ export default function ServerAuthorWizard() {
   const onSuccessfulConfigureServer = (json) => {
     const serverConfig = json.omagServerConfig;
     setNewServerConfig(serverConfig);
+    let platformName;
+    if (newPlatformName === undefined || newPlatformName === "") {
+      platformName = Object.keys(activePlatforms)[0];
+    } else {
+      platformName = newPlatformName;
+    }
+    const platform = activePlatforms[platformName];
+    setAvailableAccessServices(platform.accessServices);
+    // if there are access services copnfigured for this server set them as current
+    // then work out what the unconfigured ones should be
+    if (
+      serverConfig.accessServicesConfig == undefined ||
+      serverConfig.accessServicesConfig.length === 0
+    ) {
+      setUnconfiguredAccessServices(platform.accessServices);
+      setCurrentAccessServices([]);
+    } else {
+      const accessServicesFromServer = serverConfig.accessServicesConfig;
+      setCurrentAccessServices(accessServicesFromServer);
+      // work out the unconfigured access services
+      let currentUrlMarkers = [];
+      if (accessServicesFromServer && accessServicesFromServer.length > 0) {
+        currentUrlMarkers = accessServicesFromServer.map(
+          (service) => service.id
+        );
+      }
+      let services = [];
+      for (let i = 0; i < platform.accessServices.length; i++) {
+        const availableAccessService = platform.accessServices[i];
+        if (
+          !currentUrlMarkers.includes(availableAccessService.serviceURLMarker)
+        ) {
+          services.push(availableAccessService);
+          // clear out the option states
+          // clearCurrentOptions();
+        }
+      }
+      setUnconfiguredAccessServices(services);
+    }
+    setAvailableEngineServices(platform.engineServices);
+    setAvailableViewServices(platform.viewServices);
+    setAvailableIntegrationServices(platform.integrationServices);
     // Configure security connector
     if (newServerSecurityConnector !== "") {
       setLoadingText("Configuring security connector...");
@@ -1086,7 +1135,6 @@ export default function ServerAuthorWizard() {
               id="select-server-type"
               invalidText="A valid value is required"
               labelText="Select"
-              
             >
               <SelectItem
                 text="Choose a Server type"

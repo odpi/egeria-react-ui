@@ -63,7 +63,8 @@ const ServerAuthorContextProvider = (props) => {
     useState([]);
   // Active Platforms by name
   const [activePlatforms, setActivePlatforms] = useState();
-  const [currentAccessServices, setCurrentAccessServices] = useState([]);
+  const [activePlatform, setActivePlatform] = useState();
+ 
   // Cohorts
   const [newServerCohorts, setNewServerCohorts] = useState([]);
   const [registerCohortName, setRegisterCohortName] = useState();
@@ -75,7 +76,16 @@ const ServerAuthorContextProvider = (props) => {
   const [newServerEventMapperConnector, setNewServerEventMapperConnector] =
     useState("");
   const [newServerEventSource, setNewServerEventSource] = useState("");
+   // access services 
+   const [availableAccessServices, setAvailableAccessServices] = useState();
+   const [currentAccessServices, setCurrentAccessServices] = useState([]);
+   const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState([]);
+  // view services 
+  const [availableViewServices, setAvailableViewServices] = useState();
   const [currentViewServices, setCurrentViewServices] = useState([]);
+  // engine services
+  const [availableEngineServices, setAvailableEngineServices] = useState();
+  const [currentEngineServices, setCurrentEngineServices] = useState([]);
   const [
     newServerViewServiceRemoteServerName,
     setNewServerViewServiceRemoteServerName,
@@ -86,9 +96,10 @@ const ServerAuthorContextProvider = (props) => {
   ] = useState("");
 
   // Integration Services
-
+  const [availableIntegrationServices, setAvailableIntegrationServices] =
+  useState();
   const [currentIntegrationServices, setCurrentIntegrationServices] =
-    useState("");
+    useState([]);
   const [
     newServerIntegrationServiceRemoteServerName,
     setNewServerIntegrationServiceRemoteServerName,
@@ -153,7 +164,7 @@ const ServerAuthorContextProvider = (props) => {
     // can/should we clear refs ???
     setNewServerName("");
     setNewServerLocalURLRoot("https://localhost:9443");
-    setNewPlatformName = "";
+    setNewPlatformName("");
     setNewServerOrganizationName(user ? user.organizationName || "" : "");
     setNewServerLocalUserId("");
     setNewServerLocalPassword("");
@@ -216,10 +227,15 @@ const ServerAuthorContextProvider = (props) => {
           serverList.push(svr);
         }
         if (platform.platformStatus === "ACTIVE") {
-          platformMap[platform.name] = platform;
+          platformMap[platform.platformName] = platform;
         }
       }
       setAllServers(serverList);
+
+      console.log(JSON.stringify(platforms));
+      console.log("Platform map");
+      console.log(JSON.stringify(platformMap));
+
       setActivePlatforms(platformMap);
     }
     const restURL = encodeURI(
@@ -294,12 +310,6 @@ const ServerAuthorContextProvider = (props) => {
     if (!newServerName || newServerName === "") {
       throw new Error(
         `Cannot create OMAG server configuration without Server Name`
-      );
-    }
-
-    if (!newPlatformName || newPlatformName === "") {
-      throw new Error(
-        `Cannot create OMAG server configuration without a platform`
       );
     }
 
@@ -758,8 +768,29 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerEventMapperConnector,
         newServerEventSource,
         setNewServerEventSource,
+        
+        availableAccessServices,
+        setAvailableAccessServices, 
         currentAccessServices,
         setCurrentAccessServices,
+        unconfiguredAccessServices,
+        setUnconfiguredAccessServices,
+
+        availableViewServices,
+        setAvailableViewServices,
+        currentViewServices,
+        setCurrentViewServices,
+
+        availableIntegrationServices,
+        setAvailableIntegrationServices,
+        currentIntegrationServices,
+        setCurrentIntegrationServices,
+
+        availableEngineServices,
+        setAvailableEngineServices,
+        currentEngineServices,
+        setCurrentEngineServices,
+
         newServerViewServiceRemoteServerName,
         setNewServerViewServiceRemoteServerName,
         newServerViewServiceRemoteServerURLRoot,
@@ -791,6 +822,8 @@ const ServerAuthorContextProvider = (props) => {
         setNotificationSubtitle,
         progressIndicatorIndex,
         setProgressIndicatorIndex,
+        newPlatformName,
+        setNewPlatformName,
         loadingText,
         setLoadingText,
         newServerConfig,
