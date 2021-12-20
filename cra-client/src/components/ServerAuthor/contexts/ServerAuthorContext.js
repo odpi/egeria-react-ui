@@ -453,6 +453,7 @@ const  cleanForNewServerType = () => {
     for (let el of document.querySelectorAll('.hideable')) el.style.display = 'none';
     document.getElementById("server-type-container").style.display = "block";
     setProgressIndicatorIndex(0);
+    // get the servers again
     retrieveAllServers(); 
   };
 
