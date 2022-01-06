@@ -1,0 +1,1088 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- Copyright Contributors to the ODPi Egeria project. -->
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A multi-tenant Egeria React UI for Open Metadata.">
+      
+      
+      
+        <link rel="canonical" href="https://odpi.github.io/egeria-react-ui/ecosystem/RepositoryExplorerGuide/">
+      
+      <link rel="icon" href="../../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4">
+    
+    
+      
+        <title>RepositoryExplorerGuide - Egeria React UI</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bb3983ee.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/egeria.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="cyan">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+<a href="https://www.linuxfoundation.org/projects" target="_blank"><img src="https://lfaidata.foundation/wp-content/themes/salient-child/images/logo_lf_projects_horizontal_2018.png" style="height: 15px; width: auto"></a>
+
+          </div>
+        </aside>
+      
+    </div>
+    
+    
+      <!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- Copyright Contributors to the ODPi Egeria project. -->
+
+<!--
+  Copyright (c) 2016-2021 Martin Donath <martin.donath@squidfunk.com>
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Header -->
+<header class="md-header" data-md-component="header">
+    <nav
+            class="md-header__inner md-grid"
+            aria-label="Header"
+    >
+
+        <!-- Button to open drawer -->
+        <label class="md-header__button md-icon" for="__drawer">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+        </label>
+
+        <!-- Link to home -->
+        <a
+                href="../.."
+                title="Egeria React UI"
+                class="md-header__button md-logo"
+                aria-label="Egeria React UI"
+                data-md-component="logo"
+        >
+            <!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- Copyright Contributors to the ODPi Egeria project. -->
+
+<a href="https://egeria.ai" target="_blank"><img src="../../assets/images/egeria-header.png" alt="Egeria" style="height:26px; width:auto;" /></a>
+        </a>
+
+        <!-- Header title -->
+        <div class="md-header__title" data-md-component="header-title">
+            <div class="md-header__ellipsis">
+                <div class="md-header__topic">
+                    <a href="https://odpi.github.io/egeria-react-ui/">
+                        <span class="md-ellipsis">
+                            Egeria React UI
+                        </span>
+                    </a>
+                </div>
+                <div class="md-header__topic" data-md-component="header-topic">
+                    <span class="md-ellipsis">
+                        <a href="https://odpi.github.io/egeria-react-ui/">Egeria React UI</a> /
+                        
+                            RepositoryExplorerGuide
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color palette -->
+        
+        <form class="md-header__option" data-md-component="palette">
+            
+            
+            
+            <input
+                    class="md-option"
+                    data-md-color-media=""
+                    data-md-color-scheme="default"
+                    data-md-color-primary=""
+                    data-md-color-accent="cyan"
+                    
+                    aria-label="Switch to dark mode"
+                    
+                    type="radio"
+                    name="__palette"
+                    id="__palette_1"
+            />
+            
+            <label
+                    class="md-header__button md-icon"
+                    title="Switch to dark mode"
+                    for="__palette_2"
+                    hidden
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+            
+            
+            
+            
+            <input
+                    class="md-option"
+                    data-md-color-media=""
+                    data-md-color-scheme="slate"
+                    data-md-color-primary=""
+                    data-md-color-accent="cyan"
+                    
+                    aria-label="Switch to light mode"
+                    
+                    type="radio"
+                    name="__palette"
+                    id="__palette_2"
+            />
+            
+            <label
+                    class="md-header__button md-icon"
+                    title="Switch to light mode"
+                    for="__palette_1"
+                    hidden
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3z"/></svg>
+            </label>
+            
+            
+        </form>
+        
+
+        <!-- Site language selector -->
+        
+
+        <!-- Button to open search modal -->
+        
+        <label class="md-header__button md-icon" for="__search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        </label>
+
+        <!-- Search interface -->
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+
+        <!-- Repository information -->
+        
+        <div class="md-header__source">
+            <a href="https://github.com/odpi/egeria-react-ui" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    odpi/egeria-react-ui
+  </div>
+</a>
+        </div>
+        
+    </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      About
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../getting-started/prereqs/" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/Overview/" class="md-tabs__link">
+        Overview
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../solutions/solutions/" class="md-tabs__link">
+        Solutions
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../ecosystem/" class="md-tabs__link md-tabs__link--active">
+        Eco System
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributors/contributorguide/" class="md-tabs__link">
+        Contributors section
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Egeria React UI" class="md-nav__button md-logo" aria-label="Egeria React UI" data-md-component="logo">
+      <!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- Copyright Contributors to the ODPi Egeria project. -->
+
+<a href="https://egeria.ai" target="_blank"><img src="../../assets/images/egeria-header.png" alt="Egeria" style="height:26px; width:auto;" /></a>
+    </a>
+    Egeria React UI
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/odpi/egeria-react-ui" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    odpi/egeria-react-ui
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Getting started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/prereqs/" class="md-nav__link">
+        Prereqs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/setup/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Overview" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../overview/Overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Solutions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Solutions" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Solutions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../solutions/solutions/" class="md-nav__link">
+        Solutions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../solutions/GlossaryAuthor/GlossaryAuthorGuide/" class="md-nav__link">
+        GlossaryAuthorGuide
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Eco System
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Eco System" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Eco System
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ecosystem/" class="md-nav__link">
+        Ecosystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        RepositoryExplorerGuide
+      </a>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Contributors section
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contributors section" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Contributors section
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/contributorguide/" class="md-nav__link">
+        Contributorguide
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+  <h1>RepositoryExplorerGuide</h1>
+
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+<!-- Copyright Contributors to the ODPi Egeria project 2020. -->
+
+<p>The <strong>Repository Explorer (Rex)</strong> can help you explore and visualize the metadata in a repository.
+It retrieves entities and relationships from the repository and displays them.
+A details panel also shows the properties and other information about an object.
+Each entity or relationship is added to a network diagram, which shows how they are connected.</p>
+<p>Starting with an initial object - an entity or relationship - Rex enables you to explore the
+neighborhood of objects around that initial object. It does so by traversing the relationships
+connected to each entity, and allows you to select what types of relationship and types of
+neighboring entity you want it to retrieve. You can also filter the traversal by specifying
+classifications that the neighboring entities must possess.</p>
+<p>You can repeat this traversal process to assemble a graph of the objects that you are
+interested in.</p>
+<p>You don't need to know the available relationship types, entity types or classifications in
+advance, because Rex will display what is possible and let you choose.</p>
+<p>In general, one object in the graph is the 'focus'; this is the object from where the next
+traversal starts; the focus object is the one that is displayed in the details panel.
+You can set which object is the focus by clicking on it in the diagram. If you retrieve an
+object from the repository by searching or typing in its GUID, that object automatically
+becomes the new focus.  </p>
+<p>Rex can retrieve and display objects of the types supported by whichever repository you
+connect it to. When you connect it to a repository, Rex will automatically read the type information
+from the repository. It uses this information to populate things like the search filters (explained
+below).</p>
+<p>Rex is intended as a tool to help targeted exploration of relatively small sets of entities and relationships.
+It is not a general graph visualization utility, so it would not be wise to use to construct a large graph.
+It is advisable to limit the number of traversals you perform, and avoid performing a traversal that would include
+a large number of objects. There are no hard limits on graph size, but it is recommended that exploration is
+kept specific and aimed at revealing the structure of relatively small sub-graphs. </p>
+<p>To help with this, Rex provides assistance to help limit what you get back from each traversal. For
+example, it provides Traversal Filters that allow you to filter the types of entity and relationship to include. The
+Traversal Filters work by types and classifications. They do not support fine-grained (property-based) filtering of
+objects within a traversal. This is not a limitation of Rex, rather a reflection of the functions available in the
+metadata collection interface.</p>
+<p>If the type-based filtering provided by Rex's Traversal Filters proves to be too coarse-grained, and you find yourself struggling
+to select a particular entity within a possible set of neighbors, consider adopting a different approach. For example,
+it may be better to with a search for the interesting entity, followed by traversing from that entity. It may be possible
+in future to add more sophisticated traversal filters but there would most likely still be repositories that would not support
+the full metadata collection interface.          </p>
+<p><strong>A Typical Workflow:</strong></p>
+<p>Typically you would perform the following steps:</p>
+<ul>
+<li>Set the repository server details</li>
+<li>Retrieve one or more initial metadata objects, either using Search or by specifying an object's GUID if you know it</li>
+<li>Explore starting from the initial object, applying filters at each step</li>
+<li>Explore from additional objects or using different filters</li>
+<li>When you have something you want to keep, capture the diagram and history views</li>
+<li>At any point you can Undo the most recent operation (repeatedly) or can clear the whole graph</li>
+</ul>
+<p><strong>Set the Repository Server:</strong></p>
+<p>To get started Rex needs the name and URL of the repository server that you wish to explore.
+Enter these details in the "Server Name" and "Server URL Root" fields and press the 'Connect' button.
+Immediately below the server input fields, you will see a status message. On first start the message
+asks that you enter the server details and press Connect. Rex will use the server
+details to request the type information from the repository, which Rex uses to populate its search filters.
+If the request to the server completes successfully you should see the message change to "Server OK".
+If Rex cannot connect to the server it will display an error message and ask you to check the details and retry.</p>
+<p>Rex does not maintain a long-running connection to the server; each time it needs to get something from the
+server it will use the server details you have set.</p>
+<p><strong>Get some initial metadata:</strong></p>
+<p>Rex needs an object as the starting point of a traversal. You can retrieve a starting object either by entering a
+GUID or by performing a Search, which is explained below.  If an object is found it will appear in the diagram.
+If no object could be found you will see an alert pop up.</p>
+<p>You can start with either an entity or a relationship - use whichever is most convenient.
+Entities are drawn as circles. Relationships are drawn as lines connecting pairs of circles (entities).
+Classifications are not shown in the diagram, but any classifications associated with an entity are shown in
+the details panel when the entity is selected.</p>
+<p><strong>Setting the focus object:</strong></p>
+<p>If one object was retrieved it will automatically be set to the focus, so it will be highlighted and its details will
+be displayed in the details panel.
+If multiple objects were retrieved they will be shown in the diagram and none will be highlighted. You can select a
+focus object in the diagram by clicking on it. The focus object will be highlighted in the diagram
+and its details will be shown in the details panel.</p>
+<p>The focus object is highlighted in the primary color for the UI - this is the same color used for things like buttons and
+banners. The default  primary color is the Egeria 'aqua' color (a pale blue), but this may be changed if a different color
+scheme has been applied. Other objects (not the focus) are given a color that reflects the home repository of the object; objects from the
+same home repository will be the same color. These 'repository colors' are generally shades of gray.</p>
+<p>If you want to deselect the selected object, click on it again. This can be useful if you want to view the graph with no
+object focused, so that all objects are shown in their 'repository colors'.                </p>
+<p><strong>Traverse to find related metadata:</strong></p>
+<p>Once there's an initial object in the diagram, you can use the Explore button to retrieve further objects that are
+related to the focus object. Rex needs to traverse from an entity, so if you retrieved or selected a relationship,
+click on one of its entities before attempting to traverse.
+When you traverse, Rex will explore the neighborhood around the selected entity, traversing outward
+along the available relationships to find adjacent entities. This process can be repeated to enlarge the graph of
+entities and relationships that are displayed.
+Rex currently supports a traversal depth of 1 - meaning it will only traverse as far
+as the immediate neighbors of the focus entity. It could support deeper traversals, but this would make it harder
+to understand the traversal filters - so depth is limited to 1.</p>
+<p>When you press the Explore button, Rex display a set of (optional) traversal filters, that you can set before it
+actually performs the traversal. This is to let you decide which relationships and entities will be included in
+the traversal. The traversal filters display the number of relationships and entities of each type, that could be
+included in the displayed graph. Check the counts and select the types you want. Rex will then only retrieve the
+objects you are really interested in. There is more information below under "Traversal Filtering".      </p>
+<p><strong>Search:</strong></p>
+<p>The search utility in Rex is fairly basic. It allows you to enter a text string and optionally apply an
+entity, relationship or classification filter, which limits the search to one particular type. The classification
+filter is not yet enabled, but that capability should be added soon.</p>
+<p>The search utility does not include property-based searching, it is just a text-based search. It therefore relies
+on objects having string-type attributes that can be searched. If an object is of a type that has no string-type
+attributes then it will not be found by the search. It is possible that property-based searching could be added,
+but it is not available yet.</p>
+<p>When you enter a string as search text, it can include regular expression characters. Beware that the level of support
+for regular expressions varies between repositories. If you are searching an Egeria graph repository or in-memory
+repository, then you have more freedom than you might have with some other repositories.                   </p>
+<p>If the text you are searching for contains special characters, you will need to literalize the string. As an example,
+suppose there are two Assets called asset-qn001 and asset-(qn001). In this example, the parentheses are special
+characters, because they affect the processing of the regular expression.</p>
+<ul>
+<li>If you type asset-qn001 as the search text, the first asset (only) will match.</li>
+<li>If you type asset-(qn001) as the search text, the first asset (only) will match.</li>
+<li>If you type \Qasset-(qn001)\E in as the search text, the second asset (only) will match.</li>
+</ul>
+<p>This example was tested using the Egeria graph repository. Some repositories support broad regular expressions
+but others do not. All repositories should support exact, prefix and suffix matches - so you should be able to
+use expressions like \Qany.characters.you.like!\E.* - which would literalize the part between \Q and \E as the
+beginning of the search expression and permit any other characters to follow it.</p>
+<p><strong>Traversal Filtering:</strong></p>
+<p>When you press Explore to expand the neighborhood around an entity, a dialog box will show how many entities and
+relationships might be included. The number of occurrences of each type of entity or relationship are shown alongside the type
+name. You can decide which types to include in the traversal. This dialog box also shows numbers of classifications
+associated with the neighboring entities.</p>
+<p>The filters are separated into three columns - for entity types, relationship types and classifications, respectively.</p>
+<p>Each column operates as follows:</p>
+<p>If none of the types in a column are checked, no filtering is applied to that column. This means that all entity types
+will be included in the traversal, or all relationship types.</p>
+<p>If any of the types in a column are checked then filtering is performed. Only the checked types are allowed. If you were
+to check ALL the types in the entity or relationship columns you achieve the same as when none of the checkboxes in
+those columns are checked (i.e. when there is no filtering). That is, the traversal will include all entities or all
+relationships. Note that if you wish to include a relationship to a neighboring entity, you need to enable both the
+relationship type and the entity type. This allows you to be very specific about which relationships to traverse. If
+there are relationships of the same type to entities of different types, or vice versa, you can independently
+select relationship and entity types to achieve finer grain traversal.</p>
+<p>If no classification types are checked there is no classification filtering. This means all entities will be eligible,
+regardless of their classifications (if any). Be careful with the classification column - if you check ALL the
+classification types it does NOT mean that all entities are eligible - it means only those entities that have at
+least one of the checked classifications will be eligible. If there is a neighboring entity that has none of the
+classifications it will not be reached.</p>
+<p><strong>Adding to the graph:</strong></p>
+<p>If after a number of traversals you realize that you would like to perform an additional traversal from an entity you
+visited at an earlier stage, just go back and select the entity from which you want to perform the additional traversal. Then press
+the Explore button. You can set the filters to include the types that you would like to add to the graph.</p>
+<p><strong>Undoing a change:</strong></p>
+<p>If you realize that you have added things to the graph that you actually do not want, you can use the Undo button to undo
+the most recent change. The Undo button can be used repeatedly to unwind back to a state that contains objects you want to
+keep. You can then use Explore from this state to add more objects.</p>
+<p><strong>Clearing the graph:</strong></p>
+<p>The Clear button will clear the graph diagram, the GUID input field and the details panel. It effectively resets Rex to the
+state it was in  when the page was first loaded, apart from the search text.</p>
+<p><strong>Traversal History:</strong></p>
+<p>At any point during an exploration session you can use the History button to list the operations that resulted
+in the graph as it is currently displayed. The traversal history shows the sequence of operations and describes
+the type and parameters of each operation and the entities and relationships that were added to the graph by each
+operation. The types of operation include retrieval using a GUID, search and traversal. In each case the GUID,
+search string or traversal parameters are recorded.</p>
+<p><strong>Diagram layouts:</strong></p>
+<p>There is currently one type of diagram - called the 'Network Diagram'. Other types of diagram may be added later.
+The Network Diagram is a visualization of the traversed graph, in which entities and relationships are drawn as circles and arcs.
+Each entity or relationship is labelled according to Rex's built-in labelling scheme (see below). The GUID (globally unique id) 
+associated with an instance may be the only way to uniquely identify it, but it is not particularly convenient or memorable. 
+Rex includes the GUID in the details panel and in the traversal history to help to uniquely identify an instance.</p>
+<p>There are two layout settings within the Network Diagram, that can be selected using the radio button in the top-left corner of
+the diagram:</p>
+<ul>
+<li>
+<p>Time-based (default) layout. This layout places objects starting at the top of the diagram and working vertically downwards with each
+  stage of traversal; the more recently visited objects will be located toward the bottom of the diagram. This layout may be helpful while
+  you are building the diagram. The temporal placement is not rigid - if a relationship connects a pair of entities retrieved in different
+  stages of the traversal, it will tend to pull them together, possibly distorting the temporal sequence.</p>
+</li>
+<li>
+<p>Proximity-based layout. This layout places objects using a straightforward force-directed graph layout. There is no temporal ordering.
+  This layout may be preferred when you have finished adding to the diagram and would like to lay it out for display or printing.</p>
+</li>
+</ul>
+<p>You can switch back and forth between the layout options.</p>
+<p>** Labelling of objects:</p>
+<p>Rex has a built-in labeler that assigns a label to each object (entity or relationship) that is retrieved from the
+repository. The labels are used in the diagram and attempts to find a concise, meaningful and hopefully unique label, based on the 
+properties of the entity or relationship. </p>
+<p>The labelling strategy behaves differently depending on the type of an object. For some types of object there are
+not many possible labels, but in the default case Rex will examine the instance properties of the object and choose a label 
+based on the following precedence order:
+* displayName - which should have been set with the expectation that it will be used for display purposes
+* name - which should be easier to read than qualified name
+* qualifiedName - limited to the last 24 characters as qualified names can be long and the last part is often the best 
+  means of discrimination.                        </p>
+<p>If you retrieve a relationship (from Get or Search), the entities at the ends of the relationship will be assigned 
+labels based on the information available - which is limited to the unique properties in the EntityProxy. If such
+an entity is subsequently selected (by clicking on it) Rex will retrieve the full entity and if it can identify
+a better label, it will update the label associated with the entity in both the diagram and in the details panel.</p>
+<p><strong>Tips for using Rex:</strong></p>
+<ul>
+<li>
+<p>Rex uses the Metadata Collection API to interrogate the chosen repository. All Egeria repositories support this API, but
+  some functions of the API are optional, so not all repositories support them. For maximum support for graph
+  traversals, if possible choose a repository server that has the Egeria graph repository. Remember that Egeria servers can
+  create reference copies of objects, so you can ask a server with a graph repository about objects that belong to
+  other repositories in the cohort.</p>
+</li>
+<li>
+<p>Relationship types do not have many attributes; some have no type-defined attributes at all. If you have trouble searching
+  for a relationship, it may be easier to search for an entity that you believe is connected to the relationship. Alternatively,
+  use another tool to retrieve the relationship GUID and paste that into Rex and use the Get button.</p>
+</li>
+<li>
+<p>If you are short of screen space, there a couple of things you can do to save space with Rex:</p>
+</li>
+<li>
+<p>One is to click the 'hamburger' menu icon to toggle away the left-hand navigation menu.</p>
+</li>
+<li>
+<p>Another is that, once you have selected the repository server to use and retrieved the first
+    entity or relationship, you may not need to visit the top part of the screen again, or only infrequently, so 
+    try scrolling until the top edge of the diagram and controls are at the top of the browser page. The controls
+    have been placed level with the top of the diagram to enable this.</p>
+</li>
+<li>
+<p>At any point during an exploration session you can use the History button to display a dialog that lists where the
+  exploration started and what steps have been used, to arrive at the graph that is currently displayed.</p>
+</li>
+<li>
+<p>You can save the current diagram as a .png image file, using the button near the top-left of the diagram.
+  Before capturing the image, consider clicking on the currently selected object to remove the focus color, if you want to
+  see its home repository color instead.</p>
+</li>
+<li>
+<p>After capturing the history and image, as described above, it is straightforward to copy and paste them into a report
+document.</p>
+</li>
+</ul>
+<p><strong>Customization:</strong></p>
+<p>Rex uses a styled set of colors, so it can be re-themed. The important colors are defined as CSS variables in the
+shared-styles.js file. They are called --egeria-primary-color and --egeria-secondary-color.
+By setting the egeria-primary-color you can achieve different themes.</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../ecosystem/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Ecosystem" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Ecosystem
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../contributors/contributorguide/" class="md-footer__link md-footer__link--next" aria-label="Next: Contributorguide" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Contributorguide
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      License: <a href='https://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a>, &copy; 2018-2021 contributors to the Egeria project.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    <a href="https://github.com/odpi/egeria" target="_blank" rel="noopener" title="Egeria on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://hub.docker.com/u/odpi" target="_blank" rel="noopener" title="Egeria on Docker" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M349.9 236.3h-66.1v-59.4h66.1v59.4zm0-204.3h-66.1v60.7h66.1V32zm78.2 144.8H362v59.4h66.1v-59.4zm-156.3-72.1h-66.1v60.1h66.1v-60.1zm78.1 0h-66.1v60.1h66.1v-60.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1l-13.3-8.9zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm-78.1-72.1h-66.1v60.1h66.1v-60.1z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://medium.com/tag/egeria" target="_blank" rel="noopener" title="Egeria on Medium" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 32v448h448V32H0zm372.2 106.1-24 23c-2.1 1.6-3.1 4.2-2.7 6.7v169.3c-.4 2.6.6 5.2 2.7 6.7l23.5 23v5.1h-118V367l24.3-23.6c2.4-2.4 2.4-3.1 2.4-6.7V199.8l-67.6 171.6h-9.1L125 199.8v115c-.7 4.8 1 9.7 4.4 13.2l31.6 38.3v5.1H71.2v-5.1l31.6-38.3c3.4-3.5 4.9-8.4 4.1-13.2v-133c.4-3.7-1-7.3-3.8-9.8L75 138.1V133h87.3l67.4 148L289 133.1h83.2v5z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://lfaifoundation.slack.com/archives/C01F40J2XA8" target="_blank" rel="noopener" title="Egeria on Slack" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1c0-25.9 21.16-47.06 47.06-47.06h47.06v47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V315.1zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06H164.9zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06H164.9zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06h-47.06V196.9zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06V196.9zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06v-47.06h47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06 0-25.9 21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06H283.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.361d90f1.min.js"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.289a2a4b.min.js"></script>
+      
+    
+  </body>
+</html>
