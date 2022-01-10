@@ -22,9 +22,9 @@ export default function ServerConfigEventBusDisplay(props) {
         <ul>
           <li className="details-sublist-item">Topic URL Root : {cfg.topicURLRoot}</li>
           <li className="details-sublist-item">Producer : 
-            {cfg.configurationProperties.producer ? formatBootstrapEndpoints(cfg.configurationProperties.producer) : <i>blank</i>}</li>
+            {cfg.configurationProperties !== undefined && cfg.configurationProperties.producer ? formatBootstrapEndpoints(cfg.configurationProperties.producer) : <i>blank</i>}</li>
           <li className="details-sublist-item">Consumer : 
-            {cfg.configurationProperties.consumer ? formatBootstrapEndpoints(cfg.configurationProperties.consumer) : <i>blank</i>}</li> 
+            {cfg.configurationProperties !== undefined && cfg.configurationProperties.consumer ? formatBootstrapEndpoints(cfg.configurationProperties.consumer) : <i>blank</i>}</li> 
           <li className="details-sublist-item">Additional Properties : {cfg.additionalProperties ? formatAdditionalProperties(cfg.additionalProperties) : <i>blank</i>}</li>
         </ul>
       </div>

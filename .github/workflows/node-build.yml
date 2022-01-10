@@ -9,8 +9,8 @@ on:
   pull_request:
     branches: [main,release-*]
 
-# Run client/server in parallel. 
-# Code checkout is small so low overhead, 
+# Run client/server in parallel.
+# Code checkout is small so low overhead,
 # npm build is slow, so benefits from parallelism
 jobs:
 
@@ -19,10 +19,10 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
-      - name: Use Node.js 
+      - name: Use Node.js
         uses: actions/setup-node@v2.2.0
         with:
-          node-version: "14"  
+          node-version: "14"
       - name: Install dependencies for client
         working-directory: ./cra-client
         run: npm install
@@ -47,31 +47,40 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        if: ${{ github.event_name == 'push' && github.repository == 'odpi/egeria-react-ui' }}
+      - name: Login to container registry (Quay.io)
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_IO_USERNAME }}
+          password: ${{ secrets.QUAY_IO_ACCESS_TOKEN }}
         if: ${{ github.event_name == 'push' && github.repository == 'odpi/egeria-react-ui' }}
       # For releases (ie not main)
       - name: Build and push (not main merge)
         if: github.ref != 'refs/heads/main'
         id: docker_build_release
-        uses: docker/build-push-action@v2 
+        uses: docker/build-push-action@v2
         with:
-          push:  ${{ github.event_name == 'push' && github.repository == 'odpi/egeria-react-ui' }} 
-          tags: odpi/egeria-react-ui:${{ steps.package-version.outputs.current-version}}
+          push:  ${{ github.event_name == 'push' && github.repository == 'odpi/egeria-react-ui' }}
+          tags: odpi/egeria-react-ui:${{ steps.package-version.outputs.current-version}}, quay.io/odpi/egeria-react-ui:${{ steps.package-version.outputs.current-version}}
           context: .
           file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
       # For main code stream
       - name: Build and push (main merge)
         if: github.ref == 'refs/heads/main'
         id: docker_build_main
         uses: docker/build-push-action@v2
         with:
-          push:  ${{ github.event_name == 'push' && github.repository == 'odpi/egeria-react-ui' }} 
-          tags: odpi/egeria-react-ui:${{ steps.package-version.outputs.current-version}}, odpi/egeria-react-ui:latest
+          push:  ${{ github.event_name == 'push' && github.repository == 'odpi/egeria-react-ui' }}
+          tags: odpi/egeria-react-ui:${{ steps.package-version.outputs.current-version}}, odpi/egeria-react-ui:latest, quay.io/odpi/egeria-react-ui:${{ steps.package-version.outputs.current-version}}, quay.io/odpi/egeria-react-ui:latest
           context: .
           file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
       - name: Image digest (release)
         if: github.ref != 'refs/heads/main'
         run: echo ${{ steps.docker_build_release.outputs.digest }}
@@ -80,7 +89,7 @@ jobs:
         run: echo ${{ steps.docker_build_main.outputs.digest }}
       - name: Create Archive
         run: tar -zcf /tmp/egeria-react-ui.tar.gz .
-      - name: Upload 
+      - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: React UI {{ steps.package-version.outputs.current-version}}

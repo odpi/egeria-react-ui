@@ -723,6 +723,8 @@ const ServerAuthorContextProvider = (props) => {
       el.style.display = "none";
     document.getElementById("server-type-container").style.display = "block";
     setProgressIndicatorIndex(0);
+    // get the servers again 
+    retrieveAllServers(); 
   };
 
   return (
