@@ -11,17 +11,8 @@ edit_uri: ""
 
 nav:
   - About: index.md
-  - Getting started:
-      - getting-started/prereqs.md
-      - getting-started/setup.md
   - Overview:
       - overview/Overview.md
-  - Solutions:
-      - solutions/solutions.md
-      - solutions/GlossaryAuthor/GlossaryAuthorGuide.md
-  - Eco System:
-      - ecosystem/ecosystem.md
-      - ecosystem/RepositoryExplorerGuide.md
   - Contributors section:
       - contributors/contributorguide.md    
 
