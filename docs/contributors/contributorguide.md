@@ -29,6 +29,7 @@ This project is a [Create React App](https://reactjs.org/docs/create-a-new-react
 
 ## 5. cra-server
 This is the Express server (also known as the presentation server). the cra - stands for Create React app.
+
   * db - this is the in memory database used for the simple authentication for demo purposes
   * functions - common functions
   * node_modules - dependant node modules
@@ -37,6 +38,7 @@ This is the Express server (also known as the presentation server). the cra - st
 
 ## 6. cra-client
 This is the client code including the javascript. the cra - stands for Create React app.
+
   * build - this is where the client code is built for use in production 
   * node_modules - dependant node modules
   * public - resources
