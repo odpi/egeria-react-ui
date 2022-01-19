@@ -1,9 +1,15 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionItem, TextInput } from "carbon-components-react";
+import {
+  Accordion,
+  AccordionItem,
+  TextInput,
+  TextArea,
+} from "carbon-components-react";
 import DateTimePicker from "../../../common/DateTimePicker";
 import Info16 from "@carbon/icons-react/lib/information/16";
+import { Html16 } from "@carbon/icons-react";
 
 /**
  * Component to take user input for node page as part of a wizard.
@@ -126,6 +132,33 @@ export default function NodeInput(props) {
       key: "value",
     },
   ];
+  const showInputforItem = (item) => {
+    if (item.type === "longtext") {
+      return (
+        <TextArea
+          id={labelIdForAttribute(item.key)}
+          type={getInputType(item)}
+          value={item.value}
+          invalid={item.invalid}
+          invalidText={item.invalidText}
+          onChange={(e) => setAttribute(item, e.target.value)}
+          placeholder={item.label}
+        ></TextArea>
+      );
+    } else {
+      return (
+        <TextInput
+          id={labelIdForAttribute(item.key)}
+          type={getInputType(item)}
+          value={item.value}
+          invalid={item.invalid}
+          invalidText={item.invalidText}
+          onChange={(e) => setAttribute(item, e.target.value)}
+          placeholder={item.label}
+        ></TextInput>
+      );
+    }
+  };
 
   return (
     <div>
@@ -142,8 +175,8 @@ export default function NodeInput(props) {
                 }
                 return allow;
               })
-              .map((item) => {
-                return (
+              .map((item) =>
+                item.type === "longtext" ? (
                   <div className="bx--form-item" key={item.key}>
                     <label
                       htmlFor={labelIdForAttribute(item.key)}
@@ -152,19 +185,39 @@ export default function NodeInput(props) {
                       {item.label} <Info16 />
                     </label>
                     <div className="fullwidth">
-                      <TextInput
-                        id={labelIdForAttribute(item.key)}
-                        type={getInputType(item)}
-                        value={item.value}
-                        invalid={item.invalid}
-                        invalidText={item.invalidText}
-                        onChange={(e) => setAttribute(item, e.target.value)}
-                        placeholder={item.label}
-                      ></TextInput>
+                        <TextArea
+                          id={labelIdForAttribute(item.key)}
+                          type={getInputType(item)}
+                          value={item.value}
+                          invalid={item.invalid}
+                          invalidText={item.invalidText}
+                          onChange={(e) => setAttribute(item, e.target.value)}
+                          placeholder={item.label}
+                        ></TextArea>
                     </div>
                   </div>
-                );
-              })}
+                ) : (
+                  <div className="bx--form-item" key={item.key}>
+                    <label
+                      htmlFor={labelIdForAttribute(item.key)}
+                      className="bx--label"
+                    >
+                      {item.label} <Info16 />
+                    </label>
+                    <div className="fullwidth">
+                        <TextInput
+                          id={labelIdForAttribute(item.key)}
+                          type={getInputType(item)}
+                          value={item.value}
+                          invalid={item.invalid}
+                          invalidText={item.invalidText}
+                          onChange={(e) => setAttribute(item, e.target.value)}
+                          placeholder={item.label}
+                        ></TextInput>
+                    </div>
+                  </div>
+                )
+              )}
           <Accordion>
             <AccordionItem title="Limit when active">
               <DateTimePicker
