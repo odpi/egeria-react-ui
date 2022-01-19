@@ -340,25 +340,7 @@ export default function UpdateNode(props) {
     // go  back
     history.goBack();
   };
-  // const onUpdated = (payLoad) => {
-  //   setUpdateBody(payLoad);
-  //   // if (payLoad.node !== undefined) {
-  //   //   const nodeTypeName = payLoad.node.nodeType.toLowerCase();
-  //   //   const nodeType = getNodeType(
-  //   //     identificationContext.getRestURL("glossary-author"),
-  //   //     nodeTypeName
-  //   //   );
-  //   //   instancesContext.updateNodeInstance(payLoad.node, nodeType);
-  //   // }
-  //   // if (payLoad.relationship !== undefined) {
-  //   //   const relationshipTypeName =
-  //   //     payLoad.relationship.relationshipType.toLowerCase();
-  //   //   instancesContext.updateRelationshipInstance(
-  //   //     payLoad.relationship,
-  //   //     payLoad.relationship.relationshipTypeName
-  //   //   );
-  //   // }
-  // };
+
   return (
     <div>
       {currentNode === undefined && nodeType && initialGet()}
