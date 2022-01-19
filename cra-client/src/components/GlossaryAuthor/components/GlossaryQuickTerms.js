@@ -6,14 +6,32 @@ import { IdentificationContext } from "../../../contexts/IdentificationContext";
 import getPathTypesAndGuids from "./properties/PathAnalyser";
 import Add32 from "../../../images/carbon/Egeria_add_32";
 import getNodeType from "./properties/NodeTypes.js";
-import { Button, Form, FormGroup, TextInput, Loading } from "carbon-components-react";
+import {
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  TextArea,
+  Loading,
+  DataTable,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableHeader,
+  TableBody,
+} from "carbon-components-react";
 
 import { issueRestCreate } from "../../common/RestCaller";
 import { useHistory, withRouter } from "react-router-dom";
 
 function GlossaryQuickTerms(props) {
   const identificationContext = useContext(IdentificationContext);
-  const glossaryNodeType = getNodeType(identificationContext.getRestURL("glossary-author"), "glossary");
+  const glossaryNodeType = getNodeType(
+    identificationContext.getRestURL("glossary-author"),
+    "glossary"
+  );
   const [terms, setTerms] = useState([]);
   const [termsWithStatus, setTermsWithStatus] = useState([]);
   const [errorMsg, setErrorMsg] = useState();
@@ -29,6 +47,21 @@ function GlossaryQuickTerms(props) {
     setGlossaryGuid(parentElement.guid);
   });
 
+
+  const headerData = [
+    {
+      text: "Term Name ",
+      key: "name",
+    },
+    {
+      text: "Term Description",
+      key: "description",
+    },
+    {
+      text: "Status",
+      key: "status",
+    },
+  ];
 
   function getUrl() {
     return glossaryNodeType.url + "/" + glossaryGuid + "/terms";
@@ -74,6 +107,7 @@ function GlossaryQuickTerms(props) {
       } else {
         workingTermWithStatus.status = "Error";
       }
+      workingTermWithStatus.id=i;
       workingTermsWithStatus[i] = workingTermWithStatus;
     }
     setTermsWithStatus(workingTermsWithStatus);
@@ -113,7 +147,12 @@ function GlossaryQuickTerms(props) {
           Back
         </button>
       </div>
-      {restCallInProgress && <Loading description="Waiting for network call to the server to complete" withOverlay={true} />}
+      {restCallInProgress && (
+        <Loading
+          description="Waiting for network call to the server to complete"
+          withOverlay={true}
+        />
+      )}
       {!restCallInProgress && termsWithStatus.length === 0 && (
         <div>
           <div className="row-container">
@@ -136,7 +175,7 @@ function GlossaryQuickTerms(props) {
                           setTermName(index, e.target.value);
                         }}
                       />
-                      <TextInput
+                      <TextArea
                         type="text"
                         placeholder="Term description"
                         defaultValue={item.description}
@@ -162,63 +201,92 @@ function GlossaryQuickTerms(props) {
           </Form>
         </div>
       )}
-       {!restCallInProgress && termsWithStatus.length > 0 && (
+      {!restCallInProgress && termsWithStatus.length > 0 && (
         <div>
           <div className="row-container">
             <h3>Terms Added.</h3>
           </div>
-          <Form>
+          <div className="search-item">
+            <DataTable
+              isSortable
+              rows={termsWithStatus}
+              headers={headerData}
+              render={({
+                rows,
+                headers,
+                getHeaderProps,
+              }) => (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        {headers.map((header) => (
+                          <TableHeader
+                            {...getHeaderProps({ header })}
+                            key={header.key}
+                            id={header.key}
+                          >
+                            {header.text}
+                          </TableHeader>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <TableRow key={row.id}>
+                          {row.cells.map((cell) => (
+                            <TableCell key={cell.id}>{cell.value}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            />
+          </div>
+
+          {/* <Form>
             <FormGroup>
               <div className="bx--form-item">
                 <div className="row-container">
-                  <TextInput
-                    type="text"
-                    defaultValue="Name"
-                    style={{ color: "grey" }}
-                    readOnly
-                  />
-                  <TextInput
-                    type="text"
-                    defaultValue="Description"
-                    style={{ color: "grey" }}
-                    readOnly
-                  />
+                  <TextInput type="text" defaultValue="Name" readOnly />
+                  <TextInput type="text" defaultValue="Description" readOnly />
 
-                  <TextInput
-                    type="text"
-                    defaultValue="Status"
-                    style={{ color: "grey" }}
-                    readOnly
-                  />
+                  <TextInput type="text" defaultValue="Status" readOnly />
                 </div>
               </div>
               {termsWithStatus.map((item, index) => {
                 return (
                   <div className="bx--form-item" key={index}>
                     <div className="row-container">
-                      <TextInput
-                        type="text"
-                        defaultValue={item.name}
-                        readOnly
-                      />
-                      <TextInput
+                      <TextArea type="text" defaultValue={item.name} readOnly />
+                      <TextArea
                         type="text"
                         defaultValue={item.description}
                         readOnly
                       />
                       {item.status === "Success" && (
                         <div className="row-container">
-                          <TextInput
+                          <TextArea
                             type="text"
                             defaultValue={item.status}
                             readOnly
                           />
-                          <span role="img" aria-label="When present, this image indicates that the Term has been successfully created" className="left-20" alias="white_check_mark" src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png">✅</span>
+                          <span
+                            role="img"
+                            aria-label="When present, this image indicates that the Term has been successfully created"
+                            className="left-20"
+                            alias="white_check_mark"
+                            src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png"
+                          >
+                            ✅
+                          </span>
                         </div>
                       )}
                       {item.status !== "Success" && (
                         <div>
-                          <TextInput
+                          <TextArea
                             type="text"
                             defaultValue={item.status}
                             readOnly
@@ -230,7 +298,7 @@ function GlossaryQuickTerms(props) {
                 );
               })}
             </FormGroup>
-          </Form>
+          </Form> */}
           <article style={{ color: "red" }}>{errorMsg}</article>
         </div>
       )}
