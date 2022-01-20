@@ -6,6 +6,7 @@ const getRelationshipType = (GlossaryAuthorURL, key) => {
     {
       key: "description",
       label: "Description",
+      type:"longtext"
     },
     {
       key: "steward",
