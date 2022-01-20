@@ -18,6 +18,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "description",
           label: "Description",
+          type:"longtext"
         },
         {
           key: "qualifiedName",
@@ -45,6 +46,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "description",
           label: "Description",
+          type:"longtext"
         },
         {
           key: "qualifiedName",
@@ -53,6 +55,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "summary",
           label: "Summary",
+          type:"longtext"
         },
         {
           key: "abbreviation",
@@ -61,10 +64,12 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "examples",
           label: "Examples",
+          type:"longtext"
         },
         {
           key: "usage",
           label: "Usage",
+          type:"longtext"
         },
         {
           key: "isSpineObject",
@@ -116,6 +121,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "description",
           label: "Description",
+          type:"longtext"
         },
         {
           key: "qualifiedName",
@@ -143,6 +149,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "description",
           label: "Description",
+          type:"longtext"
         },
         {
           key: "qualifiedName",
@@ -181,6 +188,7 @@ const getNodeType = (GlossaryAuthorURL, key) => {
         {
           key: "description",
           label: "Description",
+          type:"longtext"
         },
         {
           key: "qualifiedName",

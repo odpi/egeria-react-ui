@@ -4,6 +4,7 @@ import React, { useState, useContext, useEffect } from "react";
 import getPathTypesAndGuids from "../properties/PathAnalyser";
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import getNodeType from "../properties/NodeTypes.js";
+import UpdateNodePropertiesWizard from "./UpdateNodePropertiesWizard";
 import {
   Accordion,
   AccordionItem,
@@ -288,7 +289,6 @@ export default function UpdateNode(props) {
     return rows;
   };
   const renderRelationships = () => {
-   
     return Object.entries(relationshipsMap).map(([key], i) => {
       return (
         <Accordion>
@@ -340,31 +340,19 @@ export default function UpdateNode(props) {
     // go  back
     history.goBack();
   };
+
   return (
     <div>
-      {/* the useEffect will run after the render and set the nodeType, allowing the initalGet to run and set currentNode */}
       {currentNode === undefined && nodeType && initialGet()}
-      {currentNode !== undefined &&
-        nodeType.attributes.map((item) => {
-          return (
-            <div className="bx--form-item" key={item.key}>
-              <label htmlFor={updateLabelId(item.key)} className="bx--label">
-                {item.label} <Info16 />
-              </label>
-              <input
-                id={updateLabelId(item.key)}
-                type="text"
-                className="bx--text-input"
-                defaultValue={currentNode[item.key]}
-                disabled={isDisabled()}
-                key={currentNode[item.key]}
-                onChange={(e) => setAttribute(item, e.target.value)}
-                placeholder={item.label}
-              ></input>
-            </div>
-          );
-        })}
-      {/* {currentNode !== undefined && (
+      {currentNode !== undefined && (
+        <UpdateNodePropertiesWizard
+          onUpdated={setUpdateBody}
+          // onModalContentRequestedClose={props.onModalContentRequestedClose}
+          currentNode={currentNode}
+        />
+      )}
+      {/*   )} 
+       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Advanced options">
             <DatePicker dateFormat="m/d/Y" datePickerType="range">
@@ -383,7 +371,7 @@ export default function UpdateNode(props) {
             </DatePicker>
           </AccordionItem>
         </Accordion>
-      )} */}
+      )} (*/}
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">
@@ -424,6 +412,7 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
+      )
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Relationships">
@@ -451,9 +440,7 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
-
       <div style={{ color: "red" }}>{errorMsg}</div>
-
       <Button
         className="bx--btn bx--btn--primary"
         onClick={handleClickUpdate}
