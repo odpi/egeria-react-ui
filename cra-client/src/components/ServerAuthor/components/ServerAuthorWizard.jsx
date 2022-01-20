@@ -61,7 +61,7 @@ export default function ServerAuthorWizard() {
     setLoadingText,
     newServerConfig,
     setNewServerConfig,
-
+    setCurrentAccessServices,
     activePlatforms,
     newPlatformName,
     // available services for this servers platforms.
