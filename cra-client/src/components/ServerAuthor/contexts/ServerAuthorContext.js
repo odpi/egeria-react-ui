@@ -173,9 +173,7 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerMaxPageSize(1000);
     // Audit log destinations
     setCurrentServerAuditDestinations([]);
-
-    currentAccessServices,
-      setCurrentAccessServices,
+    setCurrentAccessServices([]),
       // Cohorts
       setNewServerCohorts([]);
     setRegisterCohortName("");
