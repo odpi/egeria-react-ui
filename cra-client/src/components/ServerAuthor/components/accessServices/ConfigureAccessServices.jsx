@@ -21,6 +21,10 @@ import {
   OverflowMenuItem,
 } from "carbon-components-react";
 import { MisuseOutline16, Edit16 } from "@carbon/icons-react";
+import CommunityProfileOptions from "./options/CommunityProfileOptions";
+import AssetLineageOptions from "./options/AssetLineageOptions";
+import AllZonesOptions from "./options/AllZonesOptions";
+import SupportedZoneOption from "./options/SupportedZoneOption";
 
 export default function ConfigureAccessServices() {
   const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
@@ -28,30 +32,40 @@ export default function ConfigureAccessServices() {
     useState();
   const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
   const [currentAccessServiceURL, setCurrentAccessServiceURL] = useState();
-  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] =
-    useState();
+  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
+
+  const [allOptionedOMASes,setAllOptionedOMASes]  = useState([]);
   const [accessServicesSelectionForAdd, setAccessServicesSelectionForAdd] =
     useState();
   const [operation, setOperation] = useState();
 
-  // access service options.
+  // list of all the omas identifiers that only have supportedZone as an option
+  const supportedZoneOMASArray = [
+    "asset-catalog",
+    "asset-consumer",
+    "data-privacy",
+    "devops",
+    "information-view",
+    "it-infrastructure",
+    "project-management",
+    "security-officer",
+    "software-developer",
+    "stewardship-action",
+  ];
+  // list of all the omas identifiers that published supported and default zones.
+  const allZonesOMASArray = [
+    "data-manager",
+    "asset-owner",
+    "data-engine",
+    "data-platform",
+    "digital-architect",
+    "digital-service",
+    "discovery-engine",
+    "govenance-engine",
+    "security-manager",
+  ];
 
-  // // supported zones
-  // const [addSupportedZoneName, setAddSupportedZoneName] = useState();
-  // const [removeSupportedZoneIndex, setRemoveSupportedZoneIndex] = useState();
-  // const [supportedZoneNames, setSupportedZones] = useState([]);
-  // // default zones
-  // const [addDefaultZoneName, setAddDefaultZoneName] = useState();
-  // const [removeDefaultZoneIndex, setRemoveDefaultZoneIndex] = useState();
-  // const [defaultZones, setDefaultZones] = useState([]);
-  // // publish zones
-  // const [addPublishZoneName, setAddPublishZoneName] = useState();
-  // const [removePublishZoneIndex, setRemovePublishZoneIndex] = useState();
-  // const [publishZoneNames, setPublishZones] = useState([]);
-  // // Karma Point Plateau
-  // const [newKarmaPointPlateau, setKarmaPointPlateau] = useState();
-  // // Karma Point Increment
-  // const [newKarmaPointIncrement, setKarmaPointIncrement] = useState();
+
 
   const {
     currentAccessServices,
@@ -63,6 +77,17 @@ export default function ConfigureAccessServices() {
   } = useContext(ServerAuthorContext);
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
+
+  useEffect(() => {
+    const isNoOptionOMAS = (id ) => {
+   
+      let allOptionedOMASArray =supportedZoneOMASArray.concat(allZonesOMASArray);
+      allOptionedOMASArray.push("community-profile");
+      allOptionedOMASArray.push("asset-lineage");
+      setAllOptionedOMASes(allOptionedOMASArray);
+    }
+
+  }, []);
 
   useEffect(() => {
     let accessServiceDefinition;
@@ -98,94 +123,8 @@ export default function ConfigureAccessServices() {
           }
         }
       }
-      // if (!isCurrentAccessService) {
-      //   clearCurrentOptions();
-      // }
     }
   }, [currentAccessServiceId]);
-
-  //   // Default zones
-  //   useEffect(() => {
-  //     if (addDefaultZoneName !== undefined && addDefaultZoneName !== "") {
-
-  //       const newDefaultZones = [...defaultZones, addDefaultZoneName];
-  //       setDefaultZones(newDefaultZones);
-  //       setAddDefaultZoneName("");
-  //     }
-  //   }, [addDefaultZoneName]);
-
-  //   useEffect(() => {
-  //     if (removeDefaultZoneIndex !== undefined && removeDefaultZoneIndex !== "") {
-  //       let newDefaultZones = [...defaultZones];
-
-  //       if (removeDefaultZoneIndex > -1) {
-  //         newDefaultZones.splice(removeDefaultZoneIndex, 1);
-  //         setDefaultZones(newDefaultZones);
-  //         setRemoveDefaultZoneIndex("");
-  //       }
-  //     }
-  //   }, [removeDefaultZoneIndex]);
-
-  //   // Publish zones
-  //   useEffect(() => {
-  //     if (addPublishZoneName !== undefined && addPublishZoneName !== "") {
-  //       const newPublishZoneNames = [...publishZoneNames, addPublishZoneName];
-  //       setPublishZones(newPublishZoneNames);
-  //       setAddPublishZoneName("");
-  //     }
-  //   }, [addPublishZoneName]);
-
-  //   useEffect(() => {
-  //     if (removePublishZoneIndex !== undefined && removePublishZoneIndex !== "") {
-  //       let newPublishZoneNames = [...publishZoneNames];
-  //       if (removePublishZoneIndex > -1) {
-  //         newPublishZoneNames.splice(removePublishZoneIndex, 1);
-  //         setPublishZones(newPublishZoneNames);
-  //         setRemovePublishZoneIndex("");
-  //       }
-  //     }
-  //   }, [removePublishZoneIndex]);
-
-  //   // Supported zones
-
-  //   useEffect(() => {
-  //     if (addSupportedZoneName !== undefined && addSupportedZoneName !== "") {
-  //       const newSupportedZoneNames = [...supportedZoneNames, addSupportedZoneName];
-  //       setSupportedZones(newSupportedZoneNames);
-  //       setAddSupportedZoneName("");
-  //     }
-  //   }, [addSupportedZoneName]);
-
-  //   useEffect(() => {
-  //     if (removeSupportedZoneIndex !== undefined && removeSupportedZoneIndex !== "") {
-  //       let newSupportedZoneNames = [...supportedZoneNames];
-  //       if (removeSupportedZoneIndex > -1) {
-  //         newSupportedZoneNames.splice(removeSupportedZoneIndex, 1);
-  //         setSupportedZones(newSupportedZoneNames);
-  //         setRemoveSupportedZoneIndex("");
-  //       }
-  //     }
-  //   }, [removeSupportedZoneIndex]);
-
-  // useEffect(() => {
-  //   let currentUrlMarkers = [];
-  //   if (currentAccessServices && currentAccessServices.length > 0) {
-  //     currentUrlMarkers = currentAccessServices.map((service) => service.id);
-  //   }
-  //   let services = [];
-  //   for (let i = 0; i < availableAccessServices.length; i++) {
-  //     const availableAccessService = availableAccessServices[i];
-  //     if (
-  //       !currentUrlMarkers.includes(availableAccessService.serviceURLMarker)
-  //     ) {
-  //      services.push(availableAccessService);
-  //       // clear out the option states
-  //       // clearCurrentOptions();
-  //     }
-  //   }
-  //   setUnconfiguredAccessServices(services);
-
-  // }, [currentAccessServices]);
 
   const headers = [
     {
@@ -223,20 +162,6 @@ export default function ConfigureAccessServices() {
       onErrorAccessServices
     );
   };
-  // const clearCurrentOptions = () => {
-  //   // supported zones
-  //   setAddSupportedZoneName(undefined);
-  //   setRemoveSupportedZoneIndex(undefined);
-  //   setSupportedZones = useState([]);
-  //   // default zones
-  //   setAddDefaultZoneName(undefined);
-  //   setRemoveDefaultZoneIndex(undefined);
-  //   setDefaultZones([]);
-  //   // publish zones
-  //   setAddPublishZoneName(undefined);
-  //   setRemovePublishZoneIndex(undefined);
-  //   setPublishZones([]);
-  // };
 
   const onClickEditOverflow = (selectedRows) => () => {
     console.log("called onClickEditOverflow", { selectedRows });
@@ -293,15 +218,19 @@ export default function ConfigureAccessServices() {
     let accessServiceToEdit;
   };
 
-  const onFinishedOperation = (options) => {
+  const onFinishedOperation = () => {
     if (operation === "Add") {
-      issueAdd(options);
+      issueAdd(currentAccessServiceOptions);
     } else if (operation === "Edit") {
-      issueEdit();
+      issueEdit(currentAccessServiceOptions);
     }
   };
   const onCancelOperation = () => {
     setOperation(undefined);
+  };
+
+  const onCurrentOptionsChanged = (options) => {
+      setCurrentAccessServiceOptions(options);
   };
 
   const issueAdd = (options) => {
@@ -354,43 +283,7 @@ export default function ConfigureAccessServices() {
       "omagServerConfig"
     );
   };
-  /**
-   *
-   *  for each access service
-   *    if there are options,
-   *    if those options have been specified
-   *        then copy them from the state into the json.
-   * else
-   *    return undefined
-   *
-   *   @returns options or undefined
-   */
-  // const getAccessOptionsForBody = () => {
-  //   let options = {};
 
-  //   if (currentAccessServiceId === "community-profile") {
-  //     if (defaultZones !== undefined && defaultZones.length > 0) {
-  //       options.DefaultZones = defaultZones;
-  //     }
-  //     if (supportedZoneNames !== undefined && supportedZoneNames.length > 0) {
-  //       options.SupportedZones = supportedZoneNames;
-  //     }
-  //     if (publishZoneNames !== undefined && publishZoneNames.length > 0) {
-  //       options.PublishZones = publishZoneNames;
-  //     }
-  //   }
-
-  //   if(!Object.keys(options).length){
-  //      options = undefined;
-  //    }
-  //    return options;
-  // };
-
-  // const onAddAccessServiceWithOptions = (options) => {
-  //   // store options into
-  //   onFinishedOperation();
-
-  // };
   const onSuccessfulAddAccessService = () => {
     console.log("onSuccessfulAddAccessService entry");
     document.getElementById("loading-container").style.display = "none";
@@ -486,6 +379,11 @@ export default function ConfigureAccessServices() {
     console.log("handleRemoveSupportedZones() called", { index });
     setRemoveSupportedZoneIndex(index);
   };
+  const onlySupportedZone = () => {
+    let includeZone = false;
+
+    return includeZone;
+  };
 
   return (
     <div className="left-text">
@@ -519,12 +417,43 @@ export default function ConfigureAccessServices() {
 
           {currentAccessServiceId === "community-profile" && (
             <CommunityProfileOptions
-              onIssueOperation={onFinishedOperation}
-              onCancelOperation={onCancelOperation}
+              onCurrentOptionsChanged={onCurrentOptionsChanged}
               operation={operation}
               options={currentAccessServiceOptions}
             ></CommunityProfileOptions>
           )}
+          {currentAccessServiceId === "asset-lineage" && (
+            <AssetLineageOptions
+              onCurrentOptionsChanged={onCurrentOptionsChanged}
+              operation={operation}
+              options={currentAccessServiceOptions}
+            ></AssetLineageOptions>
+          )}
+
+          {currentAccessServiceId && supportedZoneOMASArray.indexOf(currentAccessServiceId) > -1 && (
+            <SupportedZoneOption
+              onCurrentOptionsChanged={onCurrentOptionsChanged}
+              operation={operation}
+              options={currentAccessServiceOptions}
+            ></SupportedZoneOption>
+          )}
+          {currentAccessServiceId && allZonesOMASArray.indexOf(currentAccessServiceId) > -1 && (
+            <AllZonesOptions
+              onCurrentOptionsChanged={onCurrentOptionsChanged}
+              operation={operation}
+              options={currentAccessServiceOptions}
+            ></AllZonesOptions>
+            )}
+         {operation !== undefined && (
+        <fieldset className="bx--fieldset left-text-bottom-margin-32">
+          <button onClick={(e) => onCancelOperation()}>
+            Cancel {operation}
+          </button>
+          <button onClick={(e) => onFinishedOperation()}>
+            Issue {operation}
+          </button>
+        </fieldset>
+      )}
         </div>
       )}
       {operation === "Edit" && <h4>Edit Access Service</h4>}

@@ -2,11 +2,13 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useState, useEffect } from "react";
 
-import { TextInput } from "carbon-components-react";
+import {
+  TextInput,
+} from "carbon-components-react";
 
 import AuthorStringList from "../../../../common/AuthorStringList";
 
-export default function CommunityProfileOptions(props) {
+export default function AllZonesOptions(props) {
   // supported zones
   const [addSupportedZoneName, setAddSupportedZoneName] = useState();
   const [removeSupportedZoneIndex, setRemoveSupportedZoneIndex] = useState();
@@ -19,14 +21,11 @@ export default function CommunityProfileOptions(props) {
   const [addPublishZoneName, setAddPublishZoneName] = useState();
   const [removePublishZoneIndex, setRemovePublishZoneIndex] = useState();
   const [publishZoneNames, setPublishZones] = useState([]);
-  // Karma Point Plateau
-  const [karmaPointPlateau, setKarmaPointPlateau] = useState();
-  // Karma Point Increment
-  const [karmaPointIncrement, setKarmaPointIncrement] = useState();
 
   // Default zones
   useEffect(() => {
     if (addDefaultZoneName !== undefined && addDefaultZoneName !== "") {
+
       const newDefaultZoneNames = [...defaultZoneNames, addDefaultZoneName];
       setDefaultZoneNames(newDefaultZoneNames);
       setAddDefaultZoneName("");
@@ -36,7 +35,7 @@ export default function CommunityProfileOptions(props) {
   useEffect(() => {
     if (removeDefaultZoneIndex !== undefined && removeDefaultZoneIndex !== "") {
       let newdefaultZoneNames = [...defaultZoneNames];
-
+   
       if (removeDefaultZoneIndex > -1) {
         newDefaultZoneNames.splice(removeDefaultZoneIndex, 1);
         setDefaultZoneNames(newDefaultZoneNames);
@@ -47,18 +46,18 @@ export default function CommunityProfileOptions(props) {
 
   // useEffect(() => {
   //   if (props.options !== undefined && Object.keys(options).length) {
-  //     if (options.DefaultZoneNames !== undefined) {
-  //       setDefaultZoneNames(options.DefaultZoneNames);
+  //     if(options.DefaultZoneNames !== undefined) {
+  //         setDefaultZoneNames(options.DefaultZoneNames);
   //     }
   //     if (options.SupportedZones !== undefined) {
   //       setSupportedZones(options.SupportedZones);
   //     }
   //     if (options.PublishZones !== undefined) {
-  //       setPublishZones(options.PublishZones);
+  //       setPublishZones(options.PublishZones);   
   //     }
   //   } else {
   //     clearCurrentOptionState();
-  //   }
+  //   }  
   // }, [props.options]);
 
   // Publish zones
@@ -85,20 +84,14 @@ export default function CommunityProfileOptions(props) {
 
   useEffect(() => {
     if (addSupportedZoneName !== undefined && addSupportedZoneName !== "") {
-      const newSupportedZoneNames = [
-        ...supportedZoneNames,
-        addSupportedZoneName,
-      ];
+      const newSupportedZoneNames = [...supportedZoneNames, addSupportedZoneName];
       setSupportedZones(newSupportedZoneNames);
       setAddSupportedZoneName("");
     }
   }, [addSupportedZoneName]);
 
   useEffect(() => {
-    if (
-      removeSupportedZoneIndex !== undefined &&
-      removeSupportedZoneIndex !== ""
-    ) {
+    if (removeSupportedZoneIndex !== undefined && removeSupportedZoneIndex !== "") {
       let newSupportedZoneNames = [...supportedZoneNames];
       if (removeSupportedZoneIndex > -1) {
         newSupportedZoneNames.splice(removeSupportedZoneIndex, 1);
@@ -120,18 +113,12 @@ export default function CommunityProfileOptions(props) {
     if (publishZoneNames !== undefined && publishZoneNames.length > 0) {
       options.PublishZones = publishZoneNames;
     }
-    if (karmaPointPlateau !== undefined) {
-      options.karmaPointPlateau = karmaPointPlateau;
-    }
-    if (karmaPointIncrement !== undefined) {
-      options.karmaPointIncrement = karmaPointIncrement;
-    }
 
     if (!Object.keys(options).length) {
       options = undefined;
     }
     props.onCurrentOptionsChanged(options);
-  }, [supportedZoneNames, publishZoneNames, defaultZoneNames, karmaPointPlateau, karmaPointIncrement]);
+  }, [supportedZoneNames, publishZoneNames, defaultZoneNames]);
 
   const clearCurrentOptionState = () => {
     // supported zones
@@ -147,6 +134,7 @@ export default function CommunityProfileOptions(props) {
     setRemovePublishZoneIndex(undefined);
     setPublishZones([]);
   };
+
 
   // options functions
   const handleAddPublishZones = (zoneName) => {
@@ -183,55 +171,34 @@ export default function CommunityProfileOptions(props) {
     <div className="left-text">
       {props.operation === "Edit" && <h4>Edit Access Service</h4>}
 
-      {props.operation !== null && props.operation !== "" && (
+      {props.operation !== null  &&  props.operation !==  "" && (
         <div>
-          <AuthorStringList
-            handleAddString={handleAddDefaultZones}
-            handleRemoveStringAtIndex={handleRemoveDefaultZones}
-            stringLabel={"Default Zones"}
-            idPrefix="default-zones"
-            stringValues={defaultZoneNames}
-          />
+              <AuthorStringList
+                handleAddString={handleAddDefaultZones}
+                handleRemoveStringAtIndex={handleRemoveDefaultZones}
+                stringLabel={"Default Zones"}
+                idPrefix="default-zones"
+                stringValues={defaultZoneNames}
+              />
 
-          <AuthorStringList
-            handleAddString={handleAddPublishZones}
-            handleRemoveStringAtIndex={handleRemovePublishZones}
-            stringLabel={"Publish Zones"}
-            idPrefix="publish-zones"
-            stringValues={publishZoneNames}
-          />
+              <AuthorStringList
+                handleAddString={handleAddPublishZones}
+                handleRemoveStringAtIndex={handleRemovePublishZones}
+                stringLabel={"Publish Zones"}
+                idPrefix="publish-zones"
+                stringValues={publishZoneNames}
+              />
 
-          <AuthorStringList
-            handleAddString={handleAddSupportedZones}
-            handleRemoveStringAtIndex={handleRemoveSupportedZones}
-            stringLabel={"Supported Zones"}
-            idPrefix="supported-zones"
-            stringValues={supportedZoneNames}
-          />
-
-          <TextInput
-            id="KarmaPointPlateau"
-            name="KarmaPointPlateau"
-            type="number"
-            labelText="Karma Point Plateau"
-            value={karmaPointPlateau}
-            onChange={(e) => setKarmaPointPlateau(e.target.value)}
-            invalid={karmaPointPlateau === ""}
-            style={{ marginBottom: "16px", width: "100%" }}
-            autoComplete="off"
-          />
-          <TextInput
-            id="KarmaPointIncrement"
-            name="KarmaPointIncrement"
-            type="number"
-            labelText="Karma Point Increment"
-            value={karmaPointIncrement}
-            onChange={(e) => setKarmaPointIncrement(e.target.value)}
-            style={{ marginBottom: "16px", width: "100%" }}
-            autoComplete="off"
-          />
+              <AuthorStringList
+                handleAddString={handleAddSupportedZones}
+                handleRemoveStringAtIndex={handleRemoveSupportedZones}
+                stringLabel={"Supported Zones"}
+                idPrefix="supported-zones"
+                stringValues={supportedZoneNames}
+              />
         </div>
       )}
+   
     </div>
   );
 }
