@@ -39,7 +39,7 @@ export default function ConfigureIntegrationServices() {
     <div style={{ textAlign: 'left' }}>
 
       <legend className="bx--label" style={{ fontWeight: 'bold' }}>Choose an Integration Service</legend>
-
+      {availableIntegrationServices !== undefined &&
         <Dropdown
           id="new-server-integration-service"
           name="new-server-integration-service"
@@ -50,6 +50,7 @@ export default function ConfigureIntegrationServices() {
           onChange={({ selectedItem }) => setSelectedIntegrationService(selectedItem)}
           // style={{marginBottom: "16px"}}
         />
+        }
 
         <br />
         <br />

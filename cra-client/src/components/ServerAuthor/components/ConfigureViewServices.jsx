@@ -88,7 +88,7 @@ export default function ConfigureViewServices() {
 
       <fieldset className="bx--fieldset" style={{ marginBottom: "32px" }}>
         <div aria-label="selectable tiles" role="group">
-          {availableViewServices.map((s, i) => (
+          {availableViewServices !== undefined && availableViewServices.map((s, i) => (
             <SelectableTile
               id={s.serviceURLMarker}
               key={s.serviceURLMarker}

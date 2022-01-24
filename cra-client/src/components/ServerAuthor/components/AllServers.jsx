@@ -136,6 +136,10 @@ export default function AllServers() {
       header: "Server Name",
     },
     {
+      key: "serverDescription",
+      header: "Server Description",
+    },
+    {
       key: "serverType",
       header: "Server Type",
     },
