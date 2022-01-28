@@ -3,6 +3,14 @@
   "version": "3.5.0-rc.0",
   "description": "Egeria React User Interface client component.",
   "private": true,
+  "resolutions": {
+    "immer": "9.0.7",
+    "ansi-html": "https://registry.yarnpkg.com/ansi-html-community/-/ansi-html-community-0.0.8.tgz",
+    "ansi-regex": "5.0.1",
+    "nth-check": "2.0.1",
+    "glob-parent": "6.0.1",
+    "node-forge": "1.0.0"
+  },
   "dependencies": {
     "@babel/core": "^7.16.5",
     "@carbon/elements": "^10.49.0",
@@ -20,6 +28,7 @@
     "date-fns": "^2.27.0",
     "fibers": "^5.0.0",
     "joi": "^17.5.0",
+    "npm-force-resolutions": "0.0.10",
     "postcss": "^8.4.5",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
@@ -38,7 +47,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "preinstall": "npx npm-force-resolutions"
   },
   "contributors": [
     {
