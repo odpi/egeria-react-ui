@@ -80,6 +80,12 @@ const ServerAuthorContextProvider = (props) => {
    const [availableAccessServices, setAvailableAccessServices] = useState();
    const [currentAccessServices, setCurrentAccessServices] = useState([]);
    const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState([]);
+
+   const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
+   const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
+   const [operationForAccessServices, setOperationForAccessServices] = useState();
+   const [showAllAccessServices, setShowAllAccessServices] = useState(true);
+  
   // view services 
   const [availableViewServices, setAvailableViewServices] = useState();
   const [currentViewServices, setCurrentViewServices] = useState([]);
@@ -171,19 +177,32 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerSecurityConnector("");
     setNewServerRepository("in-memory-repository");
     setNewServerMaxPageSize(1000);
+    
     // Audit log destinations
     setCurrentServerAuditDestinations([]);
-    setCurrentAccessServices([]),
-      // Cohorts
-      setNewServerCohorts([]);
+    
+    // Cohorts
+    setNewServerCohorts([]);
     setRegisterCohortName("");
     setUnregisterCohortName("");
+    
     // Archives
     setNewServerOMArchives([]);
+    
     // Proxy
     setNewServerProxyConnector("");
     setNewServerEventMapperConnector("");
     setNewServerEventSource("");
+ 
+    // access services
+    setCurrentAccessServices([]),
+    setCurrentAccessServices(undefined);
+    setCurrentAccessServiceId(undefined);
+    setCurrentAccessServiceOptions(undefined);
+    setOperationForAccessServices(undefined);
+    setShowAllAccessServices(true);
+
+    // view services
     setCurrentViewServices([]);
     setNewServerViewServiceRemoteServerName("");
     setNewServerViewServiceRemoteServerURLRoot("");
@@ -775,6 +794,14 @@ const ServerAuthorContextProvider = (props) => {
         setCurrentAccessServices,
         unconfiguredAccessServices,
         setUnconfiguredAccessServices,
+        currentAccessServiceId,
+        setCurrentAccessServiceId,
+        currentAccessServiceOptions,
+        setCurrentAccessServiceOptions,
+        operationForAccessServices,
+        setOperationForAccessServices,
+        showAllAccessServices,
+        setShowAllAccessServices,
 
         availableViewServices,
         setAvailableViewServices,

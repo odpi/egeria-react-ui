@@ -1222,7 +1222,7 @@ export default function ServerAuthorWizard() {
               handleNextStep={showNextStep}
             />
             <h4 className="left-text-bottom-margin-24">
-              Select Access Services
+              Configure Access Services
             </h4>
             <ConfigureAccessServices />
           </div>

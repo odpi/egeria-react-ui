@@ -31,7 +31,7 @@ export default function ConfigureLocalRepository() {
             tabIndex={2}
             value="plugin-repository/connection"
           >
-            Bitemporal repository (in memory Crux)
+            Bitemporal XTDB repository (in memory)
           </RadioTile>
           <RadioTile
             id="local-graph-repository"
