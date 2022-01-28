@@ -15,6 +15,7 @@ import {
   Row,
   Select,
   SelectItem,
+  Toggle,
   Button,
   DataTable,
   OverflowMenu,
@@ -22,22 +23,23 @@ import {
 } from "carbon-components-react";
 import { MisuseOutline16, Edit16 } from "@carbon/icons-react";
 import CommunityProfileOptions from "./options/CommunityProfileOptions";
+import AllOptions from "./options/AllOptions";
 import AssetLineageOptions from "./options/AssetLineageOptions";
 import AllZonesOptions from "./options/AllZonesOptions";
 import SupportedZoneOption from "./options/SupportedZoneOption";
 
 export default function ConfigureAccessServices() {
-  const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
-  const [currentAccessServiceDescription, setCurrentAccessServiceDescription] =
-    useState();
-  const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
-  const [currentAccessServiceURL, setCurrentAccessServiceURL] = useState();
-  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
 
-  const [allOptionedOMASes,setAllOptionedOMASes]  = useState([]);
-  const [accessServicesSelectionForAdd, setAccessServicesSelectionForAdd] =
+  const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
+  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] =
     useState();
+
+  // const [allOptionedOMASes, setAllOptionedOMASes] = useState([]);
+  // const [accessServicesSelectionForAdd, setAccessServicesSelectionForAdd] =
+  //   useState();
   const [operation, setOperation] = useState();
+  const [showAllAccessServices, setShowAllAccessServices] = useState(true);
+  
 
   // list of all the omas identifiers that only have supportedZone as an option
   const supportedZoneOMASArray = [
@@ -65,8 +67,6 @@ export default function ConfigureAccessServices() {
     "security-manager",
   ];
 
-
-
   const {
     currentAccessServices,
     setCurrentAccessServices,
@@ -78,16 +78,15 @@ export default function ConfigureAccessServices() {
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
 
-  useEffect(() => {
-    const isNoOptionOMAS = (id ) => {
-   
-      let allOptionedOMASArray =supportedZoneOMASArray.concat(allZonesOMASArray);
-      allOptionedOMASArray.push("community-profile");
-      allOptionedOMASArray.push("asset-lineage");
-      setAllOptionedOMASes(allOptionedOMASArray);
-    }
-
-  }, []);
+  // useEffect(() => {
+  //   const isNoOptionOMAS = (id) => {
+  //     let allOptionedOMASArray =
+  //       supportedZoneOMASArray.concat(allZonesOMASArray);
+  //     allOptionedOMASArray.push("community-profile");
+  //     allOptionedOMASArray.push("asset-lineage");
+  //     setAllOptionedOMASes(allOptionedOMASArray);
+  //   };
+  // }, []);
 
   useEffect(() => {
     let accessServiceDefinition;
@@ -99,10 +98,10 @@ export default function ConfigureAccessServices() {
           currentAccessServiceId === accessServiceDefinition.serviceURLMarker
         ) {
           setCurrentAccessServiceId(accessServiceDefinition.serviceURLMarker);
-          setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
-          setCurrentAccessServiceDescription(
-            accessServiceDefinition.serviceDescription
-          );
+          // setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
+          // setCurrentAccessServiceDescription(
+          //   accessServiceDefinition.serviceDescription
+          // );
         }
       }
       if (accessServiceDefinition !== undefined) {
@@ -126,6 +125,15 @@ export default function ConfigureAccessServices() {
     }
   }, [currentAccessServiceId]);
 
+  useEffect(() => {
+    if (showAllAccessServices && operation !== "Add All") {
+      setOperation("Add All");
+    }
+    if (!showAllAccessServices && operation === "Add All") {
+      setOperation(undefined)
+    }
+  }, [showAllAccessServices, operation]);
+
   const headers = [
     {
       key: "name",
@@ -138,8 +146,8 @@ export default function ConfigureAccessServices() {
   ];
 
   const onClickAdd = () => {
-    setCurrentAccessServiceName(undefined);
-    setCurrentAccessServiceDescription(undefined);
+    // setCurrentAccessServiceName(undefined);
+    // setCurrentAccessServiceDescription(undefined);
     setCurrentAccessServiceId(undefined);
     setCurrentAccessServiceOptions(undefined);
     setOperation("Add");
@@ -221,6 +229,8 @@ export default function ConfigureAccessServices() {
   const onFinishedOperation = () => {
     if (operation === "Add") {
       issueAdd(currentAccessServiceOptions);
+    } else if (operation === "Add All") {
+      issueAddAll(currentAccessServiceOptions);
     } else if (operation === "Edit") {
       issueEdit(currentAccessServiceOptions);
     }
@@ -230,9 +240,32 @@ export default function ConfigureAccessServices() {
   };
 
   const onCurrentOptionsChanged = (options) => {
-      setCurrentAccessServiceOptions(options);
+    setCurrentAccessServiceOptions(options);
   };
 
+  const issueAddAll = (options) => {
+    if (showAllAccessServices) {
+      const addAccessServiceURL = encodeURI(
+        "/servers/" +
+          tenantId +
+          "/server-author/users/" +
+          userId +
+          "/servers/" +
+          newServerName +
+          "/access-services"
+      );
+      setOperation(undefined);
+      console.log("addAccessServiceURL " + addAccessServiceURL);
+      setLoadingText("Adding all access services");
+      issueRestCreate(
+        addAccessServiceURL,
+        options,
+        onSuccessfulAddAccessService,
+        onErrorAccessServices,
+        "omagServerConfig"
+      );
+    }
+  };
   const issueAdd = (options) => {
     if (currentAccessServiceId) {
       const addAccessServiceURL = encodeURI(
@@ -255,8 +288,6 @@ export default function ConfigureAccessServices() {
         onErrorAccessServices,
         "omagServerConfig"
       );
-    } else {
-      alert("Please choose a type of access service");
     }
   };
   const issueEdit = () => {
@@ -288,6 +319,9 @@ export default function ConfigureAccessServices() {
     console.log("onSuccessfulAddAccessService entry");
     document.getElementById("loading-container").style.display = "none";
     setLoadingText("Refreshing access services ");
+    setOperation(undefined);
+    setShowAllAccessServices(false);
+
     // retrieveAllServers
     fetchServerConfig(refreshCurrentAccessServices, onErrorAccessServices);
   };
@@ -299,8 +333,8 @@ export default function ConfigureAccessServices() {
   };
 
   const onSuccessfulRemoveAll = () => {
-    setCurrentAccessServiceName(undefined);
-    setCurrentAccessServiceDescription(undefined);
+    // setCurrentAccessServiceName(undefined);
+    // setCurrentAccessServiceDescription(undefined);
     setCurrentAccessServiceId(undefined);
     setCurrentAccessServiceOptions(undefined);
     setSelectedAccessServices([]);
@@ -384,80 +418,117 @@ export default function ConfigureAccessServices() {
 
     return includeZone;
   };
+  const onToggle = () => {
+    console.log("onToggle");
+    // isToggled is the current state
+    setShowAllAccessServices((isToggled) => !isToggled);
+  };
 
   return (
     <div className="left-text">
+      <Toggle
+        aria-label="allSpecificAccessOptionsToggle"
+        defaultToggled
+        toggled ={showAllAccessServices}
+        labelText="Access Service Configuration"
+        labelA="Supply options for a chosen access service"
+        labelB="Supply the options to be used by all the OMAS services"
+        id="allSpecificAccessOptionsToggle"
+        onToggle={onToggle}
+      />
+      {showAllAccessServices && operation === "Add All" && (
+        <div>
+          <AllOptions
+            onCurrentOptionsChanged={onCurrentOptionsChanged}
+            operation={operation}
+            options={currentAccessServiceOptions}
+          ></AllOptions>
+          <fieldset className="bx--fieldset left-text-bottom-margin-32">
+            <button onClick={(e) => onCancelOperation()}>Cancel Add All</button>
+            <button onClick={(e) => onFinishedOperation()}>
+              Issue Add All services with the following options
+            </button>
+          </fieldset>
+        </div>
+      )}
+
       {operation === "Add" && (
         <div>
-          <h4>Add Access Service</h4>
-          <div>
-            <Select
-              defaultValue="placeholder-item"
-              // helperText={serverTypeDescription}
-              onChange={onChangeAccessServiceSelected}
-              id="select-access-server"
-              invalidText="A valid value is required"
-            >
-              <SelectItem
-                text="Choose an access service"
-                value="placeholder-item"
-                disabled
-                hidden
-              />
-              {unconfiguredAccessServices.map((service) => (
-                <SelectItem
-                  text={service.serviceName}
-                  value={service.serviceURLMarker}
-                  id={service.serviceURLMarker}
-                  key={service.serviceURLMarker}
-                />
-              ))}
-            </Select>
-          </div>
+          {!showAllAccessServices && (
+            <div>
+              <h4>Add Access Service</h4>
+              <div>
+                <Select
+                  defaultValue="placeholder-item"
+                  // helperText={serverTypeDescription}
+                  onChange={onChangeAccessServiceSelected}
+                  id="select-access-server"
+                  invalidText="A valid value is required"
+                >
+                  <SelectItem
+                    text="Choose an access service"
+                    value="placeholder-item"
+                    disabled
+                    hidden
+                  />
+                  {unconfiguredAccessServices.map((service) => (
+                    <SelectItem
+                      text={service.serviceName}
+                      value={service.serviceURLMarker}
+                      id={service.serviceURLMarker}
+                      key={service.serviceURLMarker}
+                    />
+                  ))}
+                </Select>
+              </div>
 
-          {currentAccessServiceId === "community-profile" && (
-            <CommunityProfileOptions
-              onCurrentOptionsChanged={onCurrentOptionsChanged}
-              operation={operation}
-              options={currentAccessServiceOptions}
-            ></CommunityProfileOptions>
-          )}
-          {currentAccessServiceId === "asset-lineage" && (
-            <AssetLineageOptions
-              onCurrentOptionsChanged={onCurrentOptionsChanged}
-              operation={operation}
-              options={currentAccessServiceOptions}
-            ></AssetLineageOptions>
-          )}
+              {currentAccessServiceId === "community-profile" && (
+                <CommunityProfileOptions
+                  onCurrentOptionsChanged={onCurrentOptionsChanged}
+                  operation={operation}
+                  options={currentAccessServiceOptions}
+                ></CommunityProfileOptions>
+              )}
+              {currentAccessServiceId === "asset-lineage" && (
+                <AssetLineageOptions
+                  onCurrentOptionsChanged={onCurrentOptionsChanged}
+                  operation={operation}
+                  options={currentAccessServiceOptions}
+                ></AssetLineageOptions>
+              )}
 
-          {currentAccessServiceId && supportedZoneOMASArray.indexOf(currentAccessServiceId) > -1 && (
-            <SupportedZoneOption
-              onCurrentOptionsChanged={onCurrentOptionsChanged}
-              operation={operation}
-              options={currentAccessServiceOptions}
-            ></SupportedZoneOption>
+              {currentAccessServiceId &&
+                supportedZoneOMASArray.indexOf(currentAccessServiceId) > -1 && (
+                  <SupportedZoneOption
+                    onCurrentOptionsChanged={onCurrentOptionsChanged}
+                    operation={operation}
+                    options={currentAccessServiceOptions}
+                  ></SupportedZoneOption>
+                )}
+              {currentAccessServiceId &&
+                allZonesOMASArray.indexOf(currentAccessServiceId) > -1 && (
+                  <AllZonesOptions
+                    onCurrentOptionsChanged={onCurrentOptionsChanged}
+                    operation={operation}
+                    options={currentAccessServiceOptions}
+                  ></AllZonesOptions>
+                )}
+            </div>
           )}
-          {currentAccessServiceId && allZonesOMASArray.indexOf(currentAccessServiceId) > -1 && (
-            <AllZonesOptions
-              onCurrentOptionsChanged={onCurrentOptionsChanged}
-              operation={operation}
-              options={currentAccessServiceOptions}
-            ></AllZonesOptions>
-            )}
-         {operation !== undefined && (
-        <fieldset className="bx--fieldset left-text-bottom-margin-32">
-          <button onClick={(e) => onCancelOperation()}>
-            Cancel {operation}
-          </button>
-          <button onClick={(e) => onFinishedOperation()}>
-            Issue {operation}
-          </button>
-        </fieldset>
-      )}
+          {operation !== undefined && (
+            <fieldset className="bx--fieldset left-text-bottom-margin-32">
+              <button onClick={(e) => onCancelOperation()}>
+                Cancel {operation}
+              </button>
+              <button onClick={(e) => onFinishedOperation()}>
+                Issue {operation}
+              </button>
+            </fieldset>
+          )}
         </div>
       )}
       {operation === "Edit" && <h4>Edit Access Service</h4>}
-
+            operation is {operation}
       {operation === undefined && (
         <Grid>
           <Row id="audit-log-destinations-list-container">
@@ -488,7 +559,6 @@ export default function ConfigureAccessServices() {
                       getTableContainerProps,
                     }) => (
                       <DataTable.TableContainer
-                        // title="Select Access Services"
                         description="List of all of the configured Access Servers"
                         {...getTableContainerProps()}
                       >
