@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
 import { IdentificationContext } from "../../../../contexts/IdentificationContext";
 import { ServerAuthorContext } from "../../contexts/ServerAuthorContext";
@@ -29,17 +29,6 @@ import AllZonesOptions from "./options/AllZonesOptions";
 import SupportedZoneOption from "./options/SupportedZoneOption";
 
 export default function ConfigureAccessServices() {
-
-  const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
-  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] =
-    useState();
-
-  // const [allOptionedOMASes, setAllOptionedOMASes] = useState([]);
-  // const [accessServicesSelectionForAdd, setAccessServicesSelectionForAdd] =
-  //   useState();
-  const [operation, setOperation] = useState();
-  const [showAllAccessServices, setShowAllAccessServices] = useState(true);
-  
 
   // list of all the omas identifiers that only have supportedZone as an option
   const supportedZoneOMASArray = [
@@ -74,6 +63,14 @@ export default function ConfigureAccessServices() {
     newServerName,
     fetchServerConfig,
     unconfiguredAccessServices,
+    currentAccessServiceId,
+    setCurrentAccessServiceId,
+    currentAccessServiceOptions,
+    setCurrentAccessServiceOptions,
+    operationForAccessServices,
+    setOperationForAccessServices,
+    showAllAccessServices,
+    setShowAllAccessServices
   } = useContext(ServerAuthorContext);
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
@@ -126,13 +123,13 @@ export default function ConfigureAccessServices() {
   }, [currentAccessServiceId]);
 
   useEffect(() => {
-    if (showAllAccessServices && operation !== "Add All") {
-      setOperation("Add All");
+    if (showAllAccessServices && operationForAccessServices !== "Add All") {
+      setOperationForAccessServices("Add All");
     }
-    if (!showAllAccessServices && operation === "Add All") {
-      setOperation(undefined)
+    if (!showAllAccessServices && operationForAccessServices === "Add All") {
+      setOperationForAccessServices(undefined)
     }
-  }, [showAllAccessServices, operation]);
+  }, [showAllAccessServices, operationForAccessServices]);
 
   const headers = [
     {
@@ -150,7 +147,7 @@ export default function ConfigureAccessServices() {
     // setCurrentAccessServiceDescription(undefined);
     setCurrentAccessServiceId(undefined);
     setCurrentAccessServiceOptions(undefined);
-    setOperation("Add");
+    setOperationForAccessServices("Add");
   };
 
   const onClickRemoveAll = () => {
@@ -226,17 +223,17 @@ export default function ConfigureAccessServices() {
     let accessServiceToEdit;
   };
 
-  const onFinishedOperation = () => {
-    if (operation === "Add") {
+  const onFinishedOperationForAccessServices = () => {
+    if (operationForAccessServices === "Add") {
       issueAdd(currentAccessServiceOptions);
-    } else if (operation === "Add All") {
+    } else if (operationForAccessServices === "Add All") {
       issueAddAll(currentAccessServiceOptions);
-    } else if (operation === "Edit") {
+    } else if (operationForAccessServices === "Edit") {
       issueEdit(currentAccessServiceOptions);
     }
   };
-  const onCancelOperation = () => {
-    setOperation(undefined);
+  const onCancelOperationForAccessServices = () => {
+    setOperationForAccessServices(undefined);
   };
 
   const onCurrentOptionsChanged = (options) => {
@@ -254,7 +251,7 @@ export default function ConfigureAccessServices() {
           newServerName +
           "/access-services"
       );
-      setOperation(undefined);
+      setOperationForAccessServices(undefined);
       console.log("addAccessServiceURL " + addAccessServiceURL);
       setLoadingText("Adding all access services");
       issueRestCreate(
@@ -278,7 +275,7 @@ export default function ConfigureAccessServices() {
           "/access-services/" +
           currentAccessServiceId
       );
-      setOperation(undefined);
+      setOperationForAccessServices(undefined);
       console.log("addAccessServiceURL " + addAccessServiceURL);
       setLoadingText("Adding access service");
       issueRestCreate(
@@ -291,7 +288,7 @@ export default function ConfigureAccessServices() {
     }
   };
   const issueEdit = () => {
-    setOperation(undefined);
+    setOperationForAccessServices(undefined);
 
     const editAccessServiceURL = encodeURI(
       "/servers/" +
@@ -319,7 +316,7 @@ export default function ConfigureAccessServices() {
     console.log("onSuccessfulAddAccessService entry");
     document.getElementById("loading-container").style.display = "none";
     setLoadingText("Refreshing access services ");
-    setOperation(undefined);
+    setOperationForAccessServices(undefined);
     setShowAllAccessServices(false);
 
     // retrieveAllServers
@@ -436,23 +433,23 @@ export default function ConfigureAccessServices() {
         id="allSpecificAccessOptionsToggle"
         onToggle={onToggle}
       />
-      {showAllAccessServices && operation === "Add All" && (
+      {showAllAccessServices && operationForAccessServices === "Add All" && (
         <div>
           <AllOptions
             onCurrentOptionsChanged={onCurrentOptionsChanged}
-            operation={operation}
+            operationForAccessServices={operationForAccessServices}
             options={currentAccessServiceOptions}
           ></AllOptions>
           <fieldset className="bx--fieldset left-text-bottom-margin-32">
-            <button onClick={(e) => onCancelOperation()}>Cancel Add All</button>
-            <button onClick={(e) => onFinishedOperation()}>
+            <button onClick={(e) => onCancelOperationForAccessServices()}>Cancel Add All</button>
+            <button onClick={(e) => onFinishedOperationForAccessServices()}>
               Issue Add All services with the following options
             </button>
           </fieldset>
         </div>
       )}
 
-      {operation === "Add" && (
+      {operationForAccessServices === "Add" && (
         <div>
           {!showAllAccessServices && (
             <div>
@@ -485,14 +482,14 @@ export default function ConfigureAccessServices() {
               {currentAccessServiceId === "community-profile" && (
                 <CommunityProfileOptions
                   onCurrentOptionsChanged={onCurrentOptionsChanged}
-                  operation={operation}
+                  operationForAccessServices={operationForAccessServices}
                   options={currentAccessServiceOptions}
                 ></CommunityProfileOptions>
               )}
               {currentAccessServiceId === "asset-lineage" && (
                 <AssetLineageOptions
                   onCurrentOptionsChanged={onCurrentOptionsChanged}
-                  operation={operation}
+                  operationForAccessServices={operationForAccessServices}
                   options={currentAccessServiceOptions}
                 ></AssetLineageOptions>
               )}
@@ -501,7 +498,7 @@ export default function ConfigureAccessServices() {
                 supportedZoneOMASArray.indexOf(currentAccessServiceId) > -1 && (
                   <SupportedZoneOption
                     onCurrentOptionsChanged={onCurrentOptionsChanged}
-                    operation={operation}
+                    operationForAccessServices={operationForAccessServices}
                     options={currentAccessServiceOptions}
                   ></SupportedZoneOption>
                 )}
@@ -509,27 +506,26 @@ export default function ConfigureAccessServices() {
                 allZonesOMASArray.indexOf(currentAccessServiceId) > -1 && (
                   <AllZonesOptions
                     onCurrentOptionsChanged={onCurrentOptionsChanged}
-                    operation={operation}
+                    operationForAccessServices={operationForAccessServices}
                     options={currentAccessServiceOptions}
                   ></AllZonesOptions>
                 )}
             </div>
           )}
-          {operation !== undefined && (
+          {operationForAccessServices !== undefined && (
             <fieldset className="bx--fieldset left-text-bottom-margin-32">
-              <button onClick={(e) => onCancelOperation()}>
-                Cancel {operation}
+              <button onClick={(e) => onCancelOperationForAccessServices()}>
+                Cancel {operationForAccessServices}
               </button>
-              <button onClick={(e) => onFinishedOperation()}>
-                Issue {operation}
+              <button onClick={(e) => onFinishedOperationForAccessServices()}>
+                Issue {operationForAccessServices}
               </button>
             </fieldset>
           )}
         </div>
       )}
-      {operation === "Edit" && <h4>Edit Access Service</h4>}
-            operation is {operation}
-      {operation === undefined && (
+      {operationForAccessServices === "Edit" && <h4>Edit Access Service</h4>}
+      {operationForAccessServices === undefined && (
         <Grid>
           <Row id="audit-log-destinations-list-container">
             <Column
