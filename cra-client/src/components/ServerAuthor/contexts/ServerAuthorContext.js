@@ -85,7 +85,85 @@ const ServerAuthorContextProvider = (props) => {
    const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
    const [operationForAccessServices, setOperationForAccessServices] = useState();
    const [showAllAccessServices, setShowAllAccessServices] = useState(true);
-  
+
+  // access services supported options
+
+  // supported zones
+  const [supportedZoneNames, setSupportedZones] = useState([]);
+  // default zones
+  const [defaultZoneNames, setDefaultZoneNames] = useState([]);
+  // publish zones
+  const [publishZoneNames, setPublishZones] = useState([]);
+  // Karma Point Plateau
+  const [karmaPointPlateau, setKarmaPointPlateau] = useState();
+  // Karma Point Increment
+  const [karmaPointIncrement, setKarmaPointIncrement] = useState();
+  // chunk
+  const [glossaryTermLineageEventsChunkSize, setGlossaryTermLineageEventsChunkSize] = useState();
+
+   const addSupportedZoneName = (zoneName) => {
+    if (zoneName !== undefined && zoneName !== "") {
+      setSupportedZones([...supportedZoneNames, zoneName]);
+    }
+   };
+   const removeSupportedZoneByIndex = (index) => {
+    if (index !== undefined && index !== "") {
+      if (index > -1) {
+        setSupportedZoneNames([...supportedZoneNames].splice(index, 1));
+      }
+    }
+  };
+  const addDefaultZoneName = (zoneName) => {
+    if (zoneName !== undefined && zoneName !== "") {
+      setDefaultZones([...defaultZoneNames, zoneName]);
+    }
+   };
+   const removeDefaultZoneByIndex = (index) => {
+    if (index !== undefined && index !== "") {
+      if (index > -1) {
+        setDefaultZoneNames([...defaultZoneNames].splice(index, 1));
+      }
+    }
+  };
+  const addPublishZoneName = (zoneName) => {
+    if (zoneName !== undefined && zoneName !== "") {
+      setPublishZones([...publishZoneNames, zoneName]);
+    }
+   };
+   const removePublishZoneByIndex = (index) => {
+    if (index !== undefined && index !== "") {
+      if (index > -1) {
+        setPublishZoneNames([...publishZoneNames].splice(index, 1));
+      }
+    }
+  };
+  useEffect(() => {
+    // update the current options (the rest body) in the caller
+    let options = {};
+    if (defaultZoneNames !== undefined && defaultZoneNames.length > 0) {
+      options.defaultZoneNames = defaultZoneNames;
+    }
+    if (supportedZoneNames !== undefined && supportedZoneNames.length > 0) {
+      options.SupportedZones = supportedZoneNames;
+    }
+    if (publishZoneNames !== undefined && publishZoneNames.length > 0) {
+      options.PublishZones = publishZoneNames;
+    }
+    if (karmaPointPlateau !== undefined) {
+      options.karmaPointPlateau = karmaPointPlateau;
+    }
+    if (karmaPointIncrement !== undefined) {
+      options.karmaPointIncrement = karmaPointIncrement;
+    }
+    if (glossaryTermLineageEventsChunkSize !== undefined) {
+      options.glossaryTermLineageEventsChunkSize = glossaryTermLineageEventsChunkSize;
+    }
+
+    if (!Object.keys(options).length) {
+      options = undefined;
+    }
+  }, [supportedZoneNames, publishZoneNames, defaultZoneNames, karmaPointPlateau, karmaPointIncrement, glossaryTermLineageEventsChunkSize]);
+
   // view services 
   const [availableViewServices, setAvailableViewServices] = useState();
   const [currentViewServices, setCurrentViewServices] = useState([]);
@@ -787,9 +865,9 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerEventMapperConnector,
         newServerEventSource,
         setNewServerEventSource,
-        
+
         availableAccessServices,
-        setAvailableAccessServices, 
+        setAvailableAccessServices,
         currentAccessServices,
         setCurrentAccessServices,
         unconfiguredAccessServices,
@@ -802,6 +880,31 @@ const ServerAuthorContextProvider = (props) => {
         setOperationForAccessServices,
         showAllAccessServices,
         setShowAllAccessServices,
+        // Access service options
+        // supported zones
+        supportedZoneNames,
+        setSupportedZones,
+        addSupportedZoneName,
+        removeSupportedZoneByIndex,
+        // default zones
+        defaultZoneNames,
+        setDefaultZoneNames,
+        addDefaultZoneName,
+        removeDefaultZoneByIndex,
+        // publish zones
+        publishZoneNames,
+        setPublishZones,
+        addPublishZoneName,
+        removePublishZoneByIndex,
+        // Karma Point Plateau
+        karmaPointPlateau,
+        setKarmaPointPlateau,
+        // Karma Point Increment
+        karmaPointIncrement,
+        setKarmaPointIncrement,
+        // chunk
+        glossaryTermLineageEventsChunkSize,
+        setGlossaryTermLineageEventsChunkSize,
 
         availableViewServices,
         setAvailableViewServices,
@@ -822,7 +925,7 @@ const ServerAuthorContextProvider = (props) => {
         setNewServerViewServiceRemoteServerName,
         newServerViewServiceRemoteServerURLRoot,
         setNewServerViewServiceRemoteServerURLRoot,
-        activePlatforms,   
+        activePlatforms,
         setActivePlatforms,
         setNewServerIntegrationServiceRemoteServerName,
         newServerIntegrationServiceRemoteServerURLRoot,
