@@ -29,7 +29,6 @@ import AllZonesOptions from "./options/AllZonesOptions";
 import SupportedZoneOption from "./options/SupportedZoneOption";
 
 export default function ConfigureAccessServices() {
-
   // list of all the omas identifiers that only have supportedZone as an option
   const supportedZoneOMASArray = [
     "asset-catalog",
@@ -65,12 +64,14 @@ export default function ConfigureAccessServices() {
     unconfiguredAccessServices,
     currentAccessServiceId,
     setCurrentAccessServiceId,
+    currentAccessServiceName,
+    setCurrentAccessServiceName,
     currentAccessServiceOptions,
     setCurrentAccessServiceOptions,
     operationForAccessServices,
     setOperationForAccessServices,
     showAllAccessServices,
-    setShowAllAccessServices
+    setShowAllAccessServices,
   } = useContext(ServerAuthorContext);
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
@@ -95,7 +96,7 @@ export default function ConfigureAccessServices() {
           currentAccessServiceId === accessServiceDefinition.serviceURLMarker
         ) {
           setCurrentAccessServiceId(accessServiceDefinition.serviceURLMarker);
-          // setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
+          setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
           // setCurrentAccessServiceDescription(
           //   accessServiceDefinition.serviceDescription
           // );
@@ -127,7 +128,7 @@ export default function ConfigureAccessServices() {
       setOperationForAccessServices("Add All");
     }
     if (!showAllAccessServices && operationForAccessServices === "Add All") {
-      setOperationForAccessServices(undefined)
+      setOperationForAccessServices(undefined);
     }
   }, [showAllAccessServices, operationForAccessServices]);
 
@@ -220,16 +221,28 @@ export default function ConfigureAccessServices() {
   };
 
   const editAction = (id) => {
-    let accessServiceToEdit;
+    setCurrentAccessServiceId(id);
+    setOperationForAccessServices("Edit");
+    setShowAllAccessServices(false);
+    currentAccessServices.forEach((service) => {
+      if (service.id === id) {
+        setCurrentAccessServiceOptions(service.options);
+        let options = "nothing";
+        if (service.options) {
+          options = JSON.stringify(service.options);
+        }
+        console.log("options in editAction" + options );
+      }
+    });
   };
 
   const onFinishedOperationForAccessServices = () => {
     if (operationForAccessServices === "Add") {
-      issueAdd(currentAccessServiceOptions);
+      issueAdd();
     } else if (operationForAccessServices === "Add All") {
-      issueAddAll(currentAccessServiceOptions);
+      issueAddAll();
     } else if (operationForAccessServices === "Edit") {
-      issueEdit(currentAccessServiceOptions);
+      issueEdit();
     }
   };
   const onCancelOperationForAccessServices = () => {
@@ -240,7 +253,7 @@ export default function ConfigureAccessServices() {
     setCurrentAccessServiceOptions(options);
   };
 
-  const issueAddAll = (options) => {
+  const issueAddAll = () => {
     if (showAllAccessServices) {
       const addAccessServiceURL = encodeURI(
         "/servers/" +
@@ -256,14 +269,14 @@ export default function ConfigureAccessServices() {
       setLoadingText("Adding all access services");
       issueRestCreate(
         addAccessServiceURL,
-        options,
+        currentAccessServiceOptions,
         onSuccessfulAddAccessService,
         onErrorAccessServices,
         "omagServerConfig"
       );
     }
   };
-  const issueAdd = (options) => {
+  const issueAdd = () => {
     if (currentAccessServiceId) {
       const addAccessServiceURL = encodeURI(
         "/servers/" +
@@ -280,7 +293,7 @@ export default function ConfigureAccessServices() {
       setLoadingText("Adding access service");
       issueRestCreate(
         addAccessServiceURL,
-        options,
+        currentAccessServiceOptions,
         onSuccessfulAddAccessService,
         onErrorAccessServices,
         "omagServerConfig"
@@ -300,12 +313,11 @@ export default function ConfigureAccessServices() {
         "/access-services/" +
         currentAccessServiceId
     );
-    const body = getAccessOptionsForBody();
     console.log("editAccessServiceURL " + editAccessServiceURL);
     setLoadingText("Editing audit log destination");
     issueRestUpdate(
       editAccessServiceURL,
-      body,
+      currentAccessServiceOptions,
       onSuccessfulEditAccessService,
       onErrorAccessServices,
       "omagServerConfig"
@@ -380,41 +392,6 @@ export default function ConfigureAccessServices() {
     alert("Error occurred configuring access services");
   };
 
-  // options functions
-  const handleAddPublishZones = (zoneName) => {
-    console.log("handleAddPublishZones() called", { zoneName });
-    if (zoneName.length === 0) return;
-    setAddPublishZoneName(zoneName);
-  };
-  const handleRemovePublishZones = (index) => {
-    console.log("handleRemovePublishZones() called", { index });
-    setRemovePublishZoneIndex(index);
-  };
-
-  const handleAddDefaultZones = (zoneName) => {
-    console.log("handleAddDefaultZones() called", { zoneName });
-    if (zoneName.length === 0) return;
-    setAddDefaultZoneName(zoneName);
-  };
-  const handleRemoveDefaultZones = (index) => {
-    console.log("handleRemoveDefaultZones() called", { index });
-    setRemoveDefaultZoneIndex(index);
-  };
-
-  const handleAddSupportedZones = (zoneName) => {
-    console.log("handleAddSupportedZones() called", { zoneName });
-    if (zoneName.length === 0) return;
-    setAddSupportedZoneName(zoneName);
-  };
-  const handleRemoveSupportedZones = (index) => {
-    console.log("handleRemoveSupportedZones() called", { index });
-    setRemoveSupportedZoneIndex(index);
-  };
-  const onlySupportedZone = () => {
-    let includeZone = false;
-
-    return includeZone;
-  };
   const onToggle = () => {
     console.log("onToggle");
     // isToggled is the current state
@@ -423,25 +400,30 @@ export default function ConfigureAccessServices() {
 
   return (
     <div className="left-text">
-      <Toggle
-        aria-label="allSpecificAccessOptionsToggle"
-        defaultToggled
-        toggled ={showAllAccessServices}
-        labelText="Access Service Configuration"
-        labelA="Supply options for a chosen access service"
-        labelB="Supply the options to be used by all the OMAS services"
-        id="allSpecificAccessOptionsToggle"
-        onToggle={onToggle}
-      />
+      operationForAccessServices  {operationForAccessServices}
+      {/* {operationForAccessServices !== "Edit" && ( */}
+        <Toggle
+          aria-label="allSpecificAccessOptionsToggle"
+          defaultToggled
+          toggled={showAllAccessServices}
+          labelText="Access Service Configuration"
+          labelA="Supply options for a chosen access service"
+          labelB="Supply the options to be used by all the OMAS services"
+          id="allSpecificAccessOptionsToggle"
+          onToggle={onToggle}
+        />
+      {/* )} */}
       {showAllAccessServices && operationForAccessServices === "Add All" && (
         <div>
           <AllOptions
             onCurrentOptionsChanged={onCurrentOptionsChanged}
             operationForAccessServices={operationForAccessServices}
-            options={currentAccessServiceOptions}
+         
           ></AllOptions>
           <fieldset className="bx--fieldset left-text-bottom-margin-32">
-            <button onClick={(e) => onCancelOperationForAccessServices()}>Cancel Add All</button>
+            <button onClick={(e) => onCancelOperationForAccessServices()}>
+              Cancel Add All
+            </button>
             <button onClick={(e) => onFinishedOperationForAccessServices()}>
               Issue Add All services with the following options
             </button>
@@ -449,35 +431,38 @@ export default function ConfigureAccessServices() {
         </div>
       )}
 
-      {operationForAccessServices === "Add" && (
+  
         <div>
           {!showAllAccessServices && (
             <div>
-              <h4>Add Access Service</h4>
-              <div>
-                <Select
-                  defaultValue="placeholder-item"
-                  // helperText={serverTypeDescription}
-                  onChange={onChangeAccessServiceSelected}
-                  id="select-access-server"
-                  invalidText="A valid value is required"
-                >
-                  <SelectItem
-                    text="Choose an access service"
-                    value="placeholder-item"
-                    disabled
-                    hidden
-                  />
-                  {unconfiguredAccessServices.map((service) => (
+               {operationForAccessServices === "Add" && (
+                <div>
+                  <h4>Add Access Service</h4>
+                  <Select
+                    defaultValue="placeholder-item"
+                    // helperText={serverTypeDescription}
+                    onChange={onChangeAccessServiceSelected}
+                    id="select-access-server"
+                    invalidText="A valid value is required"
+                  >
                     <SelectItem
-                      text={service.serviceName}
-                      value={service.serviceURLMarker}
-                      id={service.serviceURLMarker}
-                      key={service.serviceURLMarker}
+                      text="Choose an access service"
+                      value="placeholder-item"
+                      disabled
+                      hidden
                     />
-                  ))}
-                </Select>
-              </div>
+                    {unconfiguredAccessServices.map((service) => (
+                      <SelectItem
+                        text={service.serviceName}
+                        value={service.serviceURLMarker}
+                        id={service.serviceURLMarker}
+                        key={service.serviceURLMarker}
+                      />
+                    ))}
+                  </Select>
+                </div>
+              )}
+              {operationForAccessServices === "Edit" && <h4>Edit {currentAccessServiceName} Access Service</h4>}
 
               {currentAccessServiceId === "community-profile" && (
                 <CommunityProfileOptions
@@ -523,8 +508,7 @@ export default function ConfigureAccessServices() {
             </fieldset>
           )}
         </div>
-      )}
-      {operationForAccessServices === "Edit" && <h4>Edit Access Service</h4>}
+      
       {operationForAccessServices === undefined && (
         <Grid>
           <Row id="audit-log-destinations-list-container">
@@ -570,6 +554,7 @@ export default function ConfigureAccessServices() {
                                     : -1
                                 }
                                 renderIcon={Edit16}
+                                disabled // for now
                                 onClick={() => {
                                   onClickEditBatchAction(selectedRows);
                                 }}
@@ -670,6 +655,7 @@ export default function ConfigureAccessServices() {
                                     <OverflowMenu flipped>
                                       <OverflowMenuItem
                                         id="edit-audit-log-overflow"
+                                        disabled   // disable for now
                                         itemText="Edit"
                                         onClick={onClickEditOverflow([row])}
                                       />

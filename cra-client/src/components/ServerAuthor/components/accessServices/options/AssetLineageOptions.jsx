@@ -1,104 +1,62 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 
-import {
-  TextInput,
-} from "carbon-components-react";
+import { TextInput } from "carbon-components-react";
+import { ServerAuthorContext } from "../../../contexts/ServerAuthorContext";
 
 import AuthorStringList from "../../../../common/AuthorStringList";
 
 export default function AssetLineageOptions(props) {
-  // supported zones
-  const [addSupportedZoneName, setAddSupportedZoneName] = useState();
-  const [removeSupportedZoneIndex, setRemoveSupportedZoneIndex] = useState();
-  const [supportedZoneNames, setSupportedZones] = useState([]);
-
-  // chunk
-  const [glossaryTermLineageEventsChunkSize, setGlossaryTermLineageEventsChunkSize] = useState();
-
-  // useEffect(() => {
-  //   if (props.options !== undefined && Object.keys(options).length) {
-  //     if (options.SupportedZones !== undefined) {
-  //       setSupportedZones(options.SupportedZones);
-  //     }
-      
-  //   } else {
-  //     clearCurrentOptionState();
-  //   }  
-  // }, [props.options]);
-
-  // Supported zones
-
-  useEffect(() => {
-    if (addSupportedZoneName !== undefined && addSupportedZoneName !== "") {
-      const newSupportedZoneNames = [...supportedZoneNames, addSupportedZoneName];
-      setSupportedZones(newSupportedZoneNames);
-      setAddSupportedZoneName("");
-    }
-  }, [addSupportedZoneName]);
-
-  useEffect(() => {
-    if (removeSupportedZoneIndex !== undefined && removeSupportedZoneIndex !== "") {
-      let newSupportedZoneNames = [...supportedZoneNames];
-      if (removeSupportedZoneIndex > -1) {
-        newSupportedZoneNames.splice(removeSupportedZoneIndex, 1);
-        setSupportedZones(newSupportedZoneNames);
-        setRemoveSupportedZoneIndex("");
-      }
-    }
-  }, [removeSupportedZoneIndex]);
-
-  useEffect(() => {
-    // update the current options (the rest body) in the caller
-    let options = {};
-    if (supportedZoneNames !== undefined && supportedZoneNames.length > 0) {
-      options.SupportedZones = supportedZoneNames;
-    }
-    if (glossaryTermLineageEventsChunkSize !== undefined) {
-      options.glossaryTermLineageEventsChunkSize = glossaryTermLineageEventsChunkSize;
-    }
-
-    if (!Object.keys(options).length) {
-      options = undefined;
-    }
-    props.onCurrentOptionsChanged(options);
-  }, [supportedZoneNames, glossaryTermLineageEventsChunkSize]);
-
-
-  const clearCurrentOptionState = () => {
-    // supported zones
-    setAddSupportedZoneName(undefined);
-    setRemoveSupportedZoneIndex(undefined);
-    setSupportedZones([]);
+  const {
+     // supported zones
+     supportedZoneNames,
+    //  setSupportedZones,
+     addSupportedZoneName,
+     removeSupportedZoneByIndex,
   
-  };
+     // chunk
+     glossaryTermLineageEventsChunkSize,
+     setGlossaryTermLineageEventsChunkSize
+
+  } = useContext(ServerAuthorContext);
+
+  // const clearCurrentOptionState = () => {
+  //   setSupportedZones([]);
+  //   setDefaultZoneNames([]);
+  //   setPublishZones([]);
+  // };
+
+  // options functions
+
 
   const handleAddSupportedZones = (zoneName) => {
     console.log("handleAddSupportedZones() called", { zoneName });
     if (zoneName.length === 0) return;
-    setAddSupportedZoneName(zoneName);
+    addSupportedZoneName(zoneName);
   };
   const handleRemoveSupportedZones = (index) => {
     console.log("handleRemoveSupportedZones() called", { index });
-    setRemoveSupportedZoneIndex(index);
+    removeSupportedZoneByIndex(index);
   };
 
   return (
     <div className="left-text">
       {props.operation === "Edit" && <h4>Edit Access Service</h4>}
 
-      {props.operation !== null  &&  props.operation !==  "" && (
+      {props.operation !== null && props.operation !== "" && (
         <div>
-              <AuthorStringList
-                handleAddString={handleAddSupportedZones}
-                handleRemoveStringAtIndex={handleRemoveSupportedZones}
-                stringLabel={"Supported Zones"}
-                idPrefix="supported-zones"
-                stringValues={supportedZoneNames}
-              />
 
-              <TextInput
+          <AuthorStringList
+            handleAddString={handleAddSupportedZones}
+            handleRemoveStringAtIndex={handleRemoveSupportedZones}
+            stringLabel={"Supported Zones"}
+            idPrefix="supported-zones"
+            stringValues={supportedZoneNames}
+          />
+
+   
+          <TextInput
                 id="GlossaryTermLineageEventsChunkSize"
                 name="GlossaryTermLineageEventsChunkSize"
                 type="number"
@@ -110,7 +68,6 @@ export default function AssetLineageOptions(props) {
               />
         </div>
       )}
-   
     </div>
   );
 }
