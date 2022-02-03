@@ -15,7 +15,7 @@ None
 
 As of 02/02/22 (latest activity first)
 
-* 02/02/22 We decided to revert the forced resolutions and suggest that ```npm audit --prod``` should be run. This only checks production considerations. Pr https://github.com/odpi/egeria-react-ui/pull/347 moved the react-scripts and postcss depenancies mentioned below to be dev dependancies. **For cra-client this gives 0 vulnerabilities.**
+* 02/02/22 We decided to revert the forced resolutions and suggest that ```npm audit --prod``` should be run. This only checks production considerations. Pr https://github.com/odpi/egeria-react-ui/pull/347 moved the react-scripts and postcss depenancies mentioned below to be dev dependancies. For cra-client this gives 0 vulnerabilities.
 
 
 * 30/01/22 cra-client issue https://github.com/odpi/egeria-react-ui/issues/344. It seems most of the non high vulnerabilities relate to the level of postcss. Postcss
