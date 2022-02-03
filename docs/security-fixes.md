@@ -10,7 +10,7 @@ npm audit fix should run regularly on cra-client and cra-server. This should fix
 
 None
 * cra-server - ```npm audit``` has 0 vulnerabilities
-* crea-client - ```npm audit --prod``` has 0 vulnerabilities
+* cra-client - ```npm audit --prod``` has 0 vulnerabilities
 
 
 As of 02/02/22 (latest activity first)
@@ -49,5 +49,5 @@ Note I tried forcing the resolution but npm list now gives errors.
 
 There is a lot of discussion about this not actually effecting runtime. 
 
-* 30/01/22 cra-server has no vulnerabilitie according to ```npm audit```
+* 30/01/22 cra-server has no vulnerabilities according to ```npm audit```
 
