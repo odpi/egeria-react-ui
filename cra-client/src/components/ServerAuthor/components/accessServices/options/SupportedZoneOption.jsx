@@ -1,28 +1,18 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useContext } from "react";
+import { ServerAuthorContext } from "../../../contexts/ServerAuthorContext";
 import AuthorStringList from "../../../../common/AuthorStringList";
 
 export default function AllZonesOptions(props) {
   const {
-  
-    currentAccessServiceId,
-    setCurrentAccessServiceId,
-    currentAccessServiceOptions,
-    setCurrentAccessServiceOptions,
-     // supported zones
-     supportedZoneNames,
+    // supported zones
+    supportedZoneNames,
     //  setSupportedZones,
      addSupportedZoneName,
      removeSupportedZoneByIndex,
 
   } = useContext(ServerAuthorContext);
-
-  // const clearCurrentOptionState = () => {
-  //   setSupportedZones([]);
-  //   setDefaultZoneNames([]);
-  //   setPublishZones([]);
-
 
   const handleAddSupportedZones = (zoneName) => {
     console.log("handleAddSupportedZones() called", { zoneName });

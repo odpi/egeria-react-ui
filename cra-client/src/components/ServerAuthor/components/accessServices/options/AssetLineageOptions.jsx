@@ -3,16 +3,12 @@
 import React, { useContext } from "react";
 
 import { TextInput } from "carbon-components-react";
+import { ServerAuthorContext } from "../../../contexts/ServerAuthorContext";
 
 import AuthorStringList from "../../../../common/AuthorStringList";
 
 export default function AssetLineageOptions(props) {
   const {
-  
-    currentAccessServiceId,
-    setCurrentAccessServiceId,
-    currentAccessServiceOptions,
-    setCurrentAccessServiceOptions,
      // supported zones
      supportedZoneNames,
     //  setSupportedZones,

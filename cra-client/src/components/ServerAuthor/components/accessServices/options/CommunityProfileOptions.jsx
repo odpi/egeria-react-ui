@@ -2,17 +2,12 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 import React, { useContext } from "react";
 
+import { ServerAuthorContext } from "../../../contexts/ServerAuthorContext";
 import { TextInput } from "carbon-components-react";
-
 import AuthorStringList from "../../../../common/AuthorStringList";
 
 export default function CommunityProfileOptions(props) {
   const {
-  
-    currentAccessServiceId,
-    setCurrentAccessServiceId,
-    currentAccessServiceOptions,
-    setCurrentAccessServiceOptions,
      // supported zones
      supportedZoneNames,
     //  setSupportedZones,

@@ -64,6 +64,8 @@ export default function ConfigureAccessServices() {
     unconfiguredAccessServices,
     currentAccessServiceId,
     setCurrentAccessServiceId,
+    currentAccessServiceName,
+    setCurrentAccessServiceName,
     currentAccessServiceOptions,
     setCurrentAccessServiceOptions,
     operationForAccessServices,
@@ -94,7 +96,7 @@ export default function ConfigureAccessServices() {
           currentAccessServiceId === accessServiceDefinition.serviceURLMarker
         ) {
           setCurrentAccessServiceId(accessServiceDefinition.serviceURLMarker);
-          // setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
+          setCurrentAccessServiceName(accessServiceDefinition.serviceFullName);
           // setCurrentAccessServiceDescription(
           //   accessServiceDefinition.serviceDescription
           // );
@@ -460,7 +462,7 @@ export default function ConfigureAccessServices() {
                   </Select>
                 </div>
               )}
-              {operationForAccessServices === "Edit" && <h4>Edit Access Service</h4>}
+              {operationForAccessServices === "Edit" && <h4>Edit {currentAccessServiceName} Access Service</h4>}
 
               {currentAccessServiceId === "community-profile" && (
                 <CommunityProfileOptions
@@ -507,7 +509,6 @@ export default function ConfigureAccessServices() {
           )}
         </div>
       
-      {operationForAccessServices === "Edit" && <h4>Edit Access Service</h4>}
       {operationForAccessServices === undefined && (
         <Grid>
           <Row id="audit-log-destinations-list-container">
@@ -553,6 +554,7 @@ export default function ConfigureAccessServices() {
                                     : -1
                                 }
                                 renderIcon={Edit16}
+                                disabled // for now
                                 onClick={() => {
                                   onClickEditBatchAction(selectedRows);
                                 }}
@@ -653,6 +655,7 @@ export default function ConfigureAccessServices() {
                                     <OverflowMenu flipped>
                                       <OverflowMenuItem
                                         id="edit-audit-log-overflow"
+                                        disabled   // disable for now
                                         itemText="Edit"
                                         onClick={onClickEditOverflow([row])}
                                       />

@@ -63,7 +63,7 @@ const ServerAuthorContextProvider = (props) => {
     useState([]);
   // Active Platforms by name
   const [activePlatforms, setActivePlatforms] = useState();
-  const [activePlatform, setActivePlatform] = useState();
+  // const [activePlatform, setActivePlatform] = useState();
  
   // Cohorts
   const [newServerCohorts, setNewServerCohorts] = useState([]);
@@ -82,6 +82,7 @@ const ServerAuthorContextProvider = (props) => {
    const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState([]);
 
    const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
+   const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
    const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
    const [operationForAccessServices, setOperationForAccessServices] = useState();
    const [showAllAccessServices, setShowAllAccessServices] = useState(true);
@@ -89,11 +90,11 @@ const ServerAuthorContextProvider = (props) => {
   // access services supported options
 
   // supported zones
-  const [supportedZoneNames, setSupportedZones] = useState([]);
+  const [supportedZoneNames, setSupportedZoneNames] = useState([]);
   // default zones
   const [defaultZoneNames, setDefaultZoneNames] = useState([]);
   // publish zones
-  const [publishZoneNames, setPublishZones] = useState([]);
+  const [publishZoneNames, setPublishZoneNames] = useState([]);
   // Karma Point Plateau
   const [karmaPointPlateau, setKarmaPointPlateau] = useState();
   // Karma Point Increment
@@ -103,7 +104,7 @@ const ServerAuthorContextProvider = (props) => {
 
    const addSupportedZoneName = (zoneName) => {
     if (zoneName !== undefined && zoneName !== "") {
-      setSupportedZones([...supportedZoneNames, zoneName]);
+      setSupportedZoneNames([...supportedZoneNames, zoneName]);
     }
    };
    const removeSupportedZoneByIndex = (index) => {
@@ -115,7 +116,7 @@ const ServerAuthorContextProvider = (props) => {
   };
   const addDefaultZoneName = (zoneName) => {
     if (zoneName !== undefined && zoneName !== "") {
-      setDefaultZones([...defaultZoneNames, zoneName]);
+      setDefaultZoneNames([...defaultZoneNames, zoneName]);
     }
    };
    const removeDefaultZoneByIndex = (index) => {
@@ -127,7 +128,7 @@ const ServerAuthorContextProvider = (props) => {
   };
   const addPublishZoneName = (zoneName) => {
     if (zoneName !== undefined && zoneName !== "") {
-      setPublishZones([...publishZoneNames, zoneName]);
+      setPublishZoneNames([...publishZoneNames, zoneName]);
     }
    };
    const removePublishZoneByIndex = (index) => {
@@ -137,6 +138,8 @@ const ServerAuthorContextProvider = (props) => {
       }
     }
   };
+
+
   useEffect(() => {
     // update the current options (the rest body) in the caller
     let options = {};
@@ -874,6 +877,8 @@ const ServerAuthorContextProvider = (props) => {
         setUnconfiguredAccessServices,
         currentAccessServiceId,
         setCurrentAccessServiceId,
+        currentAccessServiceName, 
+        setCurrentAccessServiceName,
         currentAccessServiceOptions,
         setCurrentAccessServiceOptions,
         operationForAccessServices,
@@ -883,7 +888,7 @@ const ServerAuthorContextProvider = (props) => {
         // Access service options
         // supported zones
         supportedZoneNames,
-        setSupportedZones,
+        setSupportedZoneNames,
         addSupportedZoneName,
         removeSupportedZoneByIndex,
         // default zones
@@ -893,7 +898,7 @@ const ServerAuthorContextProvider = (props) => {
         removeDefaultZoneByIndex,
         // publish zones
         publishZoneNames,
-        setPublishZones,
+        setPublishZoneNames,
         addPublishZoneName,
         removePublishZoneByIndex,
         // Karma Point Plateau
