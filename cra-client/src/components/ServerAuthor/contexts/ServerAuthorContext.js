@@ -165,6 +165,7 @@ const ServerAuthorContextProvider = (props) => {
     if (!Object.keys(options).length) {
       options = undefined;
     }
+    setCurrentAccessServiceOptions(options);
   }, [supportedZoneNames, publishZoneNames, defaultZoneNames, karmaPointPlateau, karmaPointIncrement, glossaryTermLineageEventsChunkSize]);
 
   // view services 
@@ -250,6 +251,8 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerConfig(null);
     // can/should we clear refs ???
     setNewServerName("");
+    setNewServerLocalServerType(undefined);
+    setServerTypeDescription(undefined);
     setNewServerLocalURLRoot("https://localhost:9443");
     setNewPlatformName("");
     setNewServerOrganizationName(user ? user.organizationName || "" : "");
@@ -973,7 +976,6 @@ const ServerAuthorContextProvider = (props) => {
         retrieveAllServers,
         fetchServerConfig,
         generateBasicServerConfig,
-        // configureAccessServices,
         registerCohort,
         unRegisterCohort,
         configureArchiveFile,

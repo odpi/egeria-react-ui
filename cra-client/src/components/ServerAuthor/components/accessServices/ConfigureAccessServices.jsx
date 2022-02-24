@@ -76,16 +76,6 @@ export default function ConfigureAccessServices() {
 
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
 
-  // useEffect(() => {
-  //   const isNoOptionOMAS = (id) => {
-  //     let allOptionedOMASArray =
-  //       supportedZoneOMASArray.concat(allZonesOMASArray);
-  //     allOptionedOMASArray.push("community-profile");
-  //     allOptionedOMASArray.push("asset-lineage");
-  //     setAllOptionedOMASes(allOptionedOMASArray);
-  //   };
-  // }, []);
-
   useEffect(() => {
     let accessServiceDefinition;
     let availableAccessServices = [];
@@ -247,6 +237,7 @@ export default function ConfigureAccessServices() {
   };
   const onCancelOperationForAccessServices = () => {
     setOperationForAccessServices(undefined);
+    resetAccessServiceProperties();
   };
 
   const onCurrentOptionsChanged = (options) => {
@@ -254,6 +245,7 @@ export default function ConfigureAccessServices() {
   };
 
   const issueAddAll = () => {
+    console.log("issueAddAll ");
     if (showAllAccessServices) {
       const addAccessServiceURL = encodeURI(
         "/servers/" +
@@ -265,7 +257,6 @@ export default function ConfigureAccessServices() {
           "/access-services"
       );
       setOperationForAccessServices(undefined);
-      console.log("addAccessServiceURL " + addAccessServiceURL);
       setLoadingText("Adding all access services");
       issueRestCreate(
         addAccessServiceURL,
@@ -289,7 +280,6 @@ export default function ConfigureAccessServices() {
           currentAccessServiceId
       );
       setOperationForAccessServices(undefined);
-      console.log("addAccessServiceURL " + addAccessServiceURL);
       setLoadingText("Adding access service");
       issueRestCreate(
         addAccessServiceURL,
@@ -315,7 +305,8 @@ export default function ConfigureAccessServices() {
     );
     console.log("editAccessServiceURL " + editAccessServiceURL);
     setLoadingText("Editing audit log destination");
-    issueRestUpdate(
+    // the post does an update 
+    issueRestCreate(
       editAccessServiceURL,
       currentAccessServiceOptions,
       onSuccessfulEditAccessService,
@@ -323,12 +314,17 @@ export default function ConfigureAccessServices() {
       "omagServerConfig"
     );
   };
+  const resetAccessServiceProperties = () => {
+    setLoadingText("Refreshing access services ");
+    document.getElementById("loading-container").style.display = "none";
+    setOperationForAccessServices(undefined);
+    setCurrentAccessServiceOptions(undefined);
+    setCurrentAccessServiceId(undefined);
+  };
 
   const onSuccessfulAddAccessService = () => {
     console.log("onSuccessfulAddAccessService entry");
-    document.getElementById("loading-container").style.display = "none";
-    setLoadingText("Refreshing access services ");
-    setOperationForAccessServices(undefined);
+    // resetAccessServiceProperties();
     setShowAllAccessServices(false);
 
     // retrieveAllServers
@@ -336,24 +332,20 @@ export default function ConfigureAccessServices() {
   };
   const onSuccessfulEditAccessService = () => {
     console.log("onSuccessfulEditAccessService ");
-    document.getElementById("loading-container").style.display = "none";
-    setLoadingText("Refreshing access services ");
+   
+    // resetAccessServiceProperties();
     fetchServerConfig(refreshCurrentAccessServices, onErrorAccessServices);
   };
 
   const onSuccessfulRemoveAll = () => {
-    // setCurrentAccessServiceName(undefined);
-    // setCurrentAccessServiceDescription(undefined);
-    setCurrentAccessServiceId(undefined);
-    setCurrentAccessServiceOptions(undefined);
     setSelectedAccessServices([]);
-    document.getElementById("loading-container").style.display = "none";
+    fetchServerConfig(refreshCurrentAccessServices, onErrorAccessServices);
   };
 
   const onSuccessfulRemove = (e) => {
     console.log("onSuccessfulRemove");
     // Fetch Server Config
-    setLoadingText("Refreshing access services ");
+    // resetAccessServiceProperties();
     fetchServerConfig(refreshCurrentAccessServices, onErrorAccessServices);
   };
 
@@ -361,6 +353,7 @@ export default function ConfigureAccessServices() {
     console.log("refreshCurrentAccessServices");
     console.log(response);
     let refreshedAccessServices = [];
+    resetAccessServiceProperties();
     const config = response.omagServerConfig;
     if (config) {
       const accessServicesFromServer = config.accessServicesConfig;
@@ -388,7 +381,7 @@ export default function ConfigureAccessServices() {
   const onErrorAccessServices = (err) => {
     console.log("onErrorAccessServices");
     console.log(err);
-    document.getElementById("loading-container").style.display = "none";
+    resetAccessServiceProperties();
     alert("Error occurred configuring access services");
   };
 
@@ -420,14 +413,6 @@ export default function ConfigureAccessServices() {
             operationForAccessServices={operationForAccessServices}
          
           ></AllOptions>
-          <fieldset className="bx--fieldset left-text-bottom-margin-32">
-            <button onClick={(e) => onCancelOperationForAccessServices()}>
-              Cancel Add All
-            </button>
-            <button onClick={(e) => onFinishedOperationForAccessServices()}>
-              Issue Add All services with the following options
-            </button>
-          </fieldset>
         </div>
       )}
 
@@ -448,8 +433,6 @@ export default function ConfigureAccessServices() {
                     <SelectItem
                       text="Choose an access service"
                       value="placeholder-item"
-                      disabled
-                      hidden
                     />
                     {unconfiguredAccessServices.map((service) => (
                       <SelectItem
@@ -554,7 +537,6 @@ export default function ConfigureAccessServices() {
                                     : -1
                                 }
                                 renderIcon={Edit16}
-                                disabled // for now
                                 onClick={() => {
                                   onClickEditBatchAction(selectedRows);
                                 }}
@@ -655,7 +637,6 @@ export default function ConfigureAccessServices() {
                                     <OverflowMenu flipped>
                                       <OverflowMenuItem
                                         id="edit-audit-log-overflow"
-                                        disabled   // disable for now
                                         itemText="Edit"
                                         onClick={onClickEditOverflow([row])}
                                       />
