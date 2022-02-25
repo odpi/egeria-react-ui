@@ -42,6 +42,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
           kind="tertiary"
           style={{margin: "16px auto"}}
           onClick={(e) => onCancelConfiguration()}
+          // onClick={hideConfigForm}
         >
           Cancel Configuration
         </Button>

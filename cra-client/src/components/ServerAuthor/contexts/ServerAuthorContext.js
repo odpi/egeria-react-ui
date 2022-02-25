@@ -251,8 +251,8 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerConfig(null);
     // can/should we clear refs ???
     setNewServerName("");
-    setNewServerLocalServerType(undefined);
-    setServerTypeDescription(undefined);
+    // setNewServerLocalServerType(undefined);
+    // setServerTypeDescription(undefined);
     setNewServerLocalURLRoot("https://localhost:9443");
     setNewPlatformName("");
     setNewServerOrganizationName(user ? user.organizationName || "" : "");

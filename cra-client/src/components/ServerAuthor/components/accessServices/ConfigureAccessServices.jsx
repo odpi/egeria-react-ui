@@ -324,7 +324,7 @@ export default function ConfigureAccessServices() {
 
   const onSuccessfulAddAccessService = () => {
     console.log("onSuccessfulAddAccessService entry");
-    // resetAccessServiceProperties();
+    resetAccessServiceProperties();
     setShowAllAccessServices(false);
 
     // retrieveAllServers
@@ -333,7 +333,7 @@ export default function ConfigureAccessServices() {
   const onSuccessfulEditAccessService = () => {
     console.log("onSuccessfulEditAccessService ");
    
-    // resetAccessServiceProperties();
+    resetAccessServiceProperties();
     fetchServerConfig(refreshCurrentAccessServices, onErrorAccessServices);
   };
 
@@ -345,7 +345,7 @@ export default function ConfigureAccessServices() {
   const onSuccessfulRemove = (e) => {
     console.log("onSuccessfulRemove");
     // Fetch Server Config
-    // resetAccessServiceProperties();
+    resetAccessServiceProperties();
     fetchServerConfig(refreshCurrentAccessServices, onErrorAccessServices);
   };
 
