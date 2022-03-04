@@ -90,7 +90,7 @@ export default function ServerAuthorWizard() {
 
   const displayHelpForServerTypes = () => {
     window.open(
-      "https://odpi.github.io/egeria-docs/concepts/omag-server/?h=omag+server+types",
+      "https://egeria-project.org/concepts/omag-server/?h=omag+server+types",
       "_blank"
     );
   };
