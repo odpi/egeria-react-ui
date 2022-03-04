@@ -1,9 +1,9 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 <!-- Copyright Contributors to the ODPi Egeria project. -->
 
-# Egeria React UI 
+# Egeria Ecosystem UI (React UI) 
 
-The Egeria React UI is a multitenanted user interface with eco-system and solution capabilities. It's documentation is [https://odpi.github.io/egeria-docs/user-interfaces/react/](https://odpi.github.io/egeria-docs/user-interfaces/react/)
+The Egeria Ecosystem UI is a multitenanted user interface with eco-system and solution capabilities for use by the governance team. It's documentation is [https://egeria-project.org/user-interfaces/ecosystem/](https://egeria-project.org/user-interfaces/ecosystem/)
 
 Contributors see the [Contributor Guide](docs/contributors/contributorguide.md).
 
