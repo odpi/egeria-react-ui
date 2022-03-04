@@ -80,7 +80,7 @@ export default function SearchWizard(props) {
               <SelectItem text="Category" value="category" />
               <SelectItem
                 text="Subject Area"
-                value="subjectareadefintiion"
+                value="subjectareadefinition"
                 disabled
               />
             </SelectItemGroup>

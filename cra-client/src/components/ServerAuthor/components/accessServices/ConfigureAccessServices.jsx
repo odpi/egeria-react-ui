@@ -70,6 +70,12 @@ export default function ConfigureAccessServices() {
     setCurrentAccessServiceOptions,
     operationForAccessServices,
     setOperationForAccessServices,
+    setSupportedZoneNames,
+    setDefaultZoneNames,
+    setPublishZoneNames,
+    setKarmaPointPlateau,
+    setKarmaPointIncrement,
+    setGlossaryTermLineageEventsChunkSize,
     showAllAccessServices,
     setShowAllAccessServices,
   } = useContext(ServerAuthorContext);
@@ -99,14 +105,15 @@ export default function ConfigureAccessServices() {
             " in the available access services"
         );
       } else {
-        let isCurrentAccessService = false;
+        // let isCurrentAccessService = false;
         for (let j = 0; j < currentAccessServices.length; j++) {
           const currentAccessService = currentAccessServices[j];
           if (
             currentAccessServiceId === currentAccessService.serviceURLMarker
           ) {
             // indicate this access service already is associated with the server so copy in its options
-            isCurrentAccessService = true;
+            // isCurrentAccessService = true;
+            setCurrentAccessServiceOptions(currentAccessService.accessServiceOptions)
           }
         }
       }
@@ -115,6 +122,13 @@ export default function ConfigureAccessServices() {
 
   useEffect(() => {
     if (showAllAccessServices && operationForAccessServices !== "Add All") {
+      setCurrentAccessServiceOptions(undefined);
+      setSupportedZoneNames([]);
+      setDefaultZoneNames([]);
+      setPublishZoneNames([]);
+      setKarmaPointPlateau(undefined);
+      setKarmaPointIncrement(undefined);
+      setGlossaryTermLineageEventsChunkSize(undefined);
       setOperationForAccessServices("Add All");
     }
     if (!showAllAccessServices && operationForAccessServices === "Add All") {
@@ -212,6 +226,7 @@ export default function ConfigureAccessServices() {
 
   const editAction = (id) => {
     setCurrentAccessServiceId(id);
+    setCurrentAccessServiceOptions(undefined);
     setOperationForAccessServices("Edit");
     setShowAllAccessServices(false);
     currentAccessServices.forEach((service) => {
@@ -237,6 +252,7 @@ export default function ConfigureAccessServices() {
   };
   const onCancelOperationForAccessServices = () => {
     setOperationForAccessServices(undefined);
+    setCurrentAccessServiceOptions(undefined);
     resetAccessServiceProperties();
   };
 

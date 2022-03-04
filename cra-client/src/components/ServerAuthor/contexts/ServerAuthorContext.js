@@ -21,6 +21,7 @@ import {
   issueRestGet,
   issueRestDelete,
 } from "../../common/RestCaller";
+import { set } from "date-fns";
 
 export const ServerAuthorContext = createContext();
 export const ServerAuthorContextConsumer = ServerAuthorContext.Consumer;
@@ -144,7 +145,7 @@ const ServerAuthorContextProvider = (props) => {
     // update the current options (the rest body) in the caller
     let options = {};
     if (defaultZoneNames !== undefined && defaultZoneNames.length > 0) {
-      options.defaultZoneNames = defaultZoneNames;
+      options.DefaultZones = defaultZoneNames;
     }
     if (supportedZoneNames !== undefined && supportedZoneNames.length > 0) {
       options.SupportedZones = supportedZoneNames;
@@ -243,6 +244,17 @@ const ServerAuthorContextProvider = (props) => {
   useEffect(() => {
     retrieveAllServers();
   }, []);
+  // is this changes clear out the access service specific details
+  useEffect(() => {
+      if (showAllAccessServices){
+        setCurrentAccessServiceId(undefined);
+        setCurrentAccessServiceName(undefined);
+        setCurrentAccessServiceOptions(undefined);
+      }
+  }, [showAllAccessServices]);
+
+
+
   /**
    * Clear out all the context so the new server type doe not pick up old values in the wizard.
    * Leave NewServerLocalServerType
@@ -251,8 +263,6 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerConfig(null);
     // can/should we clear refs ???
     setNewServerName("");
-    // setNewServerLocalServerType(undefined);
-    // setServerTypeDescription(undefined);
     setNewServerLocalURLRoot("https://localhost:9443");
     setNewPlatformName("");
     setNewServerOrganizationName(user ? user.organizationName || "" : "");

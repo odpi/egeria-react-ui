@@ -81,9 +81,12 @@ export default function ServerAuthorWizard() {
     configureRepositoryEventMapperConnector,
     configureViewServices,
     serverConfigurationSteps,
+    // setServerTypeDescription,
+    // serverTypeDescription
   } = useContext(ServerAuthorContext);
 
   const [serverTypeDescription, setServerTypeDescription] = useState();
+
 
   const displayHelpForServerTypes = () => {
     window.open(
