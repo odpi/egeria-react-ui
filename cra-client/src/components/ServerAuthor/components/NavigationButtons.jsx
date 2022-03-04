@@ -15,6 +15,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
     progressIndicatorIndex,
     serverConfigurationSteps,
     hideConfigForm,
+    cleanForNewServerType
   } = useContext(ServerAuthorContext);
 
   const steps = serverConfigurationSteps(newServerLocalServerType);
@@ -23,6 +24,12 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
     const id = steps[index];
     const serverTypeElement = serverConfigElements.find(o => o.id === id); 
     return serverTypeElement.label;
+  };
+  const onCancelConfiguration = () => {
+    hideConfigForm();
+    cleanForNewServerType();
+
+
   };
 
   // First step
@@ -34,7 +41,8 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
         <Button
           kind="tertiary"
           style={{margin: "16px auto"}}
-          onClick={hideConfigForm}
+          onClick={(e) => onCancelConfiguration()}
+          // onClick={hideConfigForm}
         >
           Cancel Configuration
         </Button>

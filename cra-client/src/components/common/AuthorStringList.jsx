@@ -52,7 +52,7 @@ export default function AuthorStringList(props) {
         </Button>
       </div>
       <ul style={{ marginBottom: "32px" }}>
-        {props.stringValues.map((stringValue, i) => (
+        {props.stringValues !== undefined && props.stringValues.map((stringValue, i) => (
           <li key={`string-value-${i}`} style={{ display: "flex" }}>
             <Button
               hasIconOnly
