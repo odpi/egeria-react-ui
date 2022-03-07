@@ -65,7 +65,7 @@ const ServerAuthorContextProvider = (props) => {
   // Active Platforms by name
   const [activePlatforms, setActivePlatforms] = useState();
   // const [activePlatform, setActivePlatform] = useState();
- 
+
   // Cohorts
   const [newServerCohorts, setNewServerCohorts] = useState([]);
   const [registerCohortName, setRegisterCohortName] = useState();
@@ -77,16 +77,20 @@ const ServerAuthorContextProvider = (props) => {
   const [newServerEventMapperConnector, setNewServerEventMapperConnector] =
     useState("");
   const [newServerEventSource, setNewServerEventSource] = useState("");
-   // access services 
-   const [availableAccessServices, setAvailableAccessServices] = useState();
-   const [currentAccessServices, setCurrentAccessServices] = useState([]);
-   const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState([]);
+  // access services
+  const [availableAccessServices, setAvailableAccessServices] = useState();
+  const [currentAccessServices, setCurrentAccessServices] = useState([]);
+  const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState(
+    []
+  );
 
-   const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
-   const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
-   const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
-   const [operationForAccessServices, setOperationForAccessServices] = useState();
-   const [showAllAccessServices, setShowAllAccessServices] = useState(true);
+  const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
+  const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
+  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] =
+    useState();
+  const [operationForAccessServices, setOperationForAccessServices] =
+    useState();
+  const [showAllAccessServices, setShowAllAccessServices] = useState(true);
 
   // access services supported options
 
@@ -101,17 +105,24 @@ const ServerAuthorContextProvider = (props) => {
   // Karma Point Increment
   const [karmaPointIncrement, setKarmaPointIncrement] = useState();
   // chunk
-  const [glossaryTermLineageEventsChunkSize, setGlossaryTermLineageEventsChunkSize] = useState();
+  const [
+    glossaryTermLineageEventsChunkSize,
+    setGlossaryTermLineageEventsChunkSize,
+  ] = useState();
 
-   const addSupportedZoneName = (zoneName) => {
+  const addSupportedZoneName = (zoneName) => {
     if (zoneName !== undefined && zoneName !== "") {
       setSupportedZoneNames([...supportedZoneNames, zoneName]);
     }
-   };
-   const removeSupportedZoneByIndex = (index) => {
+  };
+  const removeSupportedZoneByIndex = (index) => {
     if (index !== undefined && index !== "") {
       if (index > -1) {
-        setSupportedZoneNames([...supportedZoneNames].splice(index, 1));
+          setSupportedZoneNames(
+            [
+              ...supportedZoneNames.slice(0, index),
+              ...supportedZoneNames.slice(index + 1)
+            ]);
       }
     }
   };
@@ -119,11 +130,15 @@ const ServerAuthorContextProvider = (props) => {
     if (zoneName !== undefined && zoneName !== "") {
       setDefaultZoneNames([...defaultZoneNames, zoneName]);
     }
-   };
-   const removeDefaultZoneByIndex = (index) => {
+  };
+  const removeDefaultZoneByIndex = (index) => {
     if (index !== undefined && index !== "") {
       if (index > -1) {
-        setDefaultZoneNames([...defaultZoneNames].splice(index, 1));
+          setDefaultZoneNames(
+          [
+            ...defaultZoneNames.slice(0, index),
+            ...defaultZoneNames.slice(index + 1)
+          ]);
       }
     }
   };
@@ -131,15 +146,18 @@ const ServerAuthorContextProvider = (props) => {
     if (zoneName !== undefined && zoneName !== "") {
       setPublishZoneNames([...publishZoneNames, zoneName]);
     }
-   };
-   const removePublishZoneByIndex = (index) => {
+  };
+  const removePublishZoneByIndex = (index) => {
     if (index !== undefined && index !== "") {
       if (index > -1) {
-        setPublishZoneNames([...publishZoneNames].splice(index, 1));
+          setPublishZoneNames(
+            [
+              ...publishZoneNames.slice(0, index),
+              ...publishZoneNames.slice(index + 1)
+            ]);
       }
     }
   };
-
 
   useEffect(() => {
     // update the current options (the rest body) in the caller
@@ -160,16 +178,24 @@ const ServerAuthorContextProvider = (props) => {
       options.karmaPointIncrement = karmaPointIncrement;
     }
     if (glossaryTermLineageEventsChunkSize !== undefined) {
-      options.glossaryTermLineageEventsChunkSize = glossaryTermLineageEventsChunkSize;
+      options.glossaryTermLineageEventsChunkSize =
+        glossaryTermLineageEventsChunkSize;
     }
 
     if (!Object.keys(options).length) {
       options = undefined;
     }
     setCurrentAccessServiceOptions(options);
-  }, [supportedZoneNames, publishZoneNames, defaultZoneNames, karmaPointPlateau, karmaPointIncrement, glossaryTermLineageEventsChunkSize]);
+  }, [
+    supportedZoneNames,
+    publishZoneNames,
+    defaultZoneNames,
+    karmaPointPlateau,
+    karmaPointIncrement,
+    glossaryTermLineageEventsChunkSize,
+  ]);
 
-  // view services 
+  // view services
   const [availableViewServices, setAvailableViewServices] = useState();
   const [currentViewServices, setCurrentViewServices] = useState([]);
   // engine services
@@ -186,9 +212,10 @@ const ServerAuthorContextProvider = (props) => {
 
   // Integration Services
   const [availableIntegrationServices, setAvailableIntegrationServices] =
-  useState();
-  const [currentIntegrationServices, setCurrentIntegrationServices] =
-    useState([]);
+    useState();
+  const [currentIntegrationServices, setCurrentIntegrationServices] = useState(
+    []
+  );
   const [
     newServerIntegrationServiceRemoteServerName,
     setNewServerIntegrationServiceRemoteServerName,
@@ -246,14 +273,12 @@ const ServerAuthorContextProvider = (props) => {
   }, []);
   // is this changes clear out the access service specific details
   useEffect(() => {
-      if (showAllAccessServices){
-        setCurrentAccessServiceId(undefined);
-        setCurrentAccessServiceName(undefined);
-        setCurrentAccessServiceOptions(undefined);
-      }
+    if (showAllAccessServices) {
+      setCurrentAccessServiceId(undefined);
+      setCurrentAccessServiceName(undefined);
+      setCurrentAccessServiceOptions(undefined);
+    }
   }, [showAllAccessServices]);
-
-
 
   /**
    * Clear out all the context so the new server type doe not pick up old values in the wizard.
@@ -271,26 +296,25 @@ const ServerAuthorContextProvider = (props) => {
     setNewServerSecurityConnector("");
     setNewServerRepository("in-memory-repository");
     setNewServerMaxPageSize(1000);
-    
+
     // Audit log destinations
     setCurrentServerAuditDestinations([]);
-    
+
     // Cohorts
     setNewServerCohorts([]);
     setRegisterCohortName("");
     setUnregisterCohortName("");
-    
+
     // Archives
     setNewServerOMArchives([]);
-    
+
     // Proxy
     setNewServerProxyConnector("");
     setNewServerEventMapperConnector("");
     setNewServerEventSource("");
- 
+
     // access services
-    setCurrentAccessServices([]),
-    setCurrentAccessServices(undefined);
+    setCurrentAccessServices([]), setCurrentAccessServices(undefined);
     setCurrentAccessServiceId(undefined);
     setCurrentAccessServiceOptions(undefined);
     setOperationForAccessServices(undefined);
@@ -834,8 +858,8 @@ const ServerAuthorContextProvider = (props) => {
       el.style.display = "none";
     document.getElementById("server-type-container").style.display = "block";
     setProgressIndicatorIndex(0);
-    // get the servers again 
-    retrieveAllServers(); 
+    // get the servers again
+    retrieveAllServers();
   };
 
   return (
@@ -890,7 +914,7 @@ const ServerAuthorContextProvider = (props) => {
         setUnconfiguredAccessServices,
         currentAccessServiceId,
         setCurrentAccessServiceId,
-        currentAccessServiceName, 
+        currentAccessServiceName,
         setCurrentAccessServiceName,
         currentAccessServiceOptions,
         setCurrentAccessServiceOptions,
