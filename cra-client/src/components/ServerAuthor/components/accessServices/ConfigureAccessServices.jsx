@@ -44,11 +44,12 @@ export default function ConfigureAccessServices() {
   ];
   // list of all the omas identifiers that published supported and default zones.
   const allZonesOMASArray = [
-    "data-manager",
     "asset-owner",
     "data-engine",
+    "asset-manager",
+    "data-manager",
     "data-platform",
-    "digital-architect",
+    "digital-architecture",
     "digital-service",
     "discovery-engine",
     "govenance-engine",
@@ -113,7 +114,8 @@ export default function ConfigureAccessServices() {
           ) {
             // indicate this access service already is associated with the server so copy in its options
             // isCurrentAccessService = true;
-            setCurrentAccessServiceOptions(currentAccessService.accessServiceOptions)
+            setCurrentAccessServiceOptions(currentAccessService.accessServiceOptions);
+            setCurrentAccessServiceName(currentAccessService.accessServiceFullName);
           }
         }
       }
@@ -123,6 +125,7 @@ export default function ConfigureAccessServices() {
   useEffect(() => {
     if (showAllAccessServices && operationForAccessServices !== "Add All") {
       setCurrentAccessServiceOptions(undefined);
+      setCurrentAccessServiceName(undefined);
       setSupportedZoneNames([]);
       setDefaultZoneNames([]);
       setPublishZoneNames([]);
@@ -152,6 +155,7 @@ export default function ConfigureAccessServices() {
     // setCurrentAccessServiceDescription(undefined);
     setCurrentAccessServiceId(undefined);
     setCurrentAccessServiceOptions(undefined);
+    setCurrentAccessServiceName(undefined);
     setOperationForAccessServices("Add");
   };
 
@@ -232,6 +236,7 @@ export default function ConfigureAccessServices() {
     currentAccessServices.forEach((service) => {
       if (service.id === id) {
         setCurrentAccessServiceOptions(service.options);
+        setCurrentAccessServiceName(service.accessServiceFullName);
         let options = "nothing";
         if (service.options) {
           options = JSON.stringify(service.options);
@@ -461,8 +466,12 @@ export default function ConfigureAccessServices() {
                   </Select>
                 </div>
               )}
-              {operationForAccessServices === "Edit" && <h4>Edit {currentAccessServiceName} Access Service</h4>}
-
+              {operationForAccessServices === "Edit" && 
+              <div>
+                <h4>Edit {currentAccessServiceName} Access Service</h4>
+            
+              </div>}
+            
               {currentAccessServiceId === "community-profile" && (
                 <CommunityProfileOptions
                   onCurrentOptionsChanged={onCurrentOptionsChanged}
