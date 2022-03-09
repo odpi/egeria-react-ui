@@ -7,7 +7,7 @@ import AuthorStringList from "../../common/AuthorStringList";
 
 export default function RegisterCohorts() {
   const {
-    newServerCohorts, setNewServerCohorts,
+    currentServerCohorts, setCurrentServerCohorts,
     registerCohortName, setRegisterCohortName,
     unregisterCohortName, setUnregisterCohortName,
     // calls to server
@@ -42,12 +42,12 @@ export default function RegisterCohorts() {
   };
   const handleRemoveCohort = (index) => {
     console.log("handleRemoveCohort() called", { index });
-    const cohortName = newServerCohorts[index];
+    const cohortName = currentServerCohorts[index];
     setUnregisterCohortName(cohortName);
   };
 
   const onSuccessfulRegisterCohort = () => {
-    setNewServerCohorts(newServerCohorts.concat(registerCohortName));
+    setCurrentServerCohorts(currentServerCohorts.concat(registerCohortName));
     document.getElementById("cohort-new-string-value").value = "";
   };
   const onErrorRegisterCohort = (error) => {
@@ -58,9 +58,9 @@ export default function RegisterCohorts() {
     // const cohortName = document.activeElement.id.substring(
     //   "cohort-remove-button-".length
     // );
-    const cohortList = newServerCohorts.filter((e) => e !== unregisterCohortName);
-    // const cohortList = newServerCohorts.filter((v, i) => { return i !== index });
-    setNewServerCohorts(cohortList);
+    const cohortList = currentServerCohorts.filter((e) => e !== unregisterCohortName);
+    // const cohortList = currentServerCohorts.filter((v, i) => { return i !== index });
+    setCurrentServerCohorts(cohortList);
   };
   const onErrorUnRegisterCohort = (error) => {
     setUnregisterCohortName("");
@@ -73,7 +73,7 @@ export default function RegisterCohorts() {
       handleRemoveStringAtIndex={handleRemoveCohort}
       stringLabel={"Cohort Name"}
       idPrefix="cohort"
-      stringValues={newServerCohorts}
+      stringValues={currentServerCohorts}
     />
   );
 }

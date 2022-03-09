@@ -15,8 +15,8 @@ export default function ConfigureViewServices() {
   const {
     availableViewServices,
     setSelectedViewServices,
-    newServerViewServiceRemoteServerName, setNewServerViewServiceRemoteServerName,
-    newServerViewServiceRemoteServerURLRoot, setNewServerViewServiceRemoteServerURLRoot,
+    currentServerViewServiceRemoteServerName, setCurrentServerViewServiceRemoteServerName,
+    currentServerViewServiceRemoteServerURLRoot, setCurrentServerViewServiceRemoteServerURLRoot,
   } = useContext(ServerAuthorContext);
 
   const handleDeselectAllViewServices = () => {
@@ -52,8 +52,8 @@ export default function ConfigureViewServices() {
         name="new-server-view-service-remote-server-name"
         type="text"
         labelText="Open Metadata View Services (OMVS) Remote Server Name"
-        defaultValue={newServerViewServiceRemoteServerName}
-        onChange={e => setNewServerViewServiceRemoteServerName(e.target.value)}
+        defaultValue={currentServerViewServiceRemoteServerName}
+        onChange={e => setCurrentServerViewServiceRemoteServerName(e.target.value)}
         style={{marginBottom: "16px"}}
         autoComplete="off"
       />
@@ -63,8 +63,8 @@ export default function ConfigureViewServices() {
         name="new-server-view-service-remote-server-url-root"
         type="text"
         labelText="Open Metadata View Services (OMVS) Remote Server URL Root"
-        defaultValue={newServerViewServiceRemoteServerURLRoot}
-        onChange={e => setNewServerViewServiceRemoteServerURLRoot(e.target.value)}
+        defaultValue={currentServerViewServiceRemoteServerURLRoot}
+        onChange={e => setCurrentServerViewServiceRemoteServerURLRoot(e.target.value)}
         style={{marginBottom: "16px"}}
         autoComplete="off"
       />

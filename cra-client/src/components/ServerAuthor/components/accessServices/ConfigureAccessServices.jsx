@@ -60,7 +60,7 @@ export default function ConfigureAccessServices() {
     currentAccessServices,
     setCurrentAccessServices,
     setLoadingText,
-    newServerName,
+    currentServerName,
     fetchServerConfig,
     unconfiguredAccessServices,
     currentAccessServiceId,
@@ -166,7 +166,7 @@ export default function ConfigureAccessServices() {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/access-services"
     );
     setLoadingText("Removing all access services");
@@ -216,7 +216,7 @@ export default function ConfigureAccessServices() {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/access-services/" +
         name
     );
@@ -274,7 +274,7 @@ export default function ConfigureAccessServices() {
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/access-services"
       );
       setOperationForAccessServices(undefined);
@@ -296,7 +296,7 @@ export default function ConfigureAccessServices() {
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/access-services/" +
           currentAccessServiceId
       );
@@ -320,7 +320,7 @@ export default function ConfigureAccessServices() {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/access-services/" +
         currentAccessServiceId
     );

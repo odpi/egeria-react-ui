@@ -16,9 +16,9 @@ import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 export default function ConfigureRepositoryProxyConnectors() {
   
   const {
-    newServerProxyConnector, setNewServerProxyConnector,
-    newServerEventMapperConnector, setNewServerEventMapperConnector,
-    newServerEventSource, setNewServerEventSource,
+    currentServerProxyConnector, setCurrentServerProxyConnector,
+    currentServerEventMapperConnector, setCurrentServerEventMapperConnector,
+    currentServerEventSource, setCurrentServerEventSource,
   } = useContext(ServerAuthorContext);
 
   return (
@@ -30,8 +30,8 @@ export default function ConfigureRepositoryProxyConnectors() {
         name="new-server-proxy-connector"
         type="text"
         labelText="Open Metadata Repository Services (OMRS) Repository Connector"
-        defaultValue={newServerProxyConnector}
-        onChange={e => setNewServerProxyConnector(e.target.value)}
+        defaultValue={currentServerProxyConnector}
+        onChange={e => setCurrentServerProxyConnector(e.target.value)}
         autoComplete="off"
       />
 
@@ -40,8 +40,8 @@ export default function ConfigureRepositoryProxyConnectors() {
         name="new-server-event-mapper-connector"
         type="text"
         labelText="Open Metadata Repository Services (OMRS) Event Mapper Connector"
-        defaultValue={newServerEventMapperConnector}
-        onChange={e => setNewServerEventMapperConnector(e.target.value)}
+        defaultValue={currentServerEventMapperConnector}
+        onChange={e => setCurrentServerEventMapperConnector(e.target.value)}
         style={{marginBottom: "16px"}}
         autoComplete="off"
       />
@@ -51,8 +51,8 @@ export default function ConfigureRepositoryProxyConnectors() {
         name="new-server-event-source"
         type="text"
         labelText="Event Source"
-        defaultValue={newServerEventSource}
-        onChange={e => setNewServerEventSource(e.target.value)}
+        defaultValue={currentServerEventSource}
+        onChange={e => setCurrentServerEventSource(e.target.value)}
         style={{marginBottom: "16px"}}
         autoComplete="off"
       />
