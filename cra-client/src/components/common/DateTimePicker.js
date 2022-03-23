@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   DatePicker,
   DatePickerInput,
@@ -33,7 +33,7 @@ export default function DateTimePicker(props) {
       props.value !== undefined &&
       props.value.date !== undefined 
     ) {
-      date = props.value.date.value;
+      date = props.value.date;
     }
     dateTime.date = date;
     dateTime.time = e.currentTarget.value;
@@ -67,10 +67,17 @@ export default function DateTimePicker(props) {
     // the value needs to be the date string using the date-fns format
     if (
       props.value != undefined &&
-      props.value.date != undefined &&
-      props.value.date.value != undefined
+      props.value.date != undefined 
+      // props.value.date.value != undefined
     ) {
-      dateValue = format(props.value.date.value, "MM/dd/Y");
+      console.log("getDateValue" + JSON.stringify(props.value.date));
+      // dateValue = format(props.value.date.value, "MM/dd/Y");
+      dateValue = format(props.value.date, "MM/dd/Y");
+    }
+
+    if ( props.value != undefined){
+      console.log("props.value != undefined getDateValue" + JSON.stringify(props.value));
+
     }
     return dateValue;
   };
