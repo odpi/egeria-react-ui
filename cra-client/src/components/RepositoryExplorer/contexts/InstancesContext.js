@@ -96,10 +96,25 @@ const InstancesContextProvider = (props) => {
   const [gens, setGens] = useState([]);
   const [guidToGenId, setGuidToGenId] = useState({});
   /*
-   * As of datetime; this is an object that has a date property with a date object as its value, and a
-   * time object with a number in it representing the time in millisecond in the current day.  
-   */
+   * As of Date string 
+   */ 
+  const [asOfDateStr, setAsOfDateStr] = useState();
+
+  /*
+   * As of time string 
+   */ 
+  const [asOfTimeStr, setAsOfTimeStr] = useState();
+
+  /*
+   * As of Date  - the data part ofdate time as a date object
+   */ 
+  const [asOfDate, setAsOfDate] = useState();
+
+  /*
+   * As of date time - the date and time as a date object. 
+   */ 
   const [asOfDateTime, setAsOfDateTime] = useState();
+
  /*
    * As of datetime for queries = this is the datetime that the metadata calls to Egeria should be issues with.
    * If not specified then Rex uses the the latest content.
@@ -107,18 +122,21 @@ const InstancesContextProvider = (props) => {
    */
   const [asOfDateTimeForQueries, setAsOfDateTimeForQueries] = useState();
 
+  /**
+   * is the historical time box disabled
+   */
+  const [isTimeDisabled, setIsTimeDisabled] = useState(true);
+
+
   /*
-   * DateTime UTC string
+   * as of DateTime string
    */
 
-  const [asOfDateTimeUTCStr,setAsOfDateTimeUTCStr] = useState(); 
-    /*
-   * DateTime Local string
-   */
-
-  const [asOfDateTimeLocalStr, setAsOfDateTimeLocalStr] = useState(); 
+  const [asOfDateTimeStr, setAsOfDateTimeStr] = useState(); 
 
   const [invalidTime, setInvalidTime]  = useState(false); 
+
+  const [invalidDate, setInvalidDate]  = useState(false); 
 
   /*
    * The latestGenId is not just the length of the gens array - it indicates the id of the most recent
@@ -128,29 +146,67 @@ const InstancesContextProvider = (props) => {
   const [latestActiveGenId, setLatestActiveGenId] = useState(0);
 
   useEffect(() => {
-    if (asOfDateTime !==undefined && asOfDateTime.date !== undefined) {
-      
-      let localDateTime;
-       // convert the split object to a date
-      if (asOfDateTime.time !== undefined && !invalidTime) {
-        localDateTime = parse(asOfDateTime.time, "HH:mm", asOfDateTime.date);
+    let validatedDate;
+    if (asOfDateStr) {
+      validatedDate = format(asOfDateStr, "MM/dd/Y");
+      if (!validatedDate || !isValid(validatedDate)) {
+        setInvalidDate(true);
+        setAsOfDate(undefined);
       } else {
-        localDateTime = asOfDateTime.date;
+        setInvalidDate(false);
+        setAsOfDate(validatedDate);
       }
-      const utcDateTimeString = localDateTime.toUTCString()
-      setAsOfDateTimeUTCStr(utcDateTimeString);
-      setAsOfDateTimeLocalStr (format(localDateTime, "PPPPpppp"));
+    } else {
+      setAsOfDate(undefined);
+      setIsTimeDisabled(true);
+    }
+  }, [asOfDateStr, asOfDate, invalidDate, setIsTimeDisabled]);
+
+  useEffect(() => {
+    let validatedDateTime;
+    if (asOfDate) {
+      if (asOfTimeStr === undefined || asOfTimeStr === "") {
+        setAsOfDateTime(asOfDate);
+      } else {
+        validatedDateTime = parse(time, "HH:mm", asOfDate);
+        if (validatedDateTime) {
+            if (isValid(validatedDateTime)) {
+              setIsTimeDisabled(false);
+              setInvalidTime(false);
+              setAsOfDateTime(validatedDateTime);
+            } else {
+              setInvalidTime(true);
+              setAsOfDateTime(asOfDate);
+              setIsTimeDisabled(true);
+            }
+        } else {
+          setInvalidTime(true);
+          setAsOfDateTime(asOfDate);
+          setIsTimeDisabled(true);
+        }
+        
+      }
+    } else {
+      setAsOfDateTime(undefined);
+      setInvalidTime(true);
+      setIsTimeDisabled(true);
+    }
+  }, [asOfTimeStr, asOfDateTime, asOfDate, invalidTime]);
+
+  useEffect(() => {
+    if (asOfDateTime !== undefined) {
+      
+      setAsOfDateTimeStr (format(asOfDateTime, "PPPPpppp"));
       // set the date using the time from epoc- this should now be a UTC date with no local formatting
       // in the date object. 
 
-      setAsOfDateTimeForQueries(new Date(localDateTime.getTime())); 
+      setAsOfDateTimeForQueries(new Date(asOfDateTime.getTime())); 
     } else {
       setAsOfDateTimeForQueries(undefined);
-      setAsOfDateTimeUTCStr(undefined);
-      setAsOfDateTimeLocalStr(undefined);
+      setAsOfDateTimeStr(undefined);
     }
-    //TODO
-  }, [asOfDateTimeForQueries, asOfDateTime, asOfDateTimeUTCStr, invalidTime]);
+  
+  }, [asOfDateTimeForQueries, asOfDateTime]);
   /*
    * getLatestActiveGenId  - returns the most recent gen number that is active
    */
@@ -1415,31 +1471,42 @@ const InstancesContextProvider = (props) => {
     return historyList;
   }, [gens, guidToGenId]);
 
-  const onDateTimeChanged = (inputDateTime) => {
-    // the value is an object with date and time properties
-    console.log("onDateTimeChanged");
+  const onAsOfDateChange = (inputDate) => {
+    console.log("onDateChange");
+  
+    // let validatedDate;
+    // if (inputDate) {
+    //   validatedDate = format(props.value.date, "MM/dd/Y");
+    //   if (!validatedDate || !isValid(validatedDate)) {
+    //     setInvalidDate(true)
+    //   } else {
+    //     setInvalidDate(false)
+    //     setAsOfDate(validatedDate);
+    //   }
+    // }
+    setAsOfDateStr(inputDate);
+   
+
+  };
+  const onAsOfTimeChange = (inputTime) => {
+    console.log("onTimeChange");
   
     let validatedTime;
-    if (inputDateTime !== undefined) {
-      let time = inputDateTime.time;
-      let date = inputDateTime.date;
-      // TODO do we need to validate the date?
-      // TODO validation error message
+    if (inputTime !== undefined) {
+    
       if (time) {
-         validatedTime = parse(time, "HH:mm", date);
+         validatedTime = parse(time, "HH:mm", asOfDate);
          if (!validatedTime  || !isValid(validatedTime)) {
-            setInvalidTime(true)
+            setInvalidTime(true);
         } else {
-          setInvalidTime(false)
+          setInvalidTime(false);
+          setAsOfTime(validatedTime);
         }
       } else {
-        if (time ==="") {
-          inputDateTime.time = undefined;
-        }
-        setInvalidTime(false)
+        setInvalidTime(false);
       }
     }
-    setAsOfDateTime(inputDateTime);
+    setAsOfTimeStr(inputTime);
   };
 
   return (
@@ -1449,11 +1516,13 @@ const InstancesContextProvider = (props) => {
         guidToGenId,
         focus,
         latestActiveGenId,
-        asOfDateTime,
+        asOfDateStr,
+        asOfTimeStr,
         asOfDateTimeForQueries,
-        asOfDateTimeUTCStr,
-        asOfDateTimeLocalStr,
+        asOfDateTimeStr,
         invalidTime,
+        invalidDate,
+        isTimeDisabled,
         setGuidToGenId,
         setFocus,
         getFocusGUID,
@@ -1480,7 +1549,8 @@ const InstancesContextProvider = (props) => {
         getLatestActiveGenId,
         removeGen,
         getLatestGen,
-        onDateTimeChanged
+        onAsOfDateChange,
+        onAsOfTimeChange
 
       }}
     >

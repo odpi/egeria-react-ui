@@ -14,17 +14,6 @@ import "./instance-retriever.scss";
 export default function HistoricalDateTime() {
   const instancesContext = useContext(InstancesContext);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const onDateTimeChange = (dateTime) => {
-    console.log("onDateTimeChange");
-    if (dateTime === undefined) {
-      console.log("dateTime === undefined");
-    } else {
-      console.log(JSON.stringify(dateTime));
-    }
-  
-    instancesContext.onDateTimeChanged(dateTime);
-  };
   const onErrorMessage = (msg) => {
     setErrorMessage(msg);
   };
@@ -36,8 +25,13 @@ export default function HistoricalDateTime() {
           <DateTimePicker
             dateLabel="As of Date"
             timeLabel="As of Time"
-            onDateTimeChange={onDateTimeChange}
-            value={instancesContext.asOfDateTime}
+            onDateChange={instancesContext.onAsOfDateChange}
+            onTimeChange={instancesContext.onAsOfTimeChange}
+            dateValue={instancesContext.asOfDateStr}
+            timeValue={instancesContext.asOfTimeStr}
+            invalidTime={instancesContext.invalidTime}
+            invalidDate={instancesContext.invalidDate}
+            isTimeDisabled={instancesContext.isTimeDisabled}
             onDateTimeMessage={onErrorMessage}
           />
           {errorMessage}

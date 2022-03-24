@@ -61,45 +61,47 @@ export default function DateTimePicker(props) {
     }
     return invalidText;
   };
-  const getDateValue = () => {
-    let dateValue = undefined;
+  // const getDateValue = () => {
+  //   let dateValue = undefined;
 
-    // the value needs to be the date string using the date-fns format
-    if (
-      props.value != undefined &&
-      props.value.date != undefined 
-      // props.value.date.value != undefined
-    ) {
-      console.log("getDateValue" + JSON.stringify(props.value.date));
-      // dateValue = format(props.value.date.value, "MM/dd/Y");
-      dateValue = format(props.value.date, "MM/dd/Y");
-    }
+  //   // the value needs to be the date string using the date-fns format
+  //   if (
+  //     props.value != undefined &&
+  //     props.value.date != undefined 
+  //     // props.value.date.value != undefined
+  //   ) {
+  //     console.log("getDateValue" + JSON.stringify(props.value.date));
+  //     // dateValue = format(props.value.date.value, "MM/dd/Y");
+  //     dateValue = format(props.value.date, "MM/dd/Y");
+  //   }
 
-    if ( props.value != undefined){
-      console.log("props.value != undefined getDateValue" + JSON.stringify(props.value));
+  //   if ( props.value != undefined){
+  //     console.log("props.value != undefined getDateValue" + JSON.stringify(props.value));
 
-    }
-    return dateValue;
-  };
+  //   }
+  //   return dateValue;
+  // };
 
-  const getDateInvalid = () => {
-    let invalid = false;
-    if (
-      props.value != undefined &&
-      props.value.date != undefined &&
-      props.value.date.invalid != undefined
-    ) {
-      invalid = props.value.date.invalid;
-    }
-    return invalid;
-  };
-  const getDateInvalidText = () => {
-    let invalidText = false;
-    if (props.value != undefined && props.value.date != undefined) {
-      invalidText = props.value.date.invalidText;
-    }
-    return invalidText;
-  };
+
+
+  // const getDateInvalid = () => {
+  //   let invalid = false;
+  //   if (
+  //     props.value != undefined &&
+  //     props.value.date != undefined &&
+  //     props.value.date.invalid != undefined
+  //   ) {
+  //     invalid = props.value.date.invalid;
+  //   }
+  //   return invalid;
+  // };
+  // const getDateInvalidText = () => {
+  //   let invalidText = false;
+  //   if (props.value != undefined && props.value.date != undefined) {
+  //     invalidText = props.value.date.invalidText;
+  //   }
+  //   return invalidText;
+  // };
 
   const getDateFormat = () => {
     // TODO localise
@@ -113,9 +115,22 @@ export default function DateTimePicker(props) {
    * It is meaningless to have a time without a date, so dont let the user input a time until there is a date.
    * @returns boolean time is disabled.
    */
-  const isTimeDisabled = () => {
-    return !getDateValue();
-  };
+  // const isTimeDisabled = () => {
+  //   return !getDateValue();
+  // };
+
+
+//   <DateTimePicker
+//   dateLabel="As of Date"
+//   timeLabel="As of Time"
+//   onDateChange={instancesContext.onAsOfDateChange}
+//   onTimeChange={instancesContext.onAsOfTimeChange}
+//   dateValue={instancesContext.asOfDateStr}
+//   timeValue={instancesContext.asOfTimeStr}
+//   invalidTime={instancesContext.invalidTime}
+//   invalidDate={instancesContext.invalidDate}
+//   onDateTimeMessage={onErrorMessage}
+// />
 
   return (
     <div className="flexcontainer">
@@ -123,14 +138,14 @@ export default function DateTimePicker(props) {
         <DatePicker
           dateFormat={getDateFormat()}
           datePickerType="single"
-          onChange={onDateChange}
+          onChange={props.onDateChange}
         >
           <DatePickerInput
             placeholder={getDateFormatPlaceHolder()}
             labelText={props.dateLabel}
-            value={getDateValue()}
-            invalid={getDateInvalid()}
-            invalidText={getDateInvalidText()}
+            value={props.dateValue}
+            invalid={props.invalidDate}
+            invalidText={"Invalid Dates are not accepted"}
             type="text"
           />
         </DatePicker>
@@ -141,16 +156,16 @@ export default function DateTimePicker(props) {
             {props.timeLabel}
           </label>
           <TextInput
-            disabled={isTimeDisabled()}
+            disabled={props.isTimeDisabled}
             id={props.timeLabel}
-            value={getTimeValue()}
-            invalid={getTimeInvalid()}
-            invalidText={getTimeInvalidText()}
+            value={props.timeValue}
+            invalid={props.invalidTime}
+            invalidText= "A valid time value is required, of the form hh:mm"
             label={props.timeLabel}
             //   pattern="(0[0123]|[1-9]):[0-5][0-9](\\s)?"
-            placeholder="hh:mm (UTC)"
+            placeholder="hh:mm"
             maxLength="5"
-            onChange={onTimeChange}
+            onChange={props.onTimeChange}
           />
         </div>
       </div>
