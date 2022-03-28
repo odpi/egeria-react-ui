@@ -7,9 +7,7 @@ import PropTypes from "prop-types";
 
 import { RepositoryServerContext } from "./RepositoryServerContext";
 
-import { parse, format } from "date-fns";
-
-import isValid from 'date-fns/isValid'
+import { parse, format, parseISO, isValid } from "date-fns";
 
 /*
  * The InstancesContext holds the state for the instances that are retrieved from the
@@ -156,6 +154,7 @@ const InstancesContextProvider = (props) => {
         setInvalidDate(false);
         setAsOfDate(validatedDate);
       }
+      setIsTimeDisabled(false);
     } else {
       setAsOfDate(undefined);
       setIsTimeDisabled(true);
@@ -1474,18 +1473,18 @@ const InstancesContextProvider = (props) => {
   const onAsOfDateChange = (inputDate) => {
     console.log("onDateChange");
   
-    // let validatedDate;
-    // if (inputDate) {
-    //   validatedDate = format(props.value.date, "MM/dd/Y");
-    //   if (!validatedDate || !isValid(validatedDate)) {
-    //     setInvalidDate(true)
-    //   } else {
-    //     setInvalidDate(false)
-    //     setAsOfDate(validatedDate);
-    //   }
-    // }
-    setAsOfDateStr(inputDate);
-   
+    let validatedDate;
+    if (inputDate) {
+      validatedDate = format(parseISO(inputDate), "MM/dd/Y");
+      if (!validatedDate || !isValid(validatedDate)) {
+        setInvalid1Date(true)
+        setAsOfDateStr(undefined);
+      } else {
+        setInvalidDate(false)
+        // setAsOfDate(validatedDate);
+        setAsOfDateStr(validatedDate);
+      }
+    }   
 
   };
   const onAsOfTimeChange = (inputTime) => {
