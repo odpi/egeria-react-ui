@@ -18,13 +18,22 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
-// used for client authentication (so we can trust the server)
-const keystore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keystore.p12"
+// // used for client authentication (so we can trust the server)
+// const keystore = fs.readFileSync(
+//   path.join(__dirname, "../../") + "ssl/keystore.p12"
+// );
+// // server for server authentication (so the server can trust us)
+// const truststore = fs.readFileSync(
+//   path.join(__dirname, "../../") + "ssl/truststore.p12"
+// );
+
+// used to identify us (the Egeria React UI server)
+const pfx = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/EgeriaReactUIServer.p12"
 );
-// server for server authentication (so the server can trust us)
-const truststore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/truststore.p12"
+// this is the certificate authority
+const ca = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/EgeriaRootCA.p12"
 );
 
 passphrase = "egeria";
@@ -143,7 +152,7 @@ router.put("/servers/*", (req, res) => {
   //console.log("Got body:", body);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl);
+    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
     instance
       .put("", body)
       .then(function (response) {
@@ -172,7 +181,7 @@ router.delete("/servers/*", (req, res) => {
   // console.log("/servers/* delete called " + incomingUrl);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl);
+    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
     instance
       .delete()
       .then(function (response) {
@@ -201,7 +210,7 @@ router.get("/servers/*", (req, res) => {
   // console.log("/servers/* get called " + url);
   const servers = req.app.get("servers");
   if (validateURL(url, servers)) {
-    const instance = getAxiosInstance(url);
+    const instance = getAxiosInstance(url, ca, pfx, passphrase);
     instance
       .get()
       .then(function (response) {
@@ -234,8 +243,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
       ca: truststore,
-      pfx: keystore,
+      pfx: pfx,
       passphrase: passphrase,
+      rejectUnauthorized: false
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -277,9 +287,10 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase,
+      rejectUnauthorized: false
     }),
   };
   if (config) apiReq.data = config;
@@ -317,9 +328,10 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase,
+      rejectUnauthorized: false
     }),
   };
   if (config) apiReq.data = config;
@@ -356,9 +368,10 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: ca,
+      pfx: pfx,
       passphrase: passphrase,
+      rejectUnauthorized: false
     }),
   };
   axios(apiReq)
