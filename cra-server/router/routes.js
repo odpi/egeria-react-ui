@@ -120,7 +120,7 @@ router.post("/servers/*", (req, res) => {
   //console.log("Got body:", body);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl);
+    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
     instance
       .post("", body)
       .then(function (response) {
@@ -242,10 +242,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
+      ca: ca,
       pfx: pfx,
-      passphrase: passphrase,
-      rejectUnauthorized: false
+      passphrase: passphrase
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -289,8 +288,7 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
     httpsAgent: new https.Agent({
       ca: ca,
       pfx: pfx,
-      passphrase: passphrase,
-      rejectUnauthorized: false
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -330,8 +328,7 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
     httpsAgent: new https.Agent({
       ca: ca,
       pfx: pfx,
-      passphrase: passphrase,
-      rejectUnauthorized: false
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -370,8 +367,7 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     httpsAgent: new https.Agent({
       ca: ca,
       pfx: pfx,
-      passphrase: passphrase,
-      rejectUnauthorized: false
+      passphrase: passphrase
     }),
   };
   axios(apiReq)

@@ -35,8 +35,7 @@ const getAxiosInstance = (url, ca, pfx, passphrase) => {
         // key: key,
         ca: ca,
         pfx: pfx,
-        passphrase: passphrase,
-        rejectUnauthorized: false
+        passphrase: passphrase
       }),
     });
     return instance;
