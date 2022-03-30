@@ -4,13 +4,9 @@
 const axios = require('axios');
 const https = require("https");
 const fs = require("fs");
-const path = require("path")
 const getServerInfoFromEnv = require('./getServerInfoFromEnv');
 
-const cert = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.cert");
-const key = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.key");
-
-const getAxiosInstance = (url) => {
+const getAxiosInstance = (url, ca, pfx, passphrase) => {
 
   try {
 
@@ -30,10 +26,9 @@ const getAxiosInstance = (url) => {
     const instance = axios.create({
       baseURL: downStreamURL,
       httpsAgent: new https.Agent({
-        // ca: - at some stage add the certificate authority
-        cert: cert,
-        key: key,
-        rejectUnauthorized: false,
+        ca: ca,
+        pfx: pfx,
+        passphrase: passphrase
       }),
     });
     return instance;

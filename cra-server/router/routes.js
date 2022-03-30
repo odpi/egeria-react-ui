@@ -2,15 +2,34 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
 const axios = require("axios");
 const https = require("https");
 const rateLimit = require("express-rate-limit");
 
 const getAxiosInstance = require("../functions/getAxiosInstance");
+// const getSSLInfoForViewServerFromEnv = require("../functions/getSSLInfoForViewServerFromEnv");
 const validateURL = require("../validations/validateURL");
 const validateAdminURL = require("../validations/validateAdminURL");
+
+/**
+ * This module contains the middleware to handle the inbound requests. There is code to handle the login and code to route
+ * inbound rest calls to up to the appropraite service (admin or view service) running on the connected omag server.
+ * 
+ */
+
+ let pfx_file_location = "EgeriaReactUIServer.p12";
+ let ca_file_location = "EgeriaRootCA.p12";
+
+ // used to identify us (the Egeria React UI server)
+ let pfx;
+ // this is the certificate authority
+ let ca;
+ // this is the default password
+ let passphrase = "egeria";
+
+
 
 // required for codeQL to ensure that logins are rate limitted
 const loginLimiter = rateLimit({
@@ -18,16 +37,7 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
-// used for client authentication (so we can trust the server)
-const keystore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keystore.p12"
-);
-// server for server authentication (so the server can trust us)
-const truststore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/truststore.p12"
-);
 
-passphrase = "egeria";
 
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
@@ -93,6 +103,41 @@ const joinedPath = path.join(
   "../../cra-client/build/",
   "index.html"
 );
+const getSSLInfoForViewServerFromEnv = () => {
+
+  // capitals as Windows can be case sensitive.
+  const env_passphrase = "EGERIA_SECURITY_PASSPHRASE";
+  const env_egeria_react_ui_server_file_location =
+    "EGERIA_CERTIFICATE_FILE_LOCATION_FOR_REACT_UI_SERVER";
+  const env_egeria_certificate_authority_file_location =
+    "EGERIA_CERTIFICATE_FILE_LOCATION_FOR_CERTIFICATE_AUTHORITY";
+
+  const env = process.env;
+
+  for (const envVariable in env) {
+    try {
+      if (envVariable === env_egeria_react_ui_server_file_location) {
+        pfx_file_location = env[envVariable];
+      } else if (
+        envVariable === env_egeria_certificate_authority_file_location
+      ) {
+        ca_file_location = env[envVariable];
+      } else if (envVariable === env_passphrase) {
+        passphrase = env[envVariable];
+      }
+    } catch (error) {
+      console.log(error);
+      console.log(
+        "Error occured processing environment variables. Ignore and carry on looking for more valid server content."
+      );
+    }
+  }
+  pfx = fs.readFileSync(path.join(__dirname, "../../ssl/") + pfx_file_location);
+  ca = fs.readFileSync(path.join(__dirname, "../../ssl/") + ca_file_location);
+
+};
+// populate the ssl information for the view server from the environment
+getSSLInfoForViewServerFromEnv();
 /**
  * Process login url,
  */
@@ -111,7 +156,7 @@ router.post("/servers/*", (req, res) => {
   //console.log("Got body:", body);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl);
+    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
     instance
       .post("", body)
       .then(function (response) {
@@ -143,7 +188,7 @@ router.put("/servers/*", (req, res) => {
   //console.log("Got body:", body);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl);
+    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
     instance
       .put("", body)
       .then(function (response) {
@@ -172,7 +217,7 @@ router.delete("/servers/*", (req, res) => {
   // console.log("/servers/* delete called " + incomingUrl);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl);
+    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
     instance
       .delete()
       .then(function (response) {
@@ -201,7 +246,7 @@ router.get("/servers/*", (req, res) => {
   // console.log("/servers/* get called " + url);
   const servers = req.app.get("servers");
   if (validateURL(url, servers)) {
-    const instance = getAxiosInstance(url);
+    const instance = getAxiosInstance(url, ca, pfx, passphrase);
     instance
       .get()
       .then(function (response) {
@@ -233,9 +278,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
-      passphrase: passphrase,
+      ca: ca,
+      pfx:  pfx,
+      passphrase:  passphrase
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -277,9 +322,9 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
       "Access-Control-Allow-Origin": "*",
     },
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
-      passphrase: passphrase,
+      ca: ca,
+      pfx: pfx,
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -317,9 +362,9 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
       "Content-Type": "application/json",
     },
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
-      passphrase: passphrase,
+      ca: ca,
+      pfx: pfx,
+      passphrase: passphrase
     }),
   };
   if (config) apiReq.data = config;
@@ -356,9 +401,9 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
-      passphrase: passphrase,
+      ca: ca,
+      pfx: pfx,
+      passphrase: passphrase
     }),
   };
   axios(apiReq)
