@@ -2,15 +2,34 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
 const axios = require("axios");
 const https = require("https");
 const rateLimit = require("express-rate-limit");
 
 const getAxiosInstance = require("../functions/getAxiosInstance");
+// const getSSLInfoForViewServerFromEnv = require("../functions/getSSLInfoForViewServerFromEnv");
 const validateURL = require("../validations/validateURL");
 const validateAdminURL = require("../validations/validateAdminURL");
+
+/**
+ * This module contains the middleware to handle the inbound requests. There is code to handle the login and code to route
+ * inbound rest calls to up to the appropraite service (admin or view service) running on the connected omag server.
+ * 
+ */
+
+ let pfx_file_location = "EgeriaReactUIServer.p12";
+ let ca_file_location = "EgeriaRootCA.p12";
+
+ // used to identify us (the Egeria React UI server)
+ let pfx;
+ // this is the certificate authority
+ let ca;
+ // this is the default password
+ let passphrase = "egeria";
+
+
 
 // required for codeQL to ensure that logins are rate limitted
 const loginLimiter = rateLimit({
@@ -18,25 +37,7 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
-// // used for client authentication (so we can trust the server)
-// const keystore = fs.readFileSync(
-//   path.join(__dirname, "../../") + "ssl/keystore.p12"
-// );
-// // server for server authentication (so the server can trust us)
-// const truststore = fs.readFileSync(
-//   path.join(__dirname, "../../") + "ssl/truststore.p12"
-// );
 
-// used to identify us (the Egeria React UI server)
-const pfx = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/EgeriaReactUIServer.p12"
-);
-// this is the certificate authority
-const ca = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/EgeriaRootCA.p12"
-);
-
-passphrase = "egeria";
 
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
@@ -102,6 +103,41 @@ const joinedPath = path.join(
   "../../cra-client/build/",
   "index.html"
 );
+const getSSLInfoForViewServerFromEnv = () => {
+
+  // capitals as Windows can be case sensitive.
+  const env_passphrase = "EGERIA_SECURITY_PASSPHRASE";
+  const env_egeria_react_ui_server_file_location =
+    "EGERIA_CERTIFICATE_FILE_LOCATION_FOR_REACT_UI_SERVER";
+  const env_egeria_certificate_authority_file_location =
+    "EGERIA_CERTIFICATE_FILE_LOCATION_FOR_CERTIFICATE_AUTHORITY";
+
+  const env = process.env;
+
+  for (const envVariable in env) {
+    try {
+      if (envVariable === env_egeria_react_ui_server_file_location) {
+        pfx_file_location = env[envVariable];
+      } else if (
+        envVariable === env_egeria_certificate_authority_file_location
+      ) {
+        ca_file_location = env[envVariable];
+      } else if (envVariable === env_passphrase) {
+        passphrase = env[envVariable];
+      }
+    } catch (error) {
+      console.log(error);
+      console.log(
+        "Error occured processing environment variables. Ignore and carry on looking for more valid server content."
+      );
+    }
+  }
+  pfx = fs.readFileSync(path.join(__dirname, "../../ssl/") + pfx_file_location);
+  ca = fs.readFileSync(path.join(__dirname, "../../ssl/") + ca_file_location);
+
+};
+// populate the ssl information for the view server from the environment
+getSSLInfoForViewServerFromEnv();
 /**
  * Process login url,
  */
@@ -243,8 +279,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
       ca: ca,
-      pfx: pfx,
-      passphrase: passphrase
+      pfx:  pfx,
+      passphrase:  passphrase
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
