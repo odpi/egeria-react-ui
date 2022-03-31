@@ -238,6 +238,7 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
   const pfx = getCertificateFromFileSystem(server.pfx);
   const ca = getCertificateFromFileSystem(server.ca);
   const passphrase = server.passphrase;
+  const rejectUnauthorized = server.rejectUnauthorizedForOmag;
 
   const apiReq = {
     method: "get",
@@ -245,7 +246,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     httpsAgent: new https.Agent({
       ca: ca,
       pfx:  pfx,
-      passphrase:  passphrase
+      passphrase:  passphrase,
+      rejectUnauthorized: rejectUnauthorized
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -283,6 +285,10 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
   const pfx = getCertificateFromFileSystem(server.pfx);
   const ca = getCertificateFromFileSystem(server.ca);
   const passphrase = server.passphrase;
+  const rejectUnauthorized = server.rejectUnauthorizedForOmag;
+
+
+
   const apiReq = {
     method: "post",
     url: urlRoot + incomingUrl,
@@ -293,7 +299,8 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
     httpsAgent: new https.Agent({
       ca: ca,
       pfx: pfx,
-      passphrase: passphrase
+      passphrase: passphrase,
+      rejectUnauthorized: rejectUnauthorized
     }),
   };
   if (config) apiReq.data = config;
@@ -328,6 +335,9 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
   const pfx = getCertificateFromFileSystem(server.pfx);
   const ca = getCertificateFromFileSystem(server.ca);
   const passphrase = server.passphrase;
+
+  const rejectUnauthorized = server.rejectUnauthorizedForOmag;
+
   const apiReq = {
     method: "delete",
     url: urlRoot + incomingUrl,
@@ -337,7 +347,8 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
     httpsAgent: new https.Agent({
       ca: ca,
       pfx: pfx,
-      passphrase: passphrase
+      passphrase: passphrase,
+      rejectUnauthorized: rejectUnauthorized
     }),
   };
   if (config) apiReq.data = config;
@@ -374,13 +385,17 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
   const pfx = getCertificateFromFileSystem(server.pfx);
   const ca = getCertificateFromFileSystem(server.ca);
   const passphrase = server.passphrase;
+
+  const rejectUnauthorized = server.rejectUnauthorizedForOmag;
+
   const apiReq = {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
       ca: ca,
       pfx: pfx,
-      passphrase: passphrase
+      passphrase: passphrase,
+      rejectUnauthorized: rejectUnauthorized
     }),
   };
   axios(apiReq)
