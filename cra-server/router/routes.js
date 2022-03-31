@@ -9,7 +9,8 @@ const https = require("https");
 const rateLimit = require("express-rate-limit");
 
 const getAxiosInstance = require("../functions/getAxiosInstance");
-// const getSSLInfoForViewServerFromEnv = require("../functions/getSSLInfoForViewServerFromEnv");
+const getCertificateFromFileSystem = require("../functions/getCertificateFromFileSystem");
+
 const validateURL = require("../validations/validateURL");
 const validateAdminURL = require("../validations/validateAdminURL");
 
@@ -18,16 +19,6 @@ const validateAdminURL = require("../validations/validateAdminURL");
  * inbound rest calls to up to the appropraite service (admin or view service) running on the connected omag server.
  * 
  */
-
- let pfx_file_location = "EgeriaReactUIServer.p12";
- let ca_file_location = "EgeriaRootCA.p12";
-
- // used to identify us (the Egeria React UI server)
- let pfx;
- // this is the certificate authority
- let ca;
- // this is the default password
- let passphrase = "egeria";
 
 
 
@@ -103,41 +94,9 @@ const joinedPath = path.join(
   "../../cra-client/build/",
   "index.html"
 );
-const getSSLInfoForViewServerFromEnv = () => {
 
-  // capitals as Windows can be case sensitive.
-  const env_passphrase = "EGERIA_SECURITY_PASSPHRASE";
-  const env_egeria_react_ui_server_file_location =
-    "EGERIA_CERTIFICATE_FILE_LOCATION_FOR_REACT_UI_SERVER";
-  const env_egeria_certificate_authority_file_location =
-    "EGERIA_CERTIFICATE_FILE_LOCATION_FOR_CERTIFICATE_AUTHORITY";
-
-  const env = process.env;
-
-  for (const envVariable in env) {
-    try {
-      if (envVariable === env_egeria_react_ui_server_file_location) {
-        pfx_file_location = env[envVariable];
-      } else if (
-        envVariable === env_egeria_certificate_authority_file_location
-      ) {
-        ca_file_location = env[envVariable];
-      } else if (envVariable === env_passphrase) {
-        passphrase = env[envVariable];
-      }
-    } catch (error) {
-      console.log(error);
-      console.log(
-        "Error occured processing environment variables. Ignore and carry on looking for more valid server content."
-      );
-    }
-  }
-  pfx = fs.readFileSync(path.join(__dirname, "../../ssl/") + pfx_file_location);
-  ca = fs.readFileSync(path.join(__dirname, "../../ssl/") + ca_file_location);
-
-};
 // populate the ssl information for the view server from the environment
-getSSLInfoForViewServerFromEnv();
+// getSSLInfoForViewServerFromEnv();
 /**
  * Process login url,
  */
@@ -156,7 +115,7 @@ router.post("/servers/*", (req, res) => {
   //console.log("Got body:", body);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
+    const instance = getAxiosInstance(incomingUrl, req.app);
     instance
       .post("", body)
       .then(function (response) {
@@ -188,7 +147,8 @@ router.put("/servers/*", (req, res) => {
   //console.log("Got body:", body);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
+   
+    const instance = getAxiosInstance(incomingUrl, req.app);
     instance
       .put("", body)
       .then(function (response) {
@@ -217,7 +177,7 @@ router.delete("/servers/*", (req, res) => {
   // console.log("/servers/* delete called " + incomingUrl);
   const servers = req.app.get("servers");
   if (validateURL(incomingUrl, servers)) {
-    const instance = getAxiosInstance(incomingUrl, ca, pfx, passphrase);
+    const instance = getAxiosInstance(incomingUrl, req.app);
     instance
       .delete()
       .then(function (response) {
@@ -246,7 +206,7 @@ router.get("/servers/*", (req, res) => {
   // console.log("/servers/* get called " + url);
   const servers = req.app.get("servers");
   if (validateURL(url, servers)) {
-    const instance = getAxiosInstance(url, ca, pfx, passphrase);
+    const instance = getAxiosInstance(url, req.app);
     instance
       .get()
       .then(function (response) {
@@ -273,7 +233,15 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     return;
   }
   const servers = req.app.get("servers");
-  const urlRoot = servers[req.query.serverName].remoteURL;
+  const server = servers[req.query.serverName];
+  const urlRoot = server.remoteURL;
+  console.log("DEBUG1 urlRoot " + urlRoot);
+  const pfx = getCertificateFromFileSystem(server.pfx);
+  console.log("DEBUG1 pfx " + pfx);
+  const ca = getCertificateFromFileSystem(server.ca);
+  console.log("DEBUG1 ca " + ca);
+  const passphrase = server.passphrase;
+
   const apiReq = {
     method: "get",
     url: urlRoot + incomingPath,
@@ -313,7 +281,11 @@ router.post("/open-metadata/admin-services/*", (req, res) => {
   }
   const { config, serverName } = req.body;
   const servers = req.app.get("servers");
-  const urlRoot = servers[serverName].remoteURL;
+  const server = servers[req.query.serverName];
+  const urlRoot = server.remoteURL;
+  const pfx = getCertificateFromFileSystem(server.pfx);
+  const ca = getCertificateFromFileSystem(server.ca);
+  const passphrase = server.passphrase;
   const apiReq = {
     method: "post",
     url: urlRoot + incomingUrl,
@@ -354,7 +326,11 @@ router.delete("/open-metadata/admin-services/*", (req, res) => {
   }
   const { config, serverName } = req.body;
   const servers = req.app.get("servers");
-  const urlRoot = servers[serverName].remoteURL;
+  const server = servers[req.query.serverName];
+  const urlRoot = server.remoteURL;
+  const pfx = getCertificateFromFileSystem(server.pfx);
+  const ca = getCertificateFromFileSystem(server.ca);
+  const passphrase = server.passphrase;
   const apiReq = {
     method: "delete",
     url: urlRoot + incomingUrl,
@@ -396,7 +372,11 @@ router.get("/open-metadata/platform-services/*", (req, res) => {
   // }
   console.log("/open-metadata/platform-services req.query " + JSON.stringify(req.query) );
   const servers = req.app.get("servers");
-  const urlRoot = servers[req.query.serverName].remoteURL;
+  const server = servers[req.query.serverName];
+  const urlRoot = server.remoteURL;
+  const pfx = getCertificateFromFileSystem(server.pfx);
+  const ca = getCertificateFromFileSystem(server.ca);
+  const passphrase = server.passphrase;
   const apiReq = {
     method: "get",
     url: urlRoot + incomingPath,

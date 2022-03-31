@@ -3,10 +3,9 @@
 
 const axios = require('axios');
 const https = require("https");
-const fs = require("fs");
-const getServerInfoFromEnv = require('./getServerInfoFromEnv');
+const getCertificateFromFileSystem = require("../functions/getCertificateFromFileSystem");
 
-const getAxiosInstance = (url, ca, pfx, passphrase) => {
+const getAxiosInstance = (url, app) => {
 
   try {
 
@@ -14,9 +13,15 @@ const getAxiosInstance = (url, ca, pfx, passphrase) => {
 
     const suppliedServerName = urlArray[2];
     const remainingURL = urlArray.slice(3).join("/");
-    const servers = getServerInfoFromEnv();
+    const servers = app.get('servers');
     const urlRoot = servers[suppliedServerName].remoteURL;
     const remoteServerName = servers[suppliedServerName].remoteServerName;
+ 
+
+    const pfx = getCertificateFromFileSystem(servers[suppliedServerName].pfx);
+    const ca = getCertificateFromFileSystem(servers[suppliedServerName].ca);
+    const passphrase = servers[suppliedServerName].passphrase;
+
     const downStreamURL =
       urlRoot +
       "/servers/" +
