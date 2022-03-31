@@ -10,7 +10,7 @@ const https = require("https");
 const app = express();
 require("dotenv").config();
 
-const getServerInfoFromEnv = require('./functions/getServerInfoFromEnv');
+const setConfigurationFromEnv = require('./functions/setConfigurationFromEnv');
 const serverNameMiddleWare = require('./functions/serverNameMiddleware');
 const passportConfiguration = require('./functions/passportConfiguration');
 
@@ -29,10 +29,9 @@ const options = {
 };
 app.set('key', key);
 app.set('cert', cert);
+// populate the configuration into the app variables from the environment.
+setConfigurationFromEnv(app);
 
-const servers = getServerInfoFromEnv();
-
-app.set('servers', servers);
 if (env === 'production') {
   app.use(express.static(path.join(__dirname, '../cra-client/build')));
 }
