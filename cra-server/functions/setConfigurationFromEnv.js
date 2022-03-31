@@ -103,9 +103,7 @@ const setConfigurationFromEnv = (app) => {
 
   // this is the certificate authority
 
-  console.log("DEBUG2 supplied_ca_file_name " + supplied_ca_file_name);
   let ca = supplied_ca_file_name ? supplied_ca_file_name : "EgeriaRootCA.p12";
-  console.log("DEBUG2 ca " + ca);
 
   // this is the default password
   let passphrase = supplied_passphrase ? supplied_passphrase : "egeria";
@@ -121,7 +119,6 @@ const setConfigurationFromEnv = (app) => {
       serverWithSecurity.ca = ca;
       serverWithSecurity.pfx = pfx;
       serverWithSecurity.passphrase = passphrase;
-      console.log("DEBUG 2 serverWithSecurity " + JSON.stringify(serverWithSecurity));
     } else {
       // must have a platform
       const platformInfo = platforms[serverInfo.platformName];
@@ -146,8 +143,6 @@ const setConfigurationFromEnv = (app) => {
 
     serversWithSecurity[serverName] = serverWithSecurity;
   }
-  console.log("DEBUG4 app=");
-  console.log(app);
   app.set("servers", serversWithSecurity);
 };
 

@@ -235,11 +235,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
   const servers = req.app.get("servers");
   const server = servers[req.query.serverName];
   const urlRoot = server.remoteURL;
-  console.log("DEBUG1 urlRoot " + urlRoot);
   const pfx = getCertificateFromFileSystem(server.pfx);
-  console.log("DEBUG1 pfx " + pfx);
   const ca = getCertificateFromFileSystem(server.ca);
-  console.log("DEBUG1 ca " + ca);
   const passphrase = server.passphrase;
 
   const apiReq = {
