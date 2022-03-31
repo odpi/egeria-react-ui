@@ -32,7 +32,7 @@ const setConfigurationFromEnv = (app) => {
           const serverDetails = JSON.parse(serverDetailsStr);
           if (
             serverDetails.remoteURL != undefined &&
-            serverDetails.platform != undefined
+            serverDetails.platformName != undefined
           ) {
             console.log(
               "Found server environment variable for server " +
@@ -42,7 +42,7 @@ const setConfigurationFromEnv = (app) => {
             );
           } else if (
             (serverDetails.remoteURL != undefined ||
-              serverDetails.platform != undefined) &&
+              serverDetails.platformName != undefined) &&
             serverDetails.remoteServerName != undefined
           ) {
             servers[serverName] = serverDetails;
@@ -50,7 +50,7 @@ const setConfigurationFromEnv = (app) => {
             console.log(
               "Found server environment variable for server " +
                 serverName +
-                ", but neither remoteURL or platform was specified , so we do not know which platform to talk to :" +
+                ", but neither remoteURL or platformName was specified , so we do not know which platform to talk to :" +
                 serverDetailsStr
             );
           }
@@ -61,7 +61,7 @@ const setConfigurationFromEnv = (app) => {
           const platformName = envVariable.substr(env_platform_prefix.length);
           const platformDetailsStr = env[envVariable];
           const platformDetails = JSON.parse(platformDetailsStr);
-          if (platformDetails.remoteURL != undefined) {
+          if (platformDetails.remoteURL === undefined) {
             console.log(
               "Found a platform  " +
                 platformName +
