@@ -3,14 +3,9 @@
 
 const axios = require('axios');
 const https = require("https");
-const fs = require("fs");
-const path = require("path")
-const getServerInfoFromEnv = require('./getServerInfoFromEnv');
+const getCertificateFromFileSystem = require("../functions/getCertificateFromFileSystem");
 
-const cert = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.cert");
-const key = fs.readFileSync(path.join(__dirname, '../../') + "ssl/keys/server.key");
-
-const getAxiosInstance = (url) => {
+const getAxiosInstance = (url, app) => {
 
   try {
 
@@ -18,9 +13,15 @@ const getAxiosInstance = (url) => {
 
     const suppliedServerName = urlArray[2];
     const remainingURL = urlArray.slice(3).join("/");
-    const servers = getServerInfoFromEnv();
+    const servers = app.get('servers');
     const urlRoot = servers[suppliedServerName].remoteURL;
     const remoteServerName = servers[suppliedServerName].remoteServerName;
+ 
+
+    const pfx = getCertificateFromFileSystem(servers[suppliedServerName].pfx);
+    const ca = getCertificateFromFileSystem(servers[suppliedServerName].ca);
+    const passphrase = servers[suppliedServerName].passphrase;
+
     const downStreamURL =
       urlRoot +
       "/servers/" +
@@ -30,10 +31,9 @@ const getAxiosInstance = (url) => {
     const instance = axios.create({
       baseURL: downStreamURL,
       httpsAgent: new https.Agent({
-        // ca: - at some stage add the certificate authority
-        cert: cert,
-        key: key,
-        rejectUnauthorized: false,
+        ca: ca,
+        pfx: pfx,
+        passphrase: passphrase
       }),
     });
     return instance;
