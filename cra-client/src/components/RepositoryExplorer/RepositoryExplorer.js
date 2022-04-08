@@ -136,8 +136,9 @@ export default function RepositoryExplorer() {
         <RepositoryServerContextProvider>
           <TypesContextProvider>
             <InstancesContextProvider>
-              <div className="rex-top">
-                <div className="title">
+       
+              <div className="rex-top" >
+                <div className="title" >
                   <p>Repository Explorer</p>
 
                   <input
@@ -159,11 +160,11 @@ export default function RepositoryExplorer() {
                   <HistoricalDateTime />
                 </div>
 
-                <ServerSelector />
+                <ServerSelector/>
 
-                <InstanceRetrieval />
+                <InstanceRetrieval  />
 
-                <InstanceSearch />
+                <InstanceSearch  />
               </div>
 
               <div className="rex-content">
