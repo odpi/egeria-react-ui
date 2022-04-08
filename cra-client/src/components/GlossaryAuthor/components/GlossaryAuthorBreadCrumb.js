@@ -78,7 +78,7 @@ function GlossaryAuthorBreadCrumb(props) {
           breadcrumbMap.length > 0 &&
           breadcrumbMap.map((crumb) => {
             return (
-              <BreadcrumbItem>
+              <BreadcrumbItem key={crumb.url}>
                 <Link to={crumb.url}>{crumb.name}</Link>
               </BreadcrumbItem>
             );

@@ -105,12 +105,12 @@ export default function Frame() {
                 aria-label="Header Panel"
                 expanded={userOpen}
               >
-                <Switcher aria-label="">
-                  <SwitcherItem    style={{ textAlign: 'left' }}>
+                <Switcher aria-label="switcher for logged in and logout ">
+                  <SwitcherItem   aria-label="logged in"  style={{ textAlign: 'left' }}>
                     Logged in User: {userId}
                   </SwitcherItem>
                   <SwitcherItem
-                    aria-label=""
+                    aria-label="logout"
                     style={{ textAlign: 'left' }}
                     onClick={async () => {
                       try {

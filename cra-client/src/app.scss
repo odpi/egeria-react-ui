@@ -66,8 +66,17 @@ body {
 .center-400-content {
   flex: 0 0 120px;
 }
-.flexcontainer {
+.flexcontainer-row {
   display: flex;
+  flex-direction: row;
+}
+.flexcontainer-column {
+  display: flex;
+  flex-direction: column;
+}
+.datetimestr {
+  font-size: 0.75rem;
+  margin: 10px;
 }
 
 .center {

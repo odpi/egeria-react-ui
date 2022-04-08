@@ -18,56 +18,56 @@ import format from "date-fns/format";
  * @returns node input
  */
 export default function DateTimePicker(props) {
-  const onDateChange = (e) => {
-    console.log("onDateChange " + e[0]);
-    let dateTime = {};
-    dateTime.date = e[0];
-    dateTime.time = getTimeValue();
-    props.onDateTimeChange(dateTime);
-  };
-  const onTimeChange = (e) => {
-    console.log("onTimeChange");
-    let dateTime = {};
-    let date;
-    if (
-      props.value !== undefined &&
-      props.value.date !== undefined 
-    ) {
-      date = props.value.date;
-    }
-    dateTime.date = date;
-    dateTime.time = e.currentTarget.value;
-    props.onDateTimeChange(dateTime);
-  };
+  // const onDateChange = (e) => {
+  //   console.log("onDateChange " + e[0]);
+  //   let dateTime = {};
+  //   dateTime.date = e[0];
+  //   dateTime.time = getTimeValue();
+  //   props.onDateTimeChange(dateTime);
+  // };
+  // const onTimeChange = (e) => {
+  //   console.log("onTimeChange");
+  //   let dateTime = {};
+  //   let date;
+  //   if (
+  //     props.value !== undefined &&
+  //     props.value.date !== undefined
+  //   ) {
+  //     date = props.value.date;
+  //   }
+  //   dateTime.date = date;
+  //   dateTime.time = e.currentTarget.value;
+  //   props.onDateTimeChange(dateTime);
+  // };
 
-  const getTimeValue = () => {
-    let timeValue = undefined;
-    if (props.value !== undefined && props.value.time !== undefined) {
-      timeValue = props.value.time.value;
-    }
-    return timeValue;
-  };
-  const getTimeInvalid = () => {
-    let invalid = false;
-    if (props.value !== undefined && props.value.time !== undefined) {
-      invalid = props.value.time.invalid;
-    }
-    return invalid;
-  };
-  const getTimeInvalidText = () => {
-    let invalidText = false;
-    if (props.value !== undefined && props.value.time !== undefined) {
-      invalidText = props.value.time.invalidText;
-    }
-    return invalidText;
-  };
+  // const getTimeValue = () => {
+  //   let timeValue = undefined;
+  //   if (props.value !== undefined && props.value.time !== undefined) {
+  //     timeValue = props.value.time.value;
+  //   }
+  //   return timeValue;
+  // };
+  // const getTimeInvalid = () => {
+  //   let invalid = false;
+  //   if (props.value !== undefined && props.value.time !== undefined) {
+  //     invalid = props.value.time.invalid;
+  //   }
+  //   return invalid;
+  // };
+  // const getTimeInvalidText = () => {
+  //   let invalidText = false;
+  //   if (props.value !== undefined && props.value.time !== undefined) {
+  //     invalidText = props.value.time.invalidText;
+  //   }
+  //   return invalidText;
+  // };
   // const getDateValue = () => {
   //   let dateValue = undefined;
 
   //   // the value needs to be the date string using the date-fns format
   //   if (
   //     props.value != undefined &&
-  //     props.value.date != undefined 
+  //     props.value.date != undefined
   //     // props.value.date.value != undefined
   //   ) {
   //     console.log("getDateValue" + JSON.stringify(props.value.date));
@@ -81,8 +81,6 @@ export default function DateTimePicker(props) {
   //   }
   //   return dateValue;
   // };
-
-
 
   // const getDateInvalid = () => {
   //   let invalid = false;
@@ -119,56 +117,59 @@ export default function DateTimePicker(props) {
   //   return !getDateValue();
   // };
 
-
-//   <DateTimePicker
-//   dateLabel="As of Date"
-//   timeLabel="As of Time"
-//   onDateChange={instancesContext.onAsOfDateChange}
-//   onTimeChange={instancesContext.onAsOfTimeChange}
-//   dateValue={instancesContext.asOfDateStr}
-//   timeValue={instancesContext.asOfTimeStr}
-//   invalidTime={instancesContext.invalidTime}
-//   invalidDate={instancesContext.invalidDate}
-//   onDateTimeMessage={onErrorMessage}
-// />
+  //   <DateTimePicker
+  //   dateLabel="As of Date"
+  //   timeLabel="As of Time"
+  //   onDateChange={instancesContext.onAsOfDateChange}
+  //   onTimeChange={instancesContext.onAsOfTimeChange}
+  //   dateValue={instancesContext.asOfDateStr}
+  //   timeValue={instancesContext.asOfTimeStr}
+  //   invalidTime={instancesContext.invalidTime}
+  //   invalidDate={instancesContext.invalidDate}
+  //   onDateTimeMessage={onErrorMessage}
+  // />
 
   return (
-    <div className="flexcontainer">
-      <div>
-        <DatePicker
-          dateFormat={getDateFormat()}
-          datePickerType="single"
-          onChange={props.onDateChange}
-        >
-          <DatePickerInput
-            placeholder={getDateFormatPlaceHolder()}
-            labelText={props.dateLabel}
-            value={props.dateValue}
-            invalid={props.invalidDate}
-            invalidText={"Invalid Dates are not accepted"}
-            type="text"
-          />
-        </DatePicker>
-      </div>
-      <div>
-        <div className="bx--date-picker-container time-picker__width">
-          <label className="bx--label" htmlFor={props.timeLabel}>
-            {props.timeLabel}
-          </label>
-          <TextInput
-            disabled={props.isTimeDisabled}
-            id={props.timeLabel}
-            value={props.timeValue}
-            invalid={props.invalidTime}
-            invalidText= "A valid time value is required, of the form hh:mm"
-            label={props.timeLabel}
-            //   pattern="(0[0123]|[1-9]):[0-5][0-9](\\s)?"
-            placeholder="hh:mm"
-            maxLength="5"
-            onChange={props.onTimeChange}
-          />
+    <div className="flexcontainer-column">
+      <div className="flexcontainer-row">
+        <div>
+          <DatePicker
+            dateFormat={getDateFormat()}
+            datePickerType="single"
+            onChange={props.onDateChange}
+          >
+            <DatePickerInput
+              placeholder={getDateFormatPlaceHolder()}
+              labelText={props.dateLabel}
+              id={props.dateLabel}
+              value={props.dateValue}
+              invalid={props.invalidDate}
+              invalidText={"Invalid Dates are not accepted"}
+              type="text"
+            />
+          </DatePicker>
+        </div>
+        <div>
+          <div className="bx--date-picker-container time-picker__width">
+            <label className="bx--label" htmlFor={props.timeLabel}>
+              {props.timeLabel}
+            </label>
+            <TextInput
+              disabled={props.isTimeDisabled}
+              id={props.timeLabel}
+              value={props.timeValue}
+              invalid={props.invalidTime}
+              invalidText="A valid time value is required, of the form hh:mm"
+              label={props.timeLabel}
+              //   pattern="(0[0123]|[1-9]):[0-5][0-9](\\s)?"
+              placeholder="hh:mm"
+              maxLength="5"
+              onChange={props.onTimeChange}
+            />
+          </div>
         </div>
       </div>
+      <div className="datetimestr">{props.asOfDateTimeStr} </div>
     </div>
   );
 }

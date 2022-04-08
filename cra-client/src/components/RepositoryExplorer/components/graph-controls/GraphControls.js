@@ -89,7 +89,7 @@ export default function GraphControls(props) {
 
     // if there is an as of time set to use for queries then include it on the find.
     if (instancesContext.asOfDateTimeForQueries !== undefined) {
-      rexPreTraversalBody.asOftime = instancesContext.asOfDateTimeForQueries;
+      rexPreTraversalBody.asOfTime = instancesContext.asOfDateTimeForQueries;
     }
     
 

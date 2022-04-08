@@ -20,14 +20,13 @@ export default function HistoricalDateTime() {
 
   return (
         <div className="history-outline">
-           <div>History</div>
-           <div>Date time value: {instancesContext.asOfDateTimeLocalStr} </div>
           <DateTimePicker
             dateLabel="As of Date"
             timeLabel="As of Time"
+            asOfDateTimeStr={instancesContext.asOfDateTimeStr}
             onDateChange={instancesContext.onAsOfDateChange}
             onTimeChange={instancesContext.onAsOfTimeChange}
-            dateValue={instancesContext.asOfDateStr}
+            dateValue={instancesContext.asOfDate}
             timeValue={instancesContext.asOfTimeStr}
             invalidTime={instancesContext.invalidTime}
             invalidDate={instancesContext.invalidDate}

@@ -1,7 +1,13 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 import PropTypes from "prop-types";
 
@@ -93,27 +99,27 @@ const InstancesContextProvider = (props) => {
    */
   const [gens, setGens] = useState([]);
   const [guidToGenId, setGuidToGenId] = useState({});
-  /*
-   * As of Date string 
-   */ 
-  const [asOfDateStr, setAsOfDateStr] = useState();
+  // /*
+  //  * As of Date  - the date part of date time as a string
+  //  */
+  // const [asOfDateStr, setAsOfDateStr] = useState();
 
   /*
-   * As of time string 
-   */ 
+   * As of time string
+   */
   const [asOfTimeStr, setAsOfTimeStr] = useState();
 
   /*
-   * As of Date  - the data part ofdate time as a date object
-   */ 
+   * As of Date  - the date part of date time as a date object
+   */
   const [asOfDate, setAsOfDate] = useState();
 
   /*
-   * As of date time - the date and time as a date object. 
-   */ 
+   * As of date time - the date and time as a date object.
+   */
   const [asOfDateTime, setAsOfDateTime] = useState();
 
- /*
+  /*
    * As of datetime for queries = this is the datetime that the metadata calls to Egeria should be issues with.
    * If not specified then Rex uses the the latest content.
    *
@@ -125,16 +131,15 @@ const InstancesContextProvider = (props) => {
    */
   const [isTimeDisabled, setIsTimeDisabled] = useState(true);
 
-
   /*
    * as of DateTime string
    */
 
-  const [asOfDateTimeStr, setAsOfDateTimeStr] = useState(); 
+  const [asOfDateTimeStr, setAsOfDateTimeStr] = useState();
 
-  const [invalidTime, setInvalidTime]  = useState(false); 
+  const [invalidTime, setInvalidTime] = useState(false);
 
-  const [invalidDate, setInvalidDate]  = useState(false); 
+  const [invalidDate, setInvalidDate] = useState(false);
 
   /*
    * The latestGenId is not just the length of the gens array - it indicates the id of the most recent
@@ -144,68 +149,63 @@ const InstancesContextProvider = (props) => {
   const [latestActiveGenId, setLatestActiveGenId] = useState(0);
 
   useEffect(() => {
-    let validatedDate;
-    if (asOfDateStr) {
-      validatedDate = format(asOfDateStr, "MM/dd/Y");
-      if (!validatedDate || !isValid(validatedDate)) {
-        setInvalidDate(true);
-        setAsOfDate(undefined);
-      } else {
-        setInvalidDate(false);
-        setAsOfDate(validatedDate);
-      }
-      setIsTimeDisabled(false);
-    } else {
-      setAsOfDate(undefined);
-      setIsTimeDisabled(true);
-    }
-  }, [asOfDateStr, asOfDate, invalidDate, setIsTimeDisabled]);
-
-  useEffect(() => {
+    console.log(" useEffect [asOfTimeStr, asOfDate]); ");
     let validatedDateTime;
     if (asOfDate) {
+      // if we have a date then activate the time input
+      setIsTimeDisabled(false);
       if (asOfTimeStr === undefined || asOfTimeStr === "") {
         setAsOfDateTime(asOfDate);
+        setInvalidTime(false);
       } else {
-        validatedDateTime = parse(time, "HH:mm", asOfDate);
-        if (validatedDateTime) {
+        // it is confusing to the user if we allow shorter strings that parse might see as invalid e.g. 11:1, so we insist on 5 characters
+        if (asOfTimeStr.length !== 5) {
+          setInvalidTime(true);
+          setAsOfDateTime(asOfDate);
+        } else {
+          validatedDateTime = parse(asOfTimeStr, "HH:mm", asOfDate);
+          if (validatedDateTime) {
             if (isValid(validatedDateTime)) {
-              setIsTimeDisabled(false);
               setInvalidTime(false);
               setAsOfDateTime(validatedDateTime);
             } else {
               setInvalidTime(true);
               setAsOfDateTime(asOfDate);
-              setIsTimeDisabled(true);
             }
-        } else {
-          setInvalidTime(true);
-          setAsOfDateTime(asOfDate);
-          setIsTimeDisabled(true);
+          } else {
+            setInvalidTime(true);
+            setAsOfDateTime(asOfDate);
+          }
         }
-        
       }
     } else {
       setAsOfDateTime(undefined);
-      setInvalidTime(true);
+      // no point in allowing time to be updated if there is no date
       setIsTimeDisabled(true);
     }
-  }, [asOfTimeStr, asOfDateTime, asOfDate, invalidTime]);
+  }, [asOfTimeStr, asOfDate]);
 
   useEffect(() => {
+    // the clear the context if the date time has changed then existing content should be thrown 
+    clear()
     if (asOfDateTime !== undefined) {
-      
-      setAsOfDateTimeStr (format(asOfDateTime, "PPPPpppp"));
+      console.log("useEffect 1- [asOfDateTimeForQueries, asOfDateTime])");
+      setAsOfDateTimeStr(format(asOfDateTime, "PPPPpppp"));
+      console.log(
+        "useEffect 1- format(asOfDateTime, PPPPpppp) " +
+          format(asOfDateTime, "PPPPpppp")
+      );
       // set the date using the time from epoc- this should now be a UTC date with no local formatting
-      // in the date object. 
-
-      setAsOfDateTimeForQueries(new Date(asOfDateTime.getTime())); 
+      // in the date object.
+      console.log("useEffect 2- [asOfDateTimeForQueries, asOfDateTime])");
+      setAsOfDateTimeForQueries(asOfDateTime.getTime());
+      console.log("useEffect 3- [asOfDateTimeForQueries, asOfDateTime])");
     } else {
+      console.log("useEffect 4- [asOfDateTimeForQueries, asOfDateTime])");
       setAsOfDateTimeForQueries(undefined);
       setAsOfDateTimeStr(undefined);
     }
-  
-  }, [asOfDateTimeForQueries, asOfDateTime]);
+  }, [asOfDateTime]);
   /*
    * getLatestActiveGenId  - returns the most recent gen number that is active
    */
@@ -219,7 +219,6 @@ const InstancesContextProvider = (props) => {
   const getLatestGen = useCallback(() => {
     return gens[gens.length - 1];
   }, [gens]);
-
 
   /*
    * General failure reporting utility
@@ -372,7 +371,6 @@ const InstancesContextProvider = (props) => {
     let focusGenId = guidToGenId[focus.instanceGUID];
     return focusGenId;
   }, [guidToGenId, focus]);
-
 
   /*
    * Functions to process retrieved instances
@@ -734,14 +732,13 @@ const InstancesContextProvider = (props) => {
    */
   const loadEntity = useCallback(
     (entityGUID) => {
-
       let rexFindBody = {
-         entityGUID: entityGUID 
+        entityGUID: entityGUID,
       };
-  
+
       // if there is an as of time set to use for queries then include it on the find.
       if (asOfDateTimeForQueries !== undefined) {
-        rexFindBody.asOftime = asOfDateTimeForQueries;
+        rexFindBody.asOfTime = asOfDateTimeForQueries;
       }
 
       repositoryServerContext.repositoryPOST(
@@ -803,15 +800,14 @@ const InstancesContextProvider = (props) => {
    */
   const loadRelationship = useCallback(
     (relationshipGUID) => {
-
       let rexFindBody = {
-         relationshipGUID: relationshipGUID 
-     };
- 
-     // if there is an as of time set to use for queries then include it on the find.
-     if (asOfDateTimeForQueries !== undefined) {
-       rexFindBody.asOftime = asOfDateTimeForQueries;
-     }
+        relationshipGUID: relationshipGUID,
+      };
+
+      // if there is an as of time set to use for queries then include it on the find.
+      if (asOfDateTimeForQueries !== undefined) {
+        rexFindBody.asOfTime = asOfDateTimeForQueries;
+      }
       repositoryServerContext.repositoryPOST(
         "instances/relationship",
         rexFindBody,
@@ -1170,7 +1166,7 @@ const InstancesContextProvider = (props) => {
 
       // if there is an as of time set to use for queries then include it on the find.
       if (asOfDateTimeForQueries !== undefined) {
-        rexFindBody.asOftime = asOfDateTimeForQueries;
+        rexFindBody.asOfTime = asOfDateTimeForQueries;
       }
       repositoryServerContext.repositoryPOST(
         "instances/traversal",
@@ -1469,37 +1465,36 @@ const InstancesContextProvider = (props) => {
 
     return historyList;
   }, [gens, guidToGenId]);
-
-  const onAsOfDateChange = (inputDate) => {
-    console.log("onDateChange");
-  
-    let validatedDate;
-    if (inputDate) {
-      validatedDate = format(parseISO(inputDate), "MM/dd/Y");
-      if (!validatedDate || !isValid(validatedDate)) {
-        setInvalid1Date(true)
-        setAsOfDateStr(undefined);
-      } else {
-        setInvalidDate(false)
-        // setAsOfDate(validatedDate);
-        setAsOfDateStr(validatedDate);
-      }
-    }   
-
+  /*
+   * The value we provides into the date picker is a string.
+   * we get back an array where the first element should ba ea data object.
+   * But we get back an invalid date object.
+   */
+  const onAsOfDateChange = (e) => {
+    console.log(" onAsOfDateChange");
+    const inputDate = e[0];
+    // let validatedDate;
+    if (inputDate && isValid(inputDate)) {
+      setInvalidDate(false);
+      setAsOfDate(inputDate);
+    } else {
+      setInvalidDate(true);
+      setAsOfDate(undefined);
+    }
   };
-  const onAsOfTimeChange = (inputTime) => {
+  const onAsOfTimeChange = (e) => {
     console.log("onTimeChange");
-  
+    const inputTime = e.target.value;
+
     let validatedTime;
     if (inputTime !== undefined) {
-    
-      if (time) {
-         validatedTime = parse(time, "HH:mm", asOfDate);
-         if (!validatedTime  || !isValid(validatedTime)) {
-            setInvalidTime(true);
+      if (inputTime) {
+        validatedTime = parse(inputTime, "HH:mm", asOfDate);
+        if (!validatedTime || !isValid(validatedTime)) {
+          setInvalidTime(true);
+          console.log("onAsOfTimeChange  setInvalidTime(true); ");
         } else {
           setInvalidTime(false);
-          setAsOfTime(validatedTime);
         }
       } else {
         setInvalidTime(false);
@@ -1515,7 +1510,7 @@ const InstancesContextProvider = (props) => {
         guidToGenId,
         focus,
         latestActiveGenId,
-        asOfDateStr,
+        // asOfDateStr,
         asOfTimeStr,
         asOfDateTimeForQueries,
         asOfDateTimeStr,
@@ -1549,8 +1544,7 @@ const InstancesContextProvider = (props) => {
         removeGen,
         getLatestGen,
         onAsOfDateChange,
-        onAsOfTimeChange
-
+        onAsOfTimeChange,
       }}
     >
       {props.children}

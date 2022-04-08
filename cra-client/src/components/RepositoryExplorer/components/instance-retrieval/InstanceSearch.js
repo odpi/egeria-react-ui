@@ -150,7 +150,7 @@ export default function InstanceSearch(props) {
 
     // if there is an as of time set to use for queries then include it on the find.
     if (instancesContext.asOfDateTimeForQueries !== undefined) {
-      rexFindBody.asOftime = instancesContext.asOfDateTimeForQueries;
+      rexFindBody.asOfTime = instancesContext.asOfDateTimeForQueries;
     }
 
     repositoryServerContext.repositoryPOST(
@@ -230,7 +230,7 @@ export default function InstanceSearch(props) {
 
     // if there is an as of time set to use for queries then include it on the find.
     if (instancesContext.asOfDateTimeForQueries !== undefined) {
-      rexFindBody.asOftime = instancesContext.asOfDateTimeForQueries;
+      rexFindBody.asOfTime = instancesContext.asOfDateTimeForQueries;
     }
 
     repositoryServerContext.repositoryPOST("instances/relationships/by-property-value", 

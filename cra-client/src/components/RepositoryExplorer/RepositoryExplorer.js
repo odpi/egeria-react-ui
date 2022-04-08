@@ -56,7 +56,7 @@ export default function RepositoryExplorer() {
   const [helpStatus, setHelpStatus] = useState("idle");
 
   let workingHeight = dimensions.cltHeight - 50;
-  let workingWidth = dimensions.cltWidth - 265;
+  let workingWidth = dimensions.cltWidth -265;
 
   /*
    * Do not set the containerDiv dimensions until AFTER the cpt has first rendered, as this creates the containerDiv
