@@ -441,7 +441,7 @@ export default function UpdateNode(props) {
         </Accordion>
       )}
       <div style={{ color: "red" }}>{errorMsg}</div>
-      <Button
+      {/* <Button
         className="bx--btn bx--btn--primary"
         onClick={handleClickUpdate}
         disabled={isDisabled()}
@@ -456,7 +456,7 @@ export default function UpdateNode(props) {
         type="button"
       >
         Back
-      </Button>
+      </Button> */}
     </div>
   );
 }
