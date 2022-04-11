@@ -18,88 +18,7 @@ import format from "date-fns/format";
  * @returns node input
  */
 export default function DateTimePicker(props) {
-  // const onDateChange = (e) => {
-  //   console.log("onDateChange " + e[0]);
-  //   let dateTime = {};
-  //   dateTime.date = e[0];
-  //   dateTime.time = getTimeValue();
-  //   props.onDateTimeChange(dateTime);
-  // };
-  // const onTimeChange = (e) => {
-  //   console.log("onTimeChange");
-  //   let dateTime = {};
-  //   let date;
-  //   if (
-  //     props.value !== undefined &&
-  //     props.value.date !== undefined
-  //   ) {
-  //     date = props.value.date;
-  //   }
-  //   dateTime.date = date;
-  //   dateTime.time = e.currentTarget.value;
-  //   props.onDateTimeChange(dateTime);
-  // };
 
-  // const getTimeValue = () => {
-  //   let timeValue = undefined;
-  //   if (props.value !== undefined && props.value.time !== undefined) {
-  //     timeValue = props.value.time.value;
-  //   }
-  //   return timeValue;
-  // };
-  // const getTimeInvalid = () => {
-  //   let invalid = false;
-  //   if (props.value !== undefined && props.value.time !== undefined) {
-  //     invalid = props.value.time.invalid;
-  //   }
-  //   return invalid;
-  // };
-  // const getTimeInvalidText = () => {
-  //   let invalidText = false;
-  //   if (props.value !== undefined && props.value.time !== undefined) {
-  //     invalidText = props.value.time.invalidText;
-  //   }
-  //   return invalidText;
-  // };
-  // const getDateValue = () => {
-  //   let dateValue = undefined;
-
-  //   // the value needs to be the date string using the date-fns format
-  //   if (
-  //     props.value != undefined &&
-  //     props.value.date != undefined
-  //     // props.value.date.value != undefined
-  //   ) {
-  //     console.log("getDateValue" + JSON.stringify(props.value.date));
-  //     // dateValue = format(props.value.date.value, "MM/dd/Y");
-  //     dateValue = format(props.value.date, "MM/dd/Y");
-  //   }
-
-  //   if ( props.value != undefined){
-  //     console.log("props.value != undefined getDateValue" + JSON.stringify(props.value));
-
-  //   }
-  //   return dateValue;
-  // };
-
-  // const getDateInvalid = () => {
-  //   let invalid = false;
-  //   if (
-  //     props.value != undefined &&
-  //     props.value.date != undefined &&
-  //     props.value.date.invalid != undefined
-  //   ) {
-  //     invalid = props.value.date.invalid;
-  //   }
-  //   return invalid;
-  // };
-  // const getDateInvalidText = () => {
-  //   let invalidText = false;
-  //   if (props.value != undefined && props.value.date != undefined) {
-  //     invalidText = props.value.date.invalidText;
-  //   }
-  //   return invalidText;
-  // };
 
   const getDateFormat = () => {
     // TODO localise
@@ -109,25 +28,6 @@ export default function DateTimePicker(props) {
     // TODO localise
     return "mm/dd/yyyy";
   };
-  /**
-   * It is meaningless to have a time without a date, so dont let the user input a time until there is a date.
-   * @returns boolean time is disabled.
-   */
-  // const isTimeDisabled = () => {
-  //   return !getDateValue();
-  // };
-
-  //   <DateTimePicker
-  //   dateLabel="As of Date"
-  //   timeLabel="As of Time"
-  //   onDateChange={instancesContext.onAsOfDateChange}
-  //   onTimeChange={instancesContext.onAsOfTimeChange}
-  //   dateValue={instancesContext.asOfDateStr}
-  //   timeValue={instancesContext.asOfTimeStr}
-  //   invalidTime={instancesContext.invalidTime}
-  //   invalidDate={instancesContext.invalidDate}
-  //   onDateTimeMessage={onErrorMessage}
-  // />
 
   return (
     <div className="flexcontainer-column">
