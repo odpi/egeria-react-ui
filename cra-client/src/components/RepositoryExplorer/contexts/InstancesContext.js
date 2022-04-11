@@ -1465,6 +1465,16 @@ const InstancesContextProvider = (props) => {
 
     return historyList;
   }, [gens, guidToGenId]);
+
+
+  const onIsDisablePastExploration  = (e) => {
+    if (e) {
+      document.getElementById('historical_date_time_picker').style.display = "none";
+    } else {
+      document.getElementById('historical_date_time_picker').style.display = "block";
+    }
+  };
+
   /*
    * The value we provides into the date picker is a string.
    * we get back an array where the first element should ba ea data object.
@@ -1517,6 +1527,7 @@ const InstancesContextProvider = (props) => {
         invalidTime,
         invalidDate,
         isTimeDisabled,
+        onIsDisablePastExploration,
         setGuidToGenId,
         setFocus,
         getFocusGUID,

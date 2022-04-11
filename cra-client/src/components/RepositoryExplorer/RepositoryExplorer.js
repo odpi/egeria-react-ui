@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+
 /*
  * Import the DEFAULT export from the InteractionContext module - which is actually the InteractionContextProvider
  * Naming it explicitly for clarity that this is the provider not the context.
@@ -156,15 +157,18 @@ export default function RepositoryExplorer() {
                   />
 
                   <EnterpriseControl />
-
+              
                   <HistoricalDateTime />
+      
                 </div>
 
                 <ServerSelector/>
 
                 <InstanceRetrieval  />
 
-                <InstanceSearch  />
+                <InstanceSearch className="instance-search-right-pad"/>
+
+             
               </div>
 
               <div className="rex-content">

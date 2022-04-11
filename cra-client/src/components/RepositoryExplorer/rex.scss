@@ -23,7 +23,7 @@
   font-size        : 10px;
   background-color : rgb(240,240,240);  
   color            : 'black';
-  // justify-content: space-evenly;
+  justify-content: space-evenly
 
   /*border-style   : solid;
   border-width     : 3px;
@@ -104,8 +104,19 @@
   padding          : 20px;
   font-size        : 20px;
 }
+
+//  hack pad out to the right - we may not need this when the display is corrected to remove the scroll bars on inital display.
+.instance-search-right-pad {
+  padding-right: 10em;
+}
+
 .history-outline {
 border: 2px solid black;
 margin: auto;  
 padding: 20px;
+}
+
+.datetimetitle {
+  font-size: 1rem;
+  margin: 10px;
 }
