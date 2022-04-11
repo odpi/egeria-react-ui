@@ -13,7 +13,7 @@
     "@rollup/plugin-babel": "^5.3.0",
     "axios": "^0.21.4",
     "carbon-components": "^10.50.0",
-    "carbon-components-react": "^7.50.0",
+    "carbon-components-react": "^8.0.3",
     "carbon-icons": "^7.0.7",
     "core-js": "^3.20.0",
     "d3": "^6.7.0",
