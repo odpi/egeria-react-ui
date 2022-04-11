@@ -5,7 +5,7 @@ import React, { useContext, useState } from "react";
 
 import { Toggle } from "carbon-components-react";
 
-import DateTimePicker from "../../../common/DateTimePicker";
+import DateTimePicker from "./DateTimePicker";
 
 import { InstancesContext } from "../../contexts/InstancesContext";
 
