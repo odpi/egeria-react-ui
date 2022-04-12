@@ -170,7 +170,7 @@ export default function ServerSelector() {
 
       <p className="descriptive-text">Servers</p>
 
-      <select className="server-selector"
+      <select
               id="serverSelector"
               name="serverSelector"
               onChange = { serverSelected }

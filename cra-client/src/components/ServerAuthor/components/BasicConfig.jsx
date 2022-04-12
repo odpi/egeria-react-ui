@@ -8,68 +8,67 @@ import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function BasicConfig() {
   const {
-    newServerName,
-    setNewServerName,
-    newPlatformName,
-    setNewPlatformName,
-    newServerOrganizationName,
-    setNewServerOrganizationName,
-    newServerDescription,
-    setNewServerDescription,
-    newServerLocalUserId,
-    setNewServerLocalUserId,
-    newServerLocalPassword,
-    setNewServerLocalPassword,
-    newServerMaxPageSize,
-    setNewServerMaxPageSize,
-    newServerSecurityConnector,
-    setNewServerSecurityConnector,
+    currentServerName,
+    setCurrentServerName,
+    setCurrentPlatformName,
+    currentServerOrganizationName,
+    setCurrentServerOrganizationName,
+    currentServerDescription,
+    setCurrentServerDescription,
+    currentServerLocalUserId,
+    setCurrentServerLocalUserId,
+    currentServerLocalPassword,
+    setCurrentServerLocalPassword,
+    currentServerMaxPageSize,
+    setCurrentServerMaxPageSize,
+    currentServerSecurityConnector,
+    setCurrentServerSecurityConnector,
     basicConfigFormStartRef,
     activePlatforms,
   } = useContext(ServerAuthorContext);
 
   const onChangePlatformSelected = (e) => {
-    setNewPlatformName(e.target.value);
+    setCurrentPlatformName(e.target.value);
   };
 
   return (
     <div className="left-text">
       <fieldset className="bx--fieldset" style={{ marginBottom: "32px" }}>
         <TextInput
-          id="new-server-name"
-          name="new-server-name"
+          id="current-server-name"
+          name="current-server-name"
           type="text"
           labelText="Server name"
-          value={newServerName}
-          onChange={(e) => setNewServerName(e.target.value)}
+          value={currentServerName}
+          onChange={(e) => setCurrentServerName(e.target.value)}
           placeholder="cocoMDS1"
-          invalid={newServerName === ""}
+          invalid={currentServerName === ""}
           style={{ marginBottom: "16px", width: "100%" }}
           ref={basicConfigFormStartRef}
           autoComplete="off"
         />
         <TextInput
-          id="new-server-local-user-id"
-          name="new-server-local-user-id"
+          id="current-server-local-user-id"
+          name="current-server-local-user-id"
           type="text"
           labelText="Local user ID"
-          value={newServerLocalUserId}
-          onChange={(e) => setNewServerLocalUserId(e.target.value)}
+          value={currentServerLocalUserId}
+          onChange={(e) => setCurrentServerLocalUserId(e.target.value)}
           placeholder="my_server_user_id"
-          invalid={newServerLocalUserId === ""}
+          invalid={currentServerLocalUserId === ""}
           style={{ marginBottom: "16px" }}
           autoComplete="off"
         />
 
         <TextInput.PasswordInput
-          id="new-server-local-password"
-          name="new-server-local-password"
+          id="current-server-local-password"
+          name="current-server-local-password"
           labelText="Local password"
-          value={newServerLocalPassword}
-          onChange={(e) => setNewServerLocalPassword(e.target.value)}
+          value={currentServerLocalPassword}
+          onChange={(e) => setCurrentServerLocalPassword(e.target.value)}
           placeholder="my_server_Password"
           style={{ marginBottom: "16px" }}
-          autoComplete="new-password"
+          autoComplete="current-password"
         />
         {activePlatforms !== undefined &&
           Object.keys(activePlatforms)[0] !== undefined && (
@@ -97,49 +96,49 @@ export default function BasicConfig() {
             </Select>
           )}
         <TextInput
-          id="new-server-organization-name"
-          name="new-server-organization-name"
+          id="current-server-organization-name"
+          name="current-server-organization-name"
           type="text"
           labelText="Organization name"
-          value={newServerOrganizationName}
-          onChange={(e) => setNewServerOrganizationName(e.target.value)}
+          value={currentServerOrganizationName}
+          onChange={(e) => setCurrentServerOrganizationName(e.target.value)}
           placeholder="Org 1"
-          invalid={newServerOrganizationName === ""}
+          invalid={currentServerOrganizationName === ""}
           style={{ marginBottom: "16px" }}
           autoComplete="off"
         />
 
         <TextInput
-          id="new-server-description"
-          name="new-server-description"
+          id="current-server-description"
+          name="current-server-description"
           type="text"
           labelText="Server Description"
-          value={newServerDescription}
-          onChange={(e) => setNewServerDescription(e.target.value)}
+          value={currentServerDescription}
+          onChange={(e) => setCurrentServerDescription(e.target.value)}
           placeholder=""
           style={{ marginBottom: "16px" }}
           autoComplete="off"
         />
 
         <TextInput
-          id="new-server-max-page-size"
-          name="new-server-max-page-size"
+          id="current-server-max-page-size"
+          name="current-server-max-page-size"
           type="text"
           labelText="Max page size"
-          value={newServerMaxPageSize}
-          onChange={(e) => setNewServerMaxPageSize(e.target.value)}
+          value={currentServerMaxPageSize}
+          onChange={(e) => setCurrentServerMaxPageSize(e.target.value)}
           placeholder="1000"
-          invalid={newServerMaxPageSize === ""}
+          invalid={currentServerMaxPageSize === ""}
           style={{ marginBottom: "16px" }}
         />
 
         <TextInput
-          id="new-server-security-connector"
-          name="new-server-security-connector"
+          id="current-server-security-connector"
+          name="current-server-security-connector"
           type="text"
           labelText="Security Connector (Class Name)"
-          value={newServerSecurityConnector}
-          onChange={(e) => setNewServerSecurityConnector(e.target.value)}
+          value={currentServerSecurityConnector}
+          onChange={(e) => setCurrentServerSecurityConnector(e.target.value)}
           placeholder="Fully Qualified Java Class Name"
           helperText="Note: This field is optional. Leave blank to skip."
           style={{ marginBottom: "16px" }}

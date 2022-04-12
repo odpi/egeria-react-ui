@@ -20,7 +20,6 @@ import DetailsPanel from "./components/details-panel/DetailsPanel";
 import DiagramManager from "./components/diagram/DiagramManager";
 import GraphControls from "./components/graph-controls/GraphControls";
 import HelpHandler from "./HelpHandler";
-import QuestionMarkImage from "./question-mark-32.png";
 import HelpMarkdown from "./HELP.md";
 
 import "./glove.scss";
@@ -124,13 +123,6 @@ export default function GlossaryAuthorVisualisation(props) {
           <div className="glove-top">
             <div className="title">
               <p>Glossary author visualisation explorer (glove) </p>
-
-              <input
-                type="image"
-                src={QuestionMarkImage}
-                alt="image of question mark"
-                onClick={() => displayHelp()}
-              ></input>
 
               <HelpHandler
                 status={helpStatus}

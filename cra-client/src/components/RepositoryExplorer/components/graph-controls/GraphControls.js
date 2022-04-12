@@ -81,10 +81,23 @@ export default function GraphControls(props) {
     /*
      * No filtering is applied to the pre-traversal...
      */
-    repositoryServerContext.repositoryPOST("instances/pre-traversal",
-      { entityGUID : entityGUID,
-        depth      : 1            },  // depth is always limited to 1
-        _preTraversal); 
+
+    let rexPreTraversalBody = {
+      entityGUID: entityGUID,
+      depth: 1, // depth is always limited to 1
+    };
+
+    // if there is an as of time set to use for queries then include it on the find.
+    if (instancesContext.asOfDateTimeForQueries !== undefined) {
+      rexPreTraversalBody.asOfTime = instancesContext.asOfDateTimeForQueries;
+    }
+    
+
+    repositoryServerContext.repositoryPOST(
+      "instances/pre-traversal",
+      rexPreTraversalBody,
+      _preTraversal
+    ); 
   }
 
 

@@ -12,12 +12,12 @@ import serverConfigElements from "./defaults/serverConfigElements";
 export default function ConfigurationSteps() {
 
   const {
-    newServerLocalServerType,
+    currentServerLocalServerType,
     progressIndicatorIndex,
     serverConfigurationSteps
   } = useContext(ServerAuthorContext);
 
-  const steps = serverConfigurationSteps(newServerLocalServerType);
+  const steps = serverConfigurationSteps(currentServerLocalServerType);
 
   const getStepLabel = (index) => {
     const id = steps[index];
