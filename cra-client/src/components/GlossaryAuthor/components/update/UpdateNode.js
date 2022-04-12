@@ -412,7 +412,7 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
-      )
+      
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Relationships">

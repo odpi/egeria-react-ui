@@ -157,7 +157,7 @@ export default function Frame() {
                       Server Author
                     </SideNavLink>
                     <SideNavLink element={Link} to={dinoUrl}>
-                      Dino
+                      Infrastucture Operations (Dino)
                     </SideNavLink>
                   </SideNavMenu>
                 </SideNavItems>

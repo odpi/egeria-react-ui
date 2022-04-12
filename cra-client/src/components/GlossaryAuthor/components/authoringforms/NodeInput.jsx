@@ -72,15 +72,6 @@ export default function NodeInput(props) {
       }
     }
   }, [props]);
-  // validate the current attributes when they change
-  // useEffect(() => {
-  //   const errMsg = validateForm();
-  //   if (errMsg === undefined) {
-  //     setErrorMsg("");
-  //   } else {
-  //     setErrorMsg(errMsg);
-  //   }
-  // }, [currentAttributes]);
 
   /**
    * If there was an error the button has a class added to it to cause it to shake. After the animation ends, we need to remove the class.
@@ -106,12 +97,7 @@ export default function NodeInput(props) {
     }
     return type;
   };
-  const getInputClass = (item) => {
-    if (item.type && item.type === "text") {
-      return "className=bx--text-input";
-    }
-    return "";
-  };
+
   const labelIdForAttribute = (labelKey) => {
     return "text-input-" + props.currentNodeType.name + "-" + labelKey;
   };

@@ -37,7 +37,6 @@ import GraphControls from "./components/graph-controls/GraphControls";
 import ServerSelector from "./components/resource-selection/ServerSelector";
 import EnterpriseControl from "./components/resource-selection/EnterpriseControl";
 import HelpHandler from "./HelpHandler";
-import QuestionMarkImage from "./question-mark-32.png";
 import HelpMarkdown from "./HELP.md";
 
 import "./rex.scss";
@@ -142,13 +141,6 @@ export default function RepositoryExplorer() {
                 <div className="title" >
                   <p>Repository Explorer</p>
 
-                  <input
-                    type="image"
-                    src={QuestionMarkImage}
-                    alt="image of question mark"
-                    onClick={() => displayHelp()}
-                  ></input>
-
                   <HelpHandler
                     status={helpStatus}
                     help={help}
@@ -157,10 +149,10 @@ export default function RepositoryExplorer() {
                   />
 
                   <EnterpriseControl />
-              
-                  <HistoricalDateTime />
       
                 </div>
+
+                <HistoricalDateTime />
 
                 <ServerSelector/>
 

@@ -33,8 +33,6 @@ import DiagramManager                           from "./components/diagram/Diagr
 
 import HelpHandler                              from "./HelpHandler";
 
-import QuestionMarkImage                        from "./question-mark-32.png";
-
 import HelpMarkdown                             from './HELP.md';
 
 import "./dino.scss";
@@ -144,11 +142,7 @@ export default function Dino() {
               <div className="dino-top">
 
                 <div className="title">
-                  <p>Dino</p>
-             
-                  <input type="image"  src={QuestionMarkImage} alt="image of question mark"
-                     onClick = { () => displayHelp() }  >
-                  </input>
+                  <p>Infrastructure Operations</p>
 
                   <HelpHandler   status              = { helpStatus }
                                  help                = { help }

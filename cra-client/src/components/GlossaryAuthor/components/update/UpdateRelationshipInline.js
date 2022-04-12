@@ -150,26 +150,6 @@ export default function UpdateRelationshipInline(props) {
             </div>
           );
         })}
-      {/* {currentRelationship !== undefined && (
-        <Accordion>
-          <AccordionItem title="Advanced options">
-            <DatePicker dateFormat="m/d/Y" datePickerType="range">
-              <DatePickerInput
-                // id="date-picker-range-start"
-                placeholder="mm/dd/yyyy"
-                labelText="Effective from date"
-                type="text"
-              />
-              <DatePickerInput
-                // id="date-picker-range-end"
-                placeholder="mm/dd/yyyy"
-                labelText="Effective to date"
-                type="text"
-              />
-            </DatePicker>
-          </AccordionItem>
-        </Accordion>
-      )} */}
       {currentRelationship !== undefined && (
         <Accordion>
           <AccordionItem title="System Attributes">

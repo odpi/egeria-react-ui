@@ -20,6 +20,10 @@ export default function HistoricalDateTime() {
 
 
   return (
+    <div>
+    <div className="descriptive-text">
+      Past or present?
+    </div>
     <div className="history-outline">
       <Toggle
         labelText="Past or present?"
@@ -44,6 +48,7 @@ export default function HistoricalDateTime() {
           onDateTimeMessage={onErrorMessage}
         />
         {errorMessage}
+      </div>
       </div>
     </div>
   );

@@ -1473,6 +1473,7 @@ const InstancesContextProvider = (props) => {
     } else {
       document.getElementById('historical_date_time_picker').style.display = "block";
     }
+    clear();
   };
 
   /*
