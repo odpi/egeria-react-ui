@@ -12,6 +12,18 @@ None
 * cra-server - ```npm audit``` has 0 vulnerabilities
 * cra-client - ```npm audit --prod``` has 0 vulnerabilities
 
+## Latest levels
+to see your outdated packages (this is what the code scan identfies.
+* ```npm outdated```
+
+Then to upgrade them using
+npm i package-name@version
+
+Then rerun 
+```npm outdated```
+
+***I found you should update carbon first then look at the latest version of React - as there maybe react level dependancies from carbon such that you cannot update both to the latest.***
+
 
 As of 02/02/22 (latest activity first)
 
