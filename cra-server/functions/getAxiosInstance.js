@@ -16,12 +16,14 @@ const getAxiosInstance = (url, app) => {
     const servers = app.get('servers');
     const urlRoot = servers[suppliedServerName].remoteURL;
     const remoteServerName = servers[suppliedServerName].remoteServerName;
- 
+    const server = servers[suppliedServerName]
 
-    const pfx = getCertificateFromFileSystem(servers[suppliedServerName].pfx);
-    const ca = getCertificateFromFileSystem(servers[suppliedServerName].ca);
-    const passphrase = servers[suppliedServerName].passphrase;
+    const pfx = getCertificateFromFileSystem(server.pfx);
+    const ca = getCertificateFromFileSystem(server.ca);
+    const passphrase = server.passphrase;
+    
 
+    const rejectUnauthorized = server.rejectUnauthorizedForOmag;
     const downStreamURL =
       urlRoot +
       "/servers/" +
@@ -33,7 +35,8 @@ const getAxiosInstance = (url, app) => {
       httpsAgent: new https.Agent({
         ca: ca,
         pfx: pfx,
-        passphrase: passphrase
+        passphrase: passphrase,
+        rejectUnauthorized: rejectUnauthorized
       }),
     });
     return instance;

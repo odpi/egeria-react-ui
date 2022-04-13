@@ -11,6 +11,7 @@ const setConfigurationFromEnv = (app) => {
   let supplied_pfx_file_name;
   let supplied_ca_file_name;
   let supplied_passphrase;
+  let rejectUnauthorizedForOmag = true;
   const env = process.env;
 
   for (const envVariable in env) {
@@ -83,6 +84,11 @@ const setConfigurationFromEnv = (app) => {
         supplied_ca_file_name = env[envVariable];
       } else if (envVariable === "EGERIA_SECURITY_PASSPHRASE") {
         supplied_passphrase = env[envVariable];
+      } else if (envVariable === "EGERIA_PRESENTATIONSERVER_REJECTUNAUTHORIZED_FOR_OMAG") {
+          if ('false' === env[envVariable] ) {
+            rejectUnauthorizedForOmag = false;
+            console.log("Not validating certificates!");
+          } 
       }
     } catch (error) {
       console.log(error);
@@ -113,6 +119,7 @@ const setConfigurationFromEnv = (app) => {
     let serverWithSecurity = {};
     serverWithSecurity.serverName = serverName;
     serverWithSecurity.remoteServerName = serverInfo.remoteServerName;
+    serverWithSecurity.rejectUnauthorizedForOmag = rejectUnauthorizedForOmag;
 
     if (serverInfo.remoteURL !== undefined) {
       serverWithSecurity.remoteURL = serverInfo.remoteURL;
