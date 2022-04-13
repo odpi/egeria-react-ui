@@ -43,8 +43,6 @@ import DiagramManager                           from "./components/diagram/Diagr
 
 import HelpHandler                              from "./HelpHandler";
 
-import QuestionMarkImage                        from "./question-mark-32.png";
-
 import HelpMarkdown                             from './HELP.md';
 
 
@@ -162,10 +160,6 @@ export default function TypeExplorer() {
 
                   <div className="title">
                     <p>Type Explorer</p>
-
-                    <input type="image"  src={QuestionMarkImage} alt="image of question mark"
-                       onClick = { () => displayHelp() }  >
-                    </input>
 
                     <HelpHandler   status              = { helpStatus }
                                      help                = { help }

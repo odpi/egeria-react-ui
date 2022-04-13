@@ -45,7 +45,7 @@ export default function ConfigureAuditLogDestinations({
     supportedAuditLogSeverities,
     currentServerAuditDestinations,
     setCurrentServerAuditDestinations,
-    newServerName,
+    currentServerName,
     fetchServerConfig,
     setLoadingText
   } = useContext(ServerAuthorContext);
@@ -166,7 +166,7 @@ export default function ConfigureAuditLogDestinations({
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/audit-log-destinations"
     );
     setLoadingText("Removing all audit log destinations ");
@@ -225,7 +225,7 @@ export default function ConfigureAuditLogDestinations({
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/audit-log-destinations/connection/" +
         name
     );
@@ -316,7 +316,7 @@ export default function ConfigureAuditLogDestinations({
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/audit-log-destinations/connection"
       );
       setOperation(undefined);
@@ -341,7 +341,7 @@ export default function ConfigureAuditLogDestinations({
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/audit-log-destinations/connection/" + 
         currentDestinationId
     );

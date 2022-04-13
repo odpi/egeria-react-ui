@@ -31,24 +31,25 @@ import ConfigureOMArchives from "./ConfigureOMArchives";
 import ConfigureRepositoryProxyConnectors from "./ConfigureRepositoryProxyConnectors";
 import ConfigureViewServices from "./ConfigureViewServices";
 import ConfigureIntegrationServices from "./ConfigureIntegrationServices";
+import serverConfigElements from "./defaults/serverConfigElements";
 
 export default function ServerAuthorWizard() {
   const { userId, serverName: tenantId } = useContext(IdentificationContext);
   console.log(useContext(ServerAuthorContext));
   const {
-    newServerName,
-    newServerLocalServerType,
-    setNewServerLocalServerType,
-    newServerSecurityConnector,
+    currentServerName,
+    currentServerLocalServerType,
+    setCurrentServerLocalServerType,
+    currentServerSecurityConnector,
     selectedAccessServices,
-    newServerRepository,
-    newServerOMArchives,
-    newServerProxyConnector,
-    newServerEventMapperConnector,
-    newServerEventSource,
+    currentServerRepository,
+    currentServerOMArchives,
+    currentServerProxyConnector,
+    currentServerEventMapperConnector,
+    currentServerEventSource,
     selectedViewServices,
-    newServerViewServiceRemoteServerURLRoot,
-    newServerViewServiceRemoteServerName,
+    currentServerViewServiceRemoteServerURLRoot,
+    currentServerViewServiceRemoteServerName,
     notificationType,
     setNotificationType,
     notificationTitle,
@@ -59,8 +60,8 @@ export default function ServerAuthorWizard() {
     setProgressIndicatorIndex,
     loadingText,
     setLoadingText,
-    newServerConfig,
-    setNewServerConfig,
+    currentServerConfig,
+    setCurrentServerConfig,
     setCurrentAccessServices,
     activePlatforms,
     newPlatformName,
@@ -73,7 +74,7 @@ export default function ServerAuthorWizard() {
     unconfiguredAccessServices,
 
     // functions
-    cleanForNewServerType,
+    cleanForcurrentServerType,
     fetchServerConfig,
     generateBasicServerConfig,
     configureArchiveFile,
@@ -83,6 +84,7 @@ export default function ServerAuthorWizard() {
     serverConfigurationSteps,
     // setServerTypeDescription,
     // serverTypeDescription
+    setIsCurrentStepInvalid
   } = useContext(ServerAuthorContext);
 
   const [serverTypeDescription, setServerTypeDescription] = useState();
@@ -99,7 +101,7 @@ export default function ServerAuthorWizard() {
     if (progressIndicatorIndex === 0) {
       return null;
     }
-    const steps = serverConfigurationSteps(newServerLocalServerType);
+    const steps = serverConfigurationSteps(currentServerLocalServerType);
     // hide everything that is hideable
     for (let el of document.querySelectorAll(".hideable"))
       el.style.display = "none";
@@ -111,7 +113,7 @@ export default function ServerAuthorWizard() {
   };
 
   const showNextStep = () => {
-    const steps = serverConfigurationSteps(newServerLocalServerType);
+    const steps = serverConfigurationSteps(currentServerLocalServerType);
     if (progressIndicatorIndex === steps.length) {
       return null;
     }
@@ -132,6 +134,11 @@ export default function ServerAuthorWizard() {
     //   stewardshipEnginesFormStartRef.current.focus();
     //   break;
     // }
+    const id = steps[progressIndicatorIndex + 1];
+    console.log('id='+id);
+    const serverTypeElement = serverConfigElements.find(o => o.id === id); 
+    // disable the next step if necessary
+    setIsCurrentStepInvalid(serverTypeElement.initialiseAsInvalid);
     setProgressIndicatorIndex(progressIndicatorIndex + 1);
   };
 
@@ -146,7 +153,7 @@ export default function ServerAuthorWizard() {
   const handleServerTypeSelection = async (e) => {
     e.preventDefault();
     // clear out the context.
-    cleanForNewServerType();
+    cleanForcurrentServerType();
     showNextStep();
   };
 
@@ -185,15 +192,15 @@ export default function ServerAuthorWizard() {
     setLoadingText(
       "Storing basic server configuration on OMAG server platform..."
     );
-    // const setServerConfigURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/configuration`;
-    const newServerName = serverConfig.localServerName;
+    // const setServerConfigURL = `/open-metadata/admin-services/users/${userId}/servers/${currentServerName}/configuration`;
+    const currentServerName = serverConfig.localServerName;
     const serverConfigURL = encodeURI(
       "/servers/" +
         tenantId +
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/configuration"
     );
     issueRestCreate(
@@ -206,7 +213,7 @@ export default function ServerAuthorWizard() {
   };
   const onSuccessfulConfigureServer = (json) => {
     const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
     let platformName;
     if (newPlatformName === undefined || newPlatformName === "") {
       platformName = Object.keys(activePlatforms)[0];
@@ -250,7 +257,7 @@ export default function ServerAuthorWizard() {
     setAvailableViewServices(platform.viewServices);
     setAvailableIntegrationServices(platform.integrationServices);
     // Configure security connector
-    if (newServerSecurityConnector !== "") {
+    if (currentServerSecurityConnector !== "") {
       setLoadingText("Configuring security connector...");
       const serverConfigURL = encodeURI(
         "/servers/" +
@@ -258,14 +265,14 @@ export default function ServerAuthorWizard() {
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/security/connection"
       );
       config = {
         class: "Connection",
         connectorType: {
           class: "ConnectorType",
-          connectorProviderClassName: newServerSecurityConnector,
+          connectorProviderClassName: currentServerSecurityConnector,
         },
       };
       issueRestCreate(
@@ -281,7 +288,7 @@ export default function ServerAuthorWizard() {
   };
   const onErrorConfigureServer = (error) => {
     console.error("Error sending config to platform", { error });
-    setNewServerConfig(null);
+    setCurrentServerConfig(null);
     setNotificationType("error");
     if (error.code && error.code === "ECONNABORTED") {
       setNotificationTitle("Connection Error");
@@ -302,7 +309,7 @@ export default function ServerAuthorWizard() {
 
   const onSuccessfulEnableRepository = (json) => {
     const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
     showNextStep();
   };
   const onErrorEnableCruxServer = () => {
@@ -318,13 +325,13 @@ export default function ServerAuthorWizard() {
   };
   const onSuccessfulConfigureEventBusURL = (json) => {
     const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
     showNextStep();
   };
 
   const onSuccessfulConfigurationOfSecurityConnector = (json) => {
     const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
     showNextStep();
   };
   // local repository
@@ -334,7 +341,7 @@ export default function ServerAuthorWizard() {
       "none";
     document.getElementById("loading-container").style.display = "block";
 
-    if (newServerRepository) {
+    if (currentServerRepository) {
       setLoadingText("Enabling chosen local repository...");
 
       //local-repository/mode/plugin-repository/connection
@@ -345,9 +352,9 @@ export default function ServerAuthorWizard() {
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/local-repository/mode/" +
-          newServerRepository
+          currentServerRepository
       );
 
       if (serverConfigURL.endsWith("plugin-repository/connection")) {
@@ -415,7 +422,7 @@ export default function ServerAuthorWizard() {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/access-services"
     );
     if (serviceURLMarker && serviceURLMarker !== "") {
@@ -432,7 +439,7 @@ export default function ServerAuthorWizard() {
   };
   const onSuccessfulConfigureAccessServices = (json) => {
     const serverConfig = json.omagServerConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
     configureAuditLogDestinations();
   };
 
@@ -453,14 +460,14 @@ export default function ServerAuthorWizard() {
   };
   const onSuccessfulFetchServer = (json) => {
     const serverConfig = json.serverConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
     showNextStep();
     document.getElementById("loading-container").style.display = "none";
   };
 
   const onErrorFetchServer = (error) => {
     console.error("Error fetching config", { error });
-    setNewServerConfig(null);
+    setCurrentServerConfig(null);
     setNotificationType("error");
     if (error.code && error.code === "ECONNABORTED") {
       setNotificationTitle("Connection Error");
@@ -491,12 +498,12 @@ export default function ServerAuthorWizard() {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/event-bus?topicURLRoot=egeriaTopics"
     );
     issueRestCreate(
       serverConfigURL,
-      newServerConfig,
+      currentServerConfig,
       onSuccessfulConfigureEventBusURL,
       onErrorConfigureServer,
       "omagServerConfig"
@@ -521,7 +528,7 @@ export default function ServerAuthorWizard() {
     document.getElementById("archives-config-element").style.display = "none";
     document.getElementById("loading-container").style.display = "block";
     // Register archives
-    for (const archiveName of newServerOMArchives) {
+    for (const archiveName of currentServerOMArchives) {
       try {
         setLoadingText(
           `Configuring the OMAG Server to load the ${archiveName} archive upon startup...`
@@ -557,7 +564,7 @@ export default function ServerAuthorWizard() {
     // setLoadingText("Fetching final stored server configuration...");
     try {
       // const serverConfig = await fetchServerConfig();
-      // setNewServerConfig(serverConfig);
+      // setCurrentServerConfig(serverConfig);
       showNextStep();
     } catch (error) {
       console.error("error fetching server config", { error });
@@ -584,22 +591,22 @@ export default function ServerAuthorWizard() {
   const handleConfigureRepositoryProxyConnectors = async () => {
     // If all three fields are blank, skip to next step
     if (
-      (!newServerProxyConnector || newServerProxyConnector === "") &&
-      (!newServerEventMapperConnector ||
-        newServerEventMapperConnector === "") &&
-      (!newServerEventSource || newServerEventSource === "")
+      (!currentServerProxyConnector || currentServerProxyConnector === "") &&
+      (!currentServerEventMapperConnector ||
+        currentServerEventMapperConnector === "") &&
+      (!currentServerEventSource || currentServerEventSource === "")
     ) {
       showNextStep();
       return;
     }
     // If one or two fields are blank, show notification
     if (
-      !newServerProxyConnector ||
-      newServerProxyConnector === "" ||
-      !newServerEventMapperConnector ||
-      newServerEventMapperConnector === "" ||
-      !newServerEventSource ||
-      newServerEventSource === ""
+      !currentServerProxyConnector ||
+      currentServerProxyConnector === "" ||
+      !currentServerEventMapperConnector ||
+      currentServerEventMapperConnector === "" ||
+      !currentServerEventSource ||
+      currentServerEventSource === ""
     ) {
       setNotificationType("error");
       setNotificationTitle("Input Error");
@@ -615,7 +622,7 @@ export default function ServerAuthorWizard() {
     document.getElementById("loading-container").style.display = "block";
     // Configure the repository proxy connector
     try {
-      await configureRepositoryProxyConnector(newServerProxyConnector);
+      await configureRepositoryProxyConnector(currentServerProxyConnector);
     } catch (error) {
       setNotificationType("error");
       if (error.code && error.code === "ECONNABORTED") {
@@ -639,8 +646,8 @@ export default function ServerAuthorWizard() {
     setLoadingText("Configuring repository event mapper connector...");
     try {
       await configureRepositoryEventMapperConnector(
-        newServerEventMapperConnector,
-        newServerEventSource
+        currentServerEventMapperConnector,
+        currentServerEventSource
       );
     } catch (error) {
       setNotificationType("error");
@@ -665,7 +672,7 @@ export default function ServerAuthorWizard() {
     setLoadingText("Fetching final stored server configuration...");
     try {
       const serverConfig = await fetchServerConfig();
-      setNewServerConfig(serverConfig);
+      setCurrentServerConfig(serverConfig);
       showNextStep();
     } catch (error) {
       console.error("error fetching server config", { error });
@@ -687,9 +694,10 @@ export default function ServerAuthorWizard() {
   };
   const onChangeServerTypeSelected = (e) => {
     const serverType = e.currentTarget.value;
-    setNewServerLocalServerType(serverType);
+    setCurrentServerLocalServerType(serverType);
     const serverTypeElement = serverTypes.find((o) => o.id === serverType);
     setServerTypeDescription(serverTypeElement.description);
+    setIsCurrentStepInvalid(false);
 
     // move to the next screen on click
   };
@@ -699,10 +707,10 @@ export default function ServerAuthorWizard() {
   const handleConfigureViewServices = async () => {
     // If all three fields are blank, skip to next step
     if (
-      (!newServerViewServiceRemoteServerURLRoot ||
-        newServerViewServiceRemoteServerURLRoot === "") &&
-      (!newServerViewServiceRemoteServerName ||
-        newServerViewServiceRemoteServerName === "") &&
+      (!currentServerViewServiceRemoteServerURLRoot ||
+        currentServerViewServiceRemoteServerURLRoot === "") &&
+      (!currentServerViewServiceRemoteServerName ||
+        currentServerViewServiceRemoteServerName === "") &&
       (!selectedViewServices || !selectedViewServices.length)
     ) {
       showNextStep();
@@ -710,10 +718,10 @@ export default function ServerAuthorWizard() {
     }
     // If one or two fields are blank, show notification
     if (
-      !newServerViewServiceRemoteServerURLRoot ||
-      newServerViewServiceRemoteServerURLRoot === "" ||
-      !newServerViewServiceRemoteServerName ||
-      newServerViewServiceRemoteServerName === "" ||
+      !currentServerViewServiceRemoteServerURLRoot ||
+      currentServerViewServiceRemoteServerURLRoot === "" ||
+      !currentServerViewServiceRemoteServerName ||
+      currentServerViewServiceRemoteServerName === "" ||
       !selectedViewServices ||
       !selectedViewServices.length
     ) {
@@ -732,15 +740,15 @@ export default function ServerAuthorWizard() {
     try {
       if (selectedViewServices.length === availableViewServices.length) {
         configureViewServices(
-          newServerViewServiceRemoteServerURLRoot,
-          newServerViewServiceRemoteServerName
+          currentServerViewServiceRemoteServerURLRoot,
+          currentServerViewServiceRemoteServerName
         );
       } else {
         for (const service of selectedViewServices) {
           setLoadingText(`Enabling ${service} view service...`);
           configureViewServices(
-            newServerViewServiceRemoteServerURLRoot,
-            newServerViewServiceRemoteServerName,
+            currentServerViewServiceRemoteServerURLRoot,
+            currentServerViewServiceRemoteServerName,
             service
           );
         }
@@ -765,7 +773,7 @@ export default function ServerAuthorWizard() {
     setLoadingText("Fetching final stored server configuration...");
     try {
       const serverConfig = await fetchServerConfig();
-      setNewServerConfig(serverConfig);
+      setCurrentServerConfig(serverConfig);
       showNextStep();
     } catch (error) {
       console.error("error fetching server config", { error });
@@ -790,10 +798,10 @@ export default function ServerAuthorWizard() {
   // const handleConfigureDiscoveryEngines = async () => {
   //   // If all three fields are blank, skip to next step
   //   if (
-  //     (!newServerDiscoveryEngineRemoteServerURLRoot ||
-  //       newServerDiscoveryEngineRemoteServerURLRoot === "") &&
-  //     (!newServerDiscoveryEngineRemoteServerName ||
-  //       newServerDiscoveryEngineRemoteServerName === "") &&
+  //     (!currentServerDiscoveryEngineRemoteServerURLRoot ||
+  //       currentServerDiscoveryEngineRemoteServerURLRoot === "") &&
+  //     (!currentServerDiscoveryEngineRemoteServerName ||
+  //       currentServerDiscoveryEngineRemoteServerName === "") &&
   //     (!selectedDiscoveryEngines || !selectedDiscoveryEngines.length)
   //   ) {
   //     showNextStep();
@@ -802,10 +810,10 @@ export default function ServerAuthorWizard() {
   //   }
   //   // If one or two fields are blank, show notification
   //   if (
-  //     !newServerDiscoveryEngineRemoteServerURLRoot ||
-  //     newServerDiscoveryEngineRemoteServerURLRoot === "" ||
-  //     !newServerDiscoveryEngineRemoteServerName ||
-  //     newServerDiscoveryEngineRemoteServerName === "" ||
+  //     !currentServerDiscoveryEngineRemoteServerURLRoot ||
+  //     currentServerDiscoveryEngineRemoteServerURLRoot === "" ||
+  //     !currentServerDiscoveryEngineRemoteServerName ||
+  //     currentServerDiscoveryEngineRemoteServerName === "" ||
   //     !selectedDiscoveryEngines ||
   //     !selectedDiscoveryEngines.length
   //   ) {
@@ -824,8 +832,8 @@ export default function ServerAuthorWizard() {
   //   // Configure the discovery engines client
   //   try {
   //     await configureDiscoveryEngineClient(
-  //       newServerDiscoveryEngineRemoteServerURLRoot,
-  //       newServerDiscoveryEngineRemoteServerName
+  //       currentServerDiscoveryEngineRemoteServerURLRoot,
+  //       currentServerDiscoveryEngineRemoteServerName
   //     );
   //   } catch (error) {
   //     setNotificationType("error");
@@ -873,7 +881,7 @@ export default function ServerAuthorWizard() {
   //   setLoadingText("Fetching final stored server configuration...");
   //   try {
   //     const serverConfig = await fetchServerConfig();
-  //     setNewServerConfig(serverConfig);
+  //     setCurrentServerConfig(serverConfig);
   //     showNextStep();
   //     setProgressIndicatorIndex(progressIndicatorIndex + 1);
   //   } catch (error) {
@@ -899,16 +907,16 @@ export default function ServerAuthorWizard() {
 
   // const handleConfigureStewardshipEngines = async () => {
   //   console.log({
-  //     newServerStewardshipEngineRemoteServerURLRoot,
-  //     newServerStewardshipEngineRemoteServerName,
+  //     currentServerStewardshipEngineRemoteServerURLRoot,
+  //     currentServerStewardshipEngineRemoteServerName,
   //     selectedStewardshipEngines,
   //   });
   //   // If all three fields are blank, skip to next step
   //   if (
-  //     (!newServerStewardshipEngineRemoteServerURLRoot ||
-  //       newServerStewardshipEngineRemoteServerURLRoot === "") &&
-  //     (!newServerStewardshipEngineRemoteServerName ||
-  //       newServerStewardshipEngineRemoteServerName === "") &&
+  //     (!currentServerStewardshipEngineRemoteServerURLRoot ||
+  //       currentServerStewardshipEngineRemoteServerURLRoot === "") &&
+  //     (!currentServerStewardshipEngineRemoteServerName ||
+  //       currentServerStewardshipEngineRemoteServerName === "") &&
   //     (!selectedStewardshipEngines || !selectedStewardshipEngines.length)
   //   ) {
   //     showNextStep();
@@ -917,10 +925,10 @@ export default function ServerAuthorWizard() {
   //   }
   //   // If one or two fields are blank, show notification
   //   if (
-  //     !newServerStewardshipEngineRemoteServerURLRoot ||
-  //     newServerStewardshipEngineRemoteServerURLRoot === "" ||
-  //     !newServerStewardshipEngineRemoteServerName ||
-  //     newServerStewardshipEngineRemoteServerName === "" ||
+  //     !currentServerStewardshipEngineRemoteServerURLRoot ||
+  //     currentServerStewardshipEngineRemoteServerURLRoot === "" ||
+  //     !currentServerStewardshipEngineRemoteServerName ||
+  //     currentServerStewardshipEngineRemoteServerName === "" ||
   //     !selectedStewardshipEngines ||
   //     !selectedStewardshipEngines.length
   //   ) {
@@ -939,8 +947,8 @@ export default function ServerAuthorWizard() {
   //   // Configure the stewardship engines client
   //   try {
   //     await configureStewardshipEngineClient(
-  //       newServerStewardshipEngineRemoteServerURLRoot,
-  //       newServerStewardshipEngineRemoteServerName
+  //       currentServerStewardshipEngineRemoteServerURLRoot,
+  //       currentServerStewardshipEngineRemoteServerName
   //     );
   //   } catch (error) {
   //     setNotificationType("error");
@@ -988,7 +996,7 @@ export default function ServerAuthorWizard() {
   //   setLoadingText("Fetching final stored server configuration...");
   //   try {
   //     const serverConfig = await fetchServerConfig();
-  //     setNewServerConfig(serverConfig);
+  //     setCurrentServerConfig(serverConfig);
   //     showNextStep();
   //     setProgressIndicatorIndex(progressIndicatorIndex + 1);
   //   } catch (error) {
@@ -1018,7 +1026,7 @@ export default function ServerAuthorWizard() {
   //   document.getElementById("config-preview-container").style.display = "none";
   //   document.getElementById("loading-container").style.display = "block";
   //   // Issue the instance call to start the new server
-  //   const startServerURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/instance`;
+  //   const startServerURL = `/open-metadata/admin-services/users/${userId}/servers/${currentServerName}/instance`;
   //   try {
   //     const startServerResponse = await axios.post(
   //       startServerURL,
@@ -1353,7 +1361,7 @@ export default function ServerAuthorWizard() {
               }}
             >
               Congratulations you have successfully configured server '
-              {newServerName}'!
+              {currentServerName}'!
             </h4>
             <NavigationButtons handlePreviousStep={handleBackToPreviousStep} />
           </div>

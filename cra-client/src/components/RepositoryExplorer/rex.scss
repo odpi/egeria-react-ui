@@ -5,8 +5,8 @@
 
 .rex-container {
   top              : 0px;
-  left             : 260px;
   height           : 100%;
+  // left             : 260px;
   display          : flex;
   flex-flow        : column;
   /*border-style   : solid;
@@ -23,38 +23,42 @@
   font-size        : 10px;
   background-color : rgb(240,240,240);  
   color            : 'black';
+  justify-content: space-evenly
+
   /*border-style   : solid;
   border-width     : 3px;
   border-color     : purple ;*/
 }
-
-.rex-top-left {
-  flex             : 0 0 auto;
-  /*border-style   : solid;
-  border-width     : 3px;
-  border-color     : rgb(55, 0, 255) ;*/
+.rex-flex-none {
+  flex:none;
 }
+// .rex-top-left {
+//   flex             : 0 0 auto;
+//   /*border-style   : solid;
+//   border-width     : 3px;
+//   border-color     : rgb(55, 0, 255) ;*/
+// }
 
-.rex-top-middle {
-  flex             : 0 0 auto;
-  /*border-style   : solid;
-  border-width     : 3px;
-  border-color     : rgb(255, 0, 170) ;*/
-}
+// .rex-top-middle {
+//   flex             : 0 0 auto;
+//   /*border-style   : solid;
+//   border-width     : 3px;
+//   border-color     : rgb(255, 0, 170) ;*/
+// }
 
-.rex-top-right {
-  flex             : 0 0 auto;
-  /*border-style   : solid;
-  border-width     : 3px;
-  border-color     : rgb(255, 0, 0) ;*/
-}
+// .rex-top-right {
+//   flex             : 0 0 auto;
+//   /*border-style   : solid;
+//   border-width     : 3px;
+//   border-color     : rgb(255, 0, 0) ;*/
+// }
 
 
 .rex-content {
   flex             : 2;
   display          : flex;
   flex-flow        : row;
-  width            : 100%;
+  // width            : 100%;
   padding          : 10px;
   font-size        : 10px;
   background-color : rgb(240,240,240);
@@ -63,11 +67,11 @@
 
 .rex-lhs {
   flex             : 0 0 auto;
-  width            : 450px;
   overflow         : auto;
   padding          : 0px 10px 10px 10px;
   font-size        : 10px;
   background-color : rgb(240,240,240);    
+  max-width        : 450px;
   color            : 'black';
   /*border-style   : solid;
   border-width     : 3px;
@@ -99,4 +103,22 @@
 .title {
   padding          : 20px;
   font-size        : 20px;
+}
+
+//  hack pad out to the right - we may not need this when the display is corrected to remove the scroll bars on inital display.
+.instance-search-right-pad {
+  padding-right: 10em;
+}
+
+.history-outline {
+border: 1px solid grey;
+margin: auto; 
+margin-top: 5px;
+padding: 20px;
+margin-right: 10px;
+}
+
+.datetimetitle {
+  font-size: 1rem;
+  margin: 10px;
 }

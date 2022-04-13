@@ -132,8 +132,7 @@ export default function InstanceSearch(props) {
   /*
    * Function to find entities in repository using searchText
    */
-  const findEntities = () => {    
-
+  const findEntities = () => {
     let typeName = searchType || null;
     let classificationList = Object.keys(searchClassifications);
 
@@ -143,12 +142,22 @@ export default function InstanceSearch(props) {
     setSearchResults([]);
 
     setStatus("pending");
+    let rexFindBody = {
+      searchText: searchText,
+      typeName: typeName,
+      classificationNames: classificationList,
+    };
 
-    repositoryServerContext.repositoryPOST("instances/entities/by-property-value", 
-      { searchText           : searchText, 
-        typeName             : typeName,
-        classificationNames  : classificationList
-       }, _findEntities); 
+    // if there is an as of time set to use for queries then include it on the find.
+    if (instancesContext.asOfDateTimeForQueries !== undefined) {
+      rexFindBody.asOfTime = instancesContext.asOfDateTimeForQueries;
+    }
+
+    repositoryServerContext.repositoryPOST(
+      "instances/entities/by-property-value",
+      rexFindBody,
+      _findEntities
+    );
   };
 
   /*
@@ -211,12 +220,21 @@ export default function InstanceSearch(props) {
     setStatus("pending");
 
     /* 
-     * Add the typeName and classifications list to the body here....
+     * Add the typeName and search text to the body here....
      */   
+
+    let rexFindBody = {
+      searchText: searchText,
+      typeName: typeName,
+    };
+
+    // if there is an as of time set to use for queries then include it on the find.
+    if (instancesContext.asOfDateTimeForQueries !== undefined) {
+      rexFindBody.asOfTime = instancesContext.asOfDateTimeForQueries;
+    }
+
     repositoryServerContext.repositoryPOST("instances/relationships/by-property-value", 
-      { searchText : searchText, 
-        typeName   : typeName 
-      }, _findRelationships); 
+    rexFindBody, _findRelationships); 
   };
 
   /*

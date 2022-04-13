@@ -11,14 +11,15 @@ import serverConfigElements from "./defaults/serverConfigElements";
 export default function NavigationButtons({ handlePreviousStep, handleNextStep }) {
 
   const {
-    newServerLocalServerType,
+    currentServerLocalServerType,
     progressIndicatorIndex,
     serverConfigurationSteps,
     hideConfigForm,
-    cleanForNewServerType
+    cleanForNewServerType,
+    isCurrentStepInvalid
   } = useContext(ServerAuthorContext);
 
-  const steps = serverConfigurationSteps(newServerLocalServerType);
+  const steps = serverConfigurationSteps(currentServerLocalServerType);
 
   const getStepLabel = (index) => {
     const id = steps[index];
@@ -51,6 +52,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
           kind="tertiary"
           style={{margin: "16px auto"}}
           onClick={handleNextStep}
+          disabled={isCurrentStepInvalid} 
         >
           Proceed to {getStepLabel(progressIndicatorIndex + 1)}
         </Button>
@@ -103,6 +105,7 @@ export default function NavigationButtons({ handlePreviousStep, handleNextStep }
         kind="tertiary"
         style={{margin: "16px auto"}}
         onClick={handleNextStep}
+        disabled={isCurrentStepInvalid} 
       >
         Proceed to {getStepLabel(progressIndicatorIndex + 1)}
       </Button>

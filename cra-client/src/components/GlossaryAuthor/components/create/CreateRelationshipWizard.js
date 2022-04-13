@@ -276,10 +276,12 @@ export default function CreateRelationshipWizard(props) {
       let end1 = {};
       end1.class = "RelationshipEnd";
       end1.nodeType = "Term";
+      end1.nodeTypeName = "Term";
       end1.nodeGuid = end1Node.systemAttributes.guid;
       let end2 = {};
       end2.class = "RelationshipEnd";
       end2.nodeType = "Term";
+      end2.nodeTypeName = "Term";
       end2.nodeGuid = end2Node.systemAttributes.guid;
       myRelationshipToCreate.end1 = end1;
       myRelationshipToCreate.end2 = end2;
