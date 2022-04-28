@@ -27,7 +27,7 @@ export default function HistoricalDateTime() {
     <div className="history-outline">
       <Toggle
         // labelA="Present"
-        labelB="Issue Historical query"
+        // labelB="Issue Historical query"
         id="asOfTimeToggle"
         onToggle={instancesContext.onHistoricalQueryChange}
       />
