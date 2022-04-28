@@ -22,16 +22,14 @@ export default function HistoricalDateTime() {
   return (
     <div>
     <div className="descriptive-text">
-      Past or present?
+      Historical Query
     </div>
     <div className="history-outline">
       <Toggle
-        labelText="Past or present?"
-        labelA="Past"
-        labelB="Present"
-        defaultToggled
+        // labelA="Present"
+        labelB="Issue Historical query"
         id="asOfTimeToggle"
-        onToggle={instancesContext.onIsDisablePastExploration}
+        onToggle={instancesContext.onHistoricalQueryChange}
       />
       <div id="historical_date_time_picker" style={{ display: "none" }} >
         <DateTimePicker

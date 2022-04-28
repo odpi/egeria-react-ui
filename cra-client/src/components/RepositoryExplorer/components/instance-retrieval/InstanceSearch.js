@@ -35,7 +35,7 @@ export default function InstanceSearch(props) {
    * was registered (i.e. on the POST call). In the event of a cancel, status should 
    * have changed to 'cancelled' and we need the callback to see the change.
    * 
-   * status : { "idle", "pending", "cancelled:", "complete" }
+   * status : { "idle", "pending", "cancelled", "complete" }
    */
   const [status, setStatus]   = useState("idle");
   const statusRef             = useRef();
@@ -194,7 +194,14 @@ export default function InstanceSearch(props) {
        * On failure ...
        */
       interactionContext.reportFailedOperation("find entities",json);
+
+      // if (json.exceptionSystemAction === "The system reported that the historical capability is not supported.") {
+      //   // setStatus("cancelled-historical-queries-not-supported");
+      //   instancesContext.setAsOfTimeStr(undefined);
+      //   instancesContext.setAsOfDate(undefined);
+      // } 
       setStatus("cancelled");
+    
     }
     else {
       setStatus("idle");
@@ -271,7 +278,13 @@ export default function InstanceSearch(props) {
        * On failure ...
        */
       interactionContext.reportFailedOperation("find relationships",json);
-      setStatus("cancelled");
+      // if (json.exceptionSystemAction === "The system reported that the historical capability is not supported.") {
+      //   instancesContext.setAsOfTimeStr(undefined);
+      //   instancesContext.setAsOfDate(undefined);
+      // }
+       setStatus("cancelled"); 
+    
+      
     }
     else {
       setStatus("idle");
@@ -434,8 +447,7 @@ export default function InstanceSearch(props) {
 
     if (status === "cancelled") {
       setStatus("idle");
-    }
-    else if (status === "complete") {
+    } else if (status === "complete") {
       setStatus("idle");
     }
     else {

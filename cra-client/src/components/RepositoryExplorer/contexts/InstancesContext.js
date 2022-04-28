@@ -1467,11 +1467,14 @@ const InstancesContextProvider = (props) => {
   }, [gens, guidToGenId]);
 
 
-  const onIsDisablePastExploration  = (e) => {
+  const onHistoricalQueryChange  = (e) => {
     if (e) {
-      document.getElementById('historical_date_time_picker').style.display = "none";
-    } else {
       document.getElementById('historical_date_time_picker').style.display = "block";
+    } else {
+      // make sure that the date and time are lost when in the present  
+      setAsOfTimeStr(undefined);
+      setAsOfDate(undefined);
+      document.getElementById('historical_date_time_picker').style.display = "none";
     }
     clear();
   };
@@ -1528,7 +1531,7 @@ const InstancesContextProvider = (props) => {
         invalidTime,
         invalidDate,
         isTimeDisabled,
-        onIsDisablePastExploration,
+        onHistoricalQueryChange,
         setGuidToGenId,
         setFocus,
         getFocusGUID,
