@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-import React from "react";
+import React, { useContext } from "react";
 import {
   DatePicker,
   DatePickerInput,
   TextInput,
 } from "carbon-components-react";
-import format from "date-fns/format";
+import { InstancesContext } from "../../contexts/InstancesContext";
 /**
  * Controlled Component (with no state) to take user input for node page as part of a wizard.
  *
@@ -18,7 +18,7 @@ import format from "date-fns/format";
  * @returns node input
  */
 export default function DateTimePicker(props) {
-
+  const instancesContext = useContext(InstancesContext);
 
   const getDateFormat = () => {
     // TODO localise
@@ -28,6 +28,14 @@ export default function DateTimePicker(props) {
     // TODO localise
     return "mm/dd/yyyy";
   };
+  // asOfDateTimeStr={instancesContext.asOfDateTimeStr}
+
+  // onTimeChange={instancesContext.onAsOfTimeChange}
+  // dateValue={instancesContext.asOfDate}
+  // timeValue={instancesContext.asOfTimeStr}
+  // invalidTime={instancesContext.invalidTime}
+  // invalidDate={instancesContext.invalidDate}
+  // isTimeDisabled={instancesContext.isTimeDisabled}
 
   return (
     <div className="flexcontainer-column">
@@ -36,14 +44,14 @@ export default function DateTimePicker(props) {
           <DatePicker
             dateFormat={getDateFormat()}
             datePickerType="single"
-            onChange={props.onDateChange}
+            onChange={instancesContext.onAsOfDateChange}
           >
             <DatePickerInput
               placeholder={getDateFormatPlaceHolder()}
               labelText={props.dateLabel}
               id={props.dateLabel}
-              value={props.dateValue}
-              invalid={props.invalidDate}
+              value={instancesContext.asOfDate}
+              invalid={instancesContext.invalidDate}
               invalidText={"Invalid Dates are not accepted"}
               type="text"
             />
@@ -55,21 +63,21 @@ export default function DateTimePicker(props) {
               {props.timeLabel}
             </label>
             <TextInput
-              disabled={props.isTimeDisabled}
+              disabled={instancesContext.isTimeDisabled}
               id={props.timeLabel}
-              value={props.timeValue}
-              invalid={props.invalidTime}
+              value={instancesContext.asOfTimeStr}
+              invalid={instancesContext.invalidTime}
               invalidText="A valid time value is required, of the form hh:mm"
               label={props.timeLabel}
               //   pattern="(0[0123]|[1-9]):[0-5][0-9](\\s)?"
               placeholder="hh:mm"
               maxLength="5"
-              onChange={props.onTimeChange}
+              onChange={instancesContext.onAsOfTimeChange}
             />
           </div>
         </div>
       </div>
-      <div className="datetimestr">{props.asOfDateTimeStr} </div>
+      <div className="datetimestr">{instancesContext.asOfDateTimeStr} </div>
     </div>
   );
 }

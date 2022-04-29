@@ -104,6 +104,12 @@ const InstancesContextProvider = (props) => {
   //  */
   // const [asOfDateStr, setAsOfDateStr] = useState();
 
+
+/**
+ * Switch for using historical state
+ */
+  const [useHistoricalQuery,setUseHistoricalQuery] = useState(false);
+
   /*
    * As of time string
    */
@@ -147,6 +153,16 @@ const InstancesContextProvider = (props) => {
    * undo or clear is used, it will be either one less than the array length, or even zero (on clear).
    */
   const [latestActiveGenId, setLatestActiveGenId] = useState(0);
+
+  useEffect(() => {
+    console.log(" useEffect [useHistoricalQuery]]); " + useHistoricalQuery);
+   
+    // make sure that the date and time are reset .
+    setAsOfTimeStr("");
+    setAsOfDate(undefined);
+    // setAsOfDateTimeStr("");
+    clear();
+  }, [useHistoricalQuery]);
 
   useEffect(() => {
     console.log(" useEffect [asOfTimeStr, asOfDate]); ");
@@ -1468,15 +1484,8 @@ const InstancesContextProvider = (props) => {
 
 
   const onHistoricalQueryChange  = (e) => {
-    if (e) {
-      document.getElementById('historical_date_time_picker').style.display = "block";
-    } else {
-      // make sure that the date and time are lost when in the present  
-      setAsOfTimeStr(undefined);
-      setAsOfDate(undefined);
-      document.getElementById('historical_date_time_picker').style.display = "none";
-    }
-    clear();
+    console.log("onHistoricalQueryChange" + e);
+    setUseHistoricalQuery(e);
   };
 
   /*
@@ -1531,6 +1540,7 @@ const InstancesContextProvider = (props) => {
         invalidTime,
         invalidDate,
         isTimeDisabled,
+        useHistoricalQuery,
         onHistoricalQueryChange,
         setGuidToGenId,
         setFocus,
