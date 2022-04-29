@@ -42,7 +42,7 @@ export default function DateTimePicker(props) {
               placeholder={getDateFormatPlaceHolder()}
               labelText={props.dateLabel}
               id={props.dateLabel}
-              value={instancesContext.asOfDate}
+              value={instancesContext.asOfFormattedDate}
               invalid={instancesContext.invalidDate}
               invalidText={"Invalid Dates are not accepted"}
               type="text"

@@ -115,6 +115,8 @@ const InstancesContextProvider = (props) => {
    */
   const [asOfDate, setAsOfDate] = useState();
 
+  const [asOfFormattedDate, setAsOfFormattedDate] = useState();
+
   /*
    * As of date time - the date and time as a date object.
    */
@@ -179,13 +181,16 @@ const InstancesContextProvider = (props) => {
             if (isValid(validatedDateTime)) {
               setInvalidTime(false);
               setAsOfDateTime(validatedDateTime);
+              setAsOfFormattedDate(getFormattedDate(validatedDateTime));
             } else {
               setInvalidTime(true);
               setAsOfDateTime(asOfDate);
+              setAsOfFormattedDate(getFormattedDate(asOfDate));
             }
           } else {
             setInvalidTime(true);
             setAsOfDateTime(asOfDate);
+            setAsOfFormattedDate(getFormattedDate(asOfDate));
           }
         }
       }
@@ -193,8 +198,18 @@ const InstancesContextProvider = (props) => {
       setAsOfDateTime(undefined);
       // no point in allowing time to be updated if there is no date
       setIsTimeDisabled(true);
+      setAsOfFormattedDate(undefined);
     }
   }, [asOfTimeStr, asOfDate]);
+
+  const getFormattedDate = (date) => {
+    // the value needs to be the date string using the date-fns format
+     let formattedDate = undefined;
+    if (date != undefined) {
+      formattedDate = format(date, "MM/dd/Y");
+    }
+    return formattedDate;
+  };
 
   useEffect(() => {
     // the clear the context if the date time has changed then existing content should be thrown 
@@ -1536,7 +1551,8 @@ const InstancesContextProvider = (props) => {
         invalidDate,
         isTimeDisabled,
         useHistoricalQuery,
-        asOfDate,
+        asOfDate,       // TODO can we remove this and key off the formatted date?
+        asOfFormattedDate,   // needed for the widget 
         onHistoricalQueryChange,
         setGuidToGenId,
         setFocus,
