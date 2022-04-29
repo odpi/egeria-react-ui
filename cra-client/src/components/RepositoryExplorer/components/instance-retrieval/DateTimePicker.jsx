@@ -28,14 +28,6 @@ export default function DateTimePicker(props) {
     // TODO localise
     return "mm/dd/yyyy";
   };
-  // asOfDateTimeStr={instancesContext.asOfDateTimeStr}
-
-  // onTimeChange={instancesContext.onAsOfTimeChange}
-  // dateValue={instancesContext.asOfDate}
-  // timeValue={instancesContext.asOfTimeStr}
-  // invalidTime={instancesContext.invalidTime}
-  // invalidDate={instancesContext.invalidDate}
-  // isTimeDisabled={instancesContext.isTimeDisabled}
 
   return (
     <div className="flexcontainer-column">

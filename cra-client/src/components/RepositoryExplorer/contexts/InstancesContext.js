@@ -99,12 +99,7 @@ const InstancesContextProvider = (props) => {
    */
   const [gens, setGens] = useState([]);
   const [guidToGenId, setGuidToGenId] = useState({});
-  // /*
-  //  * As of Date  - the date part of date time as a string
-  //  */
-  // const [asOfDateStr, setAsOfDateStr] = useState();
-
-
+ 
 /**
  * Switch for using historical state
  */
@@ -1541,6 +1536,7 @@ const InstancesContextProvider = (props) => {
         invalidDate,
         isTimeDisabled,
         useHistoricalQuery,
+        asOfDate,
         onHistoricalQueryChange,
         setGuidToGenId,
         setFocus,

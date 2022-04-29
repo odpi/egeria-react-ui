@@ -454,6 +454,18 @@ export default function InstanceSearch(props) {
       setStatus("cancelled");
     }
   };
+  const isQueryDisabled = () => {
+    let isDisabled = false;
+    if (instancesContext.useHistoricalQuery) {
+      if (
+        instancesContext.asOfDateTimeForQueries === undefined ||
+        instancesContext.invalidTime
+      ) {
+        isDisabled = true;
+      }
+    }
+    return isDisabled;
+  };
 
 
   /*
@@ -562,7 +574,7 @@ export default function InstanceSearch(props) {
                onChange = { updatedSearchResultLimit } >
         </input>
 
-        <button className="retrieval-button" onClick = { searchForInstances } >
+        <button disabled={isQueryDisabled()} className="retrieval-button" onClick = { searchForInstances } >
           Search for instances
         </button>
         </div>
