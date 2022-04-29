@@ -13,10 +13,6 @@ import "./instance-retriever.scss";
 
 export default function HistoricalDateTime() {
   const instancesContext = useContext(InstancesContext);
-  // const [errorMessage, setErrorMessage] = useState("");
-  // const onErrorMessage = (msg) => {
-  //   setErrorMessage(msg);
-  // };
 
   return (
     <div>
@@ -33,11 +29,9 @@ export default function HistoricalDateTime() {
             <DateTimePicker
               dateLabel="As of Date"
               timeLabel="As of Time"
-              // onDateTimeMessage={onErrorMessage}
             />
-            {/* {errorMessage} */}
             { instancesContext.asOfDate === undefined &&
-              <div> Please input a date for histrorical queries  </div>
+              <div  style={{ color: "red" }}> Please input a date for histrorical queries  </div>
             }
             
           </div>
