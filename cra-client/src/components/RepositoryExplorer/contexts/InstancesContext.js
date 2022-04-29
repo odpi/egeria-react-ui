@@ -151,15 +151,16 @@ const InstancesContextProvider = (props) => {
    */
   const [latestActiveGenId, setLatestActiveGenId] = useState(0);
 
-  // useEffect(() => {
-  //   console.log(" useEffect [useHistoricalQuery]]); " + useHistoricalQuery);
+  useEffect(() => {
+    console.log(" useEffect [useHistoricalQuery]]); " + useHistoricalQuery);
    
-  //   // make sure that the date and time are reset .
-  //   setAsOfTimeStr("");
-  //   setAsOfDate(undefined);
-  //   // setAsOfDateTimeStr("");
-  //   clear();
-  // }, [useHistoricalQuery]);
+    // make sure that the date and time are reset .
+    setAsOfTimeStr("");
+    setAsOfDate(undefined);
+    setAsOfFormattedDate(undefined);
+
+    clear();
+  }, [useHistoricalQuery]);
 
   useEffect(() => {
     console.log(" useEffect [asOfTimeStr, asOfDate]); ");
