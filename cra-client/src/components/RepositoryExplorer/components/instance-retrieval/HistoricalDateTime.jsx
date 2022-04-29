@@ -31,7 +31,7 @@ export default function HistoricalDateTime() {
               timeLabel="As of Time"
             />
             { instancesContext.asOfDate === undefined &&
-              <div  style={{ color: "red" }}> Please input a date for histrorical queries  </div>
+              <div  style={{ color: "red" }}> Please input a date for historical queries  </div>
             }
             
           </div>
