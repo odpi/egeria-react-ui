@@ -90,7 +90,7 @@ jobs:
       - name: Create Archive
         run: tar -zcf /tmp/egeria-react-ui.tar.gz .
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: React UI {{ steps.package-version.outputs.current-version}}
           path: /tmp/egeria-react-ui.tar.gz
