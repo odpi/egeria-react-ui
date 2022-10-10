@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.5",
-    "@carbon/elements": "^10.49.0",
+    "@carbon/elements": "^11.11.0",
     "@carbon/grid": "^10.39.0",
     "@carbon/icons-react": "^10.44.0",
     "@carbon/layout": "^10.34.0",
