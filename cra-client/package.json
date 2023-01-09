@@ -6,7 +6,7 @@
   "dependencies": {
     "@babel/core": "^7.16.5",
     "@carbon/elements": "^10.49.0",
-    "@carbon/grid": "^10.39.0",
+    "@carbon/grid": "^11.10.0",
     "@carbon/icons-react": "^10.44.0",
     "@carbon/layout": "^10.34.0",
     "@carbon/themes": "^10.48.0",
