@@ -18,14 +18,12 @@ const loginLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 
-// used for client authentication (so we can trust the server)
-const keystore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/keystore.p12"
+// EgeriaRootCA.p12 is a bundle which contains the root certiication authority certificate,
+// this is used as the truststore and keystore. 
+const rootCABundle = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/EgeriaRootCA.p12"
 );
-// server for server authentication (so the server can trust us)
-const truststore = fs.readFileSync(
-  path.join(__dirname, "../../") + "ssl/truststore.p12"
-);
+
 
 passphrase = "egeria";
 
@@ -233,8 +231,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: truststore,
-      pfx: keystore,
+      ca: rootCABundle,      // certificate authority
+      pfx: rootCABundle,     // also contains the certifcates to validate against.
       passphrase: passphrase,
     }),
     headers: {
