@@ -4,9 +4,10 @@
 .retrieval-controls {
   display          : flex;
   flex-flow        : column;
-  width            : 400px;
   height           : 200px;
   text-align       : right;
+  padding-right    : 10%;
+  padding-left     : 10%;
   /*border-style   : solid;
   border-width     : 3px;
   border-color     : rgb(236, 165, 12) ;*/

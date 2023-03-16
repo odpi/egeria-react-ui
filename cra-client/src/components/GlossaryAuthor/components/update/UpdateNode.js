@@ -412,7 +412,7 @@ export default function UpdateNode(props) {
           </AccordionItem>
         </Accordion>
       )}
-      )
+      
       {currentNode !== undefined && (
         <Accordion>
           <AccordionItem title="Relationships">
@@ -441,22 +441,6 @@ export default function UpdateNode(props) {
         </Accordion>
       )}
       <div style={{ color: "red" }}>{errorMsg}</div>
-      <Button
-        className="bx--btn bx--btn--primary"
-        onClick={handleClickUpdate}
-        disabled={isDisabled()}
-        type="button"
-      >
-        Update
-      </Button>
-      <Button
-        kind="secondary"
-        className="bx--btn bx--btn--primary"
-        onClick={onClickBack}
-        type="button"
-      >
-        Back
-      </Button>
     </div>
   );
 }

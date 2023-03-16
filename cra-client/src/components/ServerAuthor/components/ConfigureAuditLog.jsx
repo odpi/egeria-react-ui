@@ -15,12 +15,12 @@ export default function ConfigureAuditLog({ previousAction, nextAction }) {
 
   const {
     supportedAuditLogSeverities,
-    newServerLocalServerType,
+    currentServerLocalServerType,
     progressIndicatorIndex,
     serverConfigurationSteps,
   } = useContext(ServerAuthorContext);
 
-  const steps = serverConfigurationSteps(newServerLocalServerType);
+  const steps = serverConfigurationSteps(currentServerLocalServerType);
 
   const previousIndex = progressIndicatorIndex > 0 ? progressIndicatorIndex - 1 : 0;
   const nextIndex = progressIndicatorIndex < steps.length - 1 ? progressIndicatorIndex + 1 : steps.length - 1;

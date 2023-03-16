@@ -15,20 +15,20 @@ import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureOMArchives() {
   
-  const { newServerOMArchives, setNewServerOMArchives, } = useContext(ServerAuthorContext);
+  const { currentServerOMArchives, setCurrentServerOMArchives, } = useContext(ServerAuthorContext);
 
   const handleAddOMArchive = e => {
     const archiveName = document.getElementById("new-server-archive-file-name").value;
     console.log("handleAddOMArchive() called", { archiveName });
     if (archiveName.length === 0) return;
-    setNewServerOMArchives(newServerOMArchives.concat(archiveName));
+    setCurrentServerOMArchives(currentServerOMArchives.concat(archiveName));
     document.getElementById("new-server-archive-file-name").value = "";
   };
 
   const handleRemoveOMArchive = index => {
     console.log("handleRemoveOMArchive() called", { index });
-    const archiveList = newServerOMArchives.filter((v, i) => { return i !== index; });
-    setNewServerOMArchives(archiveList);
+    const archiveList = currentServerOMArchives.filter((v, i) => { return i !== index; });
+    setCurrentServerOMArchives(archiveList);
   };
 
   return (
@@ -37,7 +37,7 @@ export default function ConfigureOMArchives() {
 
       <ul style={{marginBottom: "32px"}}>
 
-        {newServerOMArchives.map((archive, i) => (
+        {currentServerOMArchives.map((archive, i) => (
           <li key={`archive-${i}`} style={{display: "flex"}}>
             {archive}
             <Button

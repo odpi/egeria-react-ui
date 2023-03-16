@@ -7,7 +7,7 @@ import { TileGroup, RadioTile } from "carbon-components-react";
 import { ServerAuthorContext } from "../contexts/ServerAuthorContext";
 
 export default function ConfigureLocalRepository() {
-  const { newServerRepository, setNewServerRepository } =
+  const { currentServerRepository, setCurrentServerRepository } =
     useContext(ServerAuthorContext);
 
   return (
@@ -19,9 +19,9 @@ export default function ConfigureLocalRepository() {
         <TileGroup
           defaultSelected="in-memory-repository"
           name="repository-types"
-          valueSelected={newServerRepository}
+          valueSelected={currentServerRepository}
           legend=""
-          onChange={(value) => setNewServerRepository(value)}
+          onChange={(value) => setCurrentServerRepository(value)}
           style={{ marginTop: "16px", textAlign: "left" }}
         >
           <RadioTile

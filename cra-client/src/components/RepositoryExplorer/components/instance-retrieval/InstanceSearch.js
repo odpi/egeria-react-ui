@@ -35,7 +35,7 @@ export default function InstanceSearch(props) {
    * was registered (i.e. on the POST call). In the event of a cancel, status should 
    * have changed to 'cancelled' and we need the callback to see the change.
    * 
-   * status : { "idle", "pending", "cancelled:", "complete" }
+   * status : { "idle", "pending", "cancelled", "complete" }
    */
   const [status, setStatus]   = useState("idle");
   const statusRef             = useRef();
@@ -132,8 +132,7 @@ export default function InstanceSearch(props) {
   /*
    * Function to find entities in repository using searchText
    */
-  const findEntities = () => {    
-
+  const findEntities = () => {
     let typeName = searchType || null;
     let classificationList = Object.keys(searchClassifications);
 
@@ -143,12 +142,22 @@ export default function InstanceSearch(props) {
     setSearchResults([]);
 
     setStatus("pending");
+    let rexFindBody = {
+      searchText: searchText,
+      typeName: typeName,
+      classificationNames: classificationList,
+    };
 
-    repositoryServerContext.repositoryPOST("instances/entities/by-property-value", 
-      { searchText           : searchText, 
-        typeName             : typeName,
-        classificationNames  : classificationList
-       }, _findEntities); 
+    // if there is an as of time set to use for queries then include it on the find.
+    if (instancesContext.asOfDateTimeForQueries !== undefined) {
+      rexFindBody.asOfTime = instancesContext.asOfDateTimeForQueries;
+    }
+
+    repositoryServerContext.repositoryPOST(
+      "instances/entities/by-property-value",
+      rexFindBody,
+      _findEntities
+    );
   };
 
   /*
@@ -185,7 +194,14 @@ export default function InstanceSearch(props) {
        * On failure ...
        */
       interactionContext.reportFailedOperation("find entities",json);
+
+      // if (json.exceptionSystemAction === "The system reported that the historical capability is not supported.") {
+      //   // setStatus("cancelled-historical-queries-not-supported");
+      //   instancesContext.setAsOfTimeStr(undefined);
+      //   instancesContext.setAsOfDate(undefined);
+      // } 
       setStatus("cancelled");
+    
     }
     else {
       setStatus("idle");
@@ -211,12 +227,21 @@ export default function InstanceSearch(props) {
     setStatus("pending");
 
     /* 
-     * Add the typeName and classifications list to the body here....
+     * Add the typeName and search text to the body here....
      */   
+
+    let rexFindBody = {
+      searchText: searchText,
+      typeName: typeName,
+    };
+
+    // if there is an as of time set to use for queries then include it on the find.
+    if (instancesContext.asOfDateTimeForQueries !== undefined) {
+      rexFindBody.asOfTime = instancesContext.asOfDateTimeForQueries;
+    }
+
     repositoryServerContext.repositoryPOST("instances/relationships/by-property-value", 
-      { searchText : searchText, 
-        typeName   : typeName 
-      }, _findRelationships); 
+    rexFindBody, _findRelationships); 
   };
 
   /*
@@ -253,7 +278,13 @@ export default function InstanceSearch(props) {
        * On failure ...
        */
       interactionContext.reportFailedOperation("find relationships",json);
-      setStatus("cancelled");
+      // if (json.exceptionSystemAction === "The system reported that the historical capability is not supported.") {
+      //   instancesContext.setAsOfTimeStr(undefined);
+      //   instancesContext.setAsOfDate(undefined);
+      // }
+       setStatus("cancelled"); 
+    
+      
     }
     else {
       setStatus("idle");
@@ -416,13 +447,24 @@ export default function InstanceSearch(props) {
 
     if (status === "cancelled") {
       setStatus("idle");
-    }
-    else if (status === "complete") {
+    } else if (status === "complete") {
       setStatus("idle");
     }
     else {
       setStatus("cancelled");
     }
+  };
+  const isQueryDisabled = () => {
+    let isDisabled = false;
+    if (instancesContext.useHistoricalQuery) {
+      if (
+        instancesContext.asOfDateTimeForQueries === undefined ||
+        instancesContext.invalidTime
+      ) {
+        isDisabled = true;
+      }
+    }
+    return isDisabled;
   };
 
 
@@ -532,7 +574,7 @@ export default function InstanceSearch(props) {
                onChange = { updatedSearchResultLimit } >
         </input>
 
-        <button className="retrieval-button" onClick = { searchForInstances } >
+        <button disabled={isQueryDisabled()} className="retrieval-button" onClick = { searchForInstances } >
           Search for instances
         </button>
         </div>

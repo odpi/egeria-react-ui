@@ -14,13 +14,16 @@ import axios from "axios";
 import { IdentificationContext } from "../../../contexts/IdentificationContext";
 
 import serverTypes from "../components/defaults/serverTypes";
-import viewServices from "../components/defaults/viewServices";
-import integrationServices from "../components/defaults/integrationServices";
+import serverConfigElements from "../components/defaults/serverConfigElements";
+
+// import viewServices from "../components/defaults/viewServices";
+// import integrationServices from "../components/defaults/integrationServices";
 import {
   issueRestCreate,
   issueRestGet,
   issueRestDelete,
 } from "../../common/RestCaller";
+// import { set } from "date-fns";
 
 export const ServerAuthorContext = createContext();
 export const ServerAuthorContextConsumer = ServerAuthorContext.Consumer;
@@ -38,54 +41,60 @@ const ServerAuthorContextProvider = (props) => {
   const [supportedAuditLogSeverities, setSupportedAuditLogSeverities] =
     useState([]);
   // Basic Config
-  const [newServerName, setNewServerName] = useState("");
-  const [newServerLocalURLRoot, setNewServerLocalURLRoot] = useState(
+  const [currentServerName, setCurrentServerName] = useState("");
+  const [currentServerLocalURLRoot, setCurrentServerLocalURLRoot] = useState(
     "https://localhost:9443"
   );
-  const [newPlatformName, setNewPlatformName] = useState("");
+  const [currentPlatformName, setCurrentPlatformName] = useState("");
 
-  const [newServerLocalServerType, setNewServerLocalServerType] = useState(
+  const [currentServerLocalServerType, setCurrentServerLocalServerType] = useState(
     serverTypes[0].id
   ); // default to metadata server for now
-  const [newServerOrganizationName, setNewServerOrganizationName] = useState(
+  const [currentServerOrganizationName, setCurrentServerOrganizationName] = useState(
     user ? user.organizationName || "" : ""
   );
-  const [newServerLocalUserId, setNewServerLocalUserId] = useState("");
-  const [newServerDescription, setNewServerDescription] = useState("");
-  const [newServerLocalPassword, setNewServerLocalPassword] = useState("");
-  const [newServerSecurityConnector, setNewServerSecurityConnector] =
+  const [currentServerLocalUserId, setCurrentServerLocalUserId] = useState("");
+  const [currentServerDescription, setCurrentServerDescription] = useState("");
+  const [currentServerLocalPassword, setCurrentServerLocalPassword] = useState("");
+  const [currentServerSecurityConnector, setCurrentServerSecurityConnector] =
     useState("");
-  const [newServerRepository, setNewServerRepository] = useState(
+  const [currentServerRepository, setCurrentServerRepository] = useState(
     "in-memory-repository"
   );
-  const [newServerMaxPageSize, setNewServerMaxPageSize] = useState(1000);
+  const [currentServerMaxPageSize, setCurrentServerMaxPageSize] = useState(1000);
   const [currentServerAuditDestinations, setCurrentServerAuditDestinations] =
     useState([]);
   // Active Platforms by name
   const [activePlatforms, setActivePlatforms] = useState();
   // const [activePlatform, setActivePlatform] = useState();
- 
+
+  const [isCurrentStepInvalid,setIsCurrentStepInvalid] = useState(true);
+
   // Cohorts
-  const [newServerCohorts, setNewServerCohorts] = useState([]);
+  const [currentServerCohorts, setCurrentServerCohorts] = useState([]);
   const [registerCohortName, setRegisterCohortName] = useState();
   const [unregisterCohortName, setUnregisterCohortName] = useState();
   // Archives
-  const [newServerOMArchives, setNewServerOMArchives] = useState([]);
+  const [currentServerOMArchives, setCurrentServerOMArchives] = useState([]);
   // Proxy
-  const [newServerProxyConnector, setNewServerProxyConnector] = useState("");
-  const [newServerEventMapperConnector, setNewServerEventMapperConnector] =
+  const [currentServerProxyConnector, setCurrentServerProxyConnector] = useState("");
+  const [currentServerEventMapperConnector, setCurrentServerEventMapperConnector] =
     useState("");
-  const [newServerEventSource, setNewServerEventSource] = useState("");
-   // access services 
-   const [availableAccessServices, setAvailableAccessServices] = useState();
-   const [currentAccessServices, setCurrentAccessServices] = useState([]);
-   const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState([]);
+  const [currentServerEventSource, setCurrentServerEventSource] = useState("");
+  // access services
+  const [availableAccessServices, setAvailableAccessServices] = useState();
+  const [currentAccessServices, setCurrentAccessServices] = useState([]);
+  const [unconfiguredAccessServices, setUnconfiguredAccessServices] = useState(
+    []
+  );
 
-   const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
-   const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
-   const [currentAccessServiceOptions, setCurrentAccessServiceOptions] = useState();
-   const [operationForAccessServices, setOperationForAccessServices] = useState();
-   const [showAllAccessServices, setShowAllAccessServices] = useState(true);
+  const [currentAccessServiceId, setCurrentAccessServiceId] = useState();
+  const [currentAccessServiceName, setCurrentAccessServiceName] = useState();
+  const [currentAccessServiceOptions, setCurrentAccessServiceOptions] =
+    useState();
+  const [operationForAccessServices, setOperationForAccessServices] =
+    useState();
+  const [showAllAccessServices, setShowAllAccessServices] = useState(true);
 
   // access services supported options
 
@@ -100,17 +109,24 @@ const ServerAuthorContextProvider = (props) => {
   // Karma Point Increment
   const [karmaPointIncrement, setKarmaPointIncrement] = useState();
   // chunk
-  const [glossaryTermLineageEventsChunkSize, setGlossaryTermLineageEventsChunkSize] = useState();
+  const [
+    glossaryTermLineageEventsChunkSize,
+    setGlossaryTermLineageEventsChunkSize,
+  ] = useState();
 
-   const addSupportedZoneName = (zoneName) => {
+  const addSupportedZoneName = (zoneName) => {
     if (zoneName !== undefined && zoneName !== "") {
       setSupportedZoneNames([...supportedZoneNames, zoneName]);
     }
-   };
-   const removeSupportedZoneByIndex = (index) => {
+  };
+  const removeSupportedZoneByIndex = (index) => {
     if (index !== undefined && index !== "") {
       if (index > -1) {
-        setSupportedZoneNames([...supportedZoneNames].splice(index, 1));
+          setSupportedZoneNames(
+            [
+              ...supportedZoneNames.slice(0, index),
+              ...supportedZoneNames.slice(index + 1)
+            ]);
       }
     }
   };
@@ -118,11 +134,15 @@ const ServerAuthorContextProvider = (props) => {
     if (zoneName !== undefined && zoneName !== "") {
       setDefaultZoneNames([...defaultZoneNames, zoneName]);
     }
-   };
-   const removeDefaultZoneByIndex = (index) => {
+  };
+  const removeDefaultZoneByIndex = (index) => {
     if (index !== undefined && index !== "") {
       if (index > -1) {
-        setDefaultZoneNames([...defaultZoneNames].splice(index, 1));
+          setDefaultZoneNames(
+          [
+            ...defaultZoneNames.slice(0, index),
+            ...defaultZoneNames.slice(index + 1)
+          ]);
       }
     }
   };
@@ -130,21 +150,24 @@ const ServerAuthorContextProvider = (props) => {
     if (zoneName !== undefined && zoneName !== "") {
       setPublishZoneNames([...publishZoneNames, zoneName]);
     }
-   };
-   const removePublishZoneByIndex = (index) => {
+  };
+  const removePublishZoneByIndex = (index) => {
     if (index !== undefined && index !== "") {
       if (index > -1) {
-        setPublishZoneNames([...publishZoneNames].splice(index, 1));
+          setPublishZoneNames(
+            [
+              ...publishZoneNames.slice(0, index),
+              ...publishZoneNames.slice(index + 1)
+            ]);
       }
     }
   };
-
 
   useEffect(() => {
     // update the current options (the rest body) in the caller
     let options = {};
     if (defaultZoneNames !== undefined && defaultZoneNames.length > 0) {
-      options.defaultZoneNames = defaultZoneNames;
+      options.DefaultZones = defaultZoneNames;
     }
     if (supportedZoneNames !== undefined && supportedZoneNames.length > 0) {
       options.SupportedZones = supportedZoneNames;
@@ -159,69 +182,79 @@ const ServerAuthorContextProvider = (props) => {
       options.karmaPointIncrement = karmaPointIncrement;
     }
     if (glossaryTermLineageEventsChunkSize !== undefined) {
-      options.glossaryTermLineageEventsChunkSize = glossaryTermLineageEventsChunkSize;
+      options.glossaryTermLineageEventsChunkSize =
+        glossaryTermLineageEventsChunkSize;
     }
 
     if (!Object.keys(options).length) {
       options = undefined;
     }
-  }, [supportedZoneNames, publishZoneNames, defaultZoneNames, karmaPointPlateau, karmaPointIncrement, glossaryTermLineageEventsChunkSize]);
+    setCurrentAccessServiceOptions(options);
+  }, [
+    supportedZoneNames,
+    publishZoneNames,
+    defaultZoneNames,
+    karmaPointPlateau,
+    karmaPointIncrement,
+    glossaryTermLineageEventsChunkSize,
+  ]);
 
-  // view services 
+  // view services
   const [availableViewServices, setAvailableViewServices] = useState();
   const [currentViewServices, setCurrentViewServices] = useState([]);
   // engine services
   const [availableEngineServices, setAvailableEngineServices] = useState();
   const [currentEngineServices, setCurrentEngineServices] = useState([]);
   const [
-    newServerViewServiceRemoteServerName,
-    setNewServerViewServiceRemoteServerName,
+    currentServerViewServiceRemoteServerName,
+    setCurrentServerViewServiceRemoteServerName,
   ] = useState("");
   const [
-    newServerViewServiceRemoteServerURLRoot,
-    setNewServerViewServiceRemoteServerURLRoot,
+    currentServerViewServiceRemoteServerURLRoot,
+    setCurrentServerViewServiceRemoteServerURLRoot,
   ] = useState("");
 
   // Integration Services
   const [availableIntegrationServices, setAvailableIntegrationServices] =
-  useState();
-  const [currentIntegrationServices, setCurrentIntegrationServices] =
-    useState([]);
+    useState();
+  const [currentIntegrationServices, setCurrentIntegrationServices] = useState(
+    []
+  );
   const [
-    newServerIntegrationServiceRemoteServerName,
-    setNewServerIntegrationServiceRemoteServerName,
+    currentServerIntegrationServiceRemoteServerName,
+    setCurrentServerIntegrationServiceRemoteServerName,
   ] = useState("");
   const [
-    newServerIntegrationServiceRemoteServerURLRoot,
-    setNewServerIntegrationServiceRemoteServerURLRoot,
+    currentServerIntegrationServiceRemoteServerURLRoot,
+    setCurrentServerIntegrationServiceRemoteServerURLRoot,
   ] = useState("");
   const [
-    newServerIntegrationServiceConnectorName,
-    setNewServerIntegrationServiceConnectorName,
+    currentServerIntegrationServiceConnectorName,
+    setCurrentServerIntegrationServiceConnectorName,
   ] = useState("");
   const [
-    newServerIntegrationServiceConnectorUserId,
-    setNewServerIntegrationServiceConnectorUserId,
+    currentServerIntegrationServiceConnectorUserId,
+    setCurrentServerIntegrationServiceConnectorUserId,
   ] = useState("");
   const [
-    newServerIntegrationServiceConnection,
-    setNewServerIntegrationServiceConnection,
+    currentServerIntegrationServiceConnection,
+    setCurrentServerIntegrationServiceConnection,
   ] = useState("");
   const [
-    newServerIntegrationServiceMetadataSource,
-    setNewServerIntegrationServiceMetadataSource,
+    currentServerIntegrationServiceMetadataSource,
+    setCurrentServerIntegrationServiceMetadataSource,
   ] = useState("");
   const [
-    newServerIntegrationServiceRefreshTimeInterval,
-    setNewServerIntegrationServiceRefreshTimeInterval,
+    currentServerIntegrationServiceRefreshTimeInterval,
+    setCurrentServerIntegrationServiceRefreshTimeInterval,
   ] = useState(60);
   const [
-    newServerIntegrationServiceUsesBlockingCalls,
-    setNewServerIntegrationServiceUsesBlockingCalls,
+    currentServerIntegrationServiceUsesBlockingCalls,
+    setCurrentServerIntegrationServiceUsesBlockingCalls,
   ] = useState(false);
   const [
-    newServerIntegrationServicePermittedSynchronization,
-    setNewServerIntegrationServicePermittedSynchronization,
+    currentServerIntegrationServicePermittedSynchronization,
+    setCurrentServerIntegrationServicePermittedSynchronization,
   ] = useState("BOTH_DIRECTIONS");
 
   // Notifications
@@ -232,7 +265,7 @@ const ServerAuthorContextProvider = (props) => {
   const [progressIndicatorIndex, setProgressIndicatorIndex] = useState(0);
   const [loadingText, setLoadingText] = useState("Loading...");
   // Preview & Deploy
-  const [newServerConfig, setNewServerConfig] = useState(null);
+  const [currentServerConfig, setCurrentServerConfig] = useState(null);
   const [preventDeployment, setPreventDeployment] = useState(false);
 
   // Refs
@@ -242,42 +275,87 @@ const ServerAuthorContextProvider = (props) => {
   useEffect(() => {
     retrieveAllServers();
   }, []);
+  // is this changes clear out the access service specific details
+  useEffect(() => {
+    if (showAllAccessServices) {
+      setCurrentAccessServiceId(undefined);
+      setCurrentAccessServiceName(undefined);
+      setCurrentAccessServiceOptions(undefined);
+    }
+  }, [showAllAccessServices]);
+  // basic step enable next button
+  useEffect(() => {
+      const steps = serverConfigurationSteps(currentServerLocalServerType);
+      const id = steps[progressIndicatorIndex];
+      const serverTypeElement = serverConfigElements.find(o => o.id === id); 
+
+      if (serverTypeElement.id === "config-basic-config-element") {
+        if (currentServerName !== "" && currentServerLocalUserId !== "" && currentServerOrganizationName !== "") {
+          setIsCurrentStepInvalid(false);
+        } else {
+          setIsCurrentStepInvalid(true);
+        }
+        // console.log("CC");
+        //    if (currentServerName !== "" && currentServerLocalUserId !== "" && currentServerOrganizationName !== "") {
+        //     console.log("DD");
+        //       let serverExists = false; 
+        //       for (let i=0; i < allServers.length; i++) {
+        //         console.log("for allServers[i].serverName =" +allServers[i].serverName);
+        //         console.log("currentServerName="+currentServerName);
+        //         if ( allServers[i].serverName === currentServerName) {
+        //           console.log("Server exists!!!");
+        //           serverExists = true;
+        //         }
+        //       }  
+        //       if (serverExists) {
+        //         console.log("Server " + currentServerName + " exists"  );
+        //         setIsCurrentStepInvalid(true);
+        //       } else {
+        //         console.log("AA");
+        //         setIsCurrentStepInvalid(false);
+        //       }
+        //     } else {
+        //       console.log("BB");
+        //       setIsCurrentStepInvalid(false);
+        //    }
+      }  
+  }, [progressIndicatorIndex, currentServerName, currentServerLocalUserId, currentServerOrganizationName]);
+
   /**
    * Clear out all the context so the new server type doe not pick up old values in the wizard.
-   * Leave NewServerLocalServerType
+   * Leave currentServerLocalServerType
    */
-  const cleanForNewServerType = () => {
-    setNewServerConfig(null);
+  const cleanForcurrentServerType = () => {
+    setCurrentServerConfig(null);
     // can/should we clear refs ???
-    setNewServerName("");
-    setNewServerLocalURLRoot("https://localhost:9443");
-    setNewPlatformName("");
-    setNewServerOrganizationName(user ? user.organizationName || "" : "");
-    setNewServerLocalUserId("");
-    setNewServerLocalPassword("");
-    setNewServerSecurityConnector("");
-    setNewServerRepository("in-memory-repository");
-    setNewServerMaxPageSize(1000);
-    
+    setCurrentServerName("");
+    setCurrentServerLocalURLRoot("https://localhost:9443");
+    setCurrentPlatformName("");
+    setCurrentServerOrganizationName(user ? user.organizationName || "" : "");
+    setCurrentServerLocalUserId("");
+    setCurrentServerLocalPassword("");
+    setCurrentServerSecurityConnector("");
+    setCurrentServerRepository("in-memory-repository");
+    setCurrentServerMaxPageSize(1000);
+
     // Audit log destinations
     setCurrentServerAuditDestinations([]);
-    
+
     // Cohorts
-    setNewServerCohorts([]);
+    setCurrentServerCohorts([]);
     setRegisterCohortName("");
     setUnregisterCohortName("");
-    
+
     // Archives
-    setNewServerOMArchives([]);
-    
+    setCurrentServerOMArchives([]);
+
     // Proxy
-    setNewServerProxyConnector("");
-    setNewServerEventMapperConnector("");
-    setNewServerEventSource("");
- 
+    setCurrentServerProxyConnector("");
+    setCurrentServerEventMapperConnector("");
+    setCurrentServerEventSource("");
+
     // access services
-    setCurrentAccessServices([]),
-    setCurrentAccessServices(undefined);
+    setCurrentAccessServices([]), setCurrentAccessServices(undefined);
     setCurrentAccessServiceId(undefined);
     setCurrentAccessServiceOptions(undefined);
     setOperationForAccessServices(undefined);
@@ -285,8 +363,8 @@ const ServerAuthorContextProvider = (props) => {
 
     // view services
     setCurrentViewServices([]);
-    setNewServerViewServiceRemoteServerName("");
-    setNewServerViewServiceRemoteServerURLRoot("");
+    setCurrentServerViewServiceRemoteServerName("");
+    setCurrentServerViewServiceRemoteServerURLRoot("");
   };
 
   const retrieveAllServers = () => {
@@ -392,7 +470,7 @@ const ServerAuthorContextProvider = (props) => {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/configuration"
     );
 
@@ -405,25 +483,25 @@ const ServerAuthorContextProvider = (props) => {
   };
 
   const generateBasicServerConfig = () => {
-    if (!newServerName || newServerName === "") {
+    if (!currentServerName || currentServerName === "") {
       throw new Error(
         `Cannot create OMAG server configuration without Server Name`
       );
     }
 
-    if (!newServerLocalServerType || newServerLocalServerType === "") {
+    if (!currentServerLocalServerType || currentServerLocalServerType === "") {
       throw new Error(
         `Cannot create OMAG server configuration without Local Server Type`
       );
     }
 
-    if (!newServerOrganizationName || newServerOrganizationName === "") {
+    if (!currentServerOrganizationName || currentServerOrganizationName === "") {
       throw new Error(
         `Cannot create OMAG server configuration without Organization Name`
       );
     }
 
-    if (!newServerLocalUserId || newServerLocalUserId === "") {
+    if (!currentServerLocalUserId || currentServerLocalUserId === "") {
       throw new Error(
         `Cannot create OMAG server configuration without Local Server User ID`
       );
@@ -432,14 +510,14 @@ const ServerAuthorContextProvider = (props) => {
     return {
       class: "OMAGServerConfig",
       versionId: "V2.0",
-      localServerName: newServerName,
-      localServerType: newServerLocalServerType,
-      organizationName: newServerOrganizationName,
-      localServerDescription: newServerDescription,
-      localServerURL: newServerLocalURLRoot,
-      localServerUserId: newServerLocalUserId,
-      localServerPassword: newServerLocalPassword,
-      maxPageSize: newServerMaxPageSize,
+      localServerName: currentServerName,
+      localServerType: currentServerLocalServerType,
+      organizationName: currentServerOrganizationName,
+      localServerDescription: currentServerDescription,
+      localServerURL: currentServerLocalURLRoot,
+      localServerUserId: currentServerLocalUserId,
+      localServerPassword: currentServerLocalPassword,
+      maxPageSize: currentServerMaxPageSize,
     };
   };
 
@@ -456,7 +534,7 @@ const ServerAuthorContextProvider = (props) => {
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/cohorts/" +
           cohortName
       );
@@ -484,7 +562,7 @@ const ServerAuthorContextProvider = (props) => {
           "/server-author/users/" +
           userId +
           "/servers/" +
-          newServerName +
+          currentServerName +
           "/cohorts/" +
           cohortName
       );
@@ -509,7 +587,7 @@ const ServerAuthorContextProvider = (props) => {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/audit-log-destinations/" +
         auditDestinationName
     );
@@ -535,7 +613,7 @@ const ServerAuthorContextProvider = (props) => {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/audit-log-destinations"
     );
     issueRestDelete(
@@ -558,7 +636,7 @@ const ServerAuthorContextProvider = (props) => {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/open-metadata-archives/file"
     );
     issueRestGet(
@@ -572,7 +650,7 @@ const ServerAuthorContextProvider = (props) => {
   const configureRepositoryProxyConnector = async (className) => {
     console.log("called configureRepositoryProxyConnector", { className });
     if (className !== "") {
-      const configureRepositoryProxyConnectorURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/local-repository/mode/repository-proxy/details?connectorProvider=${className}`;
+      const configureRepositoryProxyConnectorURL = `/open-metadata/admin-services/users/${userId}/servers/${currentServerName}/local-repository/mode/repository-proxy/details?connectorProvider=${className}`;
       try {
         const configureRepositoryProxyConnectorURLResponse = await axios.post(
           configureRepositoryProxyConnectorURL,
@@ -618,7 +696,7 @@ const ServerAuthorContextProvider = (props) => {
       className,
     });
     if (className !== "" && eventSource !== "") {
-      const configureRepositoryEventMapperConnectorURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/local-repository/event-mapper-details?connectorProvider=${className}&eventSource=${eventSource}`;
+      const configureRepositoryEventMapperConnectorURL = `/open-metadata/admin-services/users/${userId}/servers/${currentServerName}/local-repository/event-mapper-details?connectorProvider=${className}&eventSource=${eventSource}`;
       try {
         const configureRepositoryEventMapperConnectorURLResponse =
           await axios.post(
@@ -663,7 +741,7 @@ const ServerAuthorContextProvider = (props) => {
     serviceURLMarker
   ) => {
     console.log("called configureViewServices", { serviceURLMarker });
-    let configureViewServicesURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/view-services`;
+    let configureViewServicesURL = `/open-metadata/admin-services/users/${userId}/servers/${currentServerName}/view-services`;
     if (serviceURLMarker && serviceURLMarker !== "") {
       configureViewServicesURL += `/${serviceURLMarker}`;
     }
@@ -755,7 +833,7 @@ const ServerAuthorContextProvider = (props) => {
 
   const setServerAttribute = async (attrEndpoint, value) => {
     console.log("called setServerAttribute", { attrEndpoint, value });
-    const setServerAttrURL = `/open-metadata/admin-services/users/${userId}/servers/${newServerName}/${attrEndpoint}=${value}`;
+    const setServerAttrURL = `/open-metadata/admin-services/users/${userId}/servers/${currentServerName}/${attrEndpoint}=${value}`;
     try {
       const setServerAttrResponse = await axios.post(
         setServerAttrURL,
@@ -790,7 +868,7 @@ const ServerAuthorContextProvider = (props) => {
         "/server-author/users/" +
         userId +
         "/servers/" +
-        newServerName +
+        currentServerName +
         "/configuration"
     );
     issueRestCreate(
@@ -803,7 +881,7 @@ const ServerAuthorContextProvider = (props) => {
   };
   const onSuccessfulSetServer = (json) => {
     const serverConfig = json.omagserverConfig;
-    setNewServerConfig(serverConfig);
+    setCurrentServerConfig(serverConfig);
   };
   const onErrorSetServer = (error) => {
     alert("Error setting the server config");
@@ -812,6 +890,7 @@ const ServerAuthorContextProvider = (props) => {
   const showConfigForm = () => {
     document.getElementById("server-list-container").style.display = "none";
     document.getElementById("server-config-container").style.display = "flex";
+    setIsCurrentStepInvalid(true);
   };
 
   const hideConfigForm = () => {
@@ -821,8 +900,8 @@ const ServerAuthorContextProvider = (props) => {
       el.style.display = "none";
     document.getElementById("server-type-container").style.display = "block";
     setProgressIndicatorIndex(0);
-    // get the servers again 
-    retrieveAllServers(); 
+    // get the servers again
+    retrieveAllServers();
   };
 
   return (
@@ -834,40 +913,40 @@ const ServerAuthorContextProvider = (props) => {
         currentServerAuditDestinations,
         setCurrentServerAuditDestinations,
         supportedAuditLogSeverities, // we do not need expose the set as it is only referenced in this context code.
-        newServerName,
-        setNewServerName,
-        newServerLocalURLRoot,
-        setNewServerLocalURLRoot,
-        newServerLocalServerType,
-        setNewServerLocalServerType,
-        newServerOrganizationName,
-        setNewServerOrganizationName,
-        newServerDescription,
-        setNewServerDescription,
-        newServerLocalUserId,
-        setNewServerLocalUserId,
-        newServerLocalPassword,
-        setNewServerLocalPassword,
-        newServerSecurityConnector,
-        setNewServerSecurityConnector,
-        newServerRepository,
-        setNewServerRepository,
-        newServerMaxPageSize,
-        setNewServerMaxPageSize,
-        newServerCohorts,
-        setNewServerCohorts,
+        currentServerName,
+        setCurrentServerName,
+        currentServerLocalURLRoot,
+        setCurrentServerLocalURLRoot,
+        currentServerLocalServerType,
+        setCurrentServerLocalServerType,
+        currentServerOrganizationName,
+        setCurrentServerOrganizationName,
+        currentServerDescription,
+        setCurrentServerDescription,
+        currentServerLocalUserId,
+        setCurrentServerLocalUserId,
+        currentServerLocalPassword,
+        setCurrentServerLocalPassword,
+        currentServerSecurityConnector,
+        setCurrentServerSecurityConnector,
+        currentServerRepository,
+        setCurrentServerRepository,
+        currentServerMaxPageSize,
+        setCurrentServerMaxPageSize,
+        currentServerCohorts,
+        setCurrentServerCohorts,
         registerCohortName,
         setRegisterCohortName,
         unregisterCohortName,
         setUnregisterCohortName,
-        newServerOMArchives,
-        setNewServerOMArchives,
-        newServerProxyConnector,
-        setNewServerProxyConnector,
-        newServerEventMapperConnector,
-        setNewServerEventMapperConnector,
-        newServerEventSource,
-        setNewServerEventSource,
+        currentServerOMArchives,
+        setCurrentServerOMArchives,
+        currentServerProxyConnector,
+        setCurrentServerProxyConnector,
+        currentServerEventMapperConnector,
+        setCurrentServerEventMapperConnector,
+        currentServerEventSource,
+        setCurrentServerEventSource,
 
         availableAccessServices,
         setAvailableAccessServices,
@@ -877,7 +956,7 @@ const ServerAuthorContextProvider = (props) => {
         setUnconfiguredAccessServices,
         currentAccessServiceId,
         setCurrentAccessServiceId,
-        currentAccessServiceName, 
+        currentAccessServiceName,
         setCurrentAccessServiceName,
         currentAccessServiceOptions,
         setCurrentAccessServiceOptions,
@@ -926,29 +1005,29 @@ const ServerAuthorContextProvider = (props) => {
         currentEngineServices,
         setCurrentEngineServices,
 
-        newServerViewServiceRemoteServerName,
-        setNewServerViewServiceRemoteServerName,
-        newServerViewServiceRemoteServerURLRoot,
-        setNewServerViewServiceRemoteServerURLRoot,
+        currentServerViewServiceRemoteServerName,
+        setCurrentServerViewServiceRemoteServerName,
+        currentServerViewServiceRemoteServerURLRoot,
+        setCurrentServerViewServiceRemoteServerURLRoot,
         activePlatforms,
         setActivePlatforms,
-        setNewServerIntegrationServiceRemoteServerName,
-        newServerIntegrationServiceRemoteServerURLRoot,
-        setNewServerIntegrationServiceRemoteServerURLRoot,
-        newServerIntegrationServiceConnectorName,
-        setNewServerIntegrationServiceConnectorName,
-        newServerIntegrationServiceConnectorUserId,
-        setNewServerIntegrationServiceConnectorUserId,
-        newServerIntegrationServiceConnection,
-        setNewServerIntegrationServiceConnection,
-        newServerIntegrationServiceMetadataSource,
-        setNewServerIntegrationServiceMetadataSource,
-        newServerIntegrationServiceRefreshTimeInterval,
-        setNewServerIntegrationServiceRefreshTimeInterval,
-        newServerIntegrationServiceUsesBlockingCalls,
-        setNewServerIntegrationServiceUsesBlockingCalls,
-        newServerIntegrationServicePermittedSynchronization,
-        setNewServerIntegrationServicePermittedSynchronization,
+        setCurrentServerIntegrationServiceRemoteServerName,
+        currentServerIntegrationServiceRemoteServerURLRoot,
+        setCurrentServerIntegrationServiceRemoteServerURLRoot,
+        currentServerIntegrationServiceConnectorName,
+        setCurrentServerIntegrationServiceConnectorName,
+        currentServerIntegrationServiceConnectorUserId,
+        setCurrentServerIntegrationServiceConnectorUserId,
+        currentServerIntegrationServiceConnection,
+        setCurrentServerIntegrationServiceConnection,
+        currentServerIntegrationServiceMetadataSource,
+        setCurrentServerIntegrationServiceMetadataSource,
+        currentServerIntegrationServiceRefreshTimeInterval,
+        setCurrentServerIntegrationServiceRefreshTimeInterval,
+        currentServerIntegrationServiceUsesBlockingCalls,
+        setCurrentServerIntegrationServiceUsesBlockingCalls,
+        currentServerIntegrationServicePermittedSynchronization,
+        setCurrentServerIntegrationServicePermittedSynchronization,
         notificationType,
         setNotificationType,
         notificationTitle,
@@ -957,23 +1036,22 @@ const ServerAuthorContextProvider = (props) => {
         setNotificationSubtitle,
         progressIndicatorIndex,
         setProgressIndicatorIndex,
-        newPlatformName,
-        setNewPlatformName,
+        currentPlatformName,
+        setCurrentPlatformName,
         loadingText,
         setLoadingText,
-        newServerConfig,
-        setNewServerConfig,
+        currentServerConfig,
+        setCurrentServerConfig,
         preventDeployment,
         setPreventDeployment,
         // Refs
         basicConfigFormStartRef,
         integrationServicesFormStartRef,
         // Functions
-        cleanForNewServerType,
+        cleanForcurrentServerType,
         retrieveAllServers,
         fetchServerConfig,
         generateBasicServerConfig,
-        // configureAccessServices,
         registerCohort,
         unRegisterCohort,
         configureArchiveFile,
@@ -985,6 +1063,8 @@ const ServerAuthorContextProvider = (props) => {
         setServerConfig,
         showConfigForm,
         hideConfigForm,
+        isCurrentStepInvalid,
+        setIsCurrentStepInvalid
       }}
     >
       {props.children}

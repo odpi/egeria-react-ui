@@ -81,7 +81,7 @@ export default function CreateNodeWizard(props) {
             </SelectItemGroup>
             <SelectItemGroup label="Categories">
               <SelectItem text="Category" value="category" />
-              <SelectItem text="Subject Area" value="subjectareadefintiion" disabled/>
+              <SelectItem text="Subject Area" value="subjectareadefinition" disabled/>
             </SelectItemGroup>
             <SelectItemGroup label="Glossaries">
               <SelectItem text="Glossary" value="glossary" />
