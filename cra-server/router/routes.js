@@ -254,6 +254,7 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
       ca: rootCABundle,      // certificate authority
       pfx: rootCABundle,     // also contains the certifcates to validate against.
       passphrase: passphrase,
+      rejectUnauthorized: rejectUnauthorized
     }),
     headers: {
       "Access-Control-Allow-Origin": "*",
