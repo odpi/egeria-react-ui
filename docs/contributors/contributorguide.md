@@ -48,7 +48,10 @@ This is the client code including the javascript. the cra - stands for Create Re
     * images - images, javascript wrappers of the the svg images with size. 
     * imagesHolder - this contains the svg images, grouped in folders to indicate their origin 
 
-## 7. There is ongoing work to enable easy running of the Presentation Server in a demo environment
+## 7. SSL
+   The ssl folder contains ssl orientated content for demo purposes. The [core egeria project](https://github.com/odpi/egeria) contains a [certificates folder](https://github.com/odpi/egeria/tree/main/open-metadata-resources/open-metadata-deployment/certificates). These certificates are generated as sample artifacts to show aspects of securing an Egeria eco-system. They should not be used in production as they rely on self signed certificates. By default, the Egeria React UI runs with these default certificates and the Egeria certificate authority. The React UI Egeria community copy over files from the [certificates folder] into the React UI top level ssl folder. As the certifictes have expiry dates in them, the React UI could fail to work if left using expired certificates. The React UI should be updated to match any new Egeria certificate content (include when they are regeneated with updated expiration); to allow the presentation server to continue to communicate with Egeria the view services.   
+
+## 8. There is ongoing work to enable easy running of the Presentation Server in a demo environment
 
  * The Coco Pharmaceuticals 'lab' tutorial environment will now configure the view services, and allow a user to experiment with the Presentation Server
  * The 'egeria-server-config' notebook has code added to configure the view services - so once this & egeria-server-start is run, Presentation Server is available.
