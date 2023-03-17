@@ -21,8 +21,9 @@ const env = process.env.NODE_ENV || 'development';
 
 
 // ssl self signed certificate and key for browser session
-const cert = fs.readFileSync(path.join(__dirname, '../') + "ssl/keys/EgeriaReactUIClient.cert.pem");
-const key = fs.readFileSync(path.join(__dirname, '../') + "ssl/keys/EgeriaReactUIClient.key.pem");
+const cert = fs.readFileSync(path.join(__dirname, '../') + "ssl/keys/EgeriaReactUIServer.cert.pem");
+const key = fs.readFileSync(path.join(__dirname, '../') + "ssl/keys/EgeriaReactUIServer.key.pem");
+
 const options = {
   key: key,
   cert: cert,
