@@ -27,6 +27,7 @@ const key = fs.readFileSync(path.join(__dirname, '../') + "ssl/keys/EgeriaReactU
 const options = {
   key: key,
   cert: cert,
+  passphrase: 'egeria'
 };
 app.set('key', key);
 app.set('cert', cert);

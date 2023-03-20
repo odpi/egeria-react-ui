@@ -252,7 +252,7 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
       ca: rootCABundle,      // certificate authority
-      pfx: rootCABundle,     // also contains the certifcates to validate against.
+    //  pfx: rootCABundle,     // also contains the certifcates to validate against.
       passphrase: passphrase,
       rejectUnauthorized: rejectUnauthorized
     }),
