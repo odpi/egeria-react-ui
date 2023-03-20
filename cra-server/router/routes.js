@@ -29,6 +29,13 @@ const loginLimiter = rateLimit({
 });
 
 
+// EgeriaRootCA.p12 is a bundle which contains the root certiication authority certificate,
+// this is used as the truststore and keystore. 
+const rootCABundle = fs.readFileSync(
+  path.join(__dirname, "../../") + "ssl/EgeriaRootCA.p12"
+);
+
+passphrase = "egeria";
 
 /**
  * Middleware to handle post requests that start with /login i.e. the login request. The tenant segment has been removed by previous middleware.
@@ -244,9 +251,9 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
     method: "get",
     url: urlRoot + incomingPath,
     httpsAgent: new https.Agent({
-      ca: ca,
-      pfx:  pfx,
-      passphrase:  passphrase,
+      ca: rootCABundle,      // certificate authority
+    //  pfx: rootCABundle,     // also contains the certifcates to validate against.
+      passphrase: passphrase,
       rejectUnauthorized: rejectUnauthorized
     }),
     headers: {

@@ -54,7 +54,7 @@ export default function InstancePropertiesDisplay(props) {
     return propertyList;
   };
 
-  if (instProps === undefined || instProps === null || instProps.propertyNames === null || instProps.propertyNames.length === 0) {
+  if (instProps === undefined || instProps === null || instProps.propertyNames === undefined || instProps.propertyNames === null || instProps.propertyNames.length === 0) {
     properties = (
       <div>
         list is empty
