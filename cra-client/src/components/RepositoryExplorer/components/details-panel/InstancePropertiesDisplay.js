@@ -37,15 +37,18 @@ export default function InstancePropertiesDisplay(props) {
     return value;
   };
   
-  const expandProperties = (inProps) => {
+  const expandProperties = (instanceProperties) => {
 
-    let propertyNamesUnsorted = inProps.propertyNames;
+    let propertyNamesUnsorted = [];
+    for (const [key] of Object.entries(instanceProperties)) 
+      propertyNamesUnsorted.push(`${key}`);
+
+
     let propertyNamesSorted   = propertyNamesUnsorted.sort();
-    
     let propertyList = propertyNamesSorted.map( (propName) => 
         <li className="details-sublist-item" key={propName}> {propName} :
           { 
-            switchValue(inProps.instanceProperties[propName]) 
+            switchValue(instanceProperties[propName]) 
           } 
         </li>
         
@@ -54,7 +57,7 @@ export default function InstancePropertiesDisplay(props) {
     return propertyList;
   };
 
-  if (instProps === undefined || instProps === null || instProps.propertyNames === undefined || instProps.propertyNames === null || instProps.propertyNames.length === 0) {
+  if (instProps === undefined || instProps === null || instProps.instanceProperties === undefined || instProps.instanceProperties === null || instProps.instanceProperties.length === 0) {
     properties = (
       <div>
         list is empty
@@ -65,7 +68,7 @@ export default function InstancePropertiesDisplay(props) {
    
     properties = (              
       <ul className="details-sublist">       
-       {expandProperties(instProps)}          
+       {expandProperties(instProps.instanceProperties)}          
       </ul>
       
     );
