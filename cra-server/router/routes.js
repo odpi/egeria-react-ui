@@ -242,8 +242,8 @@ router.get("/open-metadata/admin-services/*", (req, res) => {
   const servers = req.app.get("servers");
   const server = servers[req.query.serverName];
   const urlRoot = server.remoteURL;
-  // const pfx = getCertificateFromFileSystem(server.pfx);
-  // const ca = getCertificateFromFileSystem(server.ca);
+  const pfx = getCertificateFromFileSystem(server.pfx);
+  const ca = getCertificateFromFileSystem(server.ca);
   const passphrase = server.passphrase;
   const rejectUnauthorized = server.rejectUnauthorizedForOmag;
 
