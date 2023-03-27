@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-import React     from "react";
+import React from "react";
 
 import PropTypes from "prop-types";
 
@@ -10,7 +10,7 @@ import "./details-panel.scss";
 
 export default function InstancePropertiesDisplay(props) {
 
-  const instProps           = props.properties;
+  const instProps = props.properties;
 
   let properties;
 
@@ -18,48 +18,51 @@ export default function InstancePropertiesDisplay(props) {
   const switchValue = (prop) => {
     let value;
     switch (prop.instancePropertyCategory) {
-      case "PRIMITIVE" : 
+      case "PRIMITIVE":
         value = prop.primitiveValue;
         break;
-      case "ENUM" :
+      case "ENUM":
         value = prop.symbolicName;
         break;
-      case "MAP" :
-        value = (<ul>  {expandProperties(prop.mapValues)}  </ul>)     
+      case "MAP":
+        if (prop.mapValues !== null && prop.mapValues !== undefined) {
+          value = (<ul>  {expandProperties(prop.mapValues.instanceProperties)}  </ul>)
+        } else {
+          value = "No map values."
+        }
         break;
-      case "ARRAY" :
-          console.log("DEBUG ARRAY");
-          if (prop.arrayValues !== null && prop.arrayValues !== undefined) {
-            value = (<ul>  {expandProperties(prop.arrayValues.instanceProperties)} </ul>)
-          } else {
-            value = "No Array values."
-          }
-          break;
+      case "ARRAY":
+        if (prop.arrayValues !== null && prop.arrayValues !== undefined) {
+          value = (<ul>  {expandProperties(prop.arrayValues.instanceProperties)} </ul>)
+        } else {
+          value = "No Array values."
+        }
+        break;
       // it seems like this method can be driven with an unknown prop.instancePropertyCategory. I assume a render occurs before the prop value has been populated
       // removing this alert. 
 
       // default:
       //   alert("Unknown instance property category: "+prop.instancePropertyCategory);
       //   break;
-    }       
+    }
     return value;
   };
-  
+
   const expandProperties = (instanceProperties) => {
 
     let propertyNamesUnsorted = [];
-    for (const [key] of Object.entries(instanceProperties)) 
+    for (const [key] of Object.entries(instanceProperties))
       propertyNamesUnsorted.push(`${key}`);
 
 
-    let propertyNamesSorted   = propertyNamesUnsorted.sort();
-    let propertyList = propertyNamesSorted.map( (propName) => 
-        <li className="details-sublist-item" key={propName}> {propName} :
-          { 
-            switchValue(instanceProperties[propName]) 
-          } 
-        </li>
-        
+    let propertyNamesSorted = propertyNamesUnsorted.sort();
+    let propertyList = propertyNamesSorted.map((propName) =>
+      <li className="details-sublist-item" key={propName}> {propName} :
+        {
+          switchValue(instanceProperties[propName])
+        }
+      </li>
+
     );
 
     return propertyList;
@@ -73,12 +76,12 @@ export default function InstancePropertiesDisplay(props) {
     )
   }
   else {
-   
-    properties = (              
-      <ul className="details-sublist">       
-       {expandProperties(instProps.instanceProperties)}          
+
+    properties = (
+      <ul className="details-sublist">
+        {expandProperties(instProps.instanceProperties)}
       </ul>
-      
+
     );
   }
 
@@ -86,5 +89,5 @@ export default function InstancePropertiesDisplay(props) {
 }
 
 InstancePropertiesDisplay.propTypes = {
-  properties: PropTypes.object 
+  properties: PropTypes.object
 };
