@@ -30,9 +30,12 @@ export default function InstancePropertiesDisplay(props) {
       case "ARRAY" :
         value = (<ul>  {expandProperties(prop.arrayValues)} </ul>)
         break;
-      default:
-        alert("Unknown instance property category: "+prop.instancePropertyCategory);
-        break;
+      // it seems like this method can be driven with an unknown prop.instancePropertyCategory. I assume a render occurs before the prop value has been populated
+      // removing this alert. 
+
+      // default:
+      //   alert("Unknown instance property category: "+prop.instancePropertyCategory);
+      //   break;
     }       
     return value;
   };
