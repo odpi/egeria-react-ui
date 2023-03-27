@@ -28,8 +28,13 @@ export default function InstancePropertiesDisplay(props) {
         value = (<ul>  {expandProperties(prop.mapValues)}  </ul>)     
         break;
       case "ARRAY" :
-        value = (<ul>  {expandProperties(prop.arrayValues)} </ul>)
-        break;
+          console.log("DEBUG ARRAY");
+          if (prop.arrayValues !== null && prop.arrayValues !== undefined) {
+            value = (<ul>  {expandProperties(prop.arrayValues.instanceProperties)} </ul>)
+          } else {
+            value = "No Array values."
+          }
+          break;
       // it seems like this method can be driven with an unknown prop.instancePropertyCategory. I assume a render occurs before the prop value has been populated
       // removing this alert. 
 
