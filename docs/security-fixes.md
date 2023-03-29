@@ -8,12 +8,15 @@ npm audit fix should run regularly on cra-client and cra-server. This should fix
 
 ## Current limitations
 
+
 None
 * cra-server - ```npm audit``` has 0 vulnerabilities
 * cra-client - ```npm audit --prod``` has 0 vulnerabilities
 
 
-As of 02/02/22 (latest activity first)
+As of 28/03/23 (latest activity first)
+
+* 28/03/23 updated d3 to 2.0 - npm audit said this was a breaking change but it seemed to work. 
 
 * 02/02/22 We decided to revert the forced resolutions and suggest that ```npm audit --prod``` should be run. This only checks production considerations. Pr https://github.com/odpi/egeria-react-ui/pull/347 moved the react-scripts and postcss depenancies mentioned below to be dev dependancies. For cra-client this gives 0 vulnerabilities.
 
