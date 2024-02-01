@@ -7,7 +7,7 @@
     "@babel/core": "^7.16.5",
     "@carbon/elements": "^10.49.0",
     "@carbon/grid": "^11.21.0",
-    "@carbon/icons-react": "^10.44.0",
+    "@carbon/icons-react": "^11.34.1",
     "@carbon/layout": "^11.20.0",
     "@carbon/themes": "^11.29.1",
     "@rollup/plugin-babel": "^5.3.0",
